@@ -1,0 +1,100 @@
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage{cogsci}
+\usepackage{pslatex}
+\usepackage{apacite}
+\usepackage{graphicx}
+\usepackage{caption}
+%\usepackage{subcaption}
+\usepackage{subfigure}
+  
+\begin{document}
+
+\title{Uncertain Deductions}
+ 
+\author{{\large \bf Michael H. Tessler, Noah D. Goodman } \\
+	\{mtessler, ngoodman\}@stanford.edu \\
+  Department of Psychology, Stanford University}
+
+\maketitle
+
+
+\begin{abstract}
+This is not an abstract.\\
+\textbf{Keywords:} 
+Reasoning, probabilistic model
+\end{abstract}
+
+Reasoning is an important faculty of the human mind. Reasoning has allowed humans to come up with sophisticated systems of laws, commerce, and scientific discoveries. Everyday reasoning is often considered to be different from formal logical reasoning. Indeed human performance on logical reasoning tasks would suggest as much.
+
+Many accounts of human performance in syllogistic reasoning tasks have been proposed. None has hitherto been satisfactory. One issue that all theories must answer is: what is the fundamental problem that the experimental participant is trying to solve? One possibility is {\emph{logical deduction}, but it would seem that if people were indeed trying to do logical deduction, they are doing quite poorly. Hence, many theories have been put forth to explain the errors in performance.
+
+We propose a different way forward. We frame the problem in terms of "what problem are people solving", with the assumption that behavior can be considered rational in a certain light. We propose, as has been proposed before, that people are importing their {\emph everyday} reasoning into the logical reasoning task. {\emph Everyday} reasoning can be understood as the type of reasoning that allows us to deal with a world of uncertainty, a world in which you don't know how many people are in the hallway outside your door. This type of reasoning is most succinctly described in the language of probability theory. 
+
+In this paper, we'll review two dominant theories, Mental Models and Probability Heuristics, that contribute greatly to our understanding of syllogistic reasoning, yet each leave something to be desired. We'll develop a probabilistic model that address these shortcomings.  Finally, we will compare our model predictions with the predictions of the other theories as well to behavioral data from a recent meta-analysis. We'll conclude by discussing further predictions of the model and future directions.  
+
+
+\section{Two syllogistic reasoning theories}
+
+The Mental Models Theory (MMT) describes a psychological process by which people reason about syllogisms. It posits that people construct {\em iconic} mental models, representing the classes of a proposition as some collection of mental objects. Models for the two premises are combined, and the conclusion is ``read off" this joint model. The MMT captures the intuition that people are able to reason about sets of different things explicitly and differently, if need be. Mental models are flexible in that one can construct models of different size, depending on the context. Some individuals may test model models and some may test just one. Quantifiers can be affirmed or denied by reasoning over these mental objects; indeed one just needs to ``read off" the model to see if a certain proposition is true. At the same time, the theory is not well defined insofar as it does not specify how and what models come into existence.
+
+The Probability Heuristic Model (PHM) is inspired by the notion that people are not fundamentally reasoning deductively, but instead are using some sort of {\em everyday} reasoning when asked to do a syllogism task. The PHM takes shape in a computational level theory consisting of three parts: a probabilistic semantics, a notion of informativeness, and a probabilistic interpretation of validity. These are instantiated at the algorithmic level by a number of {\em generation} and {\em test} heuristics which produce and quantify confidence in conclusions. The probabilistic theory relies on these heuristics, thus asserting that reasoners are not engaging with the syllogisms at a semantic level. The PHM posits a surface-level analysis of the logical arguments. 
+
+\section{A probabilistic model}
+
+We propose a probabilistic model to integrate these two theories. 
+
+Discuss parameters of the model.
+
+\subsection{Model predictions}
+
+Here we can show our model's predictions (perhaps the modal responses) and compare to the PHM predictions and the MMT predictions (available in a table in the Johnson-Laird meta-analysis).
+
+\subsection{Logical validity and the need for pragmatics}
+To be logically valid means to be true in all possible worlds. The universal quantifiers (all, none) entail their particular counterparts (some, not-all), respectively. This means confidence for {\emph all} and {\emph some} (to take the affirmative case) is the same. {\emph All} is always true and {\emph some} is true whenever {\emph all} is true. Thus, they are both true 100\% of the time. 
+
+However, reasoners do not endorse treat conclusions as equally good. 
+
+\subsection{Pragmatics extension}
+
+Harness recent advances in quantitative models of conversational pragmatics (implicature paper). 
+
+\section{Results}
+
+\subsection{Meta-analysis data}
+Scatterplot, things that we get wrong. Perhaps a more detailed view of the ones we get wrong... would need a good diagram for this, the most simple which comes to mind is a series of bargraphs, each graph has 4 x 2 (=8) bars for the 4 conclusions x (model, data). Could also do this for the ones we get right... 64 syllogisms in total so we'll have to choose wisely.
+
+
+\subsection{Model comparison}
+
+Something creative here.
+
+\section{Most and few}
+
+A grand virtue of the model. 
+
+\subsection{Model predictions}
+
+There are two experiments. As of today, the model does quite well with Experiment 1 (quantifiers: all, most, few, not-all) and less well with Experiment 2 (quantifiers: most, few, some, none). Interestingly or not, Chater and Oaksford have the same pattern (better with Exp 1) and I think our fit is better than theirs.
+
+\subsection{Chater \& Oaksford Data vs. Our Model}
+
+Results here.
+
+\subsection{Model comparison}
+
+Something creative here.
+
+\section{Future directions}
+
+Belief bias as a difference of prior.
+
+\bibliographystyle{apacite}
+
+\setlength{\bibleftmargin}{.125in}
+\setlength{\bibindent}{-\bibleftmargin}
+
+\bibliography{bibmht}
+
+
+\end{document}
