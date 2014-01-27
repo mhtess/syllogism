@@ -10,10 +10,10 @@
   
 \begin{document}
 
-\title{Uncertain Deductions}
+\title{Some arguments are probably valid}
  
-\author{{\large \bf Michael H. Tessler, Noah D. Goodman } \\
-	\{mtessler, ngoodman\}@stanford.edu \\
+\author{{\large \bf M.H. Tessler, Noah D. Goodman } \\
+	\{mhtessler, ngoodman\}@stanford.edu \\
   Department of Psychology, Stanford University}
 
 \maketitle
@@ -25,37 +25,93 @@ This is not an abstract.\\
 Reasoning, probabilistic model
 \end{abstract}
 
-Reasoning is an important faculty of the human mind. Reasoning has allowed humans to come up with sophisticated systems of laws, commerce, and scientific discoveries. Everyday reasoning is often considered to be different from formal logical reasoning. Indeed human performance on logical reasoning tasks would suggest as much.
+Syllogistic reasoning has been a topic of considerable interest in cognitive psychology for over one hundred years, and before that in philosophy, dating back to Aristotle. A syllogism is a two premise argument, which relates two terms by a middle term. The relation is a quantifier, and the quantifiers used in the classical syllogism are all, some, none, and not all. For example,
 
-Many accounts of human performance in syllogistic reasoning tasks have been proposed. None has hitherto been satisfactory. One issue that all theories must answer is: what is the fundamental problem that the experimental participant is trying to solve? One possibility is {\emph{logical deduction}, but it would seem that if people were indeed trying to do logical deduction, they are doing quite poorly. Hence, many theories have been put forth to explain the errors in performance.
+\begin{quotation}
+All artists are bakers\\
+Some bakers are chemists\\
+\end{quotation}
 
-We propose a different way forward. We frame the problem in terms of "what problem are people solving", with the assumption that behavior can be considered rational in a certain light. We propose, as has been proposed before, that people are importing their {\emph everyday} reasoning into the logical reasoning task. {\emph Everyday} reasoning can be understood as the type of reasoning that allows us to deal with a world of uncertainty, a world in which you don't know how many people are in the hallway outside your door. This type of reasoning is most succinctly described in the language of probability theory. 
+is a syllogistic argument. There are 64 possible syllogism which one can derive by replacing the quantifiers with others from the allowable set and reordering the terms (All As are Bs --> All Bs are As). Most syllogisms have no valid conclusion, like the one presented above. 
 
-In this paper, we'll review two dominant theories, Mental Models and Probability Heuristics, that contribute greatly to our understanding of syllogistic reasoning, yet each leave something to be desired. We'll develop a probabilistic model that address these shortcomings.  Finally, we will compare our model predictions with the predictions of the other theories as well to behavioral data from a recent meta-analysis. We'll conclude by discussing further predictions of the model and future directions.  
+People with no training in formal logic, and even some with training, find reasoning with syllogisms difficult. A recent meta-analysis showed that over the population, accuracy on producing valid conclusions ranges from 90 \% to 1\% \cite{khemlaniJL2012}. For syllogisms with no valid conclusion, accuracy ranges from 76\% to 12\%.
+
+This evidence would seem to suggest that people are not reasoning using deductive mechanisms in the mind. Yet, many theories take deduction as a given and try to explain errors as a matter of noise in the system. We take a different path. We propose, as has been proposed before, that people are reasoning according to their {\emph everyday} mode of reasoning. {\emph Everyday} reasoning is understood as the type of reasoning that is refined for dealing with a world of uncertainty, a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging. This type of reasoning is most succinctly described in the language of probability theory. In this formalism, deduction emerges as that which is most probable.
+
+%
+%Theories of syllogistic reasoning have been  One possibility is {\emph{logical deduction}. When a theory takes deduction to be fundamental, the explanatory power of the theory derives from explaining errors in deductive inference. That is to say, these theories treat the variety of performance errors as the first-class explanandum.
+%
+%We take a different path. We propose, as has been proposed before, that people are reasoning according to their {\emph everyday} mode of reasoning. {\emph Everyday} reasoning is understood as the type of reasoning that is refined for dealing with a world of uncertainty, a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging. This type of reasoning is most succinctly described in the language of probability theory. 
+
+In the rest of the paper, we review three theories of syllogistic reasoning -- Mental Models, Mental Logics and Probability Heuristics -- which we take to exemplify three quadrants of a two-dimensional theoretical space. We develop a computational level theory in the unexplored quadrant of the space, instantiated in a probabilistic model. We compare our model predictions with the predictions of the other theories as well to behavioral data from a recent meta-analysis. We explore the flexibility of the model to account for reasoning behavior in a study using the generalized quantifiers most and few. We conclude by discussing further predictions of the model and future directions.  
+
+\section{Extant theories}
+
+A recent meta-analysis carved the space of reasoning theories into three partitions: those based on model or diagrammatic reasoning, those based on formal logical rules, and those based on heuristics \cite{Khemlani2012}. We see the space differently. In one dimension, theories may be based on applying rules -- be they heuristic or logical -- or they are based on constructing concrete representations or models. In another dimension, theories may be considered fundamentally probabilistic or deterministic. 
+
+\subsection{Mental Models}
+ The Mental Models Theory (MMT) describes a psychological process by which people reason by constructing {\em iconic} mental representations or models, which represent the terms of a proposition as a collection of individuals. In syllogistic reasoning, a model is constructed for each premise, and premise models are consolidated so that the conclusion may be ``read off" the joint model. For example, a model for the premise  \emph{All artists are bakers} could be represented as the following situation.
+
+\begin{tabular}{l l}
+artist & baker\\
+artist & baker\\
+ & baker\\
+\end{tabular}
+
+This shows 2 individuals who are both artists and bakers, and one individual who is a baker but not an artist. Thus, each row is a representation of the properties of an individual. The authors emphasize the need to search for counter-examples to check for logical validity. Errors arise in this search process.
+
+The MMT captures the intuition that people are able to reason about sets of things explicitly and with respect to context.  The a priori believability of propositions has been shown to have an important effect on reasoning \cite{Oakhill1989}. Mental models are flexible in that content can motivate one to carry on the search process longer. The search process allows for individual differences insofar as some individuals may test many models and some may test just one. At the same time, the theory is not well defined insofar as it does not specify how various models come into existence, only that various models can come into existence.
+
+%Different quantifiers can be applied by reasoning over these mental models; indeed one just needs to ``read off" the model to see if a certain proposition is true. Thus, it has been proposed that mental models could account for usage of generalized quantifiers (e.g. most and few) in syllogistic reasoning, though this claim has not been substantiated by empirical work or a model.
+
+\subsection{Mental Logics}
+
+Rips (1994) proposed that people reason according to rules of \emph{natural deduction}. The theory of Mental Logics, instantiated in the PSYCOP model, posits individuals construct \emph{logical sentences} in a language of first-order predicate calculus which are linked when the ``individual recognizes [the link or inference] as intuitively sound". The model explains errors as a failure to recognize the applicability of a given formal rule, a failure to retrieve the rule, or a failure to carry out the necessary steps for that rule. People are especially prone to such errors when complex rules are needed so there is a predicted effect of rule complexity on difficulty. In this instance, the theory does not specify \emph{which} conclusions will be drawn fallaciously, only that some will. Mental Logics posits that people reason according to logical, deterministic rules. 
+
+\subsection{Probability Heuristics}
+
+Heuristic accounts be understood in a similar way: that people reason according to heuristic rules, which may be determined by probabilities. This the case with Chater and Oaksford's Probability Heuristic Model (PHM). Like our approach, the PHM is inspired by the notion that people are not fundamentally deductive reasoners, but instead are trying to gage degrees of plausibility for the conclusion. This amounts to computing the probability of a particular conclusion being true given that the premises are true. [equation] To accomplish this, the PHM relies on a number of {\em generation} and {\em test} heuristics which produce and quantify confidence in conclusions, and which they claim are justified by their computational level theory. The computational level theory includes a notion of informativeness, on which all their heuristics rely. We do not believe their heuristics are necessary for deriving a probabilistic model of reasoning, as we discuss below. Further, as is the case for theories based on formal rules, the very nature of their heuristics suggests reasoners are not engaging with the syllogisms at a semantic level. We also do not believe this to be the case. 
 
 
-\section{Two syllogistic reasoning theories}
+\section{The Conditional Semantics model}
 
-The Mental Models Theory (MMT) describes a psychological process by which people reason about syllogisms. It posits that people construct {\em iconic} mental models, representing the classes of a proposition as some collection of mental objects. Models for the two premises are combined, and the conclusion is ``read off" this joint model. The MMT captures the intuition that people are able to reason about sets of different things explicitly and differently, if need be. Mental models are flexible in that one can construct models of different size, depending on the context. Some individuals may test model models and some may test just one. Quantifiers can be affirmed or denied by reasoning over these mental objects; indeed one just needs to ``read off" the model to see if a certain proposition is true. At the same time, the theory is not well defined insofar as it does not specify how and what models come into existence.
+The motivation for our model stems from two intuitions: (1) people are using \emph{everyday} reasoning in syllogistic reasoning tasks and (2) they do this by constructing situations \footnote{These situations are in no way different from mental models. We prefer the term situation so as to not confound the word model, which we take to refer to a computational model.} and reasoning over these situations. This formulation places the theory in the unexplored quadrant of the two-dimensional theoretical space described above: we consider reasoning over situations and situations to be constructed probabilistically. We use a naive binomial prior to sample situations. Each situation is composed of some number of objects, each with 1, 2 or 3 of the properties under discussion. 
 
-The Probability Heuristic Model (PHM) is inspired by the notion that people are not fundamentally reasoning deductively, but instead are using some sort of {\em everyday} reasoning when asked to do a syllogism task. The PHM takes shape in a computational level theory consisting of three parts: a probabilistic semantics, a notion of informativeness, and a probabilistic interpretation of validity. These are instantiated at the algorithmic level by a number of {\em generation} and {\em test} heuristics which produce and quantify confidence in conclusions. The probabilistic theory relies on these heuristics, thus asserting that reasoners are not engaging with the syllogisms at a semantic level. The PHM posits a surface-level analysis of the logical arguments. 
+We draw on work in formal semantics by assuming that sentences are truth-functional operators. Thus, for each situation, some sentences are true while others are false. By sampling over many situations, we construct a distribution over sentences, shown in Figure 1. [Here we can show either a bar graph for n=6, p=0.25; or we can show a line graph with either n held constant or p held constant, or we can show a surface graph.]
 
-\section{A probabilistic model}
+For reasoning over syllogisms, the prior distribution is conditioned on the truth of the premise sentences. This is the distribution over sentences conditioned on the fact that the premises are true. In this way, we evaluate the $\Pr$(conclusion $\arrowvert$ premises). This is essentially a metric of the plausibility of the argument. In this formulation, $\Pr$(conclusion $\arrowvert$ premises) = 1 if and only if the syllogism is logically valid.
 
-We propose a probabilistic model to integrate these two theories. 
-
-Discuss parameters of the model.
+%
+%To set this parameter, we follow Johnson-Laird's principle of parsimony, which states that situations are constructed to ``maximize the number of properties of each individual to try to keep the number of \emph{distinct sorts} of individuals to a minimum".
+%
+%, from which we accept only those consistent with the premises \footnote{We follow J-L's lead by imposing the additionasl constraint that the syllogistic terms refer to non-empty classes in the world. This is the existential presupposition.}.
+%
+%The basic model has two parameters, which both contribute to the concept of Expected Value: situation size and property rarity. We tested a number of situation sizes and found 6 to be the best. This is consistent with Johnson-Laird's principle of parsimony which states that models are constructed to ``maximize the number of properties of each individual to try to keep the number of \emph{distinct sorts} of individuals to a minimum". 
+%
+%The number of distinct sorts of individuals is highest for logically invalid syllogisms precisely because the problems are not fully constrained. In Johnson-Laird's examples of these types of models, the number of individuals is always 6. 
+%
+%Rarity refers to the probability that a particular object in a world has a property (or belongs to class). A principle of rarity is often assumed in line with the intuition that properties are relative rare \footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}, and we assume a principle of rarity here. We tested a number of rarity factors and found that p=0.25 provided the best fit. This is also consistent with Chater \& Oaksford's rarity assumption. 
 
 \subsection{Model predictions}
 
-Here we can show our model's predictions (perhaps the modal responses) and compare to the PHM predictions and the MMT predictions (available in a table in the Johnson-Laird meta-analysis).
+\subsubsection{Multiple Models}
+Mental Models Theory explains difficulty in syllogisms by demonstrating that multiple, distinct situations can be consistent with a pair of premises, giving rise to different possible conclusions. Valid syllogistic conclusions arise in every possible model. (This is the same notion of Pr(conclusion | premises) = 1). 
 
-\subsection{Logical validity and the need for pragmatics}
-To be logically valid means to be true in all possible worlds. The universal quantifiers (all, none) entail their particular counterparts (some, not-all), respectively. This means confidence for {\emph all} and {\emph some} (to take the affirmative case) is the same. {\emph All} is always true and {\emph some} is true whenever {\emph all} is true. Thus, they are both true 100\% of the time. 
+This is always the case the logically invalid syllogisms (see discussion below), and is sometimes the case with logically valid syllogisms.
 
-However, reasoners do not endorse treat conclusions as equally good. 
+\subsubsection{Logical invalidity}
+For syllogisms that have no valid conclusion, the probabilistic reasoner computes the probability of the conclusion conditioned on the premises being true by sampling. For all invalid syllogisms, this yield a gradeds response across the different possible conclusion types. 
 
-\subsection{Pragmatics extension}
+
+\subsubsection{Logical validity}
+A conclusion is logically valid if and if only it is true in all possible situations. Recall that possible situations are restricted to those that are consistent with the premises. The universal quantifiers (all, none) entail their particular counterparts (some, not-all), respectively. This was noticed by Aristotle and commonly visualized in the \emph{Square of Opposition}. For our probabilistic reasoner, confidence for {\emph all} and {\emph some} (to take the affirmative case) will be both maximal. {\emph All} is always true and {\emph some} is true whenever {\emph all} is true.
+
+
+\subsection{Pragmatics}
+
+One thing to notice about the probabilistic reasoner is that it is agnostic among equally valid conclusions. However, human reasoners endorse some valid conclusions more so than others. What can account for this apparent illogicality?  
+
+
 
 Harness recent advances in quantitative models of conversational pragmatics (implicature paper). 
 
@@ -94,7 +150,7 @@ Belief bias as a difference of prior.
 \setlength{\bibleftmargin}{.125in}
 \setlength{\bibindent}{-\bibleftmargin}
 
-\bibliography{bibmht}
+\bibliography{mhtbib}
 
 
 \end{document}
