@@ -9,6 +9,45 @@
 \usepackage{subfigure}
 \graphicspath{{figures/}}
   
+\usepackage{listings}
+\usepackage{inconsolata}
+\usepackage{xcolor} %to use colored text
+\lstset{
+  language=Scheme, % Andreas Stuhlmüller. Scheme listings. https://github.com/stuhlmueller/scheme-listings.git
+  columns=fixed,
+  tabsize=2,
+  extendedchars=true,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numbersep=5pt,
+  rulesepcolor=\color{solarized@base03},
+  numberstyle=\tiny\color{solarized@base01},
+  basicstyle=\scriptsize\ttfamily,
+  keywordstyle=\color{solarized@green},
+  stringstyle=\color{solarized@cyan}\ttfamily,
+  identifierstyle=\color{solarized@blue},
+  commentstyle=\color{solarized@base01},
+  emphstyle=\color{solarized@red}
+}
+
+\definecolor{solarized@base03}{HTML}{002B36}
+\definecolor{solarized@base02}{HTML}{073642}
+\definecolor{solarized@base01}{HTML}{586e75}
+\definecolor{solarized@base00}{HTML}{657b83}
+\definecolor{solarized@base0}{HTML}{839496}
+\definecolor{solarized@base1}{HTML}{93a1a1}
+\definecolor{solarized@base2}{HTML}{EEE8D5}
+\definecolor{solarized@base3}{HTML}{FDF6E3}
+\definecolor{solarized@yellow}{HTML}{B58900}
+\definecolor{solarized@orange}{HTML}{CB4B16}
+\definecolor{solarized@red}{HTML}{DC322F}
+\definecolor{solarized@magenta}{HTML}{D33682}
+\definecolor{solarized@violet}{HTML}{6C71C4}
+\definecolor{solarized@blue}{HTML}{268BD2}
+\definecolor{solarized@cyan}{HTML}{2AA198}
+\definecolor{solarized@green}{HTML}{859900}
+  
 \begin{document}
 
 \title{Some arguments are probably valid}
@@ -46,32 +85,7 @@ This evidence would seem to suggest that people are not reasoning using deductiv
 
 In the rest of the paper, we review three theories of syllogistic reasoning -- Mental Models, Mental Logics and Probability Heuristics -- which we take to exemplify three quadrants of a two-dimensional theoretical space. We develop a computational level theory in the unexplored quadrant of the space, instantiated in a probabilistic model. We compare our model predictions with the predictions of the other theories as well to behavioral data from a recent meta-analysis. We explore the flexibility of the model to account for reasoning behavior in a study using the generalized quantifiers most and few. We conclude by discussing further predictions of the model and future directions.  
 
-\section{Extant theories}
 
-A recent meta-analysis carved the space of reasoning theories into three partitions: those based on model or diagrammatic reasoning, those based on formal logical rules, and those based on heuristics \cite{Khemlani2012}. We see the space differently. In one dimension, theories may be based on applying rules -- be they heuristic or logical -- or they are based on constructing concrete representations or models. In another dimension, theories may be considered fundamentally probabilistic or deterministic. 
-
-\subsection{Mental Models}
- The Mental Models Theory (MMT) describes a psychological process by which people reason by constructing {\em iconic} mental representations or models, which represent the terms of a proposition as a collection of individuals. In syllogistic reasoning, a model is constructed for each premise, and premise models are consolidated so that the conclusion may be ``read off" the joint model. For example, a model for the premise  \emph{All artists are bakers} could be represented as the following situation.
-
-\begin{tabular}{l l}
-artist & baker\\
-artist & baker\\
- & baker\\
-\end{tabular}
-
-This shows 2 individuals who are both artists and bakers, and one individual who is a baker but not an artist. Thus, each row is a representation of the properties of an individual. The authors emphasize the need to search for counter-examples to check for logical validity. Errors arise in this search process.
-
-The MMT captures the intuition that people are able to reason about sets of things explicitly and with respect to context.  The a priori believability of propositions has been shown to have an important effect on reasoning \cite{Oakhill1989}. Mental models are flexible in that content can motivate one to carry on the search process longer. The search process allows for individual differences insofar as some individuals may test many models and some may test just one. At the same time, the theory is not well defined insofar as it does not specify how various models come into existence, only that various models can come into existence.
-
-%Different quantifiers can be applied by reasoning over these mental models; indeed one just needs to ``read off" the model to see if a certain proposition is true. Thus, it has been proposed that mental models could account for usage of generalized quantifiers (e.g. most and few) in syllogistic reasoning, though this claim has not been substantiated by empirical work or a model.
-
-\subsection{Mental Logics}
-
-Rips (1994) proposed that people reason according to rules of \emph{natural deduction}. The theory of Mental Logics, instantiated in the PSYCOP model, posits individuals construct \emph{logical sentences} in a language of first-order predicate calculus which are linked when the ``individual recognizes [the link or inference] as intuitively sound". The model explains errors as a failure to recognize the applicability of a given formal rule, a failure to retrieve the rule, or a failure to carry out the necessary steps for that rule. People are especially prone to such errors when complex rules are needed so there is a predicted effect of rule complexity on difficulty. In this instance, the theory does not specify \emph{which} conclusions will be drawn fallaciously, only that some will. Mental Logics posits that people reason according to logical, deterministic rules. 
-
-\subsection{Probability Heuristics}
-
-Heuristic accounts be understood in a similar way: that people reason according to heuristic rules, which may be determined by probabilities. This the case with Chater and Oaksford's Probability Heuristic Model (PHM). Like our approach, the PHM is inspired by the notion that people are not fundamentally deductive reasoners, but instead are trying to gage degrees of plausibility for the conclusion. This amounts to computing the probability of a particular conclusion being true given that the premises are true. [equation] To accomplish this, the PHM relies on a number of {\em generation} and {\em test} heuristics which produce and quantify confidence in conclusions, and which they claim are justified by their computational level theory. The computational level theory includes a notion of informativeness, on which all their heuristics rely. We do not believe their heuristics are necessary for deriving a probabilistic model of reasoning, as we discuss below. Further, as is the case for theories based on formal rules, the very nature of their heuristics suggests reasoners are not engaging with the syllogisms at a semantic level. We also do not believe this to be the case. 
 
 
 \section{The Conditional Semantics model}
@@ -119,6 +133,36 @@ To address this we draw on recent advances in computational models of pragmatic 
 We draw on this work by saying reasoners are not only choosing conclusions which are likely to be true but also which are informative. This makes the prediction that when given equally likely conclusions, reasoners will choose the one with the higher information content. Information content can be understood as an reciprocal function of the prior. Utterances or conclusions which are likely to be true a priori are preferred less than those which are less likely to be true. 
 
 We operationalize this by using a variant of the nested-conditioning model of inference discussed in \cite{Goodman2013}. In the original model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the reasoner chooses a conclusion consistent with the premises, while the listener hears the conclusion and tries to reconstruct the premises the reasoner was presented with. This is important as the reasoner does not observe a situation directly but rather constructs one consistent with the premises. 
+
+
+\section{Relationship to previous theories}
+
+A recent meta-analysis carved the space of reasoning theories into three partitions: those based on model or diagrammatic reasoning, those based on formal logical rules, and those based on heuristics \cite{Khemlani2012}. We see the space differently. In one dimension, theories may be based on applying rules -- be they heuristic or logical -- or they are based on constructing concrete representations or models. In another dimension, theories may be considered fundamentally probabilistic or deterministic. 
+
+\subsection{Mental Models}
+ The Mental Models Theory (MMT) describes a psychological process by which people reason by constructing {\em iconic} mental representations or models, which represent the terms of a proposition as a collection of individuals. In syllogistic reasoning, a model is constructed for each premise, and premise models are consolidated so that the conclusion may be ``read off" the joint model. For example, a model for the premise  \emph{All artists are bakers} could be represented as the following situation.
+
+\begin{tabular}{l l}
+artist & baker\\
+artist & baker\\
+ & baker\\
+\end{tabular}
+
+This shows 2 individuals who are both artists and bakers, and one individual who is a baker but not an artist. Thus, each row is a representation of the properties of an individual. The authors emphasize the need to search for counter-examples to check for logical validity. Errors arise in this search process.
+
+The MMT captures the intuition that people are able to reason about sets of things explicitly and with respect to context.  The a priori believability of propositions has been shown to have an important effect on reasoning \cite{Oakhill1989}. Mental models are flexible in that content can motivate one to carry on the search process longer. The search process allows for individual differences insofar as some individuals may test many models and some may test just one. At the same time, the theory is not well defined insofar as it does not specify how various models come into existence, only that various models can come into existence.
+
+%Different quantifiers can be applied by reasoning over these mental models; indeed one just needs to ``read off" the model to see if a certain proposition is true. Thus, it has been proposed that mental models could account for usage of generalized quantifiers (e.g. most and few) in syllogistic reasoning, though this claim has not been substantiated by empirical work or a model.
+
+\subsection{Mental Logics}
+
+Rips (1994) proposed that people reason according to rules of \emph{natural deduction}. The theory of Mental Logics, instantiated in the PSYCOP model, posits individuals construct \emph{logical sentences} in a language of first-order predicate calculus which are linked when the ``individual recognizes [the link or inference] as intuitively sound". The model explains errors as a failure to recognize the applicability of a given formal rule, a failure to retrieve the rule, or a failure to carry out the necessary steps for that rule. People are especially prone to such errors when complex rules are needed so there is a predicted effect of rule complexity on difficulty. In this instance, the theory does not specify \emph{which} conclusions will be drawn fallaciously, only that some will. Mental Logics posits that people reason according to logical, deterministic rules. 
+
+\subsection{Probability Heuristics}
+
+Heuristic accounts be understood in a similar way: that people reason according to heuristic rules, which may be determined by probabilities. This the case with Chater and Oaksford's Probability Heuristic Model (PHM). Like our approach, the PHM is inspired by the notion that people are not fundamentally deductive reasoners, but instead are trying to gage degrees of plausibility for the conclusion. This amounts to computing the probability of a particular conclusion being true given that the premises are true. [equation] To accomplish this, the PHM relies on a number of {\em generation} and {\em test} heuristics which produce and quantify confidence in conclusions, and which they claim are justified by their computational level theory. The computational level theory includes a notion of informativeness, on which all their heuristics rely. We do not believe their heuristics are necessary for deriving a probabilistic model of reasoning, as we discuss below. Further, as is the case for theories based on formal rules, the very nature of their heuristics suggests reasoners are not engaging with the syllogisms at a semantic level. We also do not believe this to be the case. 
+
+
 
 \section{Results}
 
@@ -224,3 +268,13 @@ We modified the naive binomial prior to induce a slight correlation between A \&
 
 
 \end{document}
+
+
+
+TODO after cogsci:
+-implement phm (and mm?) for comparison.
+-understand alpha param and pragmatic production recursion depth.
+-understand the origin of symmetry breaking in 'prior' (i.e. funny prior which should be pragmatic).
+-understand why pragmatic comprehender model doesn't work.
+-analyze errors better.
+-do experiments to get estimate of priors.
