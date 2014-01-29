@@ -94,11 +94,68 @@ For reasoning over syllogisms, the prior distribution is conditioned on the trut
 
 \subsection{Model predictions}
 
-Our model assumes that properties are relatively rare of objects.  A principle of rarity is often assumed in line with the intuition that properties are relative rare \footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}, and we assume a principle of rarity here. We tested a number of rarity factors and found that p=0.25 provided the best fit. This is also consistent with Chater \& Oaksford's rarity assumption. 
+Our model assumes that properties are relatively rare of objects.  A principle of rarity is often assumed in line with the intuition that properties are relative rare \footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}, and we assume a principle of rarity here. We tested a number of rarity factors and found that p=0.25 provided the best fit. This is also consistent with the Probability Heuristic's rarity assumption. 
+
+For each model, we report the total number of syllogisms the model gets correct as well as the overall fit. A syllogism is deemed correct if the model's maximum predicted response is the same as the meta-analysis data. This is a qualitative assessment of the fit, while correlation is a quantitative assessment. 
 
 \subsubsection{The Prior}
-It might be the case that individuals are drawing conclusions simply from the prior probability of those conclusions being true. We show that this is not the case. From the prior, however, we can see that all conclusions are not equally likely. In particular, there is an ordering which has previously been cited as an ordering of Informativity. The Probability Heuristics Model derives this ordering by positing concepts as hyperspheres in a high-dimensional conceptual space. This ordering comes out of the Conditional Semantics Model for free.
+It might be the case that individuals are drawing conclusions simply from the prior probability of those conclusions being true. We show that this is not the case. From the prior, however, we can see that all conclusions are not equally likely. In particular, we observe an ordering which has previously been cited as an ordering of Informativity. The Probability Heuristics Model derives this ordering by positing categories as hyperspheres in a high-dimensional concept space \cite{Chater1999}. This ordering comes out of the Conditional Semantics Model with no further assumptions.
 
+The prior only model gets only the syllogisms with a ``Not all" conclusion correct. For the Chater \& Oaksford meta-analysis, this amounts to 29 out of the 64 syllogisms.
+
+\subsubsection{Conditional Semantics}
+
+The Conditional Semantics model conditions on the truth of the premises. The model generates situations in which the premises are true, and determines which conclusions are true in the variety of situations. In the limit, this converges to the $\Pr$(conclusion $\arrowvert$ premises). 
+
+The model matches people's maximum judgments on 37 of the 64 syllogisms. This includes all the syllogisms for which ``not all" is the maximum, as well as 8 syllogisms for which ``some" and ``none" are favored. Crucially, it doesn't match any of the syllogisms for which people like the all conclusion. One such syllogism is the canonical ``All/all" syllogism:
+
+\begin{quote}
+All Xs are Ys \\
+All Ys are Zs \\
+\end{quote}
+
+This illustrates one of the issues with the conditional semantics model: it is too literal. The model computes the probability of the conclusion conditioned on the premises being true. For logically valid syllogistic conclusion, this probability is equal to 1. In particular, for any syllogism for which one of the universal quantifiers is valid (i.e. {\emph none} and {\emph all}), the particular quantifier (i.e. {\emph not all} and {\emph some}, respectively) will also be valid. Data from a number of experiments suggests that people do not treat {\emph all} and {\emph some} as equally correct or good conclusions. Instead, participants show a preference for conclusions the universal conclusions (all and none) when they are warranted. 
+
+To address this we draw on recent advances in computational models of pragmatic reasoning. These models address the problem of language understanding as that of a speaker trying to convey information about a world or situation that the speaker has observed. The speaker draws on common-ground of communicative goals to maximize information content of a given utterance. In particuar, choosing an utterance in proportion to the likelihood of a listener inferred the world about which the speaker wishes to convey information. In turn, a listener considers worlds in which the given utterance heard is 
+%
+%\begin{figure*}[htp]
+%\centering
+%\subfigure[one model, valid]{ %
+%\includegraphics[width = {0.66\columnwidth}]{AE4_boxplot_text}
+%\label{fig:subfigure1}}
+%%\caption{Single-model, valid}}
+%%\caption{Single-model, valid}}
+%\hfill
+%\subfigure[multiple models, valid]{ %}
+%\includegraphics[width = {0.66\columnwidth}]{EA3_boxplot_text}
+%\label{fig:subfigure3}
+%%\caption{Multiple-model, valid}
+%}
+%\hfill
+%\subfigure[invalid]{
+%\includegraphics[width = {0.66\columnwidth}]{AI4_boxplot_text}
+%\label{fig:subfigure5}
+%%\caption{invalid}
+%}
+%\quad
+%
+%\subfigure[one model, valid]{ %
+%\includegraphics[width = {0.66\columnwidth}]{IA4_boxplot_text}
+%\label{fig:subfigure2}}
+%\hfill
+%\subfigure[multiple models, valid]{
+%\includegraphics[width = {0.66\columnwidth}]{EI3_boxplot_text}
+%\label{fig:subfigure4}}
+%%\caption{Multiple-model, valid}
+%\hfill
+%\subfigure[invalid]{
+%\includegraphics[width = {0.66\columnwidth}]{AA2_boxplot_text}
+%\label{fig:subfigure6}}
+%%\caption{invalid}
+%%
+%\caption{Participants' endorsements in six syllogisms}
+%\label{fig:fig2}
+%\end{figure*}
 
 
 
