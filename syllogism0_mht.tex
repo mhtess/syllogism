@@ -7,6 +7,7 @@
 \usepackage{caption}
 %\usepackage{subcaption}
 \usepackage{subfigure}
+\graphicspath{{figures/}}
   
 \begin{document}
 
@@ -96,18 +97,15 @@ For reasoning over syllogisms, the prior distribution is conditioned on the trut
 
 Our model assumes that properties are relatively rare of objects.  A principle of rarity is often assumed in line with the intuition that properties are relative rare \footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}, and we assume a principle of rarity here. We tested a number of rarity factors and found that p=0.25 provided the best fit. This is also consistent with the Probability Heuristic's rarity assumption. 
 
-For each model, we report the total number of syllogisms the model gets correct as well as the overall fit. A syllogism is deemed correct if the model's maximum predicted response is the same as the meta-analysis data. This is a qualitative assessment of the fit, while correlation is a quantitative assessment. 
 
 \subsubsection{The Prior}
 It might be the case that individuals are drawing conclusions simply from the prior probability of those conclusions being true. We show that this is not the case. From the prior, however, we can see that all conclusions are not equally likely. In particular, we observe an ordering which has previously been cited as an ordering of Informativity. The Probability Heuristics Model derives this ordering by positing categories as hyperspheres in a high-dimensional concept space \cite{Chater1999}. This ordering comes out of the Conditional Semantics Model with no further assumptions.
-
-The prior only model gets only the syllogisms with a ``Not all" conclusion correct. For the Chater \& Oaksford meta-analysis, this amounts to 29 out of the 64 syllogisms.
 
 \subsubsection{Conditional Semantics}
 
 The Conditional Semantics model conditions on the truth of the premises. The model generates situations in which the premises are true, and determines which conclusions are true in the variety of situations. In the limit, this converges to the $\Pr$(conclusion $\arrowvert$ premises). 
 
-The model matches people's maximum judgments on 37 of the 64 syllogisms. This includes all the syllogisms for which ``not all" is the maximum, as well as 8 syllogisms for which ``some" and ``none" are favored. Crucially, it doesn't match any of the syllogisms for which people like the all conclusion. One such syllogism is the canonical ``All/all" syllogism:
+ Crucially, it doesn't match any of the syllogisms for which people like the all conclusion. One such syllogism is the canonical ``All/all" syllogism:
 
 \begin{quote}
 All Xs are Ys \\
@@ -125,85 +123,87 @@ We operationalize this by using a variant of the nested-conditioning model of in
 \section{Results}
 
 \subsection{Meta-analysis data}
-To test our model, we used data from the meta-analysis presented with Probability Heuristics Model. These data were compiled from 5 studies on syllogistic reasoning. We compared this data set with another from a more recent meta-analysis, and found high thought not prefect correspondence (r = .94). 
+To test our model, we used data from the meta-analysis presented with Probability Heuristics Model. These data were compiled from 5 studies on syllogistic reasoning, dating from 1978-1984. 
+
+The data included percentage response of ``No Valid Conclusion". We consider the production of the ``No Valid Conclusion" an aspect of the algorithmic implementation and leave this for future work. In its most basic form the model produces responses corresponding to 1 of 4 quantifiers. The meta-analysis includes studies for which conclusion orderings were relaxed, such that participants could respond in either the A-C or the C-A ordering. Because of this, we allowed our model to do the same. Following the procedures of the meta-analysis, we collapsed responses across these two orderings to compare it to the data set.
+\subsection{Model predictions}
+For each model, we report the total number of syllogisms the model gets correct as well as the overall fit. A syllogism is deemed ``correct" if the model's maximum predicted response is the same as the most popular response in the meta-analysis data. This is a qualitative assessment of the fit. We compute correlations to assess the overall fit quantitatively. 
+
+We first examined the prior to see if it alone accounted for human reasoning patterns. It did not. Since ``not all" is the most likely conclusion to be true, the prior gets only the syllogisms with a ``Not all" conclusion correct. For the meta-analysis data, this amounts to 29 out of the 64 syllogisms. The overall fit is also quite poor (r = .36). 
+
+When we condition on the premises being true, the model matches people's maximum judgments on 37 of the 64 syllogisms. This includes all the syllogisms for which ``not all" is the maximum, as well as 8 syllogisms for which ``some" and ``none" are favored. The overall correlation is accordingly higher (r=0.62). However, among valid conclusions the correlation is terrible (r=-.20). This is a direct consequence of the model being logical and people not. Among valid conclusions to valid syllogisms, the model ranks them all equally high. 
+
+By introducing pragmatics to the model, we are able to distinguish among equally ``plausible" conclusions. The model selects not only conclusions likely to be true, but conclusions which are informative to a hypothetical listener. The model now gets 44 out of 64 questions correct and has a correlation of r = 0.77. The difference is especially striking for the valid syllogisms, for which the correlation is now r = 0.82. 
+
 
 %
-%\begin{figure*}[htp]
-%\centering
-%\subfigure[one model, valid]{ %
-%\includegraphics[width = {0.66\columnwidth}]{AE4_boxplot_text}
-%\label{fig:subfigure1}}
+
+\begin{figure*}[t!] %[htp]
+\centering
+  \includegraphics[width=\textwidth,height=10cm]{multiScatter_n6_0,25_alpha1}
+  \caption{This is a tiger.}
+\end{figure*}
+%\end{figure*}
+%\subfigure[prior]{ %
+%	\includegraphics[width = {0.66\columnwidth}]{multibar_alpha1_prior}
+%	\label{fig:subfigure1}}
 %%\caption{Single-model, valid}}
-%%\caption{Single-model, valid}}
-%\hfill
-%\subfigure[multiple models, valid]{ %}
-%\includegraphics[width = {0.66\columnwidth}]{EA3_boxplot_text}
-%\label{fig:subfigure3}
-%%\caption{Multiple-model, valid}
+%%\hfill
+%\subfigure[conditional semantics]{ %}
+%\includegraphics[width = {0.66\columnwidth}]{multibar_alpha1_lit}
+%%\label{fig:subfigure3}
+%\caption{Multiple-model, valid}
 %}
-%\hfill
-%\subfigure[invalid]{
-%\includegraphics[width = {0.66\columnwidth}]{AI4_boxplot_text}
-%\label{fig:subfigure5}
-%%\caption{invalid}
-%}
-%\quad
-%
-%\subfigure[one model, valid]{ %
-%\includegraphics[width = {0.66\columnwidth}]{IA4_boxplot_text}
-%\label{fig:subfigure2}}
-%\hfill
-%\subfigure[multiple models, valid]{
-%\includegraphics[width = {0.66\columnwidth}]{EI3_boxplot_text}
-%\label{fig:subfigure4}}
+%%\hfill
+%\subfigure[conditional pragmatics]{
+%\includegraphics[width = {0.66\columnwidth}]{multibar_alpha1_prag}
+%%\label{fig:subfigure5}
+%\caption{invalid}
+%%}
+%%\quad
+%%
+%%\subfigure[one model, valid]{ %
+%%\includegraphics[width = {0.66\columnwidth}]{IA4_boxplot_text}
+%%%\label{fig:subfigure2}}
+%%\hfill
+%%\subfigure[multiple models, valid]{
+%%\includegraphics[width = {0.66\columnwidth}]{EI3_boxplot_text}
+%%%\label{fig:subfigure4}}
 %%\caption{Multiple-model, valid}
-%\hfill
-%\subfigure[invalid]{
-%\includegraphics[width = {0.66\columnwidth}]{AA2_boxplot_text}
-%\label{fig:subfigure6}}
+%%\hfill
+%%\subfigure[invalid]{
+%%\includegraphics[width = {0.66\columnwidth}]{AA2_boxplot_text}
+%%%\label{fig:subfigure6}}
 %%\caption{invalid}
 %%
-%\caption{Participants' endorsements in six syllogisms}
-%\label{fig:fig2}
-%\end{figure*}
+%%\caption{Participants' endorsements in six syllogisms}
+%%\label{fig:fig1}
+
+
+%
+%
+%Mental Models Theory explains difficulty in syllogisms by demonstrating that multiple, distinct situations can be consistent with a pair of premises, giving rise to different possible conclusions. Valid syllogistic conclusions arise in every possible model. (This is the same notion of Pr(conclusion | premises) = 1). 
+%
+%This is always the case the logically invalid syllogisms (see discussion below), and is sometimes the case with logically valid syllogisms.
+
+%\subsubsection{Logical invalidity}
+%For syllogisms that have no valid conclusion, the probabilistic reasoner computes the probability of the conclusion conditioned on the premises being true by sampling. For all invalid syllogisms, this yield a gradeds response across the different possible conclusion types. 
+%
+%
+%\subsubsection{Logical validity}
+%A conclusion is logically valid if and if only it is true in all possible situations. Recall that possible situations are restricted to those that are consistent with the premises. The universal quantifiers (all, none) entail their particular counterparts (some, not-all), respectively. This was noticed by Aristotle and commonly visualized in the \emph{Square of Opposition}. For our probabilistic reasoner, confidence for {\emph all} and {\emph some} (to take the affirmative case) will be both maximal. {\emph All} is always true and {\emph some} is true whenever {\emph all} is true.
 
 
 
-Mental Models Theory explains difficulty in syllogisms by demonstrating that multiple, distinct situations can be consistent with a pair of premises, giving rise to different possible conclusions. Valid syllogistic conclusions arise in every possible model. (This is the same notion of Pr(conclusion | premises) = 1). 
 
-This is always the case the logically invalid syllogisms (see discussion below), and is sometimes the case with logically valid syllogisms.
-
-\subsubsection{Logical invalidity}
-For syllogisms that have no valid conclusion, the probabilistic reasoner computes the probability of the conclusion conditioned on the premises being true by sampling. For all invalid syllogisms, this yield a gradeds response across the different possible conclusion types. 
-
-
-\subsubsection{Logical validity}
-A conclusion is logically valid if and if only it is true in all possible situations. Recall that possible situations are restricted to those that are consistent with the premises. The universal quantifiers (all, none) entail their particular counterparts (some, not-all), respectively. This was noticed by Aristotle and commonly visualized in the \emph{Square of Opposition}. For our probabilistic reasoner, confidence for {\emph all} and {\emph some} (to take the affirmative case) will be both maximal. {\emph All} is always true and {\emph some} is true whenever {\emph all} is true.
-
-
-
-
-\subsection{Model comparison}
-
-Something creative here.
 
 \section{Most and few}
 
-A grand virtue of the model. 
+Since our model is based on a truth-functional semantics, it is able to deal with any quantified sentence, so long as the quantifier can be mapped to a truth-functional operator. The question of the meaning of generalized quantifiers like ``most" and ``few" is of great interest to the field of formal semantics. Often, ``most" and ``few" are modeled by a thresholded step function. As a first test of the generality of the model, we define most and few by a threshold of 0.5. 
 
-\subsection{Model predictions}
 
-There are two experiments. As of today, the model does quite well with Experiment 1 (quantifiers: all, most, few, not-all) and less well with Experiment 2 (quantifiers: most, few, some, none). Interestingly or not, Chater and Oaksford have the same pattern (better with Exp 1) and I think our fit is better than theirs.
 
-\subsection{Chater \& Oaksford Data vs. Our Model}
-
-Results here.
-
-\subsection{Model comparison}
-
-Something creative here.
-
-\section{Future directions}
+\section{Discussion}
 
 Belief bias as a difference of prior.
 
