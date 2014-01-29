@@ -12,7 +12,7 @@
 
 \title{Some arguments are probably valid}
  
-\author{{\large \bf M.H. Tessler, Noah D. Goodman } \\
+\author{{\large \bf M. H. Tessler, Noah D. Goodman } \\
 	\{mhtessler, ngoodman\}@stanford.edu \\
   Department of Psychology, Stanford University}
 
@@ -116,7 +116,12 @@ All Ys are Zs \\
 
 This illustrates one of the issues with the conditional semantics model: it is too literal. The model computes the probability of the conclusion conditioned on the premises being true. For logically valid syllogistic conclusion, this probability is equal to 1. In particular, for any syllogism for which one of the universal quantifiers is valid (i.e. {\emph none} and {\emph all}), the particular quantifier (i.e. {\emph not all} and {\emph some}, respectively) will also be valid. Data from a number of experiments suggests that people do not treat {\emph all} and {\emph some} as equally correct or good conclusions. Instead, participants show a preference for conclusions the universal conclusions (all and none) when they are warranted. 
 
-To address this we draw on recent advances in computational models of pragmatic reasoning. These models address the problem of language understanding as that of a speaker trying to convey information about a world or situation that the speaker has observed. The speaker draws on common-ground of communicative goals to maximize information content of a given utterance. In particuar, choosing an utterance in proportion to the likelihood of a listener inferred the world about which the speaker wishes to convey information. In turn, a listener considers worlds in which the given utterance heard is 
+To address this we draw on recent advances in computational models of pragmatic reasoning. The rational speech-act theory addresses the problem of language understanding as that of a speaker trying to convey information about a world or situation that the speaker has observed \cite{Frank2012a}. The speaker draws on common-ground of communicative goals to maximize information content of a given utterance. In particular, choosing an utterance in proportion to the likelihood of a listener inferred the situations about which the speaker wishes to convey information. In turn, a listener considers situations in which the given utterance heard is not only true but would be chosen to disambiguate amongst multiple consistent situations. This results in canonical ``scalar implicature" wherein the literal meaning of ``{\em some} of the apples are red" is enriched to communicate ``{\em not all} of the apples are red".
+
+We draw on this work by saying reasoners are not only choosing conclusions which are likely to be true but also which are informative. This makes the prediction that when given equally likely conclusions, reasoners will choose the one with the higher information content. Information content can be understood as an reciprocal function of the prior. Utterances or conclusions which are likely to be true a priori are preferred less than those which are less likely to be true. 
+
+We operationalize this by using a variant of the nested-conditioning model of inference discussed in \cite{Goodman2013}. In the original model, the listener hears an utterance and tries to reconstruct the situation the speaker observed. In our model, the reasoner chooses a conclusion consistent with the premises, while the listener hears the conclusion and tries to reconstruct the premises the reasoner was presented with. This is important as the reasoner does not observe a situation directly but rather constructs one consistent with the premises. 
+
 %
 %\begin{figure*}[htp]
 %\centering
@@ -169,15 +174,6 @@ For syllogisms that have no valid conclusion, the probabilistic reasoner compute
 
 \subsubsection{Logical validity}
 A conclusion is logically valid if and if only it is true in all possible situations. Recall that possible situations are restricted to those that are consistent with the premises. The universal quantifiers (all, none) entail their particular counterparts (some, not-all), respectively. This was noticed by Aristotle and commonly visualized in the \emph{Square of Opposition}. For our probabilistic reasoner, confidence for {\emph all} and {\emph some} (to take the affirmative case) will be both maximal. {\emph All} is always true and {\emph some} is true whenever {\emph all} is true.
-
-
-\subsection{Pragmatics}
-
-One thing to notice about the probabilistic reasoner is that it is agnostic among equally valid conclusions. However, human reasoners endorse some valid conclusions more so than others. What can account for this apparent illogicality?  
-
-
-
-Harness recent advances in quantitative models of conversational pragmatics (implicature paper). 
 
 \section{Results}
 
