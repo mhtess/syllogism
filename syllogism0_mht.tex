@@ -75,9 +75,9 @@ Heuristic accounts be understood in a similar way: that people reason according 
 
 \section{The Conditional Semantics model}
 
-The motivation for our model stems from two intuitions: (1) people are using \emph{everyday} reasoning in syllogistic reasoning tasks and (2) they do this by constructing situations \footnote{These situations are in no way different from mental models. We prefer the term situation so as to not confound the word model, which we take to refer to a computational model.} and reasoning over these situations. This formulation places the theory in the unexplored quadrant of the two-dimensional theoretical space described above: we consider reasoning over situations and situations to be constructed probabilistically. We use a naive binomial prior to sample situations. Each situation is composed of some number of objects, each with 1, 2 or 3 of the properties under discussion. 
+The motivation for our model stems from two intuitions: (1) people are using \emph{everyday} reasoning in syllogistic reasoning tasks and (2) they do this by constructing situations \footnote{These situations are in no way different from mental models. We prefer the term situation so as to not confound the word model, which we take to refer to a computational model.} and reasoning over these situations. This formulation places the theory in the unexplored quadrant of the two-dimensional theoretical space described above: we consider reasoning over situations and situations to be constructed probabilistically. We use a naive binomial prior to sample situations. Each situation is composed of some number of objects, each with 1, 2 or 3 of the properties under discussion, exactly like in MMT. 
 
-We draw on work in formal semantics by assuming that sentences are truth-functional operators. Thus, for each situation, some sentences are true while others are false. By sampling over many situations, we construct a distribution over sentences, shown in Figure 1. [Here we can show either a bar graph for n=6, p=0.25; or we can show a line graph with either n held constant or p held constant, or we can show a surface graph.]
+We draw on work in formal semantics by assuming that sentences are truth-functional operators. Thus, for a given situation, sentences are either true or false. By sampling over many situations, we construct a distribution over sentences, shown in Figure 1a.
 
 For reasoning over syllogisms, the prior distribution is conditioned on the truth of the premise sentences. This is the distribution over sentences conditioned on the fact that the premises are true. In this way, we evaluate the $\Pr$(conclusion $\arrowvert$ premises). This is essentially a metric of the plausibility of the argument. In this formulation, $\Pr$(conclusion $\arrowvert$ premises) = 1 if and only if the syllogism is logically valid.
 
@@ -120,7 +120,12 @@ To address this we draw on recent advances in computational models of pragmatic 
 
 We draw on this work by saying reasoners are not only choosing conclusions which are likely to be true but also which are informative. This makes the prediction that when given equally likely conclusions, reasoners will choose the one with the higher information content. Information content can be understood as an reciprocal function of the prior. Utterances or conclusions which are likely to be true a priori are preferred less than those which are less likely to be true. 
 
-We operationalize this by using a variant of the nested-conditioning model of inference discussed in \cite{Goodman2013}. In the original model, the listener hears an utterance and tries to reconstruct the situation the speaker observed. In our model, the reasoner chooses a conclusion consistent with the premises, while the listener hears the conclusion and tries to reconstruct the premises the reasoner was presented with. This is important as the reasoner does not observe a situation directly but rather constructs one consistent with the premises. 
+We operationalize this by using a variant of the nested-conditioning model of inference discussed in \cite{Goodman2013}. In the original model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the reasoner chooses a conclusion consistent with the premises, while the listener hears the conclusion and tries to reconstruct the premises the reasoner was presented with. This is important as the reasoner does not observe a situation directly but rather constructs one consistent with the premises. 
+
+\section{Results}
+
+\subsection{Meta-analysis data}
+To test our model, we used data from the meta-analysis presented with Probability Heuristics Model. These data were compiled from 5 studies on syllogistic reasoning. We compared this data set with another from a more recent meta-analysis, and found high thought not prefect correspondence (r = .94). 
 
 %
 %\begin{figure*}[htp]
@@ -175,10 +180,7 @@ For syllogisms that have no valid conclusion, the probabilistic reasoner compute
 \subsubsection{Logical validity}
 A conclusion is logically valid if and if only it is true in all possible situations. Recall that possible situations are restricted to those that are consistent with the premises. The universal quantifiers (all, none) entail their particular counterparts (some, not-all), respectively. This was noticed by Aristotle and commonly visualized in the \emph{Square of Opposition}. For our probabilistic reasoner, confidence for {\emph all} and {\emph some} (to take the affirmative case) will be both maximal. {\emph All} is always true and {\emph some} is true whenever {\emph all} is true.
 
-\section{Results}
 
-\subsection{Meta-analysis data}
-Scatterplot, things that we get wrong. Perhaps a more detailed view of the ones we get wrong... would need a good diagram for this, the most simple which comes to mind is a series of bargraphs, each graph has 4 x 2 (=8) bars for the 4 conclusions x (model, data). Could also do this for the ones we get right... 64 syllogisms in total so we'll have to choose wisely.
 
 
 \subsection{Model comparison}
