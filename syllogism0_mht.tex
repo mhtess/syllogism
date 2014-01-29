@@ -201,15 +201,23 @@ By introducing pragmatics to the model, we are able to distinguish among equally
 
 Since our model is based on a truth-functional semantics, it is able to deal with any quantified sentence, so long as the quantifier can be mapped to a truth-functional operator. The question of the meaning of generalized quantifiers like ``most" and ``few" is of great interest to the field of formal semantics. Often, ``most" and ``few" are modeled by a thresholded step function. As a first test of the generality of the model, we define most and few by a threshold of 0.5. 
 
-
+We compare our model predictions to a study carried out by Chater \& Oaksford on syllogisms using these generalized quantifiers. 
 
 \section{Discussion}
 
-Belief bias as a difference of prior.
+We have presented a formal model of syllogistic reasoning based on the rational speech-act framework. We have shown that in this model, reasoners construct mental situations by sampling, and reason over these situations, much like has been described in the Mental Models literature. Unlike Mental Models, however, our model is inherently probabilistic and thus assumes reasoners are in some way gaging degrees of plausibility when it comes this sort of logic task. Further, this model is fundamentally quantitative, and thus elaborates on the Mental Models theory in a novel way.
+
+In this framework, a syllogism is read as an argument given as a part of discourse between people. Indeed, this is how syllogisms were used in the time of Aristotle and in the long tradition of scholastic philosophers. Fundamentally, they are a tool used to convince others. The results of the pragmatic reasoning model shed light on the idea that human reasoning behavior in the syllogistic task is as much reason as it is human. Gaging degrees of plausibility alone is not sufficient. A listener needs to be posited at the end of the line so that a conclusion makes sense; so that a conclusion is convincing!
+
+If one accepts that the purpose of a syllogism is to convince, a natural question arises. Why not just assert ``Socrates is mortal" from the start? Why go through the trouble of laying out premises and have a person draw the conclusion? Arguments are used to persuade, and not all assertions are equally believable a priori. The reason premises are presented is that some of us may believe Socrates is actually not mortal; after all, we're still talking about him 2400 years after he lived. And so the conclusion is not obvious, and the premises are an alternative route to persuasion. If we accept the premises, we are left with no choice but to draw the conclusion.
+
+We set out to test this intuition by seeing if the middle term had special significance. The rationale is that if someone is to go through the trouble of mentioning the middle term, it must allow them to assert something that they wouldn't be able to assert otherwise. In other words, we take the a priori probability of A \& C to be relatively low, but become higher if B is observed. A \& C become correlated via B. This is akin to saying that the end terms have a special relationship via the middle term. It is no coincidence that the same middle term appears in both premises and it is no coincidence the premises appear at all. 
+
+We modified the naive binomial prior to induce a slight correlation between A \& C via B. Overall, the model gets a few more questions correct and provides a better quantitative fit to the data. We also looked at its effects in the generalized quantifier model and the effect is I HOPE THE EFFECT IS GOOD. 
 
 \bibliographystyle{apacite}
 
-\setlength{\bibleftmargin}{.125in}
+\setlength{\bibleftmargin}{.125in}`
 \setlength{\bibindent}{-\bibleftmargin}
 
 \bibliography{mhtbib}
