@@ -36,31 +36,40 @@ This is not an abstract.\\
 \textbf{Keywords:} 
 Reasoning, probabilistic model
 \end{abstract}
+Consider for a moment that your friend tells you, 
+\begin{quotation}
+Everyone in my office has the flu; some people with the flu are out for weeks.
+\end{quotation}
+Do you respond with ``jee, I hope that's not the case with your officemates and I hope you don't get sick" or do you reply ``I'm sorry, there is no inference I can draw from what you just said. Would you mind using a valid logical form?"
 
-Syllogistic reasoning has been a topic of considerable interest in cognitive psychology for over one hundred years, and before that in philosophy, dating back to Aristotle. A syllogism is a two premise argument, which relates two terms by a middle term. The relation is a quantifier, and the quantifiers used in the classical syllogism are all, some, none, and not all. For example,
+What this cartoon illustrates are two fundamentally different views of reasoning in the cognitive psychology literature. There are those who conceive of the mind as an intrinsically deductive computer and those who argue the mind adapted to deal with a world of uncertainty. 
+
+The form of the argument above bears some semblance to a syllogism. Syllogistic reasoning has been a topic of considerable interest in cognitive psychology for over one hundred years, and before that in philosophy, dating back to Aristotle. In cognitive psychology we are interested in how people reason logically. Syllogisms are a good testing grounds because they lie at the intersection of language and logic. They are undoubtedly logical; indeed, they are regarded as the first formal system of logic. At the same time, they use quantifiers as relations in sentences, and precisely pinning down the meaning of quantifiers has been an ongoing area of inquiry since Aristotle. 
+
+A syllogism is an argument with two premises used to relate two terms via a middle term. An example premise is \emph{All As are Bs}. For example,
 
 \begin{quotation}
-All artists are bakers\\
-Some bakers are chemists\\
+All officemates are out with the flu\\
+Some people out with the flu are out for weeks\\
 \end{quotation}
+
+is a syllogistic argument. The full space of syllogistic arguments is derived by shuffling the term-ordering (A-B vs. B-A) and changing the quantifiers (the quantifiers used in syllogisitc arguments are \{\emph{all, some, none, not all}\}). Most syllogisms have no valid conclusion, i.e. there is no necessary relation between A \& C. This is the case with the one presented above. 
 
 \begin{lstlisting}
 (this is code)
 \end{lstlisting}
 
 
-is a syllogistic argument. There are 64 possible syllogism which one can derive by replacing the quantifiers with others from the allowable set and reordering the terms (All As are Bs --> All Bs are As). Most syllogisms have no valid conclusion, like the one presented above. 
+It should come as no surprise that people with no training in formal logic, and even some with training, find reasoning with syllogisms difficult. They were counter-intuitive in Aristotle's time and they remain vexing for those unfamiliar with the forms. A recent meta-analysis of syllogistic reasoning tasks showed that over the population, accuracy on producing valid conclusions ranges from 90 \% to 1\% \cite{khemlaniJL2012}. For syllogisms with no valid conclusion, ability to produce the proper \emph{no valid conclusion} response ranges from 76\% to 12\%.
 
-People with no training in formal logic, and even some with training, find reasoning with syllogisms difficult. A recent meta-analysis showed that over the population, accuracy on producing valid conclusions ranges from 90 \% to 1\% \cite{khemlaniJL2012}. For syllogisms with no valid conclusion, accuracy ranges from 76\% to 12\%.
-
-This evidence would seem to suggest that people are not reasoning using deductive mechanisms in the mind. Yet, many theories take deduction as a given and try to explain errors as a matter of noise in the system. We take a different path. We propose, as has been proposed before, that people are reasoning according to their {\emph everyday} mode of reasoning. {\emph Everyday} reasoning is understood as the type of reasoning that is refined for dealing with a world of uncertainty, a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging. This type of reasoning is most succinctly described in the language of probability theory. In this formalism, deduction emerges as that which is most probable.
+This evidence would seem to suggest that people are not reasoning using deductive mechanisms in the mind. Yet, many theories take deduction as a given and try to explain errors as a matter of noise in the system. We have a different perspective. We propose, as has been proposed before, that people are reasoning according to their {\emph everyday} mode of reasoning. {\emph Everyday} reasoning is understood as the type of reasoning that is refined for dealing with a world of uncertainty, a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging. This type of reasoning is most succinctly described in the language of probability theory. In this formalism, deduction emerges as that which is most probable.
 
 %
 %Theories of syllogistic reasoning have been  One possibility is {\emph{logical deduction}. When a theory takes deduction to be fundamental, the explanatory power of the theory derives from explaining errors in deductive inference. That is to say, these theories treat the variety of performance errors as the first-class explanandum.
 %
 %We take a different path. We propose, as has been proposed before, that people are reasoning according to their {\emph everyday} mode of reasoning. {\emph Everyday} reasoning is understood as the type of reasoning that is refined for dealing with a world of uncertainty, a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging. This type of reasoning is most succinctly described in the language of probability theory. 
 
-In the rest of the paper, we review three theories of syllogistic reasoning -- Mental Models, Mental Logics and Probability Heuristics -- which we take to exemplify three quadrants of a two-dimensional theoretical space. We develop a computational level theory in the unexplored quadrant of the space, instantiated in a probabilistic model. We compare our model predictions with the predictions of the other theories as well to behavioral data from a recent meta-analysis. We explore the flexibility of the model to account for reasoning behavior in a study using the generalized quantifiers most and few. We conclude by discussing further predictions of the model and future directions.  
+In the rest of this article, we review three theories of syllogistic reasoning -- Mental Models, Mental Logics and Probability Heuristics -- which we take to exemplify three quadrants of a two-dimensional theoretical space. We develop a computational level theory in the unexplored fourth quadrant of the space, instantiated in a probabilistic model. We compare our model predictions with the predictions of the other theories as well to behavioral data from a recent meta-analysis. We explore the flexibility of the model to account for reasoning behavior in a study of so-called ``statistical syllogisms" using the generalized quantifiers \emph{most} and \emph{few}. We conclude by discussing further predictions of the model and future directions.  
 
 
 
