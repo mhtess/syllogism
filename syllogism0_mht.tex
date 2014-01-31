@@ -83,7 +83,7 @@ Some people out with the flu are out for weeks\\
 \end{quote}
 The full space of syllogistic arguments is derived by shuffling the term-ordering (``All A are B'' vs. ``All B are A'') and changing the quantifier (\emph{all, some, none, not all}). Most syllogisms have no valid conclusion, i.e. there is no deductive relation between A \& C determined by the premises. This is the case with the argument above. A recent meta-analysis of syllogistic reasoning tasks showed that over the population, accuracy on producing valid conclusions ranges from 90 \% to 1\% and ability to produce appropriate \emph{no valid conclusion} responses ranges from 76\% to 12\% \cite{Khemlani2012}: people are not good at drawing deductively valid conclusions.
 %
-Perhaps because of this d\'ecolage between human behavior and deductive logic, syllogistic reasoning has been a topic of considerable interest in cognitive psychology for over one hundred years \cite{storring1908}, and before that in philosophy, dating back to Aristotle. In cognitive psychology we are interested in how people reason, and syllogisms lie at the intriguing intersection of natural and formal reasoning, of  language and logic. They are undoubtedly logical; indeed, they are regarded as the first formal system of logic. At the same time, they use natural language quantifiers and invite natural language conclusions; precisely pinning down the meaning and use of quantifiers has been an ongoing area of inquiry since Aristotle \cite<e.g.>{negationHorn}.
+Perhaps because of this d\'ecolage between human behavior and deductive logic, syllogistic reasoning has been a topic of considerable interest in cognitive psychology for over one hundred years \cite{storring1908}, and before that in philosophy, dating back to Aristotle. In cognitive psychology we are interested in how people reason, and syllogisms lie at the intriguing intersection of natural and formal reasoning, of language and logic. They are undoubtedly logical; indeed, they are regarded as the first formal system of logic. At the same time, they use natural language quantifiers and invite natural language conclusions; precisely pinning down the meaning and use of quantifiers has been an ongoing area of inquiry since Aristotle \cite<e.g.>{negationHorn}.
 
 
 Many theories of syllogistic reasoning take deduction as a given and try to explain errors as a matter of errors in the system. These error may arise from improper use of deductive rules, or biased construction of logical models. In either case, logic makes the connection to natural language semantics natural (though not central).
@@ -116,7 +116,7 @@ Properties of these objects are represented by functions from objects to the pro
 \end{lstlisting}
 Note that the operator \lstinline{mem} memoizes these functions, so that a given object has the same value each time it is examined within a given situation. 
 %This allows the properties to be defined independently of the set of objects. 
-A principle of rarity that has been used for previous probabilistic models \cite{OCwasson} comes from the intuition that properties are relative rare of objects in the world\footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}. For us this simply means the base rate, \lstinline{br}, of properties is small.  
+A principle of rarity that has been used for previous probabilistic models \cite{OCwasson} comes from the intuition that properties are relatively rare of objects in the world\footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}. For us this simply means the base rate, \lstinline{br}, of properties is small.  
 
 %, each with 1, 2 or 3 properties corresponding to the three terms of a syllogism. Situations are sampled from a naive prior. In this setting, it is reasonable to assume that the prior probability, $P(situation)$, is a binomial distribution (i.e. the probability of a coin of a given weight coming up Heads $n$ times in a row, where $n$ is the number of objects). We assume properties are relatively rare of objects; this means the base rate (\lstinline{br}) of properties is less than 0.50.  This principle of rarity comes from the intuition that properties are relative rare \footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}, and this has been used in probabilistic models previously. 
 %
@@ -151,7 +151,7 @@ Here the helper function \lstinline{all-true} simply checks that all elements of
 The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over worlds into a posterior belief distribution. For syllogistic reasoning we are interested not in the posterior distribution over situations directly, but the distribution on true conclusions that this implies. In Church this looks like:
 \begin{lstlisting}
 (query
- (define objects (list Õo1 Õo2 ... Õon)) 
+ (define objects (list ï¿½o1 ï¿½o2 ... ï¿½on)) 
  ...define A,B,C...
  ...define all, some, no, notall...
  
@@ -193,7 +193,7 @@ This listener can be thought of concretely as the (rather naive) person evaluati
 
 (define (reasoner premise-one premise-two depth)
   (query 
-    (define objects (list Õo1 Õo2 ... Õon)) 
+    (define objects (list ï¿½o1 ï¿½o2 ... ï¿½on)) 
     ...define A,B,C...
     ...define all, some, no, notall...
     (define conclusion (conclusion-prior))
@@ -333,39 +333,39 @@ The set of all possible syllogisms with 6 quantifiers contains 144 questions.  T
 \end{figure*}
 
 
-We find good correspondence between the experimental data and the model, even without doing any parameter fitting. The fit is better for the experiment using \emph{all},\emph{most},\emph{few}, and \emph{not all} (r = 0.80) than for the experiment using \emph{most},\emph{few},\emph{some}, and \emph{none} (r = 0.68). The same was true for the Probability Heuristics Model (r = 0.94 vs r = 0.63). Overall, the proportion of \emph{no valid conclusion} responses, which we do not model, was much higher in Experiment 2 than in Experiment 1. Thus, this data set may well contain more noise than others. 
+We find good correspondence between the experimental data and the model, even without doing any parameter fitting. The fit is better for the experiment using \emph{all},\emph{most},\emph{few}, and \emph{not all} (r = 0.80) than for the experiment using \emph{most},\emph{few},\emph{some}, and \emph{none} (r = 0.68). The same was true for the Probability Heuristics Model (r = 0.94 vs r = 0.63). Overall, the proportion of \emph{no valid conclusion} responses, which we do not model, was much higher in Experiment 2 than in Experiment 1. Thus, this data set may well contain more noise than the others. 
 
 
 
 
 \section{Relationship to previous theories}
 
-A recent meta-analysis carved the space of reasoning theories into three partitions: those based on models or diagrammatic reasoning, those based on formal logical rules, and those based on heuristics \cite{Khemlani2012}. We see the space slightly differently. In one dimension, theories may be based on applying rules -- be they heuristic or logical -- or they are based on constructing concrete representations or models. In another dimension, theories may be considered fundamentally probabilistic or deterministic. 
+A recent meta-analysis carved the space of reasoning theories into three partitions: those based on models or diagrammatic reasoning, those based on formal logical rules, and those based on heuristics \cite{Khemlani2012}. We see the space slightly differently. In one dimension, theories may be based on applying propositions -- be they heuristic or logical -- or they are based on constructing concrete representations or models. In another dimension, theories may be considered fundamentally probabilistic or deterministic. 
 
 We now review 2 theories which we take to exemplify two of the four quadrants of this theoretical space. 
 
 \subsection{Mental Models}
- The Mental Models Theory (MMT) describes a psychological process by which people reason by constructing {\em iconic} mental representations or models, which represent the terms of a proposition as a collection of individuals. In syllogistic reasoning, a model is constructed for each premise, and premise models are consolidated so that the conclusion may be ``read off" the joint model. For example, a model for the premise  \emph{All artists are bakers} could be represented as the following situation.
+ The Mental Models Theory (MMT) describes a psychological process by which people reason by constructing {\em iconic} mental representations or models, which represent the terms of a proposition as a collection of individuals. In syllogistic reasoning, a model is constructed for each premise, and premise models are consolidated so that the conclusion may be ``read off" the joint model. For example, a model for the premise  \emph{All colleagues have the flu} could be represented as the following situation.
 
 \begin{tabular}{l l}
-artist & baker\\
-artist & baker\\
- & baker\\
+colleague & flu\\
+colleague & flu\\
+ & flu\\
 \end{tabular}
 
-This shows 2 individuals who are both artists and bakers, and one individual who is a baker but not an artist. Thus, each row is a representation of the properties of an individual. The authors emphasize the need to search for counter-examples to check for logical validity. Errors arise in this search process. Another premise might read: \emph{Some bakers have the flu}. This would like like:
+This shows 2 individuals who are colleagues and have the flu, and one individual who is not a colleague and has the flu. Thus, each row is a representation of the properties of an individual. MMT emphasizes the need to search for counter-examples to check for logical validity. Errors arise in this search process. Another premise might read: \emph{Some people with the flu are out for weeks}. This would look like:
 
 \begin{tabular}{l l}
-baker & flu\\
-baker & \{flu\}\\
- & \{flu\}\\
+flu & out for weeks\\
+flu & \{out for weeks\}\\
+ & \{out for weeks\}\\
 \end{tabular}
 
-The curly brackets reflect our uncertainty about where, if anywhere, to put additional individuals with the flu. The conclusion can be achieved by consolidating these models and reasoning over the joint model.
+The curly brackets reflect the fact that multiple distinct models could be drawn in accord with this premise. Conclusions are achieved by consolidating these models and reasoning over the joint model.Thus, a reasoner would have to construct all possible distinct models in order to determine that no proposition is true in all of them. 
 
-The MMT captures the intuition that people are able to reason about sets of things explicitly and with respect to context. At the same time, the theory is not well defined insofar as it does not specify how various models come into existence, only that various models can come into existence. Mental models are very similar to the \emph{situations} described in the Conditional Semantics model. A critical difference is that in Conditional Semantics, situations are construced by sampling. Thus, the model can make quantitative predictions about reasoning patterns with no further assumptions. 
+The MMT captures the intuition that people are able to reason about sets of things explicitly and with respect to context. At the same time, the theory is not well defined insofar as it does not specify \emph{how} various models come into existence, only that various models \emph{can} come into existence. Mental models are very similar to the \emph{situations} described in the Conditional Semantics model. A critical difference is that in Conditional Semantics, situations are constructed by sampling. Thus, the model can make quantitative predictions about reasoning patterns with no further assumptions. 
 
-The a priori believability of propositions has been shown to have an important effect on reasoning \cite{Oakhill1989}. Mental models are flexible in that content can motivate one to carry on the search process longer. The Conditional Semantics model makes this notion may incorporating background knowledge into the prior from which situations are sampled. 
+Finally, the \emph{a priori} believability of propositions has been shown to have an important effect on reasoning \cite{Oakhill1989}. Mental models are flexible in that content can motivate one to carry on the search process longer. The Conditional Semantics model makes this notion by incorporating background knowledge into the prior from which situations are sampled. 
 
 %Different quantifiers can be applied by reasoning over these mental models; indeed one just needs to ``read off" the model to see if a certain proposition is true. Thus, it has been proposed that mental models could account for usage of generalized quantifiers (e.g. most and few) in syllogistic reasoning, though this claim has not been substantiated by empirical work or a model.
 
@@ -375,29 +375,25 @@ The a priori believability of propositions has been shown to have an important e
 
 \subsection{Probability Heuristics}
 
- Chater and Oaksford's Probability Heuristic Model (PHM). Like our approach, the PHM is inspired by the notion that people are not fundamentally deductive reasoners, but instead are trying to gage degrees of plausibility for the conclusion. This amounts to computing the probability of a particular conclusion being true given that the premises are true. To accomplish this, the PHM relies on a number of {\em generation} and {\em test} heuristics which produce and quantify confidence in conclusions, and which they claim are justified by their computational level theory. The computational level theory includes a notion of informativeness, on which all their heuristics rely. We do not believe their heuristics are necessary for deriving a probabilistic model of reasoning, as we discuss below. Further, as is the case for theories based on formal rules, the very nature of their heuristics suggests reasoners are engaging with the syllogisms at a propositional level and not at the level of concrete representations. We also do not believe this to be the case.
+\cite{Chater1999} introduced the Probability Heuristic Model (PHM) as an attempt to capture the intuition that people are using \emph{everyday} reasoning when asked to resolve syllogisms. To accomplish this, the PHM lays out a computational level theory which includes an ordering of propositional informativity, a probabilistic semantics, and a probabilistic notion of validity. The PHM derives its informativity ordering at the propositional level by assuming categories are represented as hyperspheres in a high-dimensional concept space. Our model takes a different approach. Conditional Semantics uses a truth-functional semantics which it applies samples from a distribution over situations. As such, an ordering of informativity emerges. The informativity ordering in our model is the reciprocal function of the prior over propositions. 
 
-By examining the prior distribution used in the Conditional Semantics model, we can see that all conclusions are not equally likely. In particular, we can consider the reciprocal function of the prior as an ordering of informativity. The Probability Heuristics Model also uses this ordering, though they derive it from propositions, assuming categories are represented as hyperspheres in a high-dimensional concept space \cite{Chater1999}. In the Conditional Semantics model, this ordering naturally arises from the process of sampling situations.
-
-We consider heuristic accounts acounts analagous to formal rule accounts in that people are reasoning at the level of propositions, which may be determined by probabilities. This the case with
+The PHM relies on a number of {\em generation} and {\em test} heuristics to produce and quantify confidence in conclusions. We do not believe these heuristics are necessary for deriving a probabilistic model of reasoning. Further, the very nature of their heuristics suggests reasoners are engaging with the syllogisms at a propositional level and not at the level of concrete representations. We consider heuristic accounts analogous to formal rule theories (e.g. \cite{rips1994}) in that people are reasoning at the level of propositions, which in the case of the PHM, are determined by probabilities. We also do not believe this to be the case.
 
 \section{Discussion}
 
-The partitioning described above places the Conditional Semantics and Pragmatics models in the unexplored quadrant of the two-dimensional theoretical space described: we consider reasoning over concrete situations and situations to be constructed probabilistically by sampling.
+The theoretical partitioning described above places the Conditional Semantics and Pragmatics models in a previously unexplored quadrant of the two-dimensional theoretical space described: we consider reasoning over concrete situations and situations to be constructed probabilistically by sampling.
 
-We have presented a formal model of syllogistic reasoning based on the \emph{rational speech-act framework}. We have shown that in this model, reasoners construct mental situations by sampling, and reasoning over these situations, much like has been described in the Mental Models literature. Unlike Mental Models, however, our model is inherently probabilistic and thus assumes reasoners are in some way gaging degrees of plausibility in syllogistic reasoning tasks. Further, the Conditional Semantics model is fundamentally quantitative, and thus can be considered an elaboration of the Mental Models theory.
+We have presented a formal model of syllogistic reasoning based on the \emph{rational speech-act} framework. We have shown that in this model, reasoners construct mental situations by sampling, and reasoning over these situations, much like has been described in the Mental Models literature. Unlike Mental Models, however, our model is inherently probabilistic and thus assumes reasoners are in some way gaging degrees of plausibility in syllogistic reasoning tasks. Further, the Conditional Semantics model is fundamentally quantitative, and thus can be considered an elaboration of the Mental Models theory.
 
 This is early work and we have found promising evidence, both qualitative and quantitative, that this framework will allow for a more explicit understanding of syllogistic reasoning. As well, this model is flexible enough to capture some of the variability in reasoning data using generalized quantifiers. We tested the model assuming a naive threshold of 0.50, such that \emph{most} is true if more than half is satisfied. We think this is an oversimplification and will examine more context-sensitive formulations in future work.
 
 In this framework, a syllogism is read as an argument given as a part of discourse between people. Indeed, this is how syllogisms were used in the time of Aristotle and in the long tradition of scholastic philosophers. Fundamentally, syllogisms are a tool used to convince others. The results of the pragmatic reasoning model shed light on the idea that human reasoning behavior in the syllogistic task is as much reason as it is human. Gaging degrees of plausibility alone is not sufficient. A listener needs to be posited at the end of the line so that a conclusion makes sense; so that a conclusion is convincing!
 
-If one accepts that the purpose of a syllogism is to convince, a natural question arises. Why not just assert ``Some of my colleagues won't be at work for weeks" from the get-go? Why go through the trouble of laying out premises and having a person draw the conclusion? Arguments are used to persuade, and not all assertions are equally believable a priori. The reason premises are presented in this way is that there is no reason for me to believe some of my colleagues will be out of work for weeks. That almost never happens, except around Christmas break. And so the conclusion is not obvious, and the premises are an alternative route to persuasion. If we accept the premises, we are left with no choice but to draw the conclusion.
+If one accepts that the purpose of a syllogism is to convince, a natural question arises. Why not just assert ``Some of my colleagues won't be at work for weeks" from the get-go? Why go through the trouble of laying out premises and having a person draw the conclusion? Arguments are used to persuade, and not all assertions are equally believable \emph{a priori}. The reason premises are presented in this way is that there is no reason for me to believe some of my colleagues will be out of work for weeks. That almost never happens, except around Christmas. And so the conclusion is not obvious, and the premises are an alternative route to persuasion. If we accept the premises, we are left with no choice but to draw the conclusion.
 
-We set out to explore this intuition by seeing if the middle term had special significance. The rationale is that if someone is to go through the trouble of mentioning the middle term, it must allow them to assert something that they wouldn't be able to assert otherwise. In other words, we take the a priori probability of A \& C to be relatively low, but become higher if B is observed. A \& C become correlated via B. This is akin to saying that the end terms have a special relationship via the middle term. It is no coincidence that the same middle term appears in both premises and it is no coincidence the premises appear at all. 
+We set out to explore this intuition by seeing if the middle term had special significance. The rationale is that if someone is to go through the trouble of mentioning the middle term, it must allow them to assert something that they wouldn't be able to assert otherwise. In other words, we speculate the \emph{a priori} probability of A \& C is taken to be relatively low, but may become higher if B is observed. In this way, A \& C become correlated via B. This is akin to saying that the end terms have a special relationship via the middle term. It is no coincidence that the middle term appears in both premises and it is no coincidence the premises appear at all. 
 
-We modified the naive binomial prior to induce a slight correlation between A \& C via B. Overall, the model matches a few more modal responses and provides a better quantitative fit to the data. 
-
-We do not take the probability of co-occurrence to be a priori unlikely in the case of syllogistic reasoning tasks. Many of the experimental materials in the meta-analysis data were well controlled for semantic content. There is no reason to believe \emph{All artists are chemists} is a priori unlikely. Rather, we see this as arising from conversational pragmatics. It is a future direction of this work to develop a formal model of this phenomenon.
+We modified the naive binomial prior to induce a slight correlation between A \& C via B. Overall, the model matches a few more modal responses and provides a better quantitative fit to the data. However, we do not assert that the probability of co-occurrence to be \emph{a priori} unlikely in the case of syllogistic reasoning tasks. Many of the experimental materials in the meta-analysis data were well controlled for semantic content. Rather, we see this as arising from conversational pragmatics. It is a future direction of this work to develop a formal model of this phenomenon.
 
 %\end{figure*}}
 %\subfigure[prior]{ %
