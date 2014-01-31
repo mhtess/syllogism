@@ -62,7 +62,7 @@ The form of the argument above resembles a syllogism: an argument with two quant
 All officemates are out with the flu\\
 Some people out with the flu are out for weeks\\
 \end{quote}
-The full space of syllogistic arguments is derived by shuffling the term-ordering (``All A are B'' vs. ``All B are A'') and changing the quantifier (\emph{all, some, none, not all}). Most syllogisms have no valid conclusion, i.e. there is no deductive relation between A \& C determined by the premises. This is the case with the argument above. A recent meta-analysis of syllogistic reasoning tasks showed that over the population, accuracy on producing valid conclusions ranges from 90 \% to 1\% and ability to produce appropriate \emph{no valid conclusion} responses ranges from 76\% to 12\% \cite{khemlaniJL2012}: people are not good at drawing deductively valid conclusions.
+The full space of syllogistic arguments is derived by shuffling the term-ordering (``All A are B'' vs. ``All B are A'') and changing the quantifier (\emph{all, some, none, not all}). Most syllogisms have no valid conclusion, i.e. there is no deductive relation between A \& C determined by the premises. This is the case with the argument above. A recent meta-analysis of syllogistic reasoning tasks showed that over the population, accuracy on producing valid conclusions ranges from 90 \% to 1\% and ability to produce appropriate \emph{no valid conclusion} responses ranges from 76\% to 12\% \cite{Khemlani2012}: people are not good at drawing deductively valid conclusions.
 %
 Perhaps because of this d\'ecolage between human behavior and deductive logic, syllogistic reasoning has been a topic of considerable interest in cognitive psychology for over one hundred years \cite{storring1908}, and before that in philosophy, dating back to Aristotle. In cognitive psychology we are interested in how people reason, and syllogisms lie at the intriguing intersection of natural and formal reasoning, of  language and logic. They are undoubtedly logical; indeed, they are regarded as the first formal system of logic. At the same time, they use natural language quantifiers and invite natural language conclusions; precisely pinning down the meaning and use of quantifiers has been an ongoing area of inquiry since Aristotle \cite<e.g.>{negationHorn}.
 
@@ -71,6 +71,7 @@ Many theories of syllogistic reasoning take deduction as a given and try to expl
 On the other hand, many other kinds of reasoning have been explained via probabilistic reasoning under uncertainty. Probability provides a natural description of a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging.
 We will suggest that combining probabilistic reasoning with formal semantics and pragmatics of natural language leads to a useful combination of these approaches, in which our knowledge describes distributions on possible situations and sentences naturally update these distributions with new information.
 In this formalism, deduction emerges as those arguments which are always true and syllogistic reasoning becomes a process of determining what is most probable, relevant, and informative.
+
 
 
 %
@@ -102,7 +103,7 @@ To reason over situations, we draw on ideas in formal semantics by assuming that
 ...
 \end{lstlisting}
 
-The Conditional Semantics model treats the premises of a syllogism as evidence by which to update its belief prior over propositions (which are now potential conclusions). This update rule we take to be probabilistic conditioning. Thus, we get a posterior distribution of propositions, conditioned on premises being true. This has the nice feature of returning a degree of belief in each of the possible conclusions for every syllogism. Using this, we can test the hypothesis that reasoners in syllogistic reasoning tasks are essentially drawing samples from the posterior distribution of the conclusion conditioned on the premises (so-called ``posterior matching")\cite{Griffiths2006}.
+The Conditional Semantics model treats the premises of a syllogism as evidence by which to update its belief prior over propositions (which are now potential conclusions). This update rule we take to be probabilistic conditioning. Thus, we get a posterior distribution of propositions, conditioned on premises being true. This has the nice feature of returning a degree of belief in each of the possible conclusions for every syllogism. Using this, we can test the hypothesis that reasoners in syllogistic reasoning tasks are essentially drawing samples from the posterior distribution of the conclusion conditioned on the premises (so-called ``posterior matching") \cite{Griffiths2006}.
 
 \begin{lstlisting}
 (query
