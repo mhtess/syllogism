@@ -19,11 +19,30 @@
 %\usepackage{inconsolata}
 \usepackage{xcolor} %to use colored text
 
+%\lstset{
+%language=Scheme,
+%basicstyle=\footnotesize\ttfamily,
+%mathescape=true,
+%frame=single
+%}
+
 \lstset{
-language=Scheme,
-basicstyle=\footnotesize\ttfamily,
-mathescape=true,
-frame=single
+  language=Scheme, % Andreas Stuhlmüller. Scheme listings. https://github.com/stuhlmueller/scheme-listings.git
+  columns=fixed,
+  tabsize=2,
+  extendedchars=true,
+  breaklines=true,
+  frame=single,
+%  numbers=left,
+  numbersep=5pt,
+    basicstyle=\scriptsize\ttfamily
+%  rulesepcolor=\color{solarized@base03},
+%  numberstyle=\tiny\color{solarized@base01},
+%  keywordstyle=\color{solarized@green},
+%  stringstyle=\color{solarized@cyan}\ttfamily,
+%  identifierstyle=\color{blue},
+%  commentstyle=\color{solarized@base01},
+%  emphstyle=\color{solarized@red}
 }
 
 \begin{document}
@@ -86,7 +105,7 @@ The motivation for our model stems from the intuitions that people reason by con
 
 : (1) people are using \emph{everyday} reasoning in syllogistic reasoning tasks and (2) they do this by constructing situations and reasoning about these situations. For syllogistic reasoning, it is natural to think of situations as composed of objects with properties\footnote{These situations are not entirely different from Johnson-Laird's notion of a {\emph mental model}, which we discuss later. We prefer the term situation so as to not confound the word model, which we take to refer to a computational model.}. In a probabilistic model, situations arise from a sampling procedure.
 
-Situations are composed of $n$ number of objects, each with 1, 2 or 3 properties corresponding to the three terms of a syllogism. Situations are sampled from a naive prior. In this setting, it is reasonable to assume that the prior probability, $P(situation)$, is a binomial distribution (i.e. the probability of a coin of a given weight coming up Heads $n$ times in a row, where $n$ is the number of objects). We assume properties are relatively rare of objects; this means the base rate (br) of properties is less than 0.50.  This principle of rarity comes from the intuition that properties are relative rare \footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}, and this has been used in probabilistic models previously. 
+Situations are composed of $n$ number of objects, each with 1, 2 or 3 properties corresponding to the three terms of a syllogism. Situations are sampled from a naive prior. In this setting, it is reasonable to assume that the prior probability, $P(situation)$, is a binomial distribution (i.e. the probability of a coin of a given weight coming up Heads $n$ times in a row, where $n$ is the number of objects). We assume properties are relatively rare of objects; this means the base rate (\lstinline{br}) of properties is less than 0.50.  This principle of rarity comes from the intuition that properties are relative rare \footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}, and this has been used in probabilistic models previously. 
 
 \begin{lstlisting}
 (define A (mem (lambda (x) (flip br))))
@@ -134,6 +153,27 @@ To address this we draw on recent advances in probabilistic models of pragmatic 
 
 We use a variant of the nested-conditioning model of scalar implicature \cite{Goodman2013} to break the symmetry described above. We treat the reasoner as a sort of pragmatic speaker with a hypothetical listener in the reasoner's mental representation. This listener can be thought of concretely as the person evaluating the participant's responses. In the original scalar implicature model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the listener hears the conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction turns out to be important as the reasoner does not observe a situation directly but rather constructs situations consistent with the premises. 
 
+
+
+
+We speculate that there is another important pragmatic effect which dominates the interpretation of the premises. In what natural setting does a person produce a syllogistic like argument? Why would anyone ever go through the hassle of uttering two sentences which do not convey the totality of what is intended to be conveyed? We suggest this is due to an asymmetry among the three relations (i.e. A-B, B-C, C-A). We posit that the A-B \& B-C relations are weighted more strongly than the A-C relationship, possibly owing to common ground of those relationships. In some way, A-C is unexpected, or somewhat unbelieveable. If it weren't, there would be no reason to work through the syllogism. The syllogism was invented as a tool of argument, to convince others. Nobody needs convincing that ``Socrates is mortal". 
+
+Following up on this intuition, we introduced a small dependency (df) into the binomial prior such that A \& C are more likely when B is present and less likely when B is absent. In our example from the beginning, this means that some of your office mates being out of the office for weeks is less likely if they don't have the flu and more likely if they do have the flu. 
+
+
+\begin{lstlisting}
+(define B (mem (lambda (x) (flip base_rate))))
+(define A 
+  (mem (lambda (x) 
+    (flip (if (B x) (+ br df) (- br df))))))
+(define C 
+  (mem (lambda (x) 
+    (flip (if (B x) (+ br df) (- br df))))))
+\end{lstlisting}
+
+
+
+
 \section{Results}
 
 \subsection{Meta-analysis data}
@@ -163,26 +203,11 @@ By introducing pragmatics to the model, we are able to distinguish among equally
 
 \end{figure*}
 
-\subsection{Dependency}
+%\subsection{Dependency}
 
-The inspiration for this model comes from the idea that syllogistic reasoning can not be disentangled from language understanding. In particular, natural language semantics is insufficient to explain the variability in such a data set. We argue that understanding conversational pragmatics is necessary to understanding how people reason with syllogistic arguments. We have found that the meanings of quantifiers are important insofar as \emph{some} might imply \emph{not all} and so people prefer to conclude \emph{all} when it is warranted. 
+%The inspiration for this model comes from the idea that syllogistic reasoning can not be disentangled from language understanding. In particular, natural language semantics is insufficient to explain the variability in such a data set. We argue that understanding conversational pragmatics is necessary to understanding how people reason with syllogistic arguments. We have found that the meanings of quantifiers are important insofar as \emph{some} might imply \emph{not all} and so people prefer to conclude \emph{all} when it is warranted. 
 
-We speculate that there is another important pragmatic effect which dominates the interpretation of the premises. In what natural setting does a person produce a syllogistic like argument? Why would anyone ever go through the hassle of uttering two sentences which do not convey the totality of what is intended to be conveyed? We suggest this is due to an asymmetry among the three relations (i.e. A-B, B-C, C-A). We posit that the A-B \& B-C relations are weighted more strongly than the A-C relationship, possibly owing to common ground of those relationships. In some way, A-C is unexpected, or somewhat unbelieveable. If it weren't, there would be no reason to work through the syllogism. The syllogism was invented as a tool of argument, to convince others. Nobody needs convincing that ``Socrates is mortal". 
-
-Following up on this intuition, we introduced a small dependency (df) into the binomial prior such that A \& C are more likely when B is present and less likely when B is absent. In our example from the beginning, this means that some of your office mates being out of the office for weeks is less likely if they don't have the flu and more likely if they do have the flu. 
-
-
-\begin{lstlisting}
-(define B (mem (lambda (x) (flip base_rate))))
-(define A 
-  (mem (lambda (x) 
-    (flip (if (B x) (+ br df) (- br df))))))
-(define C 
-  (mem (lambda (x) 
-    (flip (if (B x) (+ br df) (- br df))))))
-\end{lstlisting}
-
-Using this conditional prior, the Conditional Semantics model gets 45 out of 64 modal responses. The overall fit is also improved, r = 0.75. The Conditional Pragmatics model does better as well, predicted the modal response for 52 syllogisms. Additionally, the quantitative fit is high (r = 0.85). Among valid syllogisms, it is correspondingly higher as well (r = 0.88). 
+Using the conditional prior, the Conditional Semantics model gets 45 out of 64 modal responses. The overall fit is also improved, r = 0.75. The Conditional Pragmatics model does better as well, predicted the modal response for 52 syllogisms. Additionally, the quantitative fit is high (r = 0.85). Among valid syllogisms, it is correspondingly higher as well (r = 0.88). 
 
 
 \section{Most and few}
