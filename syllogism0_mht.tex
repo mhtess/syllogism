@@ -38,34 +38,40 @@ frame=single
 
 
 \begin{abstract}
-Does reason exist outside of language? In the following article, we develop a novel computational level theory of syllogistic reasoning which places reasoning at the intersection of communication and logic. We compare our model predictions with behavioral data from a recent meta-analysis. We show the flexibility of the model to account for reasoning behavior in a study of so-called ``statistical syllogisms" which use the generalized quantifiers \emph{most} and \emph{few}. We relate our model to three extant theories of syllogistic reasoning -- Mental Models, Mental Logics and Probability Heuristics. We conclude by discussing further predictions of the model and future directions.  
+We develop a computational-level theory of syllogistic reasoning which places reasoning at the intersection of communication and logic. We compare our model predictions with behavioral data from a recent meta-analysis. We show the flexibility of the model to account for reasoning behavior in a study of so-called ``statistical syllogisms" which use the generalized quantifiers \emph{most} and \emph{few}. We relate our model to three extant theories of syllogistic reasoning -- Mental Models, Mental Logics and Probability Heuristics. We conclude by discussing further predictions of the model and future directions.  
 \\
 \textbf{Keywords:} 
 Reasoning, language understanding, probabilistic model
 \end{abstract}
-Consider for a moment that your friend tells you, 
-\begin{quotation}
-Everyone in my office has the flu and, you know, some people with the flu are out for weeks.
-\end{quotation}
-Do you respond with ``jee, I hope your officemates are not out for weeks and I hope you don't get sick either" or do you reply ``Pardon me, there is no inference I can draw from what you just said. Would you mind using a valid logical form?"
 
-This cartoon illustrates what are two fundamentally different views of reasoning in the cognitive psychology literature. There are those who conceive of the mind as an intrinsically deductive computer and those who argue the mind is adapted to deal with a world of uncertainty. 
 
-The form of the argument above bears some semblance to a syllogism. A syllogism is an argument with two premises used to relate two terms via a middle term. To fit into a proper syllogistic form, this argument would read:
+Consider for a moment that your friend tells you:
+``Everyone in my office has the flu and, you know, some people with the flu are out for weeks.''
+Do you respond with
+``Everyone in your office has the flu.''
+Do you respond with
+``Pardon me, there is no inference I can draw from what you just said."
+Or do you respond
+ ``I hope your officemates are not out for weeks and I hope you don't get sick either."
+ The first response is true, but does not go beyond the premises; the second response attempts to go beyond the premises by strict classical logic, but fails; the final response goes beyond the premises, to offer a conclusion which is probably useful and probably true.
+% 
+This cartoon illustrates two dimensions along which cognitive theories of reasoning differ: whether the core and ideal of reasoning is deductive validity or probabilistic support, and, the natural language principles---pragmatics and semantics---for understanding reasoning. In this paper we explore a theory of syllogistic reasoning inspired by recent advances in probabilistic semantics and pragmatics.
 
+The form of the argument above resembles a syllogism: an argument with two quantifier expressions (premises) used to relate two properties (or terms) via a middle term. Fit into a formal syllogistic form, this argument would read:
 \begin{quote}
-All officemates are out with the flu (All As are Bs)\\
-Some people out with the flu are out for weeks (Some Bs are Cs)\\
+All officemates are out with the flu\\
+Some people out with the flu are out for weeks\\
 \end{quote}
+The full space of syllogistic arguments is derived by shuffling the term-ordering (``All A are B'' vs. ``All B are A'') and changing the quantifier (\emph{all, some, none, not all}). Most syllogisms have no valid conclusion, i.e. there is no deductive relation between A \& C determined by the premises. This is the case with the argument above. A recent meta-analysis of syllogistic reasoning tasks showed that over the population, accuracy on producing valid conclusions ranges from 90 \% to 1\% and ability to produce appropriate \emph{no valid conclusion} responses ranges from 76\% to 12\% \cite{khemlaniJL2012}: people are not good at drawing deductively valid conclusions.
+%
+Perhaps because of this d\'ecolage between human behavior and deductive logic, syllogistic reasoning has been a topic of considerable interest in cognitive psychology for over one hundred years \cite{storring1908}, and before that in philosophy, dating back to Aristotle. In cognitive psychology we are interested in how people reason, and syllogisms lie at the intriguing intersection of natural and formal reasoning, of  language and logic. They are undoubtedly logical; indeed, they are regarded as the first formal system of logic. At the same time, they use natural language quantifiers and invite natural language conclusions; precisely pinning down the meaning and use of quantifiers has been an ongoing area of inquiry since Aristotle \cite<e.g.>{negationHorn}.
 
-The full space of syllogistic arguments is derived by shuffling the term-ordering (A-B vs. B-A) and changing the quantifiers (the quantifiers used in classical syllogistic arguments are \{\emph{all, some, none, not all}\}). Most syllogisms have no valid conclusion, i.e. there is no necessary relation between A \& C determined by the premises. This is the case with the argument above.
 
-Syllogistic reasoning has been a topic of considerable interest in cognitive psychology for over one hundred years \cite{storring1908}, and before that in philosophy, dating back to Aristotle. In cognitive psychology we are interested in how people reason logically. Syllogisms are a good testing grounds because they lie at the intersection of language and logic. They are undoubtedly logical; indeed, they are regarded as the first formal system of logic. At the same time, they use quantifiers as relations in sentences, and precisely pinning down the meaning of quantifiers has been an ongoing area of inquiry since Aristotle (e.g. \cite{negationHorn}).
+Many theories of syllogistic reasoning take deduction as a given and try to explain errors as a matter of errors in the system. These error may arise from improper use of deductive rules, or biased construction of logical models. In either case, logic makes the connection to natural language semantics natural (though not central).
+On the other hand, many other kinds of reasoning have been explained via probabilistic reasoning under uncertainty. Probability provides a natural description of a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging.
+We will suggest that combining probabilistic reasoning with formal semantics and pragmatics of natural language leads to a useful combination of these approaches, in which our knowledge describes distributions on possible situations and sentences naturally update these distributions with new information.
+In this formalism, deduction emerges as those arguments which are always true and syllogistic reasoning becomes a process of determining what is most probable, relevant, and informative.
 
-
-It should come as no surprise that people with no training in formal logic, and even some with training, find reasoning with syllogisms difficult. They were counter-intuitive in Aristotle's time and they remain vexing the unfamiliar today. A recent meta-analysis of syllogistic reasoning tasks showed that over the population, accuracy on producing valid conclusions ranges from 90 \% to 1\% \cite{khemlaniJL2012}. For syllogisms with no valid conclusion, ability to produce the proper \emph{no valid conclusion} response ranges from 76\% to 12\%.
-
-This evidence would seem to suggest that people are not reasoning using deductive mechanisms in the mind. Yet, many theories take deduction as a given and try to explain errors as a matter of noise in the system. We have a different perspective. We propose, as has been proposed before, that people are reasoning according to their {\emph everyday} mode of reasoning. {\emph Everyday} reasoning is understood as the type of reasoning that is refined for dealing with a world of uncertainty, a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging. This type of reasoning is most succinctly described in the language of probability theory. In this formalism, deduction emerges as that which is most probable.
 
 %
 %Theories of syllogistic reasoning have been  One possibility is {\emph{logical deduction}. When a theory takes deduction to be fundamental, the explanatory power of the theory derives from explaining errors in deductive inference. That is to say, these theories treat the variety of performance errors as the first-class explanandum.
@@ -74,7 +80,10 @@ This evidence would seem to suggest that people are not reasoning using deductiv
 
 \section{The Conditional Semantics model}
 
-The motivation for our model stems from two intuitions: (1) people are using \emph{everyday} reasoning in syllogistic reasoning tasks and (2) they do this by constructing situations and reasoning about these situations. For syllogistic reasoning, it is natural to think of situations as composed of objects with properties\footnote{These situations are not entirely different from Johnson-Laird's notion of a {\emph mental model}, which we discuss later. We prefer the term situation so as to not confound the word model, which we take to refer to a computational model.}. In a probabilistic model, situations arise from a sampling procedure.
+The motivation for our model stems from the intuitions that people reason by constructing situations consistent with their probabilistic prior knowledge, and they interpret premises and choosing conclusions as 
+
+
+: (1) people are using \emph{everyday} reasoning in syllogistic reasoning tasks and (2) they do this by constructing situations and reasoning about these situations. For syllogistic reasoning, it is natural to think of situations as composed of objects with properties\footnote{These situations are not entirely different from Johnson-Laird's notion of a {\emph mental model}, which we discuss later. We prefer the term situation so as to not confound the word model, which we take to refer to a computational model.}. In a probabilistic model, situations arise from a sampling procedure.
 
 Situations are composed of $n$ number of objects, each with 1, 2 or 3 properties corresponding to the three terms of a syllogism. Situations are sampled from a naive prior. In this setting, it is reasonable to assume that the prior probability, $P(situation)$, is a binomial distribution (i.e. the probability of a coin of a given weight coming up Heads $n$ times in a row, where $n$ is the number of objects). We assume properties are relatively rare of objects; this means the base rate (br) of properties is less than 0.50.  This principle of rarity comes from the intuition that properties are relative rare \footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}, and this has been used in probabilistic models previously. 
 
