@@ -177,37 +177,57 @@ Following up on this intuition, we introduced a small dependency (df) into the b
 \section{Results}
 
 \subsection{Meta-analysis data}
-To test our model, we used data from the meta-analysis presented with the Probability Heuristics Model\cite{Chater1999}. These data were compiled from 5 studies on syllogistic reasoning, completed from 1978-1984. The data included percentage response for conclusions of each of the 4 quantifiers as well as ``No Valid Conclusion". We consider the production of the ``No Valid Conclusion" an aspect of the algorithmic implementation and leave this for future work. The meta-analysis includes studies for which both conclusion orderings were allowed (A-C or C-A). Because of this, we allowed our model to do the same. Following the procedures of the meta-analysis, we collapsed responses across these two orderings to compare it to the data set.
+To test our model, we used data from the meta-analysis presented with the Probability Heuristics Model\cite{Chater1999}. These data were compiled from 5 studies on syllogistic reasoning, completed from 1978-1984. The data included percentage response for conclusions of each of the 4 quantifiers as well as ``No Valid Conclusion". We consider the production of the ``No Valid Conclusion" an aspect of the algorithmic level of analysis and leave this for future work. Some studies allowed for the conclusion to be ordered in either direction (A-C or C-A) while others restricted it to the classical ordering (C-A). Because of this, we allowed our model to draw conclusions in either order. Following the procedures of the meta-analysis, we collapsed responses across these two orderings to compare it to the data set.
+
+\subsection{Qualitative results}
+For each model, we report the total number of syllogisms for which the model's model response is the same as for the meta-analysis. This is a qualitative assessment of the fit. 
+
+We first examined the prior to see if it alone accounted for human reasoning patterns. It did not (Figure \ref{fig:barplots}, column 1). Since ``not all" is the most likely conclusion to be true, the prior gets only the syllogisms with a ``Not all" modal response correct. For the meta-analysis data, this amounts to 29 out of the 64 syllogisms.
+
+\begin{figure*}
+\centering
+    \includegraphics[width=\textwidth,height=7.5cm]{fig1_multibar_luceSpeak2}
+    \caption{Five example syllogisms. 
+    [1] Conditional Semantics has no preference among equally valid conclusions; the symmetry is broken by the pragmatics model which uses includes informativity in its predictions.     
+    [2] Semantics alone captures the modal response and pragmatics enriches the quantitative fit.     
+    [3] The modal response is not as likely in the Semantics model but is wildly more informative. [4] The models are able to capture multiple preferred conclusions. [5] Models do poorly in matching subjects' responses in an invalid syllogism.}
+  \label{fig:barplots}
+\end{figure*}
+
+
+When we condition on the premises being true, the model matches people's maximum judgments on 37 of the 64 syllogisms. The 29 syllogisms for which ``not all" was the modal response are qualitatively unaffected i.e. the Conditional Semantics model matches these responses. As well, the model matches 8 syllogisms for which ``some" and ``none" are favored (Figure \ref{fig:barplots}, column 2, see e.g. [2]). 
+
+Finally, we introduce pragmatics into the model in part to be able to distinguish among equally ``certain" conclusions (e.g. Figure \ref{fig:barplots}, [1]). The model selects not only conclusions likely to be true, but informative conclusions (e.g. Figure \ref{fig:barplots},[3]). The model now matches 44 out of 64 modal responses. 
+
+In addition to capturing many of the modal responses, the model is able to accomodate more than one plausible conclusion. Example [4] in Figure \ref{fig:barplots} highlights one such example. This is a syllogism with a valid conclusion but one which people find it difficult to draw. The Conditional Semantics model tells us why. In many of the possible situations in which the premises are true, a \emph{none} conclusion is true. In addition, \emph{none} is relatively more informative than \emph{not all} and so the Conditional Pragmatics enforces this symmetry. Notice how this is different from Example [3], in which \emph{all} is less likely than  \emph{some} after conditioning\footnote{This may seem surprising as the obvious response is \emph{all}. This is the case because there are two \emph{some} responses which are valid and only one \emph{all} response}. In this example, \emph{all} gets pragmatically strengthened over and above \emph{some} due \emph{all}'s much higher relatively informativeness.  
+
+Still, there are many syllogisms for which reasoning patterns are not captured by the model. A large subset of these are syllogisms which use two negative quantifiers (\emph{not all} or \emph{none}). These problems, in a way, are underconstrained in terms of the situations consistent with the premises. For this reason, the models' predictions do not differ appreciably from the prior (\ref{fig:barplots} [5]).
 
 \subsection{Model fit}
-For each model, we report the total number of syllogisms the model's model response is the same as for the meta-analysis. This is a qualitative assessment of the fit. We compute correlations across all 256 data points (64 syllogisms x 4 conclusions) to assess the overall fit quantitatively. 
 
-We first examined the prior to see if it alone accounted for human reasoning patterns. It did not. Since ``not all" is the most likely conclusion to be true, the prior gets only the syllogisms with a ``Not all" modal response correct. For the meta-analysis data, this amounts to 29 out of the 64 syllogisms. The overall fit is also accordingly poor (r = .36). 
+To assess our models' quantitative fits we compute compute correlations across all 256 data points (64 syllogisms x 4 conclusions).
 
-When we condition on the premises being true, the model matches people's maximum judgments on 37 of the 64 syllogisms. This includes all of the syllogisms for which ``not all" is the modal response, as well as 8 syllogisms for which ``some" and ``none" are favored. The overall correlation is accordingly higher (r=0.64). However, among valid conclusions the correlation is terrible (r=0.05). This is a direct consequence of the model's literalness. Among valid conclusions to valid syllogisms, the model has no preference.
+The prior's predictions are the same for all syllogisms and the overall fit is also accordingly poor (r = .36) (Figure \ref{fig:megaScatter}, row 2, column 1).  After conditioning on the truth of the premises, the model is able to make graded responses for each of the syllogisms. These responses are a reflection of the types of situations consistent with the premises. The overall correlation is appreciably higher (r=0.64 (Figure \ref{fig:megaScatter}, row 2, column 2)). However, among valid conclusions (squares in Figure \ref{fig:megaScatter}) the fit is terrible (r=0.05). This is a direct consequence of the model's literalness. Among valid conclusions, the model has no preference because each conclusion is true in every possible situation.
 
-By introducing pragmatics to the model, we are able to distinguish among equally ``certain" conclusions. The model selects not only conclusions likely to be true, but conclusions which are informative to a hypothetical listener. The model now matches 44 out of 64 modal responses and has a correlation of r = 0.77. The difference is especially striking for the valid syllogisms, for which the correlation is now r = 0.85. We compared these results to those found when using a uniform prior and found the overall fit much better with the binomial, which invokes the principle of rarity. 
+This symmetry is broken by using pragmatic reasoning (Figure \ref{fig:megaScatter}, row 2, column 3). The overall correlation again increases (r = 0.77). The difference is especially striking for the valid syllogisms (r = 0.85). We compared these results to those found when using a uniform prior (\ref{fig:megaScatter}, row 1)) and found the overall fit much better with the binomial, which invokes the principle of rarity. 
 
 \begin{figure*}[t!] %[htp]
 \centering
 	\subfigure
 		\centering
-  \includegraphics[width=\textwidth,height=10cm]{multiScatter_unif-bin-2m40br_n6_alphabefore2}
-  \caption{Human subject percentage endorsement vs. model fits for 3 different priors. Columns, from left to right: models based only on the prior, Conditional Semantics models, and Conditional Pragmatics models. Rows from top to bottom: uniform prior, binomial prior, conditional prior (see text).}
+  \includegraphics[width=\textwidth,height=12.5cm]{fig2_multiScatter_unif-bin-2m40br_n6_alphabefore2}
+  \caption{Human subject percentage endorsement vs. model fits for 3 different priors. 
+  Columns (from L to R): predictions based only on the prior, Conditional Semantics models, and Conditional Pragmatics models.
+  Rows (from top to bottom): uniform prior, binomial prior, correlated prior (see text).}
   \label{fig:megaScatter}
-\subfigure
-
-    \includegraphics[width=\textwidth,height=4cm]{multibar_AA1_II1_luceSpeak2}
-    \caption{Two example syllogisms. Pragmatic effects both strengthen already likely conclusions as well as relatively unlikely but informative conclusions.}
-  \label{fig:barplots}
 
 \end{figure*}
 
-%\subsection{Dependency}
+\subsection{Dependency}
 
-%The inspiration for this model comes from the idea that syllogistic reasoning can not be disentangled from language understanding. In particular, natural language semantics is insufficient to explain the variability in such a data set. We argue that understanding conversational pragmatics is necessary to understanding how people reason with syllogistic arguments. We have found that the meanings of quantifiers are important insofar as \emph{some} might imply \emph{not all} and so people prefer to conclude \emph{all} when it is warranted. 
+The inspiration for this model comes from the idea that syllogistic reasoning can not be disentangled from language understanding. In particular, natural language semantics is insufficient to explain the variability in such a data set. We argue that understanding conversational pragmatics is necessary to understanding how people reason with syllogistic arguments. We have found that the meanings of quantifiers are important insofar as \emph{some} might imply \emph{not all} and so people prefer to conclude \emph{all} when it is warranted. 
 
-Using the conditional prior, the Conditional Semantics model gets 45 out of 64 modal responses. The overall fit is also improved, r = 0.75. The Conditional Pragmatics model does better as well, predicted the modal response for 52 syllogisms. Additionally, the quantitative fit is high (r = 0.85). Among valid syllogisms, it is correspondingly higher as well (r = 0.88). 
+Using the correlated prior, the Conditional Semantics model gets 45 out of 64 modal responses. The overall fit is also improved, r = 0.75 (Figure \ref{fig:megaScatter}, row 3). The Conditional Pragmatics model does better as well, predicted the modal response for 52 syllogisms. Additionally, the quantitative fit is high (r = 0.85). Among valid syllogisms, it is correspondingly higher as well (r = 0.88). 
 
 
 \section{Most and few}
@@ -218,18 +238,11 @@ We compare our model predictions to two studies carried out by Chater \& Oaksfor
 
 The set of all possible syllogisms with 6 quantifiers contains 144 questions.  The authors divided these into two experiments to avoid subject fatigue. Experiment One consisted of the \emph{all},\emph{not all},\emph{most}, and \emph{few} quantifiers. Experiment Two used \emph{most},\emph{few},\emph{some}, and \emph{none}. 
 
-\begin{figure*}[ht]
-	\centering
-	\subfigure
-
-  \includegraphics[width=10cm,height=4cm]{multiScatter_AMFO_n6_alphabefore1}
-
-  \label{fig:amfoScatter}
-\subfigure
-	\centering
-    \includegraphics[width=10cm,height=4cm]{multiScatter_MFIE_n6_alphabefore1}
-      \caption{Human subject percentage endorsement vs. model fits for 2 experiments using generalized quantifiers. Predictions for the Conditional Semantics model is on the left. Predictions for the conditional pragmatics model is on the right.}
-  \label{fig:mfieScatter}
+\begin{figure*}[htp]
+  \includegraphics[width=0.51\textwidth,height=4.5cm]{fig3a_multiScatter_AMFO_n6_alphabefore1}
+    \includegraphics[width=0.51\textwidth,height=4.5cm]{fig3b_multiScatter_MFIE_n6_alphabefore1}
+      \caption{Human subject percentage endorsement vs. model fits for 2 experiments using generalized quantifiers. Experiment 1 (left) used the quantifiers \{\emph{all}, \emph{most}, \emph{few}, \emph{not all}\}. Experiment 2 (right) used the quantifiers \{\emph{most}, \emph{few}, \emph{some}, \emph{not all}\}.}
+  \label{fig:mfScatter}
 \end{figure*}
 
 
@@ -263,9 +276,9 @@ baker & \{flu\}\\
 
 The curly brackets reflect our uncertainty about where, if anywhere, to put additional individuals with the flu. The conclusion can be achieved by consolidating these models and reasoning over the joint model.
 
-The MMT captures the intuition that people are able to reason about sets of things explicitly and with respect to context.  The a priori believability of propositions has been shown to have an important effect on reasoning \cite{Oakhill1989}. Mental models are flexible in that content can motivate one to carry on the search process longer. The search process allows for individual differences insofar as some individuals may test many models and some may test just one. At the same time, the theory is not well defined insofar as it does not specify how various models come into existence, only that various models can come into existence.
+The MMT captures the intuition that people are able to reason about sets of things explicitly and with respect to context. At the same time, the theory is not well defined insofar as it does not specify how various models come into existence, only that various models can come into existence. Mental models are very similar to the \emph{situations} described in the Conditional Semantics model. A critical difference is that in Conditional Semantics, situations are construced by sampling. Thus, the model can make quantitative predictions about reasoning patterns with no further assumptions. 
 
-Mental models are very similar to the \emph{situations} described in the Conditional Semantics model. A critical difference is that in Conditional Semantics, situations are construed by sampling. Thus, the model can make quantitative predictions about reasoning patterns with no further assumptions.
+The a priori believability of propositions has been shown to have an important effect on reasoning \cite{Oakhill1989}. Mental models are flexible in that content can motivate one to carry on the search process longer. The Conditional Semantics model makes this notion may incorporating background knowledge into the prior from which situations are sampled. 
 
 %Different quantifiers can be applied by reasoning over these mental models; indeed one just needs to ``read off" the model to see if a certain proposition is true. Thus, it has been proposed that mental models could account for usage of generalized quantifiers (e.g. most and few) in syllogistic reasoning, though this claim has not been substantiated by empirical work or a model.
 
@@ -275,9 +288,11 @@ Mental models are very similar to the \emph{situations} described in the Conditi
 
 \subsection{Probability Heuristics}
 
-We consider heuristic accounts acounts analagous to formal rule accounts in that people are reasoning at the level of propositions, which may be determined by probabilities. This the case with Chater and Oaksford's Probability Heuristic Model (PHM). Like our approach, the PHM is inspired by the notion that people are not fundamentally deductive reasoners, but instead are trying to gage degrees of plausibility for the conclusion. This amounts to computing the probability of a particular conclusion being true given that the premises are true. To accomplish this, the PHM relies on a number of {\em generation} and {\em test} heuristics which produce and quantify confidence in conclusions, and which they claim are justified by their computational level theory. The computational level theory includes a notion of informativeness, on which all their heuristics rely. We do not believe their heuristics are necessary for deriving a probabilistic model of reasoning, as we discuss below. Further, as is the case for theories based on formal rules, the very nature of their heuristics suggests reasoners are engaging with the syllogisms at a propositional level and not at the level of concrete representations. We also do not believe this to be the case.
+ Chater and Oaksford's Probability Heuristic Model (PHM). Like our approach, the PHM is inspired by the notion that people are not fundamentally deductive reasoners, but instead are trying to gage degrees of plausibility for the conclusion. This amounts to computing the probability of a particular conclusion being true given that the premises are true. To accomplish this, the PHM relies on a number of {\em generation} and {\em test} heuristics which produce and quantify confidence in conclusions, and which they claim are justified by their computational level theory. The computational level theory includes a notion of informativeness, on which all their heuristics rely. We do not believe their heuristics are necessary for deriving a probabilistic model of reasoning, as we discuss below. Further, as is the case for theories based on formal rules, the very nature of their heuristics suggests reasoners are engaging with the syllogisms at a propositional level and not at the level of concrete representations. We also do not believe this to be the case.
 
 By examining the prior distribution used in the Conditional Semantics model, we can see that all conclusions are not equally likely. In particular, we can consider the reciprocal function of the prior as an ordering of informativity. The Probability Heuristics Model also uses this ordering, though they derive it from propositions, assuming categories are represented as hyperspheres in a high-dimensional concept space \cite{Chater1999}. In the Conditional Semantics model, this ordering naturally arises from the process of sampling situations.
+
+We consider heuristic accounts acounts analagous to formal rule accounts in that people are reasoning at the level of propositions, which may be determined by probabilities. This the case with
 
 \section{Discussion}
 
@@ -297,7 +312,7 @@ We modified the naive binomial prior to induce a slight correlation between A \&
 
 We do not take the probability of co-occurrence to be a priori unlikely in the case of syllogistic reasoning tasks. Many of the experimental materials in the meta-analysis data were well controlled for semantic content. There is no reason to believe \emph{All artists are chemists} is a priori unlikely. Rather, we see this as arising from conversational pragmatics. It is a future direction of this work to develop a formal model of this phenomenon.
 
-%\end{figure*}
+%\end{figure*}}
 %\subfigure[prior]{ %
 %	\includegraphics[width = {0.66\columnwidth}]{multibar_alpha1_prior}
 %	\label{fig:subfigure1}}
