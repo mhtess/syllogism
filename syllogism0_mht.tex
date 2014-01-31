@@ -100,7 +100,7 @@ In this formalism, deduction emerges as those arguments which are always true an
 
 \section{The Conditional Semantics model}
 
-Our model begins with the intuition that people reason probabilistically about situations populated by objects with properties. To represent this type of richly structured situation, we must go beyond propositional logic and its probabilistic counterpart, Bayesian networks. We instead build our model using the probabilistic programing language Church \cite{goodman2008}, a kind of higher-order probabilistic logic, in which it is natural to describe distributions over objects and their properties. For background and details on this form of model representation, see \url{http://probprog.org}.
+Our model begins with the intuition that people reason probabilistically about situations populated by objects with properties. To represent this type of richly structured situation, we must go beyond propositional logic and its probabilistic counterpart, Bayesian networks. We instead build our model using the probabilistic programing language Church \cite{Goodman2008}, a kind of higher-order probabilistic logic, in which it is natural to describe distributions over objects and their properties. For background and details on this form of model representation, see \url{http://probprog.org}.
 
 Situations are composed of $n$ objects:
 \begin{lstlisting}
@@ -146,7 +146,7 @@ A quantifier (e.g. {\emph All As are Bs} is a function of two properties which d
 \end{lstlisting}
 Here the helper function \lstinline{all-true} simply checks that all elements of a list are true, the function \lstinline{map} applies the given function to each element of the list \lstinline{objects}. Similarly we can define \lstinline{some}, \lstinline{no}, \lstinline{not all} to have their standard meanings. 
 
-\todo{existential presuposiotion?}
+\red{existential presuposiotion?}
 
 The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over worlds into a posterior belief distribution. For syllogistic reasoning we are interested not in the posterior distribution over situations directly, but the distribution on true conclusions that this implies. In Church this looks like:
 \begin{lstlisting}
@@ -163,8 +163,7 @@ The key observation to connect these truth-functional meanings of quantifier exp
       (premise-one A B)
       (premise-two B C)))
 \end{lstlisting}
-And this defines our Conditional Semantics model.
-
+We assume that the prior distribution over conclusions (and premises, below) is uniform. \red{right?}
 
 %The Conditional Semantics model treats the premises of a syllogism as evidence by which to update its belief prior over propositions (which are now potential conclusions). This update rule we take to be probabilistic conditioning. Thus, we get a posterior distribution of propositions, conditioned on premises being true. This has the nice feature of returning a degree of belief in each of the possible conclusions for every syllogism. Using this, we can test the hypothesis that reasoners in syllogistic reasoning tasks are essentially drawing samples from the posterior distribution of the conclusion conditioned on the premises (so-called ``posterior matching") \cite{Griffiths2006}.
 %
@@ -182,7 +181,51 @@ And this defines our Conditional Semantics model.
 
 
 \subsection{Conditional Pragmatics}
-One reason to be skeptical of mere \emph{posterior matching} in syllogistic reasoning is that language understanding and language production are central to the syllogistic task, and truth-functional semantics can only go so far. It is natural to think of natural language pragmatics as entering in two places in the model: premise interpretation and conclusion production. We address only production in the current model \footnote{Preliminary analyses suggest standard Gricean implicatures are not all that's at play during premise comprehension. This is consistent with other empirical findings which set out to test this. We address this matter in more detail later.}. To illustrate pragmatic production, we offer as an example the canonical ``All/all" syllogism:
+%One reason to be skeptical of mere \emph{posterior matching} in syllogistic reasoning is that language understanding and language production are central to the syllogistic task, and truth-functional semantics can only go so far. 
+We have suggested viewing syllogistic reasoning as a case of communication, and this in turn suggests that reasoning should go beyond the semantics of language, to its pragmatics.
+Natural language pragmatics could enter in two places in the above model: premise interpretation and conclusion production. 
+We first address pragmatic production, or choice of conclusion first.
+
+Following the Rational Speech Act theory \cite{Goodman2013,Frank2012a} we imagine a reasoner who chooses the conclusions which are more likely to convey to a listener the private information of the speaker---in this case the premises. That is we imagine that the reasoner treats the conclusion as a message chosen for a listener who lacks the premises (or perhaps the ability to reason form premises to conclusions).
+This listener can be thought of concretely as the (rather naive) person evaluating the participant's responses. In the original rational speech act model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the listener hears the conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction turns out to be important as the reasoner does not observe a situation directly but rather constructs situations consistent with the premises. 
+
+\begin{lstlisting}
+
+(define (reasoner premise-one premise-two depth)
+  (query 
+    (define objects (list Õo1 Õo2 ... Õon)) 
+    ...define A,B,C...
+    ...define all, some, no, notall...
+    (define conclusion (conclusion-prior))
+ 
+    conclusion
+    
+    (if (= depth 0)
+      (and (conclusion A C) 
+        (premise-one A B)
+        (premise-two B C))
+      (equal? (list premise-one premise-two) (listener conclusion depth)))))
+       
+(define (listener conclusion depth)
+  (query 
+    (define premise-one (premise-prior))
+    (define premise-two (premise-prior))
+    
+    (list premise-one premise-two)
+    
+    (equal? conclusion (reasoner premise-one premise-two (- depth 1)))))
+\end{lstlisting}
+
+
+
+addresses the problem of language understanding as that of a speaker trying to convey information about a world or situation that the speaker has observed \cite{Goodman2013,Frank2012a}. The speaker draws on common-ground of communicative goals to maximize information content of a given utterance. In particular, choosing an utterance in proportion to the likelihood of a listener inferring the situations about which the speaker wishes to convey information. In turn, a listener considers situations in which the given utterance heard is not only true but would be chosen to disambiguate amongst multiple consistent situations by an informatve speaker. This results in the canonical ``scalar implicature" wherein the literal meaning of ``{\em some} of the apples are red" is enriched to communicate ``some {\em but not all} of the apples are red".
+
+We use a variant of the nested-conditioning model of scalar implicature \cite{Goodman2013} to break the symmetry described above. We treat the reasoner as a sort of pragmatic speaker with a hypothetical listener in the reasoner's mental representation. This listener can be thought of concretely as the person evaluating the participant's responses. In the original scalar implicature model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the listener hears the conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction turns out to be important as the reasoner does not observe a situation directly but rather constructs situations consistent with the premises. 
+
+
+
+
+To illustrate pragmatic production, we offer as an example the canonical ``All/all" syllogism:
 
 \begin{quotation}
 All As are Bs \\
@@ -193,12 +236,12 @@ This is in fact one of the easiest syllogisms to which 81\% of participants prod
 
 This illustrates one of the issues with the conditional semantics model: it is too literal. The model computes the probability of the conclusion conditioned on the premises being true. For logically valid syllogistic conclusion, this probability is equal to 1. In particular, for any syllogism for which one of the universal quantifiers is valid (i.e. {\emph all} and {\emph none}), the particular quantifier (i.e.{\emph some} and {\emph not all}, respectively) will also be valid. Human reasoners show a clear preference for conclusions using universal quantifiers (all and none) in these cases. 
 
-To address this we draw on recent advances in probabilistic models of pragmatic reasoning. The \emph{rational speech-act theory} addresses the problem of language understanding as that of a speaker trying to convey information about a world or situation that the speaker has observed \cite{Frank2012a}. The speaker draws on common-ground of communicative goals to maximize information content of a given utterance. In particular, choosing an utterance in proportion to the likelihood of a listener inferring the situations about which the speaker wishes to convey information. In turn, a listener considers situations in which the given utterance heard is not only true but would be chosen to disambiguate amongst multiple consistent situations by an informatve speaker. This results in the canonical ``scalar implicature" wherein the literal meaning of ``{\em some} of the apples are red" is enriched to communicate ``some {\em but not all} of the apples are red".
-
-We use a variant of the nested-conditioning model of scalar implicature \cite{Goodman2013} to break the symmetry described above. We treat the reasoner as a sort of pragmatic speaker with a hypothetical listener in the reasoner's mental representation. This listener can be thought of concretely as the person evaluating the participant's responses. In the original scalar implicature model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the listener hears the conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction turns out to be important as the reasoner does not observe a situation directly but rather constructs situations consistent with the premises. 
 
 
 
+
+
+We address only production in the current model \footnote{Preliminary analyses suggest standard Gricean implicatures are not all that's at play during premise comprehension. This is consistent with other empirical findings which set out to test this. We address this matter in more detail later.}.
 
 We speculate that there is another important pragmatic effect which dominates the interpretation of the premises. In what natural setting does a person produce a syllogistic like argument? Why would anyone ever go through the hassle of uttering two sentences which do not convey the totality of what is intended to be conveyed? We suggest this is due to an asymmetry among the three relations (i.e. A-B, B-C, C-A). We posit that the A-B \& B-C relations are weighted more strongly than the A-C relationship, possibly owing to common ground of those relationships. In some way, A-C is unexpected, or somewhat unbelieveable. If it weren't, there would be no reason to work through the syllogism. The syllogism was invented as a tool of argument, to convince others. Nobody needs convincing that ``Socrates is mortal". 
 
