@@ -1,0 +1,186 @@
+\begin{thebibliography}{}
+
+\bibitem [\protect \citeauthoryear {%
+Chater%
+\ \BBA {} Oaksford%
+}{%
+Chater%
+\ \BBA {} Oaksford%
+}{%
+{\protect \APACyear {1999}}%
+}]{%
+Chater1999}
+\APACinsertmetastar {%
+Chater1999}%
+\begin{APACrefauthors}%
+Chater, N.%
+\BCBT {}\ \BBA {} Oaksford, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1999}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{The Probability Heuristics Model of Syllogistic
+  Reasoning}} {{The Probability Heuristics Model of Syllogistic
+  Reasoning}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Cognitive psychology}{258}{}{191--258}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Frank%
+\ \BBA {} Goodman%
+}{%
+Frank%
+\ \BBA {} Goodman%
+}{%
+{\protect \APACyear {2012}}%
+}]{%
+Frank2012a}
+\APACinsertmetastar {%
+Frank2012a}%
+\begin{APACrefauthors}%
+Frank, M\BPBI C.%
+\BCBT {}\ \BBA {} Goodman, N\BPBI D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2012}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Quantifying pragmatic inference in language games}}
+  {{Quantifying pragmatic inference in language games}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Science}{336}{}{1--9}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Goodman%
+\ \BBA {} Stuhlm\"{u}ller%
+}{%
+Goodman%
+\ \BBA {} Stuhlm\"{u}ller%
+}{%
+{\protect \APACyear {2013}}%
+}]{%
+Goodman2013}
+\APACinsertmetastar {%
+Goodman2013}%
+\begin{APACrefauthors}%
+Goodman, N\BPBI D.%
+\BCBT {}\ \BBA {} Stuhlm\"{u}ller, A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2013}{{\APACmonth{01}}}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Knowledge and implicature: modeling language
+  understanding as social cognition.}} {{Knowledge and implicature: modeling
+  language understanding as social cognition.}}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Topics in cognitive science}{5}{1}{173--84}.
+\newblock
+\begin{APACrefDOI} \doi{10.1111/tops.12007} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Horn%
+}{%
+Horn%
+}{%
+{\protect \APACyear {1989}}%
+}]{%
+negationHorn}
+\APACinsertmetastar {%
+negationHorn}%
+\begin{APACrefauthors}%
+Horn, L\BPBI R.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{1989}.
+\newblock
+\APACrefbtitle {A natural history of negation} {A natural history of negation}.
+\newblock
+\APACaddressPublisher{Chicago}{University of Chicago}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Khemlani%
+\ \BBA {} Johnson-Laird%
+}{%
+Khemlani%
+\ \BBA {} Johnson-Laird%
+}{%
+{\protect \APACyear {2012}}%
+}]{%
+Khemlani2012}
+\APACinsertmetastar {%
+Khemlani2012}%
+\begin{APACrefauthors}%
+Khemlani, S.%
+\BCBT {}\ \BBA {} Johnson-Laird, P\BPBI N.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2012}{{\APACmonth{05}}}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Theories of the syllogism: A meta-analysis.}}
+  {{Theories of the syllogism: A meta-analysis.}}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Psychological bulletin}{138}{3}{427--57}.
+\newblock
+\begin{APACrefDOI} \doi{10.1037/a0026841} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Oakhill%
+, Johnson-Laird%
+\BCBL {}\ \BBA {} Garnham%
+}{%
+Oakhill%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {1989}}%
+}]{%
+Oakhill1989}
+\APACinsertmetastar {%
+Oakhill1989}%
+\begin{APACrefauthors}%
+Oakhill, J.%
+, Johnson-Laird, P.%
+\BCBL {}\ \BBA {} Garnham, A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1989}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Believability and syllogistic reasoning}}
+  {{Believability and syllogistic reasoning}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Cognition}{31}{}{117--140}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+St\"{o}rring%
+}{%
+St\"{o}rring%
+}{%
+{\protect \APACyear {1908}}%
+}]{%
+storring1908}
+\APACinsertmetastar {%
+storring1908}%
+\begin{APACrefauthors}%
+St\"{o}rring, G.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1908}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Experimentelle Untersuchungen uber einfache
+  Schlussprozesse} {Experimentelle untersuchungen uber einfache
+  schlussprozesse}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{{Arch. f. d. ges. Psychol}}{}{}{1-127}.
+\PrintBackRefs{\CurrentBib}
+
+\end{thebibliography}
