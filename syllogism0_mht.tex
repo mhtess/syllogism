@@ -248,27 +248,28 @@ For the current initial exploration we evaluate these effects by building them i
 %
 Existential presupposition, a notion which goes back to Aristotle, is simply the observation that it is inconsistent to say ``All A are B'' if there are no objects with property A (and similarly for other quantifiers). \red{check with model..} We can simply add this to the literal meaning (the definition) of each quantifier. \red{cf pragmatic alternative ``No As''.}
 
-A second potential interpretation effect comes from the following question: In what natural setting would a reasonable person produce a syllogistic like argument? 
-Why would anyone ever go through the hassle of uttering two sentences which do not convey the totality of what is intended to be conveyed? We suggest this is due to an asymmetry among the three relations (i.e. A-B, B-C, C-A). We posit that the A-B \& B-C relations are weighted more strongly than the A-C relationship, possibly owing to common ground of those relationships. In some way, A-C is unexpected, or somewhat unbelievable. If it weren't, there would be no reason to work through the syllogism. The syllogism was invented as a tool of argument, to convince others. Nobody needs convincing that ``Socrates is mortal". 
-
-Following up on this intuition, we introduced a small dependency (df) into the binomial prior such that A \& C are more likely when B is present and less likely when B is absent. In our example from the beginning, this means that some of your office mates being out of the office for weeks is less likely if they don't have the flu and more likely if they do have the flu. 
-
-
-\begin{lstlisting}
+A second potential interpretation effect comes from the following question: In what natural setting would a reasonable person produce a syllogistic  argument? 
+Why would anyone ever go through the hassle of uttering two sentences which do not convey the totality of what is intended to be conveyed? 
+We suggest this is often due to an asymmetry among the three relations (i.e. A-B, B-C, C-A): A is more directly related to B that to C, etc.
+If this is the situation under which someone would bother to utter syllogistic premises, then the reasoner should assume this to be the the case in reasoning about the syllogism.
+%We posit that the A-B \& B-C relations are weighted more strongly than the A-C relationship, possibly owing to common ground of those relationships. In some way, A-C is unexpected, or somewhat unbelievable. If it weren't, there would be no reason to work through the syllogism. 
+%The syllogism was invented as a tool of argument, to convince others. Nobody needs convincing that ``Socrates is mortal". 
+We capture this intuition, by introducing dependence into the prior between A \& B, and B \& C:
+% a small dependency into the prior such that A \& C are more likely when B is present and less likely when B is absent. 
+ \begin{lstlisting}
 (define B (mem (lambda (x) (flip br))))
 (define A (mem (lambda (x) 
                  (flip (if (B x) (+ br df) (- br df))))))
 (define C (mem (lambda (x) 
                  (flip (if (B x) (+ br df) (- br df))))))
 \end{lstlisting}
-
-
+In our example from the beginning, this means that a person being out of the office for weeks is less likely if they don't have the flu and more likely if they do have the flu. 
 
 
 \section{Results}
 
-\subsection{Meta-analysis data}
-To test our model, we used data from the meta-analysis presented with the Probability Heuristics Model\cite{Chater1999}. These data were compiled from 5 studies on syllogistic reasoning, completed from 1978-1984. The data included percentage response for conclusions of each of the 4 quantifiers as well as ``No Valid Conclusion". We consider the production of the ``No Valid Conclusion" an aspect of the algorithmic level of analysis and leave this for future work. Some studies allowed for the conclusion to be ordered in either direction (A-C or C-A) while others restricted it to the classical ordering (C-A). Because of this, we allowed our model to draw conclusions in either order. Following the procedures of the meta-analysis, we collapsed responses across these two orderings to compare it to the data set.
+%\subsection{Meta-analysis data}
+To test our model, we used data from the meta-analysis presented by \citeA{Chater1999}. These data were compiled from 5 studies on syllogistic reasoning, completed from 1978-1984. The data included percentage response for conclusions of each of the 4 quantifiers as well as ``No Valid Conclusion". We consider the production of the ``No Valid Conclusion" an aspect of the algorithmic level of analysis and leave this for future work. Some studies allowed for the conclusion to be ordered in either direction (A-C or C-A) while others restricted it to the classical ordering (C-A). Because of this, we allowed our model to draw conclusions in either order. Following the procedures of the meta-analysis, we collapsed responses across these two orderings to compare it to the data set.
 
 \subsection{Qualitative results}
 For each model, we report the total number of syllogisms for which the model's model response is the same as for the meta-analysis. This is a qualitative assessment of the fit. 
