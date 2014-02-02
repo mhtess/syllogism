@@ -1,0 +1,95 @@
+
+(define all-true (lambda (lst) (apply and lst)))
+(define some-true (lambda (lst) (apply or lst)))
+
+(define all
+  (lambda (A B)
+    (all-true (map (lambda (x) (if (A x) (B x) true))	
+                   objects))))
+
+(define some
+  (lambda (A B)
+    (some-true (map (lambda (x) (if (A x) (B x) false)) 
+                    objects))))
+
+(define none
+  (lambda (A B)
+    (all-true (map (lambda (x) (if (A x) (not (B x)) true)) 
+                   objects))))
+
+(define notall
+  (lambda (A B)
+    (some-true (map (lambda (x) (if (A x) (not (B x)) false)) 
+                    objects))))		
+
+(define no
+  (lambda (A B)
+    (all-true (map (lambda (x) (not (A x)))	
+                   objects))))
+					
+(define (meaning word)
+  (case word
+        (('all) all)
+        (('some) some)
+        (('notall) notall)
+        (('none) none)
+		(('no) no)))
+		
+
+(define (conclusion-prior) (uniform-draw (list 'all 'some 'notall 'none 'no)))
+(define (premise-prior) (uniform-draw (list 'all 'some 'notall 'none 'no)))
+
+(define br 0.25)
+(define objects (list 'o1 'o2 'o3 'o4))
+
+(define questioner
+	 (mem (lambda (state ldepth)
+	 (enumeration-query
+	 (define premise  (premise-prior))
+
+	 premise
+	 
+	    (equal? (list A B) (apply multinomial (state-observer premise ldepth )))
+	))))
+
+
+(define state-observer (mem (lambda (premise ldepth)
+	 (enumeration-query
+   		(define A (mem (lambda (x) (flip br))))
+		(define B (mem (lambda (x) (flip br))))
+		;(define C (mem (lambda (x) (flip br))))
+		(define state (list A B))
+		
+		state
+		
+	 (if (= ldepth 0)
+		 ((meaning premise) A B)
+		(equal? premise (apply multinomial (questioner state (- ldepth 1))))		)))))
+	
+
+(define reasoner (mem (lambda (premise-one premise-two ldepth sdepth)
+  (enumeration-query
+   		(define state (apply multinomial (state-observer premise-one ldepth)))
+		(define conclusion (conclusion-prior))
+		
+		conclusion
+		
+		(if (= sdepth 0)
+;			(and 
+				((meaning conclusion) (first state) (second state))
+;				((meaning premise-one) (first state) (second state)))
+;				((meaning premise-two) (second state) (third state)))
+			(equal? (list premise-one premise-two) (apply multinomial (audience conclusion sdepth))))))))
+			
+
+(define audience (mem (lambda (conclusion sdepth)
+	(enumeration-query 
+		(define premise-one (premise-prior))
+		(define premise-two (premise-prior))
+		
+		(list premise-one premise-two)
+		
+		(equal? conclusion (apply multinomial (reasoner premise-one premise-two (- sdepth 1))))))))
+		
+(state-observer 'all 1)
+	
