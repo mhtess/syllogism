@@ -47,7 +47,7 @@
 
 \begin{document}
 
-\title{Some arguments are probably valid: Reason and language in syllogisms}
+\title{Some arguments are probably valid: Reason and conversation in syllogisms}
  
 \author{{\large \bf Michael H. Tessler, Noah D. Goodman } \\
 	\{mtessler, ngoodman\}@stanford.edu \\
@@ -108,7 +108,7 @@ Situations are composed of $n$ objects:
 \end{lstlisting}
 %\lstinline{(define objects (list 'o1 'o2 ...))}. 
 (Ellipses indicate omissions for brevity, otherwise models are specified via runnable Church code.)
-Properties of these objects are represented by functions from objects to the property value. We assume properties are Boolean and because we assume no \emph{a priori} information about the meaning of the properties they are determined independently:
+Properties of these objects are represented by functions from objects to the property value. We assume properties are Boolean. We assume no \emph{a priori} information about the meaning of the properties and so they are determined independently:
 \begin{lstlisting}
 (define A (mem (lambda (x) (flip br))))
 (define B (mem (lambda (x) (flip br))))
@@ -148,7 +148,7 @@ Here the helper function \lstinline{all-true} simply checks that all elements of
 
 \red{existential presuposiotion?}
 
-The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over worlds into a posterior belief distribution. For syllogistic reasoning we are interested not in the posterior distribution over situations directly, but the distribution on true conclusions that this implies. In Church this looks like:
+The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over worlds into a posterior belief distribution. For syllogistic reasoning we are interested not in the posterior distribution over situations directly, but the distribution on true conclusions that these situations imply. In Church this looks like:
 \begin{lstlisting}
 (query
  (define objects (list �o1 �o2 ... �on)) 
@@ -163,7 +163,7 @@ The key observation to connect these truth-functional meanings of quantifier exp
       (premise-one A B)
       (premise-two B C)))
 \end{lstlisting}
-We assume that the prior distribution over conclusions (and premises, below) is uniform. \red{right?}
+We assume that the prior distribution over conclusions (and premises, below) is uniform.
 
 %The Conditional Semantics model treats the premises of a syllogism as evidence by which to update its belief prior over propositions (which are now potential conclusions). This update rule we take to be probabilistic conditioning. Thus, we get a posterior distribution of propositions, conditioned on premises being true. This has the nice feature of returning a degree of belief in each of the possible conclusions for every syllogism. Using this, we can test the hypothesis that reasoners in syllogistic reasoning tasks are essentially drawing samples from the posterior distribution of the conclusion conditioned on the premises (so-called ``posterior matching") \cite{Griffiths2006}.
 %
@@ -186,12 +186,27 @@ We have suggested viewing syllogistic reasoning as a case of communication, and 
 Natural language pragmatics could enter in two places in the above model: premise interpretation and conclusion production. 
 We first address pragmatic production, or choice of conclusion first.
 
-Following the Rational Speech Act theory \cite{Goodman2013,Frank2012a} we imagine a reasoner who chooses the conclusions which are more likely to convey to a listener her private information---in this case the premises. That is we imagine that the reasoner treats the conclusion as a message chosen for a listener who lacks the premises (or perhaps lacks only the ability to reason form premises to conclusions).
-This listener can be thought of concretely as the (rather naive) person evaluating the participant's responses. In the original Rational Speech Act model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the listener hears the conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction turns out to be important as the reasoner does not observe a situation directly but rather constructs situations consistent with the premises. 
+Following the Rational Speech Act theory \cite{Goodman2013,Frank2012a} we imagine a reasoner who chooses the conclusions which are more likely to convey to a listener information about which only the speaker has access---in this case the premises. That is we imagine that the reasoner treats the conclusion as a message chosen for a listener who lacks the premises (or perhaps lacks only the ability to reason form premises to conclusions).
+This listener can be thought of concretely as the (rather naive) person evaluating the participant's responses. In the original Rational Speech Act model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the conclusion-listener hears a conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction turns out to be important as the reasoner does not observe a situation directly but rather constructs situations consistent with the premises. 
+
+Pragmatics may enter into syllogistic reasoning also in the interpretation of the premises by the reasoner. It is known that standalone Gricean implicatures (for instance ``some'' implies ``not all'') do a poor job that account for reasoning with syllogisms \cite{Roberts2001}. Preliminary analyses with a standard Gricean-listener model in this framework is consistent with this account. 
+
+Alternatively, a reasoner may consider the premises in a wider, conversational setting: she may ask herself why the experimenter chose to give these premises, as opposed to alternative utterances. For this we consider the implicit question addressed by interlocutors in a conversation -- the Question Under Discussion, or QUD \cite{Roberts2004QUD}. In a syllogistic conversation, the QUD is actually quite explicit -- what is the relationship between A \& C (the end terms)?
+
+In the model, the \lstinline{reasoner} considers a \lstinline{premise-speaker} who is selecting premises according to the conclusion the literal \lstinline{reasoner} is likely to draw. It is clear now that the \lstinline{premise-speaker} and \lstinline{conclusion-judger} are both tasked with selecting premises based on a conclusion as input. The only difference is that the \lstinline{premise-speaker} is grounded in the premises being true while the \lstinline{conclusion-judger} is grounded in the conclusion being true. Because of this, we formalize the two in a single function -- the \lstinline{questioner}.
 
 \begin{lstlisting}
 
-(define (reasoner premise-one premise-two depth)
+(define (conclusion-listener conclusion N_depth M_depth)
+  (query 
+    (define premise-one (premise-prior))
+    (define premise-two (premise-prior))
+    
+    (list premise-one premise-two)
+    
+    (equal? conclusion (reasoner premise-one premise-two N_depth M_depth))))
+
+(define (reasoner premise-one premise-two N_depth M_depth)
   (query 
     (define objects (list �o1 �o2 ... �on)) 
     ...define A,B,C...
@@ -200,25 +215,18 @@ This listener can be thought of concretely as the (rather naive) person evaluati
  
     conclusion
     
-    (if (= depth 0)
-      (and (conclusion A C) 
-        (premise-one A B)
-        (premise-two B C))
-      (equal? (list premise-one premise-two) (listener conclusion depth)))))
-       
-(define (listener conclusion depth)
-  (query 
-    (define premise-one (premise-prior))
-    (define premise-two (premise-prior))
-    
-    (list premise-one premise-two)
-    
-    (equal? conclusion (reasoner premise-one premise-two (- depth 1)))))
+    (and (if (= N_depth 0)
+    		 (and (premise-one A B)
+                  (premise-two B C))
+      		 (equal? (list premise-one premise-two) (questioner conclusion (- N_depth 1) M_depth)))
+          (if (= M_depth 0)
+              (conclusion A C)
+              (equal? (list premise-one premise-two) (questioner conclusion N_depth (- 1 M_depth)))))))
+
 \end{lstlisting}
-In this paper we fix \lstinline{depth} to 2.
+The \lstinline{reasoner} and \lstinline{questioner} functions produce a utility distribution over conclusions and premises, respectively. A conclusion or premises are then drawn from these distributions according to a softmax decision rule that describes an approximately rational planner \cite{suttonbarto98}.
 
-\red{alpha}
-
+Using this model, we can investigate the complementary influences of pragmatic interpretation of premises and production of conclusions. 
 
 %addresses the problem of language understanding as that of a speaker trying to convey information about a world or situation that the speaker has observed \cite{Goodman2013,Frank2012a}. The speaker draws on common-ground of communicative goals to maximize information content of a given utterance. In particular, choosing an utterance in proportion to the likelihood of a listener inferring the situations about which the speaker wishes to convey information. In turn, a listener considers situations in which the given utterance heard is not only true but would be chosen to disambiguate amongst multiple consistent situations by an informatve speaker. This results in the canonical ``scalar implicature" wherein the literal meaning of ``{\em some} of the apples are red" is enriched to communicate ``some {\em but not all} of the apples are red".
 %
@@ -239,31 +247,31 @@ In this paper we fix \lstinline{depth} to 2.
 %This illustrates one of the issues with the conditional semantics model: it is too literal. The model computes the probability of the conclusion conditioned on the premises being true. For logically valid syllogistic conclusion, this probability is equal to 1. In particular, for any syllogism for which one of the universal quantifiers is valid (i.e. {\emph all} and {\emph none}), the particular quantifier (i.e.{\emph some} and {\emph not all}, respectively) will also be valid. Human reasoners show a clear preference for conclusions using universal quantifiers (all and none) in these cases. 
 %
 %
-
-Pragmatics may enter into syllogistic reasoning also in the interpretation of the premises by the reasoner: she may ask herself why the experimenter chose to give these premises, as opposed to alternative utterances. 
-Preliminary analyses suggest that standard Gricean implicatures (for instance ``some'' implies ``not all'') have a minimal additional effect on model predictions. This is consistent with other empirical findings which set out to test this question directly \cite{??}. 
-However we speculate that other important pragmatic effects may be important for the interpretation of the premises: existential presupposition and relevance of the middle term.
 %
-For the current initial exploration we evaluate these effects by building them into the prior distribution and literal semantics for simplicity \red{(which is lame)}.
 %
-Existential presupposition, a notion which goes back to Aristotle, is simply the observation that it is inconsistent to say ``All A are B'' if there are no objects with property A (and similarly for other quantifiers). \red{check with model..} We can simply add this to the literal meaning (the definition) of each quantifier. \red{cf pragmatic alternative ``No As''.}
-
-A second potential interpretation effect comes from the following question: In what natural setting would a reasonable person produce a syllogistic  argument? 
-Why would anyone ever go through the hassle of uttering two sentences which do not convey the totality of what is intended to be conveyed? 
-We suggest this is often due to an asymmetry among the three relations (i.e. A-B, B-C, C-A): A is more directly related to B that to C, etc.
-If this is the situation under which someone would bother to utter syllogistic premises, then the reasoner should assume this to be the the case in reasoning about the syllogism.
-%We posit that the A-B \& B-C relations are weighted more strongly than the A-C relationship, possibly owing to common ground of those relationships. In some way, A-C is unexpected, or somewhat unbelievable. If it weren't, there would be no reason to work through the syllogism. 
-%The syllogism was invented as a tool of argument, to convince others. Nobody needs convincing that ``Socrates is mortal". 
-We capture this intuition, by introducing dependence into the prior between A \& B, and B \& C:
-% a small dependency into the prior such that A \& C are more likely when B is present and less likely when B is absent. 
- \begin{lstlisting}
-(define B (mem (lambda (x) (flip br))))
-(define A (mem (lambda (x) 
-                 (flip (if (B x) (+ br df) (- br df))))))
-(define C (mem (lambda (x) 
-                 (flip (if (B x) (+ br df) (- br df))))))
-\end{lstlisting}
-In our example from the beginning, this means that a person being out of the office for weeks is less likely if they don't have the flu and more likely if they do have the flu. 
+%Preliminary analyses suggest that standard Gricean implicatures (for instance ``some'' implies ``not all'') have a minimal additional effect on model predictions. This is consistent with other empirical findings which set out to test this question directly \cite{??}. 
+%However we speculate that other important pragmatic effects may be important for the interpretation of the premises: existential presupposition and relevance of the middle term.
+%%
+%For the current initial exploration we evaluate these effects by building them into the prior distribution and literal semantics for simplicity \red{(which is lame)}.
+%%
+%Existential presupposition, a notion which goes back to Aristotle, is simply the observation that it is inconsistent to say ``All A are B'' if there are no objects with property A (and similarly for other quantifiers). \red{check with model..} We can simply add this to the literal meaning (the definition) of each quantifier. \red{cf pragmatic alternative ``No As''.}
+%
+%A second potential interpretation effect comes from the following question: In what natural setting would a reasonable person produce a syllogistic  argument? 
+%Why would anyone ever go through the hassle of uttering two sentences which do not convey the totality of what is intended to be conveyed? 
+%We suggest this is often due to an asymmetry among the three relations (i.e. A-B, B-C, C-A): A is more directly related to B that to C, etc.
+%If this is the situation under which someone would bother to utter syllogistic premises, then the reasoner should assume this to be the the case in reasoning about the syllogism.
+%%We posit that the A-B \& B-C relations are weighted more strongly than the A-C relationship, possibly owing to common ground of those relationships. In some way, A-C is unexpected, or somewhat unbelievable. If it weren't, there would be no reason to work through the syllogism. 
+%%The syllogism was invented as a tool of argument, to convince others. Nobody needs convincing that ``Socrates is mortal". 
+%We capture this intuition, by introducing dependence into the prior between A \& B, and B \& C:
+%% a small dependency into the prior such that A \& C are more likely when B is present and less likely when B is absent. 
+% \begin{lstlisting}
+%(define B (mem (lambda (x) (flip br))))
+%(define A (mem (lambda (x) 
+%                 (flip (if (B x) (+ br df) (- br df))))))
+%(define C (mem (lambda (x) 
+%                 (flip (if (B x) (+ br df) (- br df))))))
+%\end{lstlisting}
+%In our example from the beginning, this means that a person being out of the office for weeks is less likely if they don't have the flu and more likely if they do have the flu. 
 
 
 \section{Results}
