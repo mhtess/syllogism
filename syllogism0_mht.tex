@@ -144,9 +144,7 @@ A quantifier (e.g. {\emph All As are Bs} is a function of two properties which d
     (all-true (map (lambda (x) (if (A x) (B x) true)) 
                    objects))))
 \end{lstlisting}
-Here the helper function \lstinline{all-true} simply checks that all elements of a list are true, the function \lstinline{map} applies the given function to each element of the list \lstinline{objects}. Similarly we can define \lstinline{some}, \lstinline{no}, \lstinline{not all} to have their standard meanings. 
-
-\red{existential presuposiotion?}
+Here the helper function \lstinline{all-true} simply checks that all elements of a list are true, the function \lstinline{map} applies the given function to each element of the list \lstinline{objects}. Similarly we can define \lstinline{some}, \lstinline{no}, \lstinline{not all} to have their standard meanings. For a first test of the model, we assume sets are non-empty, i.e. \emph{all} and \emph{none} cannot be trivially true.
 
 The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over worlds into a posterior belief distribution. For syllogistic reasoning we are interested not in the posterior distribution over situations directly, but the distribution on true conclusions that these situations imply. In Church this looks like:
 \begin{lstlisting}
@@ -180,7 +178,7 @@ We assume that the prior distribution over conclusions (and premises, below) is 
 %\end{lstlisting}
 
 
-\subsection{Conditional Pragmatics}
+\subsection{The Questioner-Reasoner Model}
 %One reason to be skeptical of mere \emph{posterior matching} in syllogistic reasoning is that language understanding and language production are central to the syllogistic task, and truth-functional semantics can only go so far. 
 We have suggested viewing syllogistic reasoning as a case of communication, and this in turn suggests that reasoning should go beyond the semantics of language, to its pragmatics.
 Natural language pragmatics could enter in two places in the above model: premise interpretation and conclusion production. 
@@ -193,7 +191,7 @@ Pragmatics may enter into syllogistic reasoning also in the interpretation of th
 
 Alternatively, a reasoner may consider the premises in a wider, conversational setting: she may ask herself why the experimenter chose to give these premises, as opposed to alternative utterances. For this we consider the implicit question addressed by interlocutors in a conversation -- the Question Under Discussion, or QUD \cite{Roberts2004QUD}. In a syllogistic conversation, the QUD is actually quite explicit -- what is the relationship between A \& C (the end terms)?
 
-In the model, the \lstinline{reasoner} considers a \lstinline{premise-speaker} who is selecting premises according to the conclusion the literal \lstinline{reasoner} is likely to draw. It is clear now that the \lstinline{premise-speaker} and \lstinline{conclusion-judger} are both tasked with selecting premises based on a conclusion as input. The only difference is that the \lstinline{premise-speaker} is grounded in the premises being true while the \lstinline{conclusion-judger} is grounded in the conclusion being true. Because of this, we formalize the two in a single function -- the \lstinline{questioner}.
+In the model, the \lstinline{reasoner} considers a \em{premise-speaker} who is selecting premises according to the conclusion the literal \em{reasoner} is likely to draw. It is apparent that the \em{premise-speaker} and \em{conclusion-judger} are both tasked with selecting premises based on a conclusion as input. The only difference is that the \em{premise-speaker} is grounded in the truth of the premises while the \em{conclusion-judger} is grounded in the conclusion being true. Because of this, we formalize the two in a single function -- the \lstinline{questioner}.
 
 \begin{lstlisting}
 
@@ -277,57 +275,65 @@ Using this model, we can investigate the complementary influences of pragmatic i
 \section{Results}
 
 %\subsection{Meta-analysis data}
-To test our model, we used data from the meta-analysis presented by \citeA{Chater1999}. These data were compiled from 5 studies on syllogistic reasoning, completed from 1978-1984. The data included percentage response for conclusions of each of the 4 quantifiers as well as ``No Valid Conclusion". We consider the production of the ``No Valid Conclusion" an aspect of the algorithmic level of analysis and leave this for future work. Some studies allowed for the conclusion to be ordered in either direction (A-C or C-A) while others restricted it to the classical ordering (C-A). Because of this, we allowed our model to draw conclusions in either order. Following the procedures of the meta-analysis, we collapsed responses across these two orderings to compare it to the data set.
+To test our model, we used data from the meta-analysis presented by \citeA{Chater1999}. These data were compiled from 5 studies on syllogistic reasoning, completed from 1978-1984. The data included percentage response for conclusions of each of the 4 quantifiers as well as ``No Valid Conclusion". We consider the production of the ``No Valid Conclusion" an aspect of the algorithmic level of analysis and leave this for future work. Some studies allowed for the conclusion to have an ordering in either direction (A-C or C-A) while others restricted it to the classical ordering (C-A). Because of this, we allowed our model to draw conclusions in either order. Following the procedures of the meta-analysis, we collapsed responses across these two orderings to compare it to the data set.
 
 \subsection{Qualitative results}
-For each model, we report the total number of syllogisms for which the model's model response is the same as for the meta-analysis. This is a qualitative assessment of the fit. 
+For each model, we report the total number of syllogisms for which the model's modal response is the same as for the meta-analysis. This is a qualitative assessment of the fit. 
 
 We first examined the prior to see if it alone accounted for human reasoning patterns. It did not (Figure \ref{fig:barplots}, column 1). Since ``not all" is the most likely conclusion to be true, the prior gets only the syllogisms with a ``Not all" modal response correct. For the meta-analysis data, this amounts to 29 out of the 64 syllogisms.
 
 \begin{figure*}
 \centering
-    \includegraphics[width=\textwidth,height=7.5cm]{fig1_multibar_luceSpeak2}
-    \caption{Five example syllogisms. 
-    [1] Conditional Semantics has no preference among equally valid conclusions; the symmetry is broken by the pragmatics model which uses includes informativity in its predictions.     
+    \includegraphics[width=\textwidth,height=8.5cm]{fig1_multibar_qrm_alpha2}
+    \caption{Six example syllogisms. 
+    [1] Conditional Semantics has no preference among equally valid conclusions; the symmetry is broken by the pragmatics models which uses includes informativity either in its understanding or in its productions.     
     [2] Semantics alone captures the modal response and pragmatics enriches the quantitative fit.     
-    [3] The modal response is not as likely in the Semantics model but is wildly more informative. [4] The models are able to capture multiple preferred conclusions. [5] Models do poorly in matching subjects' responses in an invalid syllogism.}
+    [3] The modal response is not as likely in the Semantics model but is a more informative conclusion. [4] Relatively uninformative premises suggest \emph{Some} is the most likely interpretation. [5] Models are able to capture multiple preferred conclusions. [6] Models do poorly in matching subjects' responses in an invalid syllogism.}
   \label{fig:barplots}
 \end{figure*}
 
 
 When we condition on the premises being true, the model matches people's maximum judgments on 37 of the 64 syllogisms. The 29 syllogisms for which ``not all" was the modal response are qualitatively unaffected i.e. the Conditional Semantics model matches these responses. As well, the model matches 8 syllogisms for which ``some" and ``none" are favored (Figure \ref{fig:barplots}, column 2, see e.g. [2]). 
 
-Finally, we introduce pragmatics into the model in part to be able to distinguish among equally ``certain" conclusions (e.g. Figure \ref{fig:barplots}, [1]). The model selects not only conclusions likely to be true, but informative conclusions (e.g. Figure \ref{fig:barplots},[3]). The model now matches 44 out of 64 modal responses. 
+Finally, we introduce pragmatics into the model in both the premise interpretation and the conclusion production sides. We consider first production. The model is able to distinguish between equally valid conclusions on the basis of informativity (e.g. Figure \ref{fig:barplots}, [1], column 4). The model selects not only conclusions likely to be true, but informative conclusions (e.g. Figure \ref{fig:barplots},[3]). The model now matches 41 out of 64 modal responses. 
 
-In addition to capturing many of the modal responses, the model is able to accomodate more than one plausible conclusion. Example [4] in Figure \ref{fig:barplots} highlights one such example. This is a syllogism with a valid conclusion but one which people find it difficult to draw. The Conditional Semantics model tells us why. In many of the possible situations in which the premises are true, a \emph{none} conclusion is true. In addition, \emph{none} is relatively more informative than \emph{not all} and so the Conditional Pragmatics enforces this symmetry. Notice how this is different from Example [3], in which \emph{all} is less likely than  \emph{some} after conditioning\footnote{This may seem surprising as the obvious response is \emph{all}. This is the case because there are two \emph{some} responses which are valid and only one \emph{all} response}. In this example, \emph{all} gets pragmatically strengthened over and above \emph{some} due \emph{all}'s much higher relatively informativeness.  
+In addition to capturing many of the modal responses, the model is able to accommodate more than one plausible conclusion. Example [5] in Figure \ref{fig:barplots} highlights one such example. This is a syllogism with a valid conclusion but one which people find it difficult to draw. The Conditional Semantics model tells us why. In many of the possible situations in which the premises are true, a \emph{none} conclusion is true. In addition, \emph{none} is relatively more informative than the valid conclusion -- \emph{not all} -- and so the Questioner-Reasoner Models enforces this symmetry. Notice how this is different from Example [3], in which \emph{all} is less likely than \emph{some} after conditioning\footnote{This may seem surprising as the obvious response is \emph{all}. This is the case because there are two \emph{some} responses which are valid and only one \emph{all} response}. In this example, \emph{all} gets pragmatically strengthened over and above \emph{some} due \emph{all}'s much higher relatively informativeness.  
 
-Still, there are many syllogisms for which reasoning patterns are not captured by the model. A large subset of these are syllogisms which use two negative quantifiers (\emph{not all} or \emph{none}). These problems, in a way, are underconstrained in terms of the situations consistent with the premises. For this reason, the models' predictions do not differ appreciably from the prior (\ref{fig:barplots} [5]).
+Conversational pragmatics can enrich the meaning of the premises given to the reasoner. This is the Questioner 1 model. The pragmatics comes in by the reasoner considering -- ``why has the questioner produced these premises given that he may have produced a variety of others?" As a first pass, we considered the alternatives to be the set of all premises of the same term orderings. In the syllogism literature, this ordering is referred to as a syllogism's \emph{figure}. This is tantamount to considering the space of possible quantifiers, keeping the structure of the sentence fixed. The reasoner does not consider these alternatives with respect to the full state of the world (i.e. the sets A, B and C) but rather only with respect to the QUD (i.e. the sets A and C). 
+
+The Questioner 1 model maximally-prefers the modal response of subjects for 42 out of 64 syllogisms. It picks up on some of the very complex phenomena present in syllogistic reasoning. Example [4] is one such case. The premises considered literally are relatively uninformative. The CS model is very similar to the prior (columns 1 \& 2). In this setup, the Reasoner 1 model selects the most informative answer -- \emph{all}. The Questioner 1 model, on the contrary, considers the question ``why would the questioner have given these premises" and concludes \emph{some}. Indeed, this is how people reason in this example. 
+
+Still, there are many syllogisms for which reasoning patterns are not captured by the model. A large subset of these are syllogisms which use two negative quantifiers (\emph{not all} or \emph{none}). These problems, in a way, are underconstrained in terms of the situations consistent with the premises. For this reason, the models' predictions do not differ appreciably from the prior (\ref{fig:barplots} [6]).
 
 \subsection{Model fit}
 
 To assess our models' quantitative fits we compute compute correlations across all 256 data points (64 syllogisms x 4 conclusions).
 
-The prior's predictions are the same for all syllogisms and the overall fit is also accordingly poor (r = .36) (Figure \ref{fig:megaScatter}, row 2, column 1).  After conditioning on the truth of the premises, the model is able to make graded responses for each of the syllogisms. These responses are a reflection of the types of situations consistent with the premises. The overall correlation is appreciably higher (r=0.64 (Figure \ref{fig:megaScatter}, row 2, column 2)). However, among valid conclusions (squares in Figure \ref{fig:megaScatter}) the fit is terrible (r=0.05). This is a direct consequence of the model's literalness. Among valid conclusions, the model has no preference because each conclusion is true in every possible situation.
+The prior's predictions are the same for all syllogisms and the overall fit is also accordingly poor (r = .36) (Figure \ref{fig:megaScatter}, row 2, column 1).  After conditioning on the truth of the premises, the model is able to make graded responses for each of the syllogisms. These responses are a reflection of the types of situations consistent with the premises. The overall correlation is appreciably higher (r=0.64 (Figure \ref{fig:megaScatter}, row 2, column 2)). However, among valid conclusions (squares in Figure \ref{fig:megaScatter}) the fit is terrible (r=-0.20). This is a direct consequence of the model's literalness. The model has no preference because each valid conclusion is true in every possible situation.
 
-This symmetry is broken by using pragmatic reasoning (Figure \ref{fig:megaScatter}, row 2, column 3). The overall correlation again increases (r = 0.77). The difference is especially striking for the valid syllogisms (r = 0.85). We compared these results to those found when using a uniform prior (\ref{fig:megaScatter}, row 1)) and found the overall fit much better with the binomial, which invokes the principle of rarity. 
+This symmetry is broken by using pragmatic reasoning (Figure \ref{fig:megaScatter}, columns 3-5). The reasoner who interprets the premises as coming from a pragmatic speaker provides a better fit to the data (column 4, r = 0.69). As well, the model is able to make graded responses among valid conclusions -- ``the questioner meant for me to infer ..." -- (r = 0.62). The reasoner who takes the premises at face value but who produces conclusions to be informative provides an even better fit to the data (column 4, r = 0.75). As well, the fit among valid conclusions -- ``\emph{all} is a better conclusion than \emph{some}" -- is even stronger (r = 0.82). 
+
+The Questioner-Reasoner model which reasons pragmatically on both the production and the interpretation does not model the data any better than the individual processes. This joint model selects the modal response on 41 out of the 64 syllogisms and provides a worse fir than either of the individual QR models (r = 0.66). We leave for later work the proper way of combining information between the avenues of pragmatic enrichment.
+
+
+%We compared these results to those found when using a uniform prior (\ref{fig:megaScatter}, row 1)) and found the overall fit much better with the binomial, which invokes the principle of rarity. 
 
 \begin{figure*}[t!] %[htp]
 \centering
 	\subfigure
 		\centering
-  \includegraphics[width=\textwidth,height=12.5cm]{fig2_multiScatter_unif-bin-2m40br_n6_alphabefore2}
-  \caption{Human subject percentage endorsement vs. model fits for 3 different priors. 
-  Columns (from L to R): predictions based only on the prior, Conditional Semantics models, and Conditional Pragmatics models.
-  Rows (from top to bottom): uniform prior, binomial prior, correlated prior (see text).}
+  \includegraphics[width=\textwidth,height=4cm]{fig2_multiScatter_qr5_n6_alpha2}
+  \caption{Human subject percentage endorsement vs. model fits.
+  Columns (from L to R): predictions based only on the prior, Conditional Semantics models, and Questioner-Reasoner models. The number {0,1} next to questioner and reasoner denotes the depth of recursion for interpretation of premises and production of conclusions, respectively.}
   \label{fig:megaScatter}
 
 \end{figure*}
 
-\subsection{Dependency}
+%\subsection{Dependency}
 
-The inspiration for this model comes from the idea that syllogistic reasoning can not be disentangled from language understanding. In particular, natural language semantics is insufficient to explain the variability in such a data set. We argue that understanding conversational pragmatics is necessary to understanding how people reason with syllogistic arguments. We have found that the meanings of quantifiers are important insofar as \emph{some} might imply \emph{not all} and so people prefer to conclude \emph{all} when it is warranted. 
 
-Using the correlated prior, the Conditional Semantics model gets 45 out of 64 modal responses. The overall fit is also improved, r = 0.75 (Figure \ref{fig:megaScatter}, row 3). The Conditional Pragmatics model does better as well, predicted the modal response for 52 syllogisms. Additionally, the quantitative fit is high (r = 0.85). Among valid syllogisms, it is correspondingly higher as well (r = 0.88). 
+
+%Using the correlated prior, the Conditional Semantics model gets 45 out of 64 modal responses. The overall fit is also improved, r = 0.75 (Figure \ref{fig:megaScatter}, row 3). The Conditional Pragmatics model does better as well, predicted the modal response for 52 syllogisms. Additionally, the quantitative fit is high (r = 0.85). Among valid syllogisms, it is correspondingly higher as well (r = 0.88). 
 
 
 \section{Most and few}
@@ -339,17 +345,18 @@ We compare our model predictions to two studies carried out by Chater \& Oaksfor
 The set of all possible syllogisms with 6 quantifiers contains 144 questions.  The authors divided these into two experiments to avoid subject fatigue. Experiment One consisted of the \emph{all},\emph{not all},\emph{most}, and \emph{few} quantifiers. Experiment Two used \emph{most},\emph{few},\emph{some}, and \emph{none}. 
 
 \begin{figure*}[htp]
-  \includegraphics[width=0.51\textwidth,height=4.5cm]{fig3a_multiScatter_AMFO_n6_alphabefore1}
-    \includegraphics[width=0.51\textwidth,height=4.5cm]{fig3b_multiScatter_MFIE_n6_alphabefore1}
+  \includegraphics[width=0.51\textwidth,height=4cm]{fig3a_multiScatter_AMFO_n6_alpha2}
+    \includegraphics[width=0.51\textwidth,height=4cm]{fig3b_multiScatter_MFIE_n6_alpha2}
       \caption{Human subject percentage endorsement vs. model fits for 2 experiments using generalized quantifiers. Experiment 1 (left) used the quantifiers \{\emph{all}, \emph{most}, \emph{few}, \emph{not all}\}. Experiment 2 (right) used the quantifiers \{\emph{most}, \emph{few}, \emph{some}, \emph{not all}\}.}
   \label{fig:mfScatter}
 \end{figure*}
 
 
-We find good correspondence between the experimental data and the model, even without doing any parameter fitting. The fit is better for the experiment using \emph{all},\emph{most},\emph{few}, and \emph{not all} (r = 0.80) than for the experiment using \emph{most},\emph{few},\emph{some}, and \emph{none} (r = 0.68). The same was true for the Probability Heuristics Model (r = 0.94 vs r = 0.63). Overall, the proportion of \emph{no valid conclusion} responses, which we do not model, was much higher in Experiment 2 than in Experiment 1. Thus, this data set may well contain more noise than the others. 
+We find good correspondence between the experimental data and the model, even without doing any further parameter fitting (Figure \ref{fig:mfScatter}). In Experiment 1, the quantifiers \emph{all},\emph{most},\emph{few}, and \emph{not all} were used. The CS model selected the modal response for 45 out of 64 syllogisms and had a good quantitative fit (r = 0.79). Questioner-1 selected 48 modal responses and had an even better quantitative fit (r = 0.81). Reasoner-1 selected 50 modal responses and had a slightly worse fit (r = 0.76). 
 
+In Experiment 2, the quantifiers \emph{most},\emph{few},\emph{some}, and \emph{none} were used. The CS model selected the modal response for 34 out of 64 syllogisms and had a correlation of r = 0.63. Questioner-1 selected 43 modal responses with  r = 0.63. Reasoner-1 selected 44 modal responses and had a slightly worse fit r = 0.60. 
 
-
+The fit is appreciably better for Experiment 1 than for Experiment 2. The same was true for the Probability Heuristics Model (r = 0.94 vs r = 0.63). Overall, the proportion of \emph{no valid conclusion} responses, which we do not model, was much higher in Experiment 2 than in Experiment 1. This data set may well contain more noise in the measures we attempt to model than the others discussed in this article. 
 
 \section{Relationship to previous theories}
 
@@ -394,19 +401,26 @@ The PHM relies on a number of {\em generation} and {\em test} heuristics to prod
 
 \section{Discussion}
 
-The theoretical partitioning described above places the Conditional Semantics and Pragmatics models in a previously unexplored quadrant of the two-dimensional theoretical space described: we consider reasoning over concrete situations and situations to be constructed probabilistically by sampling.
+The theoretical partitioning described above places the Questioner-Reasoner models in a previously unexplored quadrant of the two-dimensional theoretical space described: we consider reasoning over concrete situations and situations to be constructed probabilistically by sampling.
 
-We have presented a formal model of syllogistic reasoning based on the \emph{rational speech-act} framework. We have shown that in this model, reasoners construct mental situations by sampling, and reasoning over these situations, much like has been described in the Mental Models literature. Unlike Mental Models, however, our model is inherently probabilistic and thus assumes reasoners are in some way gaging degrees of plausibility in syllogistic reasoning tasks. Further, the Conditional Semantics model is fundamentally quantitative, and thus can be considered an elaboration of the Mental Models theory.
+We have presented a formal model of syllogistic reasoning based on the \emph{Rational Speech-act} framework. We have shown that in this model, reasoners construct mental situations by sampling, and reasoning over these situations, much like has been described in the Mental Models literature. Unlike Mental Models, however, our model is inherently probabilistic and thus assumes reasoners are in some way gaging degrees of plausibility in syllogistic reasoning tasks. Further, the Conditional Semantics model is fundamentally quantitative, and thus can be considered an elaboration of the Mental Models theory.
 
-This is early work and we have found promising evidence, both qualitative and quantitative, that this framework will allow for a more explicit understanding of syllogistic reasoning. As well, this model is flexible enough to capture some of the variability in reasoning data using generalized quantifiers. We tested the model assuming a naive threshold of 0.50, such that \emph{most} is true if more than half is satisfied. We think this is an oversimplification and will examine more context-sensitive formulations in future work.
+The inspiration for this model comes from the idea that syllogistic reasoning can not be disentangled from language understanding. In particular, natural language semantics is insufficient to explain the variability in such a data set. We argue that understanding conversational pragmatics is necessary to understanding how people reason with syllogistic arguments. We have found that the meanings of quantifiers are important insofar as \emph{some} might imply \emph{not all} and so people prefer to conclude \emph{all} when it is warranted. 
 
-In this framework, a syllogism is read as an argument given as a part of discourse between people. Indeed, this is how syllogisms were used in the time of Aristotle and in the long tradition of scholastic philosophers. Fundamentally, syllogisms are a tool used to convince others. The results of the pragmatic reasoning model shed light on the idea that human reasoning behavior in the syllogistic task is as much reason as it is human. Gaging degrees of plausibility alone is not sufficient. A listener needs to be posited at the end of the line so that a conclusion makes sense; so that a conclusion is convincing!
+This is early work and we have found promising evidence, both qualitative and quantitative, that this framework will allow for a more explicit understanding of syllogistic reasoning. As well, this model is flexible enough to capture some of the variability in reasoning data using generalized quantifiers. We tested the model assuming a naive threshold of 0.50, such that \emph{most} is true if more than half is satisfied. We don't believe these quantifiers are modeled perfectly in this way, and we will explore more context-sensitive formulations in future work.
 
-If one accepts that the purpose of a syllogism is to convince, a natural question arises. Why not just assert ``Some of my colleagues won't be at work for weeks" from the get-go? Why go through the trouble of laying out premises and having a person draw the conclusion? Arguments are used to persuade, and not all assertions are equally believable \emph{a priori}. The reason premises are presented in this way is that there is no reason for me to believe some of my colleagues will be out of work for weeks. That almost never happens, except around Christmas. And so the conclusion is not obvious, and the premises are an alternative route to persuasion. If we accept the premises, we are left with no choice but to draw the conclusion.
+In this framework, a syllogism is read as an argument given as a part of discourse between people. Indeed, this is how syllogisms were used in the time of Aristotle and in the long tradition of scholastic philosophers. Fundamentally, syllogisms are a tool used to convince others. The results of the Questioner-Reasoner models shed light on the idea that human reasoning behavior in the syllogistic task is as much reason as it is human. Gaging degrees of plausibility alone is not sufficient. A listener needs to be posited at the end of the line so that a conclusion makes sense; so that a conclusion is convincing!
 
-We set out to explore this intuition by seeing if the middle term had special significance. The rationale is that if someone is to go through the trouble of mentioning the middle term, it must allow them to assert something that they wouldn't be able to assert otherwise. In other words, we speculate the \emph{a priori} probability of A \& C is taken to be relatively low, but may become higher if B is observed. In this way, A \& C become correlated via B. This is akin to saying that the end terms have a special relationship via the middle term. It is no coincidence that the middle term appears in both premises and it is no coincidence the premises appear at all. 
+If one accepts that the purpose of a syllogism is to convince, a natural question arises. Why not just assert ``Some of my colleagues won't be at work for weeks" from the get-go? Why go through the trouble of laying out premises and having a person draw the conclusion? Arguments are used to persuade, and not all assertions are equally believable \emph{a priori}. The reason premises are presented in this way is that there is no reason to believe some  colleagues will be out of work for weeks. That only happens around Christmas. And so the conclusion is not obvious, and the premises are an alternative route to persuasion. If we accept the premises, we are left with no choice but to draw the conclusion.
 
-We modified the naive binomial prior to induce a slight correlation between A \& C via B. Overall, the model matches a few more modal responses and provides a better quantitative fit to the data. However, we do not assert that the probability of co-occurrence to be \emph{a priori} unlikely in the case of syllogistic reasoning tasks. Many of the experimental materials in the meta-analysis data were well controlled for semantic content. Rather, we see this as arising from conversational pragmatics. It is a future direction of this work to develop a formal model of this phenomenon.
+We set out to explore this intuition by seeing if considering alternatives in the interpretation of premises would better account for the data than a literal interpretation of premises. We did this not in the context of the true state of the world but with respect to the QUD. Thus, pragmatic interpretation is different from standard Gricean implicatures. We found this to be important in capturing human reasoning patterns.
+
+The two Questioner-Reasoner models presented interact in complex and yet not well understood ways. Individually, they account for much of the data, and in non-overlapping ways. The number of syllogisms whose modal response was not predicted by either model is a mere 9 (i.e. 55 out of 64 syllogisms were accounted for by one of the models). This suggests some complex interaction between pragmatic interpretation of premises and production of conclusions is at work. 
+
+
+%The rationale is that if someone is to go through the trouble of mentioning the middle term, it must allow them to assert something that they wouldn't be able to assert otherwise. In other words, we speculate the \emph{a priori} probability of A \& C is taken to be relatively low, but may become higher if B is observed. In this way, A \& C become correlated via B. This is akin to saying that the end terms have a special relationship via the middle term. It is no coincidence that the middle term appears in both premises and it is no coincidence the premises appear at all. 
+
+%We modified the naive binomial prior to induce a slight correlation between A \& C via B. Overall, the model matches a few more modal responses and provides a better quantitative fit to the data. However, we do not assert that the probability of co-occurrence to be \emph{a priori} unlikely in the case of syllogistic reasoning tasks. Many of the experimental materials in the meta-analysis data were well controlled for semantic content. Rather, we see this as arising from conversational pragmatics. It is a future direction of this work to develop a formal model of this phenomenon.
 
 %\end{figure*}}
 %\subfigure[prior]{ %
