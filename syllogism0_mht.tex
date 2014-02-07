@@ -74,7 +74,7 @@ Or do you respond
  ``I hope your officemates are not out for weeks and I hope you don't get sick either."
  The first response is true, but does not go beyond the premises; the second response attempts to go beyond the premises by strict classical logic, but fails; the final response goes beyond the premises, to offer a conclusion which is probably useful and probably true.
 % 
-This cartoon illustrates two dimensions along which cognitive theories of reasoning differ: whether the core and ideal of reasoning is deductive validity or probabilistic support, and, the natural language principles---pragmatics and semantics---for understanding reasoning. In this paper we explore a theory of syllogistic reasoning inspired by recent advances in probabilistic semantics and pragmatics.
+This cartoon illustrates two dimensions along which cognitive theories of reasoning differ: whether the core and ideal of reasoning is deductive validity or probabilistic support, and, the principles of natural language---pragmatics and semantics---for understanding reasoning. In this paper we explore a theory of syllogistic reasoning inspired by recent advances in probabilistic semantics and pragmatics.
 
 The form of the argument above resembles a syllogism: an argument with two quantifier expressions (premises) used to relate two properties (or terms) via a middle term. Fit into a formal syllogistic form, this argument would read:
 \begin{quote}
@@ -83,11 +83,11 @@ Some people out with the flu are out for weeks\\
 \end{quote}
 The full space of syllogistic arguments is derived by shuffling the term-ordering (``All A are B'' vs. ``All B are A'') and changing the quantifier (\emph{all, some, none, not all}). Most syllogisms have no valid conclusion, i.e. there is no deductive relation between A \& C determined by the premises. This is the case with the argument above. A recent meta-analysis of syllogistic reasoning tasks showed that over the population, accuracy on producing valid conclusions ranges from 90 \% to 1\% and ability to produce appropriate \emph{no valid conclusion} responses ranges from 76\% to 12\% \cite{Khemlani2012}: people are not good at drawing deductively valid conclusions.
 %
-Perhaps because of this d\'ecolage between human behavior and deductive logic, syllogistic reasoning has been a topic of considerable interest in cognitive psychology for over one hundred years \cite{storring1908}, and before that in philosophy, dating back to Aristotle. In cognitive psychology we are interested in how people reason, and syllogisms lie at the intriguing intersection of natural and formal reasoning, of language and logic. They are undoubtedly logical; indeed, they are regarded as the first formal system of logic. At the same time, they use natural language quantifiers and invite natural language conclusions; precisely pinning down the meaning and use of quantifiers has been an ongoing area of inquiry since Aristotle \cite<e.g.>{negationHorn}.
+Perhaps because of this d\'ecolage between human behavior and deductive logic, syllogistic reasoning has been a topic of considerable interest in cognitive psychology for over one hundred years \cite{storring1908}, and before that in philosophy, dating back to Aristotle. In cognitive psychology we are interested in how people reason, and syllogisms lie at the intriguing intersection of natural and formal reasoning, of language and logic. They are undoubtedly logical; indeed, syllogisms were the first and only formal system of logic for millennia. At the same time, they use natural language quantifiers and invite natural language conclusions; precisely pinning down the meaning and use of quantifiers has been an ongoing area of inquiry since Aristotle \cite<e.g.>{negationHorn}.
 
 
-Many theories of syllogistic reasoning take deduction as a given and try to explain errors as a matter of errors in the system. These error may arise from improper use of deductive rules, or biased construction of logical models. In either case, logic makes the connection to natural language semantics natural (though not central).
-On the other hand, many other kinds of reasoning have been explained via probabilistic reasoning under uncertainty. Probability provides a natural description of a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging.
+Many theories of syllogistic reasoning take deduction as a given and try to explain errors as a matter of errors in the system. These errors may arise from improper use of deductive rules, or biased construction of logical models. In either case, logic makes the connection to natural language semantics natural (though not central).
+At the same time, many other kinds of reasoning have been explained via probabilistic reasoning under uncertainty. Probability provides a natural description of a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging.
 We will suggest that combining probabilistic reasoning with formal semantics and pragmatics of natural language leads to a useful combination of these approaches, in which our knowledge describes distributions on possible situations and sentences naturally update these distributions with new information.
 In this formalism, deduction emerges as those arguments which are always true and syllogistic reasoning becomes a process of determining what is most probable, relevant, and informative.
 
@@ -98,7 +98,7 @@ In this formalism, deduction emerges as those arguments which are always true an
 %
 %We take a different path. We propose, as has been proposed before, that people are reasoning according to their {\emph everyday} mode of reasoning. {\emph Everyday} reasoning is understood as the type of reasoning that is refined for dealing with a world of uncertainty, a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging. This type of reasoning is most succinctly described in the language of probability theory. 
 
-\section{The Conditional Semantics model}
+\section{The Probabilistic Questioner-Reasoner model}
 
 Our model begins with the intuition that people reason probabilistically about situations populated by objects with properties. To represent this type of richly structured situation, we must go beyond propositional logic and its probabilistic counterpart, Bayesian networks. We instead build our model using the probabilistic programing language Church \cite{Goodman2008}, a kind of higher-order probabilistic logic, in which it is natural to describe distributions over objects and their properties. For background and details on this form of model representation, see \url{http://probprog.org}.
 
@@ -137,14 +137,14 @@ A principle of rarity that has been used for previous probabilistic models \cite
 
 
 We interpret quantifiers as truth-functional operators, consistent with standard practice in formal semantics.
-A quantifier (e.g. {\emph All As are Bs} is a function of two properties which determines a truth value by consulting the properties of the objects in the current situation. For instance:
+A quantifier (e.g. \emph{All As are Bs}) is a function of two properties which determines a truth value by consulting the properties of the objects in the current situation. For instance:
 \begin{lstlisting}
 (define all 
   (lambda (A B) 
     (all-true (map (lambda (x) (if (A x) (B x) true)) 
                    objects))))
 \end{lstlisting}
-Here the helper function \lstinline{all-true} simply checks that all elements of a list are true, the function \lstinline{map} applies the given function to each element of the list \lstinline{objects}. Similarly we can define \lstinline{some}, \lstinline{no}, \lstinline{not all} to have their standard meanings. For a first test of the model, we assume sets are non-empty, i.e. \emph{all} and \emph{none} cannot be trivially true.
+Here the helper function \lstinline{all-true} simply checks that all elements of a list are true, the function \lstinline{map} applies the given function to each element of the list \lstinline{objects}. Similarly we can define \lstinline{some}, \lstinline{no}, \lstinline{not-all} to have their standard meanings. For a first test of the model, we assume sets are non-empty, i.e. \emph{all} and \emph{none} cannot be trivially true.
 
 The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over worlds into a posterior belief distribution. For syllogistic reasoning we are interested not in the posterior distribution over situations directly, but the distribution on true conclusions that these situations imply. In Church this looks like:
 \begin{lstlisting}
@@ -178,33 +178,33 @@ We assume that the prior distribution over conclusions (and premises, below) is 
 %\end{lstlisting}
 
 
-\subsection{The Questioner-Reasoner Model}
+\subsection{Recursion and pragmatics}
 %One reason to be skeptical of mere \emph{posterior matching} in syllogistic reasoning is that language understanding and language production are central to the syllogistic task, and truth-functional semantics can only go so far. 
 We have suggested viewing syllogistic reasoning as a case of communication, and this in turn suggests that reasoning should go beyond the semantics of language, to its pragmatics.
 Natural language pragmatics could enter in two places in the above model: premise interpretation and conclusion production. 
-We first address pragmatic production, or choice of conclusion first.
+We address pragmatic production, or choice of conclusion, first.
 
-Following the Rational Speech Act theory \cite{Goodman2013,Frank2012a} we imagine a reasoner who chooses the conclusions which are more likely to convey to a listener information about which only the speaker has access---in this case the premises. That is we imagine that the reasoner treats the conclusion as a message chosen for a listener who lacks the premises (or perhaps lacks only the ability to reason form premises to conclusions).
-This listener can be thought of concretely as the (rather naive) person evaluating the participant's responses. In the original Rational Speech Act model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the conclusion-listener hears a conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction turns out to be important as the reasoner does not observe a situation directly but rather constructs situations consistent with the premises. 
+Following the Rational Speech Act theory \cite{Goodman2013,Frank2012a} we imagine a reasoner who chooses the conclusions which are more likely to convey to a listener information about which only the speaker has access---in this case, the premises. That is we imagine that the reasoner treats the conclusion as a message chosen for a listener who lacks the premises (or perhaps lacks only the ability to reason from premises to conclusions).
+This listener can be thought of concretely as the (rather naive) person evaluating the participant's responses. In the original Rational Speech Act model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the \emph{conclusion-listener} hears a conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction turns out to be important as the reasoner does not observe a situation directly but rather only constructs situations consistent with the premises. 
 
-Pragmatics may enter into syllogistic reasoning also in the interpretation of the premises by the reasoner. It is known that standalone Gricean implicatures (for instance ``some'' implies ``not all'') do a poor job that account for reasoning with syllogisms \cite{Roberts2001}. Preliminary analyses with a standard Gricean-listener model in this framework is consistent with this account. 
+Pragmatics may enter into syllogistic reasoning also in the interpretation of the premises by the reasoner. It is known that standalone Gricean implicatures (for instance ``some'' implies ``not all'') do a poor job to account for reasoning with syllogisms \cite{Roberts2001}. Preliminary analyses with a standard Gricean-listener model in this framework were consistent with this account. 
 
 Alternatively, a reasoner may consider the premises in a wider, conversational setting: she may ask herself why the experimenter chose to give these premises, as opposed to alternative utterances. For this we consider the implicit question addressed by interlocutors in a conversation -- the Question Under Discussion, or QUD \cite{Roberts2004QUD}. In a syllogistic conversation, the QUD is actually quite explicit -- what is the relationship between A \& C (the end terms)?
 
-In the model, the \lstinline{reasoner} considers a \em{premise-speaker} who is selecting premises according to the conclusion the literal \em{reasoner} is likely to draw. It is apparent that the \em{premise-speaker} and \em{conclusion-judger} are both tasked with selecting premises based on a conclusion as input. The only difference is that the \em{premise-speaker} is grounded in the truth of the premises while the \em{conclusion-judger} is grounded in the conclusion being true. Because of this, we formalize the two in a single function -- the \lstinline{questioner}.
+In the model, the \lstinline{reasoner} considers a \emph{premise-speaker} who is selecting premises according to the conclusion the literal \emph{reasoner} is likely to draw. It is apparent that the \emph{conclusion-judger} described above and the \emph{premise-speaker} are each tasked with selecting premises based on a conclusion as input. The only difference is that the \emph{premise-speaker} is grounded in the truth of the premises while the \emph{conclusion-judger} is grounded in the conclusion being true. Because of this, we can formalize the two into a single function -- the \lstinline{questioner}.
 
 \begin{lstlisting}
 
-(define (conclusion-listener conclusion N_depth M_depth)
+(define (questioner conclusion Q_depth R_depth)
   (query 
     (define premise-one (premise-prior))
     (define premise-two (premise-prior))
     
     (list premise-one premise-two)
     
-    (equal? conclusion (reasoner premise-one premise-two N_depth M_depth))))
+    (equal? conclusion (reasoner premise-one premise-two Q_depth R_depth))))
 
-(define (reasoner premise-one premise-two N_depth M_depth)
+(define (reasoner premise-one premise-two Q_depth R_depth)
   (query 
     (define objects (list �o1 �o2 ... �on)) 
     ...define A,B,C...
@@ -215,16 +215,16 @@ In the model, the \lstinline{reasoner} considers a \em{premise-speaker} who is s
     
     (and (if (= N_depth 0)
     		 (and (premise-one A B)
-                  (premise-two B C))
-      		 (equal? (list premise-one premise-two) (questioner conclusion (- N_depth 1) M_depth)))
+             (premise-two B C))
+      		 (equal? (list premise-one premise-two) (questioner conclusion (- Q_depth 1) R_depth)))
           (if (= M_depth 0)
               (conclusion A C)
-              (equal? (list premise-one premise-two) (questioner conclusion N_depth (- 1 M_depth)))))))
+              (equal? (list premise-one premise-two) (questioner conclusion Q_depth (- 1 R_depth)))))))
 
 \end{lstlisting}
-The \lstinline{reasoner} and \lstinline{questioner} functions produce a utility distribution over conclusions and premises, respectively. A conclusion or premises are then drawn from these distributions according to a softmax decision rule that describes an approximately rational planner \cite{suttonbarto98}.
+The \lstinline{reasoner} and \lstinline{questioner} functions produce a utility distribution over conclusions and premises, respectively. Conclusions or premises are then drawn from these distributions according to a softmax decision rule that describes an approximately rational planner \cite{suttonbarto98}. \lstinline{R_depth} and \lstinline{Q_depth} refer to the depth of recursion for each of these conditioning statements. As \lstinline{R_depth} increases, the conclusion becomes more informative. As \lstinline{Q_depth} increases, the premises becomes more informative. When both are set to 0, the model collapses to produce the $\Pr$(conclusion $\arrowvert$ premises). We refer to this model as the literal reasoner going forward. 
 
-Using this model, we can investigate the complementary influences of pragmatic interpretation of premises and production of conclusions. 
+Using this framework, we can investigate the complementary influences of pragmatic interpretation of premises and production of conclusions. 
 
 %addresses the problem of language understanding as that of a speaker trying to convey information about a world or situation that the speaker has observed \cite{Goodman2013,Frank2012a}. The speaker draws on common-ground of communicative goals to maximize information content of a given utterance. In particular, choosing an utterance in proportion to the likelihood of a listener inferring the situations about which the speaker wishes to convey information. In turn, a listener considers situations in which the given utterance heard is not only true but would be chosen to disambiguate amongst multiple consistent situations by an informatve speaker. This results in the canonical ``scalar implicature" wherein the literal meaning of ``{\em some} of the apples are red" is enriched to communicate ``some {\em but not all} of the apples are red".
 %
