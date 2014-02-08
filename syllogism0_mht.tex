@@ -102,7 +102,7 @@ In this formalism, deduction emerges as those arguments which are always true an
 
 \section{The Probabilistic Questioner-Reasoner model}
 
-Our model begins with the intuition that people reason probabilistically about situations populated by objects with properties. To represent this type of richly structured situation, we must go beyond propositional logic and its probabilistic counterpart, Bayesian networks. We instead build our model using the probabilistic programing language Church \cite{Goodman2008}, a kind of higher-order probabilistic logic, in which it is natural to describe distributions over objects and their properties. For background and details on this form of model representation, see \url{http://probmods.org}.
+Our model begins with the intuition that people reason probabilistically about situations populated by objects with properties. To represent this type of richly structured situation, we must go beyond propositional logic and its probabilistic counterpart, Bayesian networks. We instead build our model using the probabilistic programing language Church \cite{Goodman2008}, a kind of higher-order probabilistic logic in which it is natural to describe distributions over objects and their properties. For background and details on this form of model representation, see \url{http://probmods.org}.
 
 Situations are composed of $n$ objects:
 \begin{lstlisting}
@@ -146,12 +146,12 @@ A quantifier (e.g. \emph{all}) is a function of two properties (e.g. \emph{As} a
     (all-true (map (lambda (x) (if (A x) (B x) true)) 
                    objects))))
 \end{lstlisting}
-Here the helper function \lstinline{all-true} simply checks that all elements of a list are true, i.e. that all the \emph{As} are indeed \emph{Bs}. The function \lstinline{map} applies the given function ---\lstinline{lambda}--- to each element of the list \lstinline{objects}. Similarly we can define \lstinline{some}, \lstinline{no}, \lstinline{not-all} to have their standard meanings. For a first test of the model, we assume sets are non-empty, i.e. \emph{all} and \emph{none} cannot be trivially true.
+Here the helper function \lstinline{all-true} simply checks that all elements of a list are true, i.e. that all the \emph{As} are indeed \emph{Bs}. The function \lstinline{map} applies the given function ---\lstinline{(lambda ...)}--- to each element of the list \lstinline{objects}. Similarly we can define \lstinline{some}, \lstinline{no}, \lstinline{not-all} to have their standard meanings. For a first test of the model, we assume sets are non-empty, i.e. \emph{all} and \emph{none} cannot be trivially true.
 
 The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over worlds into a posterior belief distribution. For syllogistic reasoning we are interested not in the posterior distribution over situations directly, but the distribution on true conclusions that these situations imply. In Church this looks like:
 \begin{lstlisting}
 (query
- (define objects (list �o1 �o2 ... �on)) 
+ (define objects (list 'o1 'o2 ... 'on))
  ...define A,B,C...
  ...define all, some, no, notall...
  
@@ -187,44 +187,44 @@ Natural language pragmatics could enter in two places in the above model: premis
 We address pragmatic production, or choice of conclusion, first.
 
 Following the Rational Speech Act theory \cite{Goodman2013,Frank2012a} we imagine a reasoner who chooses the conclusions which are more likely to convey information about which only the reasoner has access---in this case, the premises. That is we imagine that the reasoner treats the conclusion as a message chosen for a listener who lacks the premises (or perhaps lacks only the ability to reason from premises to conclusions).
-This listener can be thought of concretely as the (rather naive) person evaluating the participant's responses. In the original Rational Speech Act model, the listener hears an utterance and tries to reconstruct the situation observed by the reasoner-equivalent. In our model, the \emph{conclusion-listener} hears a conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction between situation and premise reconstruction turns out to be important as the reasoner does not observe a situation directly but rather only constructs situations consistent with the premises. 
+This listener can be thought of concretely as the (rather naive) person evaluating the participant's responses. In the original Rational Speech Act model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the \emph{conclusion-listener} hears a conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction between situation and premise reconstruction turns out to be important as the reasoner does not observe a situation directly but rather only constructs situations consistent with the premises: our reasoner attempts to convey her \emph{knowledge state}, not her guess about the situation.
 
-Pragmatics may enter into syllogistic reasoning also in the interpretation of the premises by the reasoner. It is known that standalone Gricean implicatures (for instance ``some'' implies ``not all'') do a poor job of accounting for reasoning with syllogisms \cite{Roberts2001}. Preliminary analyses with a standard Gricean-listener model in this framework were consistent with this account. 
+Pragmatics may enter into syllogistic reasoning also in the interpretation of the premises by the reasoner. It is known that standalone Gricean implicatures (for instance ``some'' implies ``not all'') do a poor job of accounting for reasoning with syllogisms \cite{Roberts2001}. Our preliminary analyses with a standard Gricean-listener model in this framework were consistent with this account. 
+However, a reasoner may consider the premises in a wider, conversational setting: she may ask herself why the experimenter chose to give these premises, as opposed to alternative utterances. For this we consider the question she believes to be at issue in the ``conversation''---the Question Under Discussion, or QUD \cite{Roberts2004QUD}. In a syllogistic conversation, we take the QUD to be ``what is the relationship between A \& C (the end terms)?" (which is often the question with which the subject is explicitly presented). In this context pragmatic inferences may differ from the standard ones; for instance, ``Some A are B'' may not lead to a ``Not all A are B'' implicature if ``All A are B'' wouldn't provide additional information about the A-C conclusion. The A-C QUD is naturally captured by a \lstinline{questioner} who considers only the conclusion the \lstinline{reasoner} would draw about A \& C (not her inferences about the situation, including B).
 
-Alternatively, a reasoner may consider the premises in a wider, conversational setting: she may ask herself why the experimenter chose to give these premises, as opposed to alternative utterances. For this we consider the implicit question addressed by interlocutors in a conversation -- the Question Under Discussion, or QUD \cite{Roberts2004QUD}. In a syllogistic conversation, we take the QUD to be ``what is the relationship between A \& C (the end terms)?" Indeed, this is often the question with which the subject is presented.
+%In the model, the \lstinline{reasoner} considers an agent who is selecting premises according to the conclusion the literal \emph{reasoner} is likely to draw. The agent who receives the conclusion from the \lstinline{reasoner} described above and the agent that provides the premises are each tasked with selecting premises based on a conclusion as input. The only difference is that the agent that provides the premises is grounded in the truth of the premises while the agent that receives the conclusion is grounded in the conclusion being true. Because of this, we can formalize the two into a single function -- the \lstinline{questioner}.
 
-In the model, the \lstinline{reasoner} considers an agent who is selecting premises according to the conclusion the literal \emph{reasoner} is likely to draw. The agent who receives the conclusion from the \lstinline{reasoner} described above and the agent that provides the premises are each tasked with selecting premises based on a conclusion as input. The only difference is that the agent that provides the premises is grounded in the truth of the premises while the agent that receives the conclusion is grounded in the conclusion being true. Because of this, we can formalize the two into a single function -- the \lstinline{questioner}.
-
+We can combined the above intuitions about pragmatic production and comprehension into a model in which \lstinline{reasoner} and \lstinline{questioner} jointly reason about each other. Critically each agent reasons about the other at recursive depth \lstinline{R_depth} of comprehension and \lstinline{Q_depth} of production:
 \begin{lstlisting}
-
 (define (questioner conclusion Q_depth R_depth)
   (query 
-    (define premise-one (premise-prior))
-    (define premise-two (premise-prior))
-    
-    (list premise-one premise-two)
-    
-    (equal? conclusion (softmax (reasoner premise-one premise-two Q_depth R_depth) alpha))))
+   (define premise-one (premise-prior))
+   (define premise-two (premise-prior))
+   
+   (list premise-one premise-two)
+   
+   (equal? conclusion (softmax (reasoner premise-one premise-two Q_depth R_depth) alpha))))
 
 (define (reasoner premise-one premise-two Q_depth R_depth)
   (query 
-    (define objects (list �o1 �o2 ... �on)) 
-    ...define A,B,C...
-    ...define all, some, no, notall...
-    (define conclusion (conclusion-prior))
- 
-    conclusion
-    
-    (and (if (= Q_depth 0)
-    		 (and (premise-one A B)
-             (premise-two B C))
-      		 (equal? (list premise-one premise-two) (softmax (questioner conclusion (- Q_depth 1) R_depth) alpha)))
-          (if (= R_depth 0)
-              (conclusion A C)
-              (equal? (list premise-one premise-two) (softmax (questioner conclusion Q_depth (- 1 R_depth)) alpha))))))
-
+   (define objects (list 'o1 'o2 ... 'on)) 
+   ...define A,B,C...
+   ...define all, some, no, notall...
+   (define conclusion (conclusion-prior))
+   
+   conclusion
+   
+   (and (if (= Q_depth 0)
+            (and (premise-one A B)
+                 (premise-two B C))
+            (equal? (list premise-one premise-two) 
+                    (softmax (questioner conclusion (- Q_depth 1) R_depth) alpha)))
+        (if (= R_depth 0)
+            (conclusion A C)
+            (equal? (list premise-one premise-two) 
+                    (softmax (questioner conclusion Q_depth (- 1 R_depth)) alpha))))))
 \end{lstlisting}
-The \lstinline{reasoner} and \lstinline{questioner} functions produce a distribution over conclusions and premises, respectively. Since we take these functions to represent actual persons in a communicative setting, we take conclusions or premises to be selected from these distributions according to a Luce choice, or \lstinline{softmax}, decision rule that denotes to the degree to which utterances are chosen optimally \cite{luce1959}. This takes the distribution, raises it to a power \lstinline{alpha} and renormalizes. \lstinline{R_depth} and \lstinline{Q_depth} refer to the depth of recursion for each of these conditioning statements. As \lstinline{R_depth} increases, the conclusion becomes more informative with respect to the possible premises it could have been drawn from. As \lstinline{Q_depth} increases, the premises becomes more informative with respect to the possible conclusions . In this article, we explore these two parameters independently, referring to the model under discussion as Probabilistic Questioner-Reasoner model or PQR$_{q,r}$, where \emph{q} and \emph{r} refer to respective depths. When both are set to 0, the model collapses to produce the $\Pr$(conclusion $\arrowvert$ premises). This 0,0 model will be referred to the literal reasoner as well. 
+The \lstinline{reasoner} and \lstinline{questioner} functions produce a distribution over conclusions and premises, respectively. Since we take these functions to represent actual persons in a communicative setting, we take conclusions or premises to be selected from these distributions according to a Luce choice, or \lstinline{softmax}, decision rule with a parameter \lstinline{alpha} that denotes to the degree to which utterances are chosen optimally \cite{luce1959}. This takes the distribution, raises it to a power \lstinline{alpha} and renormalizes. As \lstinline{R_depth} increases, the conclusion becomes more informative with respect to the possible premises it could have been drawn from. As \lstinline{Q_depth} increases, the premises becomes more informative with respect to the possible conclusions. In this article, we explore these two parameters independently, referring to the model under discussion as Probabilistic Questioner-Reasoner model or PQR$_{q,r}$, where \emph{q} and \emph{r} refer to respective depths. When both are set to 0, the model collapses to produce the $\Pr$(conclusion $\arrowvert$ premises) (this 0,0 model will be referred to the literal reasoner). 
 
 Using this framework, we can investigate the complementary influences of pragmatic interpretation of premises and production of conclusions. 
 
