@@ -8,9 +8,16 @@
 \usepackage{subfigure}
 %\usepackage{subcaption}
 \usepackage{subfigure}
+\usepackage{multirow}
 \graphicspath{{figures/}}
   
+\newenvironment{Table}
+  {\par\bigskip\noindent\minipage{\columnwidth}\centering}
+  {\endminipage\par\bigskip}  
+  
 \usepackage{color}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
 \definecolor{Red}{RGB}{255,0,0}
 \newcommand{\red}[1]{\textcolor{Red}{#1}}  
@@ -285,7 +292,7 @@ The three parameters of the model, \lstinline{n_objects}, \lstinline{br}, and \l
 
 \subsection{Qualitative results}
 For each model, we report the total number of syllogisms for which the model's modal response is the same as in the meta-analysis. This is a qualitative assessment of the fit. 
-As a baseline, we first examined the distribution of conclusions conditioned only on the truth of the conclusion (what we refer to as the ``Prior") to see if it alone accounted for human reasoning patterns. It did not (Figure \ref{fig:barplots}, column 1). Since \emph{not all} is the most likely conclusion to be true, the Prior gets only the syllogisms with a \emph{not all} modal response correct. For the meta-analysis data, this amounts to 29 out of the 64 syllogisms.
+As a baseline, we first examined the distribution of conclusions conditioned only on the truth of the conclusion (what we refer to as the ``Prior") to see if it alone accounted for human reasoning patterns. It did not (Figure \ref{fig:barplots}, column 1). Since \emph{not all} is the most likely conclusion to be true, the Prior gets only the syllogisms with a \emph{not all} modal response correct. For the meta-analysis data, this amounts to 29 out of the 64 syllogisms. Of the 24 syllogisms with a valid conclusion, the model predicts the modal response for only 5 of these.
 
 \begin{figure*}
 \centering
@@ -302,6 +309,24 @@ As a baseline, we first examined the distribution of conclusions conditioned onl
 
 The literal reasoner model, PQR$_{0,0}$, matches the modal response on 37 of the 64 syllogisms. The 29 syllogisms for which \emph{not all} was the modal response are qualitatively unaffected i.e. the model matches these responses. The model also matches 8 syllogisms for which \emph{some} and \emph{none} are favored (Figure \ref{fig:barplots}, column 2, see e.g. [2]). This indicates that taking the premises into account in the most straightforward way improves performance, but not massively.
 %
+
+
+\begin{Table}
+\begin{tabular}{cc|c|c|c|c|l}
+\cline{3-7}
+& & \multicolumn{5}{ c| }{Model} \\ \cline{3-7}
+& & Prior & Literal & PQR$_{0,1}$ & PQR$_{1,0}$ & PQR$_{1,1}$ \\ \cline{1-7}
+\multicolumn{1}{ |c| }{\multirow{2}{.08\columnwidth}{Correct modal responses} } &
+\multicolumn{1}{ |c| }{Valid} & 5 & 17 & 17 & 21 & 20    \\ \cline{2-7}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{Invalid} & 24 & 20 & 24 & 21 & 21    \\ \cline{1-7}
+\multicolumn{1}{ |c  }{\multirow{2}{.08\columnwidth}{Correlation} } &
+\multicolumn{1}{ |c| }{Valid} & -0.46 & -0.21 & 0.69 & 0.82 & 0.85 \\ \cline{2-7}
+\multicolumn{1}{ |c  }{}                        &
+\multicolumn{1}{ |c| }{Invalid} & 0.42 & 0.62 & 0.72 & 0.63 & 0.58 \\ \cline{1-7}
+\end{tabular}
+\end{Table}
+
 Introducing pragmatics into the model, we consider first production---PQR$_{0,1}$. The model now distinguishes between equally valid conclusions on the basis of informativity (e.g. Figure \ref{fig:barplots} [1], column 4). The model selects not only conclusions likely to be true, but also informative, and now matches 42 out of 64 modal responses. 
 %
 In addition to capturing many of the modal responses, the model is able to accommodate more than one plausible conclusion. [4] in Figure \ref{fig:barplots} highlights one such example. This is a syllogism with a valid conclusion, but one which people find difficult to draw. The literal reasoner model tells us why: in many of the possible situations in which the premises are true, a \emph{none} conclusion is true. In addition, \emph{none} is more informative than the valid conclusion---\emph{not all}---and so the Questioner-Reasoner Models up-weight it.
