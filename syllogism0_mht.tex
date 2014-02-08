@@ -118,7 +118,7 @@ Properties \lstinline{A}, \lstinline{B}, and \lstinline{C} of these objects are 
 \end{lstlisting}
 Note that the operator \lstinline{mem} memoizes these functions, so that a given object has the same value each time it is examined within a given situation. 
 %This allows the properties to be defined independently of the set of objects. 
-A principle of rarity that has been used for previous probabilistic models \cite{Oaksford1994} comes from the intuition that properties are relatively rare of objects in the world\footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}. For us this simply means the base rate, \lstinline{br}, of properties is small.  
+A principle of rarity that has been used for previous probabilistic models \cite{Oaksford1994} comes from the observation that properties are relatively rare of objects in the world\footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}. For us this simply means the base rate, \lstinline{br}, of properties is small.  
 
 %, each with 1, 2 or 3 properties corresponding to the three terms of a syllogism. Situations are sampled from a naive prior. In this setting, it is reasonable to assume that the prior probability, $P(situation)$, is a binomial distribution (i.e. the probability of a coin of a given weight coming up Heads $n$ times in a row, where $n$ is the number of objects). We assume properties are relatively rare of objects; this means the base rate (\lstinline{br}) of properties is less than 0.50.  This principle of rarity comes from the intuition that properties are relative rare \footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}, and this has been used in probabilistic models previously. 
 %
@@ -154,7 +154,6 @@ The key observation to connect these truth-functional meanings of quantifier exp
  (define objects (list 'o1 'o2 ... 'on))
  ...define A,B,C...
  ...define all, some, no, notall...
- 
  (define conclusion (conclusion-prior))
  
  conclusion
@@ -163,6 +162,9 @@ The key observation to connect these truth-functional meanings of quantifier exp
       (premise-one A B)
       (premise-two B C)))
 \end{lstlisting}
+
+The first arguments to a query function are a generative model: definitions or the background knowledge with which a reasoning agent is endowed. Definitions with which a prior is stipulated (e.g. above \lstinline{conclusion}) denote concepts over which the agent has uncertainty . The second argument, called the \emph{query expression}, is the aspect of the computation about which we are interested; it is what we want to know. The final argument, called the \emph{conditioner}, is the information with which we update our beliefs; it is what we know. 
+
 We assume that the prior distribution over conclusions (and premises, below) is uniform.
 
 %The Conditional Semantics model treats the premises of a syllogism as evidence by which to update its belief prior over propositions (which are now potential conclusions). This update rule we take to be probabilistic conditioning. Thus, we get a posterior distribution of propositions, conditioned on premises being true. This has the nice feature of returning a degree of belief in each of the possible conclusions for every syllogism. Using this, we can test the hypothesis that reasoners in syllogistic reasoning tasks are essentially drawing samples from the posterior distribution of the conclusion conditioned on the premises (so-called ``posterior matching") \cite{Griffiths2006}.
@@ -186,11 +188,11 @@ We have suggested viewing syllogistic reasoning as a case of communication, and 
 Natural language pragmatics could enter in two places in the above model: premise interpretation and conclusion production. 
 We address pragmatic production, or choice of conclusion, first.
 
-Following the Rational Speech Act theory \cite{Goodman2013,Frank2012a} we imagine a reasoner who chooses the conclusions which are more likely to convey information about which only the reasoner has access---in this case, the premises. That is we imagine that the reasoner treats the conclusion as a message chosen for a listener who lacks the premises (or perhaps lacks only the ability to reason from premises to conclusions).
+Following the Rational Speech Act theory \cite{Goodman2013,Frank2012a} we imagine a reasoner who chooses the conclusions which are more likely to convey information about which only the reasoner has access---in this case, the premises. That is, we imagine that the reasoner treats the conclusion as a message chosen for a listener who lacks the premises (or perhaps lacks only the ability to reason from premises to conclusions).
 This listener can be thought of concretely as the (rather naive) person evaluating the participant's responses. In the original Rational Speech Act model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the \emph{conclusion-listener} hears a conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction between situation and premise reconstruction turns out to be important as the reasoner does not observe a situation directly but rather only constructs situations consistent with the premises: our reasoner attempts to convey her \emph{knowledge state}, not her guess about the situation.
 
 Pragmatics may enter into syllogistic reasoning also in the interpretation of the premises by the reasoner. It is known that standalone Gricean implicatures (for instance ``some'' implies ``not all'') do a poor job of accounting for reasoning with syllogisms \cite{Roberts2001}. Our preliminary analyses with a standard Gricean-listener model in this framework were consistent with this account. 
-However, a reasoner may consider the premises in a wider, conversational setting: she may ask herself why the experimenter chose to give these premises, as opposed to alternative utterances. For this we consider the question she believes to be at issue in the ``conversation''---the Question Under Discussion, or QUD \cite{Roberts2004QUD}. In a syllogistic conversation, we take the QUD to be ``what is the relationship between A \& C (the end terms)?" (which is often the question with which the subject is explicitly presented). In this context pragmatic inferences may differ from the standard ones; for instance, ``Some A are B'' may not lead to a ``Not all A are B'' implicature if ``All A are B'' wouldn't provide additional information about the A-C conclusion. The A-C QUD is naturally captured by a \lstinline{questioner} who considers only the conclusion the \lstinline{reasoner} would draw about A \& C (not her inferences about the situation, including B).
+However, a reasoner may consider the premises in a wider, conversational setting: she may ask herself why the experimenter chose to give these premises, as opposed to alternative utterances. For this we consider the question she believes to be at issue in the ``conversation''---the Question Under Discussion, or QUD \cite{Roberts2004QUD}. In a syllogistic conversation, we take the QUD to be ``what is the relationship between A \& C (the end terms)?", often the question with which the subject is explicitly presented. In this context pragmatic inferences may differ from the standard ones; for instance, ``Some A are B'' may not lead to a ``Not all A are B'' implicature if ``All A are B'' wouldn't provide additional information about the A-C conclusion. The A-C QUD is naturally captured by a \lstinline{questioner} who considers only the conclusion the \lstinline{reasoner} would draw about A \& C (not her inferences about the whole situation, which includes B).
 
 %In the model, the \lstinline{reasoner} considers an agent who is selecting premises according to the conclusion the literal \emph{reasoner} is likely to draw. The agent who receives the conclusion from the \lstinline{reasoner} described above and the agent that provides the premises are each tasked with selecting premises based on a conclusion as input. The only difference is that the agent that provides the premises is grounded in the truth of the premises while the agent that receives the conclusion is grounded in the conclusion being true. Because of this, we can formalize the two into a single function -- the \lstinline{questioner}.
 
@@ -224,7 +226,7 @@ We can combined the above intuitions about pragmatic production and comprehensio
             (equal? (list premise-one premise-two) 
                     (softmax (questioner conclusion Q_depth (- 1 R_depth)) alpha))))))
 \end{lstlisting}
-The \lstinline{reasoner} and \lstinline{questioner} functions produce a distribution over conclusions and premises\footnote{As a first pass, we consider the alternative premises generated by \lstinline{premise-prior} to be the set of all premises of the same term orderings, i.e. all premises of the same \emph{figure}. That is, we consider alternative quantifiers, keeping the structure of the sentence fixed.}, respectively. Since we take these functions to represent actual persons in a communicative setting, we take conclusions or premises to be selected from these distributions according to a Luce choice, or \lstinline{softmax}, decision rule with a parameter \lstinline{alpha} that denotes to the degree to which utterances are chosen optimally \cite{luce1959}. This takes the distribution, raises it to a power \lstinline{alpha} and renormalizes. As \lstinline{R_depth} increases, the conclusion becomes more informative with respect to the possible premises it could have been drawn from. As \lstinline{Q_depth} increases, the premises becomes more informative with respect to the possible conclusions. In this article, we explore these two parameters independently, referring to the model under discussion as Probabilistic Questioner-Reasoner model or PQR$_{q,r}$, where \emph{q} and \emph{r} refer to respective depths. When both are set to 0, the model collapses to produce the $\Pr$(conclusion $\arrowvert$ premises) (this 0,0 model will be referred to the literal reasoner). 
+The \lstinline{reasoner} and \lstinline{questioner} functions produce a distribution over conclusions and premises\footnote{As a first pass, we consider the alternative premises generated by \lstinline{premise-prior} to be the set of all premises of the same term orderings, i.e. all premises of the same \emph{figure}. That is, we consider alternative quantifiers, keeping the structure of the sentence fixed.}, respectively. Since we take these functions to represent actual persons in a communicative setting, we take conclusions or premises to be selected from these distributions according to a Luce choice, or \lstinline{softmax}, decision rule with a parameter \lstinline{alpha} that denotes to the degree to which utterances are chosen optimally \cite{luce1959}. This takes the distribution, raises it to a power \lstinline{alpha} and renormalizes. As \lstinline{R_depth} increases, the conclusion becomes more informative with respect to the possible premises it could have been drawn from. As \lstinline{Q_depth} increases, the premises becomes more informative with respect to the possible conclusions. In this article, we explore these two parameters independently, referring to the model under discussion as Probabilistic Questioner-Reasoner model or PQR$_{q,r}$, where \emph{q} and \emph{r} refer to respective depths. When $q$ and $r$ are 0, the model collapses to produce the $\Pr$(conclusion $\arrowvert$ premises) (this 0,0 model will be referred to the literal reasoner). 
 
 Using this framework, we can investigate the complementary influences of pragmatic interpretation of premises and production of conclusions. 
 
@@ -284,7 +286,7 @@ The three parameters of the model, \lstinline{n_objects}, \lstinline{br}, and \l
 
 \subsection{Qualitative results}
 For each model, we report the total number of syllogisms for which the model's modal response is the same as in the meta-analysis. This is a qualitative assessment of the fit. 
-As a baseline, we first examined the distribution of conclusions conditioned only on the truth of the conclusion (what we refer to as the ``Prior") to see if it alone accounted for human reasoning patterns. It did not (Figure \ref{fig:barplots}, column 1). Since \emph{not all} is the most likely conclusion to be true, the prior gets only the syllogisms with a \emph{not all} modal response correct. For the meta-analysis data, this amounts to 29 out of the 64 syllogisms.
+As a baseline, we first examined the distribution of conclusions conditioned only on the truth of the conclusion (what we refer to as the ``Prior") to see if it alone accounted for human reasoning patterns. It did not (Figure \ref{fig:barplots}, column 1). Since \emph{not all} is the most likely conclusion to be true, the Prior gets only the syllogisms with a \emph{not all} modal response correct. For the meta-analysis data, this amounts to 29 out of the 64 syllogisms.
 
 \begin{figure*}
 \centering
@@ -301,16 +303,15 @@ As a baseline, we first examined the distribution of conclusions conditioned onl
 
 The literal reasoner model, PQR$_{0,0}$, matches the modal response on 37 of the 64 syllogisms. The 29 syllogisms for which \emph{not all} was the modal response are qualitatively unaffected i.e. the model matches these responses. The model also matches 8 syllogisms for which \emph{some} and \emph{none} are favored (Figure \ref{fig:barplots}, column 2, see e.g. [2]). This indicates that taking the premises into account in the most straightforward way improves performance, but not massively.
 %
-Introducing pragmatics into the model, we consider first production---PQR$_{0,1}$. The model now distinguishes between equally valid conclusions on the basis of informativity (e.g. Figure \ref{fig:barplots} [1], column 4). The model selects not only conclusions likely to be true, but also informative, and now matches 41 out of 64 modal responses. 
+Introducing pragmatics into the model, we consider first production---PQR$_{0,1}$. The model now distinguishes between equally valid conclusions on the basis of informativity (e.g. Figure \ref{fig:barplots} [1], column 4). The model selects not only conclusions likely to be true, but also informative, and now matches 42 out of 64 modal responses. 
 %
-In addition to capturing many of the modal responses, the model is able to accommodate more than one plausible conclusion. Example [4] in Figure \ref{fig:barplots} highlights one such example. This is a syllogism with a valid conclusion, but one which people find difficult to draw. The literal reasoner model tells us why: in many of the possible situations in which the premises are true, a \emph{none} conclusion is true. In addition, \emph{none} is more informative than the valid conclusion---\emph{not all}---and so the Questioner-Reasoner Models up-weight it. Notice how this is different from Example [3], in which \emph{all} is less likely than \emph{some} after conditioning\footnote{This may seem surprising as the obvious response is \emph{all}. This is the case because there are two \emph{some} response orders which are valid and only one \emph{all} response}. In this example, \emph{all} is pragmatically strengthened over and above \emph{some} due to \emph{all}'s much higher relative informativeness.  
-
+In addition to capturing many of the modal responses, the model is able to accommodate more than one plausible conclusion. [4] in Figure \ref{fig:barplots} highlights one such example. This is a syllogism with a valid conclusion, but one which people find difficult to draw. The literal reasoner model tells us why: in many of the possible situations in which the premises are true, a \emph{none} conclusion is true. In addition, \emph{none} is more informative than the valid conclusion---\emph{not all}---and so the Questioner-Reasoner Models up-weight it.
 
 Conversational pragmatics can also enrich the meaning of the premises given to the reasoner---our PQR$_{1,0}$ model, which considers ``why has the questioner produced these premises given that she may have produced a variety of others?'' 
 %Critically, the reasoner does not consider these alternatives with respect to the full state of the world (i.e. the sets A, B and C) but rather only with respect to the QUD (i.e. the sets A and C, marginalizing out B). This captures the intuition that people are considering specifically the relationship between A \& C.
-PQR$_{1,0}$ maximally-prefers the modal response of subjects for 42 out of 64 syllogisms. It picks up on some of the very complex phenomena present in syllogistic reasoning. Example [3] is one such case. The premises considered literally are relatively uninformative. The ``literal" model is very similar to the prior (columns 1 \& 2). In this setup, PQR$_{0,1}$ selects the most informative answer -- \emph{all}. On the contrary, PQR$_{1,0}$ considers the question ``why would the questioner have given these premises" and concludes \emph{some}, consistent with human responses. 
+PQR$_{1,0}$ maximally-prefers the modal response of subjects for 41 out of 64 syllogisms. It picks up on some of the very complex phenomena present in syllogistic reasoning. Example [3] is one such case. The premises considered literally are relatively uninformative. The literal reasoner is very similar to the Prior (columns 1 \& 2). In this setup, PQR$_{0,1}$ selects the most informative answer -- \emph{all}. However, PQR$_{1,0}$ considers the question ``why would the questioner have given these premises" and concludes \emph{some}, consistent with human responses. 
 
-There a number of syllogisms for which reasoning patterns are not accounted by PQR. Many of these are syllogisms which use two negative quantifiers (\emph{not all} or \emph{none}). In these problems the predictions of literal reasoner do not differ appreciably from the predictions of the Prior (Figure \ref{fig:barplots} [5]), because the rarity prior assumes most relations will be false to begin with. This perhaps indicates a mismatch between the prior we have used and people's prior beliefs.
+There a number of syllogisms for which reasoning patterns are not accounted by PQR. Many of these are syllogisms which use two negative quantifiers (\emph{not all} or \emph{none}). In these problems the predictions of the literal reasoner do not differ appreciably from the predictions of the Prior (Figure \ref{fig:barplots} [5]), because the rarity prior assumes most relations will be false to begin with. This perhaps indicates a mismatch between the prior we have used and people's prior beliefs.
 
 \subsection{Model fit}
 
@@ -318,9 +319,9 @@ To assess our models' quantitative fits we examine correlations across all 256 d
 %
 The prior's predictions are the same for all syllogisms and the overall fit is poor (r = 0.36).  After conditioning on the truth of the premises, the model is able to make graded responses. These responses are a reflection of the types of situations consistent with the premises. The overall correlation is appreciably higher (r = 0.64). Among valid conclusions, however, (squares in Figure \ref{fig:megaScatter}) the fit is terrible (r = -0.20 for valid conclusions only). This is a direct consequence of the reasoner's literalness: the model has no preference among valid conclusions.
 
-This symmetry is broken by using pragmatic reasoning (Figure \ref{fig:megaScatter}, columns 3-5). The reasoner who interprets the premises as coming from a pragmatic speaker---PQR$_{1,0}$---provides a better fit to the data (r = 0.69). The model is now able to make graded responses among valid conclusions (r = 0.62 for valid conclusions only). The reasoner who takes the premises at face value but who produces conclusions to be informative---PQR$_{0,1}$---provides an even better fit to the data (r = 0.75) and the fit among valid conclusions is even stronger (r = 0.82 for valid conclusions only).  \red{!!fixme!! correlations and columns don't correspond to right models.}
+This symmetry is broken by using pragmatic reasoning (Figure \ref{fig:megaScatter}, columns 3-5). The reasoner who interprets the premises as coming from a pragmatic speaker---PQR$_{1,0}$---provides so far the best fit to the data (r = 0.75). The model is now able to make graded responses among valid conclusions (r = 0.62 for valid conclusions only). The reasoner who takes the premises at face value but who produces conclusions to be informative---PQR$_{0,1}$---has also a better fit than the literal model (r = 0.69) and the fit among valid conclusions is even stronger (r = 0.82 for valid conclusions only). 
 
-PQR$_{1,1}$---which reasons pragmatically on both the production and the interpretation---does not model the data any better than the individual processes. This joint model selects the modal response on 41 out of the 64 syllogisms and provides a worse for than either of the individual PQR models (r = 0.66). This is likely due to the particular way in which the information between the two inference processes is shared. We leave for later work the proper way of combining information from the two loci of pragmatic inference.
+PQR$_{1,1}$---which reasons pragmatically on both the production and the interpretation---does not model the data overall any better than the individual processes. This joint model selects the modal response on 41 out of the 64 syllogisms and provides a worse fit than either of the individual PQR models (r = 0.66). However, among valid conclusions the correlation is highest (r = 0.85). This mismatch is likely due to the particular way in which the information between the two inference processes is shared.  We leave for later work the proper way of combining information from the two loci of pragmatic inference.
 
 
 %We compared these results to those found when using a uniform prior (\ref{fig:megaScatter}, row 1)) and found the overall fit much better with the binomial, which invokes the principle of rarity. 
@@ -349,7 +350,7 @@ Our model is based on a truth-functional semantics and as such, it is able to ac
 %
 We compare our model predictions to two studies carried out by \citeA{Chater1999} on syllogisms using the generalized quantifiers \emph{most} and \emph{few} e.g. \emph{Most artists are beekeepers. Few chemists are beekeepers.}. Participants were told to indicate which, if any, of the four quantifier conclusions followed from the premises and were allowed to select multiple options.
 %
-The set of all possible syllogisms with 6 quantifiers is 144 questions.  These were divided into two experiments to avoid subject fatigue. Experiment One consisted of the \emph{all},\emph{not all},\emph{most}, and \emph{few} quantifiers. Experiment Two used \emph{most},\emph{few},\emph{some}, and \emph{none}. 
+The set of syllogisms was divided into two experiments to avoid subject fatigue.
 
 \begin{figure*}[t]
 	\centering
@@ -361,68 +362,112 @@ The set of all possible syllogisms with 6 quantifiers is 144 questions.  These w
 
 We find good correspondence between the experimental data and the model, even without further parameter fitting\footnote{We maintain the set size parameter of 6 though, the words ``most" and ``few" might bias people to represent sets of larger size.} (Figure \ref{fig:mfScatter}). In Experiment 1, the quantifiers \emph{all}, \emph{most}, \emph{few}, and \emph{not all} were used. The PQR$_{0,0}$ model selected the modal response for 45 out of 64 syllogisms and had a good quantitative fit (r = 0.79).  PQR$_{1,0}$ selected 48 modal responses and had an even better quantitative fit (r = 0.81). PQR$_{0,1}$ selected 50 modal responses and had a slightly worse fit (r = 0.76). 
 %
-In Experiment 2, the quantifiers \emph{most},\emph{few},\emph{some}, and \emph{none} were used. PQR$_{0,0}$ selected the modal response for 34 out of 64 syllogisms and had a correlation of r = 0.63. PQR$_{1,0}$ selected 43 modal responses with  r = 0.63. PQR$_{0,1}$ selected 44 modal responses and had a slightly worse fit r = 0.60. 
+In Experiment 2, the quantifiers \emph{most}, \emph{few}, \emph{some}, and \emph{none} were used. PQR$_{0,0}$ selected the modal response for 34 out of 64 syllogisms and had a correlation of r = 0.63. PQR$_{1,0}$ selected 43 modal responses with  r = 0.63. PQR$_{0,1}$ selected 44 modal responses and had a slightly worse fit r = 0.60. 
 %
 Our fit is appreciably better for Experiment 1 than for Experiment 2, and the same was true for the Probability Heuristics Model (r = 0.94 vs r = 0.63). Overall, the proportion of \emph{no valid conclusion} responses in the experimental data, which we do not model, was much higher in Experiment 2 than in Experiment 1. This data set may well contain more noise in the measures we model than the others discussed in this article. 
 
-\section{Relationship to previous theories}
-
-A recent meta-analysis carved the space of reasoning theories into three partitions: those based on models or diagrammatic reasoning, those based on formal logical rules, and those based on heuristics \cite{Khemlani2012}. We see the space slightly differently. In one dimension, theories may be based on applying propositions -- be they heuristic or logical -- or they are based on constructing concrete representations or models. In another dimension, theories may be considered fundamentally probabilistic or deterministic. 
-
-We now review 2 theories which we take to exemplify two of the four quadrants of this theoretical space. 
-
-\subsection{Mental Models}
- The Mental Models Theory (MMT) describes a psychological process by which people reason by constructing {\em iconic} mental representations or models, which represent the terms of a proposition as a collection of individuals. In syllogistic reasoning, a model is constructed for each premise, and premise models are consolidated so that the conclusion may be ``read off" the joint model. For example, a model for the premise  \emph{All colleagues have the flu} could be represented as the following situation.
-
-\begin{tabular}{l l}
-colleague & flu\\
-colleague & flu\\
- & flu\\
-\end{tabular}
-
-This shows 2 individuals who are colleagues and have the flu, and one individual who is not a colleague and has the flu. Thus, each row is a representation of the properties of an individual. MMT emphasizes the need to search for counter-examples to check for logical validity. Errors arise in this search process. Another premise might read: \emph{Some people with the flu are out for weeks}. This would look like:
-
-\begin{tabular}{l l}
-flu & out for weeks\\
-flu & \{out for weeks\}\\
- & \{out for weeks\}\\
-\end{tabular}
-
-The curly brackets reflect the fact that multiple distinct models could be drawn in accord with this premise. Conclusions are achieved by consolidating these models and reasoning over the joint model. Thus, a reasoner would have to construct all possible distinct models in order to determine that no proposition is true in all of them. 
-
-The MMT captures the intuition that people are able to reason about sets of things explicitly and with respect to context. At the same time, the theory is not well defined insofar as it does not specify \emph{how} various models come into existence, only that various models \emph{can} come into existence. Mental models are very similar to the \emph{situations} described in the Probabilistic Questioner-Reasoner model. A critical difference is that in PQR, situations are constructed by sampling. Thus, PQR can make quantitative predictions about reasoning patterns with no further assumptions. 
-
-Finally, the \emph{a priori} believability of propositions has been shown to have an important effect on reasoning \cite{Oakhill1989}. Mental models are flexible in that content can motivate one to carry on the search process longer. We assumed in this article that PQR samples from an independent prior. This is likely not the case when content affects reasoning. PQR is able to make this notion of context-sensitivity explicit by incorporating background knowledge into the prior from which situations are sampled. 
-
-%Different quantifiers can be applied by reasoning over these mental models; indeed one just needs to ``read off" the model to see if a certain proposition is true. Thus, it has been proposed that mental models could account for usage of generalized quantifiers (e.g. most and few) in syllogistic reasoning, though this claim has not been substantiated by empirical work or a model.
-
-%\subsection{Mental Logics}
-%
-%Rips (1994) proposed that people reason according to rules of \emph{natural deduction}. The theory of Mental Logics, instantiated in the PSYCOP model, posits individuals construct \emph{logical sentences} in a language of first-order predicate calculus which are linked when the ``individual recognizes [the link or inference] as intuitively sound". The model explains errors as a failure to recognize the applicability of a given formal rule, a failure to retrieve the rule, or a failure to carry out the necessary steps for that rule. People are especially prone to such errors when complex rules are needed so there is a predicted effect of rule complexity on difficulty. In this instance, the theory does not specify \emph{which} conclusions will be drawn fallaciously, only that some will. Mental Logics posits that people reason according to logical, deterministic rules. 
-
-\subsection{Probability Heuristics}
-
-\citeA{Chater1999} introduced the Probability Heuristic Model (PHM) as an attempt to capture the intuition that people are using \emph{everyday} reasoning when asked to resolve syllogisms. To accomplish this, the PHM lays out a computational level theory which includes an ordering of propositional informativity, a probabilistic semantics, and a probabilistic notion of validity. The PHM derives its informativity ordering at the propositional level by assuming categories are represented as hyperspheres in a high-dimensional concept space. Our model takes a different approach. PQR uses a truth-functional semantics which it applies to samples from a distribution over situations. An ordering of informativity emerges from the fact that all quantified propositions are not equally likely across situations.
-
-The PHM relies on a number of {\em generation} and {\em test} heuristics to produce and quantify confidence in conclusions. We do not believe these heuristics are necessary for deriving a probabilistic model of reasoning. Further, the very nature of their heuristics suggests reasoners are engaging with the syllogisms at a propositional level and not at the level of concrete representations. We consider heuristic accounts analogous to formal rule theories (e.g. \citeA{rips1994}) in that people are reasoning at the level of propositions, which in the case of the PHM, are determined by probabilities. We also do not believe this to be the case.
 
 \section{Discussion}
 
-The theoretical partitioning described above places the Probabilistic Questioner-Reasoner model in a previously unexplored quadrant of the two-dimensional theoretical space described: we consider reasoning over concrete situations and situations to be constructed probabilistically by sampling.
+A recent meta-analysis carved the space of reasoning theories into three partitions: those based on models or diagrammatic reasoning, those based on formal logical rules, and those based on heuristics \cite{Khemlani2012}. We see the space slightly differently. In one dimension, theories may be based on applying propositions -- be they heuristic or logical -- or based on constructing concrete representations or models. In another dimension, theories may be considered fundamentally probabilistic or deterministic. This theoretical partitioning places the Probabilistic Questioner-Reasoner model in a previously unexplored quadrant of the two-dimensional theoretical space described: we consider reasoning over concrete situations and situations to be constructed probabilistically by sampling.
 
-We have presented a formal model of syllogistic reasoning based on the \emph{Rational Speech-act} framework. This formalizes the notion that reasoners construct mental situations by sampling and reasoning over these situations, much like has been described in the Mental Models literature. Unlike Mental Models, however, PQR is inherently probabilistic and thus assumes reasoners are in some way gaging degrees of plausibility in syllogistic reasoning tasks. Further, PQR is fundamentally quantitative, and thus can be considered an elaboration of the Mental Models theory.
+The Mental Models Theory (MMT) was offered to capture the intuition that people are able to reason about sets of things explicitly and with respect to context by constructing mental representations of individuals over which to reason. The situations described in PQR are analogous to mental models. MMT, however, is not well defined insofar as it does not specify \emph{how} various models come into existence, only that various models \emph{can} come into existence. Thus, the critical difference is that in PQR, situations are constructed by sampling. As a result, PQR can make quantitative predictions about reasoning patterns with no further assumptions. 
 
-The inspiration for this model comes from the idea that syllogistic reasoning can not be disentangled from language understanding. In particular, natural language semantics is insufficient to explain the variability in such a data set. We argue that understanding conversational pragmatics is necessary to understanding how people reason with syllogistic arguments. We have found that the meanings of quantifiers are important insofar as \emph{some} might imply \emph{not all} and so people prefer to conclude \emph{all} when it is warranted. 
+\citeA{Chater1999} introduced the Probability Heuristic Model (PHM) from the intuition that people are using \emph{everyday} reasoning when asked to resolve syllogisms. To accomplish this, the PHM uses a number of heuristics and derives an ordering of informativity for the various quantifiers. PQR also has an ordering of informativity. The difference is that PHM's ordering is derived at the propositional level, using a probabilistic semantics, by assuming categories are represented as hyperspheres in a high-dimensional concept space. PQR uses a truth-functional semantics which it applies to samples from a distribution over situations. An ordering of informativity emerges from the fact that not all quantified propositions are equally likely across situations.
 
-This is early work and we have found promising evidence, both qualitative and quantitative, that this framework will allow for a more explicit understanding of syllogistic reasoning. As well, this model is flexible enough to capture some of the variability in reasoning data using generalized quantifiers. We tested the model assuming a naive threshold of 0.50, such that \emph{most} is true if more than half is satisfied. We don't believe these quantifiers are modeled perfectly in this way, and we will explore more context-sensitive formulations in future work.
+Additionally, very nature of the heuristics on which the PHM relies to produce and quantify confidence in conclusions suggests reasoners are engaging with syllogisms at a propositional level and not at the level of concrete representations. In this way, we consider heuristic accounts analogous to formal rule theories (e.g. \citeA{rips1994}) in that people are reasoning at the level of propositions, albeit probabilistic propositions. PQR is different in that it operates at the level of concrete representations.
+\\
 
-In this framework, a syllogism is read as an argument given as a part of discourse between people. Indeed, this is how syllogisms were used in the time of Aristotle and in the long tradition of scholastic philosophers. Fundamentally, syllogisms are a tool used to convince others. The results of the Questioner-Reasoner models shed light on the idea that human reasoning behavior in the syllogistic task is as much reason as it is human. Gaging degrees of plausibility alone is not sufficient. A listener needs to be posited at the end of the line so that a conclusion makes sense; so that a conclusion is convincing!
+The inspiration for PQR comes from the idea that syllogistic reasoning can not be disentangled from language understanding. In particular, natural language semantics --- be it truth-functional or probabilistic --- is insufficient to explain the variability in such a data set. We argue that understanding conversational pragmatics is necessary to understanding how people reason with syllogistic arguments. 
 
-If one accepts that the purpose of a syllogism is to convince, a natural question arises. Why not just assert ``Some of my colleagues won't be at work for weeks" from the get-go? Why go through the trouble of laying out premises and having a person draw the conclusion? Arguments are used to persuade, and not all assertions are equally believable \emph{a priori}. The reason premises are presented in this way is that there is no reason to believe some  colleagues will be out of work for weeks. That only happens around Christmas. And so the conclusion is not obvious, and the premises are an alternative route to persuasion. If we accept the premises, we are left with no choice but to draw the conclusion.
+This is early work and we have found promising evidence, both qualitative and quantitative, that this framework will allow for a more explicit understanding of syllogistic reasoning. PQR$_{1,0}$ explores pragmatic interpretation of premises. It does so not with the goal of inferring the true situation but with respect to the QUD. Thus, PQR captures an aspect of the reasoning data wherein pragmatic interpretation extends beyond standard Gricean implicatures.
 
-We set out to explore this intuition by seeing if considering alternatives in the interpretation of premises would better account for the data than a literal interpretation of premises. We did this not in the context of the true state of the world but with respect to the QUD. Thus, pragmatic interpretation is different from standard Gricean implicatures. We found this to be important in capturing human reasoning patterns.
+PQR$_{1,0}$ and PQR$_{0,1}$ account for much of the data and in non-overlapping ways. The number of syllogisms whose modal response was not predicted by either model is a mere 9 (i.e. 55 out of 64 syllogisms were accounted for by one of the models). However, PQR$_{1,1}$ in its current formulation is not simply a sum of its parts. Evidence from the individual models suggests some complex interaction between pragmatic interpretation of premises and production of conclusions is at work in human reasoning behavior. 
 
-The two Questioner-Reasoner models presented interact in complex and yet not well understood ways. Individually, they account for much of the data, and in non-overlapping ways. The number of syllogisms whose modal response was not predicted by either model is a mere 9 (i.e. 55 out of 64 syllogisms were accounted for by one of the models). This suggests some complex interaction between pragmatic interpretation of premises and production of conclusions is at work. 
+The model is flexible enough to capture some of the variability in reasoning data using generalized quantifiers as well. We tested the model on generalized quantifiers assuming a conservative threshold of 0.50, such that \emph{most} is true if more than half is satisfied. We don't believe these quantifiers are modeled perfectly in this way, and we leave for future work more context-sensitive formulations.
+
+In this framework, a syllogism is read as an argument given as a part of discourse between people. Indeed, this is how syllogisms were used in the time of Aristotle and in the long tradition of scholastic philosophers since. Fundamentally, syllogisms are a tool used to convince others. The results of the Questioner-Reasoner models shed light on the idea that human reasoning behavior in the syllogistic task is as much reason as it is human. Gaging degrees of plausibility alone is not sufficient. An agent needs to be posited at the other end of the line so that a conclusion makes sense; so that an argument may convince!
+
+\bibliographystyle{apacite}
+
+\setlength{\bibleftmargin}{.125in}
+\setlength{\bibindent}{-\bibleftmargin}
+
+\bibliography{mhtbib}
+
+
+\end{document}
+
+%If one accepts that the purpose of a syllogism is to convince, a natural question arises. Why not just assert ``Some of my colleagues won't be at work for weeks" from the get-go? Why go through the trouble of laying out premises and having a person draw the conclusion? Arguments are used to persuade, and not all assertions are equally believable \emph{a priori}. The reason premises are presented in this way is that there is no reason to believe some  colleagues will be out of work for weeks. That only happens around Christmas. And so the conclusion is not obvious, and the premises are an alternative route to persuasion. If we accept the premises, we are left with no choice but to draw the conclusion.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%
+%
+%We have presented a formal model of syllogistic reasoning based on the \emph{Rational Speech-act} framework. This formalizes the notion that reasoners construct mental situations by sampling and reasoning over these situations, much like has been described in the Mental Models literature. Unlike Mental Models, however, PQR is inherently probabilistic and thus assumes reasoners are in some way gaging degrees of plausibility in syllogistic reasoning tasks. Further, PQR is fundamentally quantitative, and thus can be considered an elaboration of the Mental Models theory.
+%
+%
+%
+%\section{Relationship to previous theories}
+%
+%
+%We now review 2 theories which we take to exemplify two of the four quadrants of this theoretical space. 
+%
+%\subsection{Mental Models}
+% The Mental Models Theory (MMT) describes a psychological process by which people reason by constructing {\em iconic} mental representations or models, which represent the terms of a proposition as a collection of individuals. In syllogistic reasoning, a model is constructed for each premise, and premise models are consolidated so that the conclusion may be ``read off" the joint model. For example, a model for the premise  \emph{All colleagues have the flu} could be represented as the following situation.
+%
+%\begin{tabular}{l l}
+%colleague & flu\\
+%colleague & flu\\
+% & flu\\
+%\end{tabular}
+%
+%This shows 2 individuals who are colleagues and have the flu, and one individual who is not a colleague and has the flu. Thus, each row is a representation of the properties of an individual. MMT emphasizes the need to search for counter-examples to check for logical validity. Errors arise in this search process. Another premise might read: \emph{Some people with the flu are out for weeks}. This would look like:
+%
+%\begin{tabular}{l l}
+%flu & out for weeks\\
+%flu & \{out for weeks\}\\
+% & \{out for weeks\}\\
+%\end{tabular}
+%
+%The curly brackets reflect the fact that multiple distinct models could be drawn in accord with this premise. Conclusions are achieved by consolidating these models and reasoning over the joint model. Thus, a reasoner would have to construct all possible distinct models in order to determine that no proposition is true in all of them. 
+%
+%The MMT captures the intuition that people are able to reason about sets of things explicitly and with respect to context. At the same time, the theory is not well defined insofar as it does not specify \emph{how} various models come into existence, only that various models \emph{can} come into existence. Mental models are very similar to the \emph{situations} described in the Probabilistic Questioner-Reasoner model. A critical difference is that in PQR, situations are constructed by sampling. Thus, PQR can make quantitative predictions about reasoning patterns with no further assumptions. 
+%
+%Finally, the \emph{a priori} believability of propositions has been shown to have an important effect on reasoning. Mental models are flexible in that content can motivate one to carry on the search process longer. We assumed in this article that PQR samples from an independent prior. This is likely not the case when content affects reasoning. PQR is able to make this notion of context-sensitivity explicit by incorporating background knowledge into the prior from which situations are sampled. 
+%
+%%Different quantifiers can be applied by reasoning over these mental models; indeed one just needs to ``read off" the model to see if a certain proposition is true. Thus, it has been proposed that mental models could account for usage of generalized quantifiers (e.g. most and few) in syllogistic reasoning, though this claim has not been substantiated by empirical work or a model.
+%
+%%\subsection{Mental Logics}
+%%
+%%Rips (1994) proposed that people reason according to rules of \emph{natural deduction}. The theory of Mental Logics, instantiated in the PSYCOP model, posits individuals construct \emph{logical sentences} in a language of first-order predicate calculus which are linked when the ``individual recognizes [the link or inference] as intuitively sound". The model explains errors as a failure to recognize the applicability of a given formal rule, a failure to retrieve the rule, or a failure to carry out the necessary steps for that rule. People are especially prone to such errors when complex rules are needed so there is a predicted effect of rule complexity on difficulty. In this instance, the theory does not specify \emph{which} conclusions will be drawn fallaciously, only that some will. Mental Logics posits that people reason according to logical, deterministic rules. 
+%
+%\subsection{Probability Heuristics}
 
 
 %The rationale is that if someone is to go through the trouble of mentioning the middle term, it must allow them to assert something that they wouldn't be able to assert otherwise. In other words, we speculate the \emph{a priori} probability of A \& C is taken to be relatively low, but may become higher if B is observed. In this way, A \& C become correlated via B. This is akin to saying that the end terms have a special relationship via the middle term. It is no coincidence that the middle term appears in both premises and it is no coincidence the premises appear at all. 
@@ -500,17 +545,8 @@ The two Questioner-Reasoner models presented interact in complex and yet not wel
 
 %\subsection{Model predictions}
 
-\
-
-\bibliographystyle{apacite}
-
-\setlength{\bibleftmargin}{.125in}`
-\setlength{\bibindent}{-\bibleftmargin}
-
-\bibliography{mhtbib}
 
 
-\end{document}
 
 
 
