@@ -344,11 +344,11 @@ PQR$_{1,1}$---which reasons pragmatically on both the production and the interpr
 
 \section{Most and few}
 
-Our model is based on a truth-functional semantics and as such, it is able to accommodate any quantified sentence with a truth-functional meaning. The question of the meaning of generalized quantifiers like ``most" and ``few" is a topic of great interest to the field of formal semantics. Often, ``most" and ``few" are modeled by a thresholded step function. As a first test of the generality of the model, we define most and few by a threshold of 0.5 such that ``most As are Bs" is true if more than half of the As are Bs. We realize this is a gross oversimplification of the meanings of these words. We maintain the set size parameter of 6. However, we feel the usage of the words ``most" and ``few" might bias people to represent sets of larger size.
-
+Our model is based on a truth-functional semantics and as such, it is able to accommodate any quantified sentence with a truth-functional meaning. The meaning of generalized quantifiers like ``most" and ``few" is a topic of debate in formal semantics, but they are often simply modeled as a thresholded function. As a first test of the generality of the model, we define most and few by a threshold of 0.5 such that ``most As are Bs" is true if more than half of the As are Bs. Once we have added these lexical items, our PQR models extend naturally. 
+%
 We compare our model predictions to two studies carried out by \citeA{Chater1999} on syllogisms using the generalized quantifiers \emph{most} and \emph{few} e.g. \emph{Most artists are beekeepers. Few chemists are beekeepers.}. Participants were told to indicate which, if any, of the four quantifier conclusions followed from the premises and were allowed to select multiple options.
-
-The set of all possible syllogisms with 6 quantifiers is 144 questions.  The authors divided these into two experiments to avoid subject fatigue. Experiment One consisted of the \emph{all},\emph{not all},\emph{most}, and \emph{few} quantifiers. Experiment Two used \emph{most},\emph{few},\emph{some}, and \emph{none}. 
+%
+The set of all possible syllogisms with 6 quantifiers is 144 questions.  These were divided into two experiments to avoid subject fatigue. Experiment One consisted of the \emph{all},\emph{not all},\emph{most}, and \emph{few} quantifiers. Experiment Two used \emph{most},\emph{few},\emph{some}, and \emph{none}. 
 
 \begin{figure*}[t]
 	\centering
@@ -358,11 +358,11 @@ The set of all possible syllogisms with 6 quantifiers is 144 questions.  The aut
 \end{figure*}
 
 
-We find good correspondence between the experimental data and the model, even without further parameter fitting (Figure \ref{fig:mfScatter}). In Experiment 1, the quantifiers \emph{all}, \emph{most}, \emph{few}, and \emph{not all} were used. The PQR$_{0,0}$ model selected the modal response for 45 out of 64 syllogisms and had a good quantitative fit (r = 0.79).  PQR$_{1,0}$ selected 48 modal responses and had an even better quantitative fit (r = 0.81). PQR$_{0,1}$ selected 50 modal responses and had a slightly worse fit (r = 0.76). 
-
+We find good correspondence between the experimental data and the model, even without further parameter fitting\footnote{We maintain the set size parameter of 6 though, the words ``most" and ``few" might bias people to represent sets of larger size.} (Figure \ref{fig:mfScatter}). In Experiment 1, the quantifiers \emph{all}, \emph{most}, \emph{few}, and \emph{not all} were used. The PQR$_{0,0}$ model selected the modal response for 45 out of 64 syllogisms and had a good quantitative fit (r = 0.79).  PQR$_{1,0}$ selected 48 modal responses and had an even better quantitative fit (r = 0.81). PQR$_{0,1}$ selected 50 modal responses and had a slightly worse fit (r = 0.76). 
+%
 In Experiment 2, the quantifiers \emph{most},\emph{few},\emph{some}, and \emph{none} were used. PQR$_{0,0}$ selected the modal response for 34 out of 64 syllogisms and had a correlation of r = 0.63. PQR$_{1,0}$ selected 43 modal responses with  r = 0.63. PQR$_{0,1}$ selected 44 modal responses and had a slightly worse fit r = 0.60. 
-
-The fit is appreciably better for Experiment 1 than for Experiment 2. The same was true for the Probability Heuristics Model (r = 0.94 vs r = 0.63). Overall, the proportion of \emph{no valid conclusion} responses in the experimental data, which we do not model, was much higher in Experiment 2 than in Experiment 1. This data set may well contain more noise in the measures we model than the others discussed in this article. 
+%
+Our fit is appreciably better for Experiment 1 than for Experiment 2, and the same was true for the Probability Heuristics Model (r = 0.94 vs r = 0.63). Overall, the proportion of \emph{no valid conclusion} responses in the experimental data, which we do not model, was much higher in Experiment 2 than in Experiment 1. This data set may well contain more noise in the measures we model than the others discussed in this article. 
 
 \section{Relationship to previous theories}
 
