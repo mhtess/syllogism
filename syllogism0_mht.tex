@@ -202,7 +202,7 @@ In the model, the \lstinline{reasoner} considers a \emph{premise-speaker} who is
     
     (list premise-one premise-two)
     
-    (equal? conclusion (reasoner premise-one premise-two Q_depth R_depth))))
+    (equal? conclusion (softmax (reasoner premise-one premise-two Q_depth R_depth) alpha))))
 
 (define (reasoner premise-one premise-two Q_depth R_depth)
   (query 
@@ -213,16 +213,16 @@ In the model, the \lstinline{reasoner} considers a \emph{premise-speaker} who is
  
     conclusion
     
-    (and (if (= N_depth 0)
+    (and (if (= Q_depth 0)
     		 (and (premise-one A B)
              (premise-two B C))
-      		 (equal? (list premise-one premise-two) (questioner conclusion (- Q_depth 1) R_depth)))
-          (if (= M_depth 0)
+      		 (equal? (list premise-one premise-two) (softmax (questioner conclusion (- Q_depth 1) R_depth) alpha)))
+          (if (= R_depth 0)
               (conclusion A C)
-              (equal? (list premise-one premise-two) (questioner conclusion Q_depth (- 1 R_depth)))))))
+              (equal? (list premise-one premise-two) (softmax (questioner conclusion Q_depth (- 1 R_depth)) alpha))))))
 
 \end{lstlisting}
-The \lstinline{reasoner} and \lstinline{questioner} functions produce a utility distribution over conclusions and premises, respectively. Conclusions or premises are then drawn from these distributions according to a softmax decision rule that describes an approximately rational planner \cite{suttonbarto98}. \lstinline{R_depth} and \lstinline{Q_depth} refer to the depth of recursion for each of these conditioning statements. As \lstinline{R_depth} increases, the conclusion becomes more informative. As \lstinline{Q_depth} increases, the premises becomes more informative. In this article, we explore these two parameters independently, referring to the model under discussion as PQR$_{q,r}$, where q and r refer to respective depths. When both are set to 0, the model collapses to produce the $\Pr$(conclusion $\arrowvert$ premises). We refer to this model as the literal reasoner going forward. 
+The \lstinline{reasoner} and \lstinline{questioner} functions produce a distribution over conclusions and premises, respectively. Since we take these functions to represent actual persons in a communicative setting, we take conclusions or premises to be selected from these distributions according to a Luce choice, or \lstinline{softmax}, decision rule that denotes to the degree to which utterances are chosen optimally \cite{luce1959}. This takes the distribution, raises it to a power \lstinline{alpha} and renormalizes. \lstinline{R_depth} and \lstinline{Q_depth} refer to the depth of recursion for each of these conditioning statements. As \lstinline{R_depth} increases, the conclusion becomes more informative. As \lstinline{Q_depth} increases, the premises becomes more informative. In this article, we explore these two parameters independently, referring to the model under discussion as PQR$_{q,r}$, where \emph{q} and \emph{r} refer to respective depths. When both are set to 0, the model collapses to produce the $\Pr$(conclusion $\arrowvert$ premises). We refer to this model as the literal reasoner going forward. 
 
 Using this framework, we can investigate the complementary influences of pragmatic interpretation of premises and production of conclusions. 
 
@@ -277,6 +277,8 @@ Using this framework, we can investigate the complementary influences of pragmat
 %\subsection{Meta-analysis data}
 As a first test for our model, we borrowed data from a meta-analysis of syllogistic reasoning tasks presented by \citeA{Chater1999}. These data were compiled from five studies on syllogistic reasoning, completed from 1978-1984. The data included percentage response for conclusions of each of the 4 quantifiers as well as for ``No Valid Conclusion". We consider the production of the ``No Valid Conclusion" an aspect of the algorithmic level of analysis and leave this for future work. Some studies in the meta-analysis asked participants to draw conclusions which were restricted to the classical ordering of terms (C-A) while others allowed conclusions in either direction (A-C or C-A). To accommodate this, we allowed our model to draw conclusions in either order and collapsed responses across these two orderings to compare it to the data set.
 
+The three parameters of the model, \lstinline{n_objects}, \lstinline{br}, and \lstinline{alpha}, were fit to values of 6, 0.25, and 2, respectively.
+
 \subsection{Qualitative results}
 For each model, we report the total number of syllogisms for which the model's modal response is the same as in the meta-analysis. This is a qualitative assessment of the fit. 
 
@@ -284,7 +286,7 @@ We first examined the distribution of conclusions conditioned only on the truth 
 
 \begin{figure*}
 \centering
-    \includegraphics[width=\textwidth,height=8.5cm]{fig1_multibar_qrm_alpha2}
+    \includegraphics[width=0.9\textwidth,height=8.5cm]{fig1_multibar_qrm_alpha2}
     \caption{Six example syllogisms. 
     [1] Conditional Semantics has no preference among equally valid conclusions; the symmetry is broken by the pragmatics models which uses includes informativity either in its understanding or in its productions.     
     [2] Semantics alone captures the modal response and pragmatics enriches the quantitative fit.     
@@ -341,23 +343,23 @@ PQR$_{1,1}$ -- which reasons pragmatically on both the production and the interp
 
 Our model is based on a truth-functional semantics and as such, it is able to accommodate any quantified sentence with a truth-functional meaning. The question of the meaning of generalized quantifiers like ``most" and ``few" is a topic of great interest to the field of formal semantics. Often, ``most" and ``few" are modeled by a thresholded step function. As a first test of the generality of the model, we define most and few by a threshold of 0.5 such that ``most As are Bs" is true if more than half of the As are Bs. We realize this is a gross oversimplification of the meanings of these words. We maintain the set size parameter of 6. However, we feel the usage of the words ``most" and ``few" might bias people to represent sets of larger size.
 
-We compare our model predictions to two studies carried out by Chater \& Oaksford on syllogisms using generalized quantifiers. In these studies, participants were given syllogisms with these generalized quantifiers e.g. {\emph Most artists are beekeepers. Few chemists are beekeepers.}. Participants were told to indicate which, if any, of the four conclusions followed from the premises and were allowed to select multiple options.
+We compare our model predictions to two studies carried out by \Acite{Chater1999} on syllogisms using the generalized quantifiers \emph{most} and \emph{few} e.g. \emph{Most artists are beekeepers. Few chemists are beekeepers.}. Participants were told to indicate which, if any, of the four quantifier conclusions followed from the premises and were allowed to select multiple options.
 
-The set of all possible syllogisms with 6 quantifiers contains 144 questions.  The authors divided these into two experiments to avoid subject fatigue. Experiment One consisted of the \emph{all},\emph{not all},\emph{most}, and \emph{few} quantifiers. Experiment Two used \emph{most},\emph{few},\emph{some}, and \emph{none}. 
+The set of all possible syllogisms with 6 quantifiers is 144 questions.  The authors divided these into two experiments to avoid subject fatigue. Experiment One consisted of the \emph{all},\emph{not all},\emph{most}, and \emph{few} quantifiers. Experiment Two used \emph{most},\emph{few},\emph{some}, and \emph{none}. 
 
-\begin{figure*}[htp]
-  \includegraphics[width=0.51\textwidth,height=4cm]{fig3a_multiScatter_AMFO_n6_alpha2}
-    \includegraphics[width=0.51\textwidth,height=4cm]{fig3b_multiScatter_MFIE_n6_alpha2}
+\begin{figure*}[t]
+	\centering
+  \includegraphics[width=\textwidth]{fig3_multiScatter_AMFO_MFIE_n6_alpha2}
       \caption{Human subject percentage endorsement vs. model fits for 2 experiments using generalized quantifiers. Experiment 1 (left) used the quantifiers \{\emph{all}, \emph{most}, \emph{few}, \emph{not all}\}. Experiment 2 (right) used the quantifiers \{\emph{most}, \emph{few}, \emph{some}, \emph{not all}\}.}
   \label{fig:mfScatter}
 \end{figure*}
 
 
-We find good correspondence between the experimental data and the model, even without doing any further parameter fitting (Figure \ref{fig:mfScatter}). In Experiment 1, the quantifiers \emph{all},\emph{most},\emph{few}, and \emph{not all} were used. The CS model selected the modal response for 45 out of 64 syllogisms and had a good quantitative fit (r = 0.79). Questioner-1 selected 48 modal responses and had an even better quantitative fit (r = 0.81). Reasoner-1 selected 50 modal responses and had a slightly worse fit (r = 0.76). 
+We find good correspondence between the experimental data and the model, even without further parameter fitting (Figure \ref{fig:mfScatter}). In Experiment 1, the quantifiers \emph{all}, \emph{most}, \emph{few}, and \emph{not all} were used. The PQR$_{0,0}$ model selected the modal response for 45 out of 64 syllogisms and had a good quantitative fit (r = 0.79).  PQR$_{1,0}$ selected 48 modal responses and had an even better quantitative fit (r = 0.81). PQR$_{0,1}$ selected 50 modal responses and had a slightly worse fit (r = 0.76). 
 
-In Experiment 2, the quantifiers \emph{most},\emph{few},\emph{some}, and \emph{none} were used. The CS model selected the modal response for 34 out of 64 syllogisms and had a correlation of r = 0.63. Questioner-1 selected 43 modal responses with  r = 0.63. Reasoner-1 selected 44 modal responses and had a slightly worse fit r = 0.60. 
+In Experiment 2, the quantifiers \emph{most},\emph{few},\emph{some}, and \emph{none} were used. PQR$_{0,0}$ selected the modal response for 34 out of 64 syllogisms and had a correlation of r = 0.63. PQR$_{1,0}$ selected 43 modal responses with  r = 0.63. PQR$_{0,1}$ selected 44 modal responses and had a slightly worse fit r = 0.60. 
 
-The fit is appreciably better for Experiment 1 than for Experiment 2. The same was true for the Probability Heuristics Model (r = 0.94 vs r = 0.63). Overall, the proportion of \emph{no valid conclusion} responses, which we do not model, was much higher in Experiment 2 than in Experiment 1. This data set may well contain more noise in the measures we attempt to model than the others discussed in this article. 
+The fit is appreciably better for Experiment 1 than for Experiment 2. The same was true for the Probability Heuristics Model (r = 0.94 vs r = 0.63). Overall, the proportion of \emph{no valid conclusion} responses in the experimental data, which we do not model, was much higher in Experiment 2 than in Experiment 1. This data set may well contain more noise in the measures we model than the others discussed in this article. 
 
 \section{Relationship to previous theories}
 
@@ -382,11 +384,11 @@ flu & \{out for weeks\}\\
  & \{out for weeks\}\\
 \end{tabular}
 
-The curly brackets reflect the fact that multiple distinct models could be drawn in accord with this premise. Conclusions are achieved by consolidating these models and reasoning over the joint model.Thus, a reasoner would have to construct all possible distinct models in order to determine that no proposition is true in all of them. 
+The curly brackets reflect the fact that multiple distinct models could be drawn in accord with this premise. Conclusions are achieved by consolidating these models and reasoning over the joint model. Thus, a reasoner would have to construct all possible distinct models in order to determine that no proposition is true in all of them. 
 
-The MMT captures the intuition that people are able to reason about sets of things explicitly and with respect to context. At the same time, the theory is not well defined insofar as it does not specify \emph{how} various models come into existence, only that various models \emph{can} come into existence. Mental models are very similar to the \emph{situations} described in the Conditional Semantics model. A critical difference is that in Conditional Semantics, situations are constructed by sampling. Thus, the model can make quantitative predictions about reasoning patterns with no further assumptions. 
+The MMT captures the intuition that people are able to reason about sets of things explicitly and with respect to context. At the same time, the theory is not well defined insofar as it does not specify \emph{how} various models come into existence, only that various models \emph{can} come into existence. Mental models are very similar to the \emph{situations} described in the Probabilistic Questioner-Reasoner model. A critical difference is that in PQR, situations are constructed by sampling. Thus, PQR can make quantitative predictions about reasoning patterns with no further assumptions. 
 
-Finally, the \emph{a priori} believability of propositions has been shown to have an important effect on reasoning \cite{Oakhill1989}. Mental models are flexible in that content can motivate one to carry on the search process longer. The Conditional Semantics model makes this notion by incorporating background knowledge into the prior from which situations are sampled. 
+Finally, the \emph{a priori} believability of propositions has been shown to have an important effect on reasoning \cite{Oakhill1989}. Mental models are flexible in that content can motivate one to carry on the search process longer. We assumed in this article that PQR samples from an independent prior. This is likely not the case when content affects reasoning. PQR is able to make this notion of context-sensitivity explicit by incorporating background knowledge into the prior from which situations are sampled. 
 
 %Different quantifiers can be applied by reasoning over these mental models; indeed one just needs to ``read off" the model to see if a certain proposition is true. Thus, it has been proposed that mental models could account for usage of generalized quantifiers (e.g. most and few) in syllogistic reasoning, though this claim has not been substantiated by empirical work or a model.
 
@@ -396,15 +398,15 @@ Finally, the \emph{a priori} believability of propositions has been shown to hav
 
 \subsection{Probability Heuristics}
 
-\cite{Chater1999} introduced the Probability Heuristic Model (PHM) as an attempt to capture the intuition that people are using \emph{everyday} reasoning when asked to resolve syllogisms. To accomplish this, the PHM lays out a computational level theory which includes an ordering of propositional informativity, a probabilistic semantics, and a probabilistic notion of validity. The PHM derives its informativity ordering at the propositional level by assuming categories are represented as hyperspheres in a high-dimensional concept space. Our model takes a different approach. Conditional Semantics uses a truth-functional semantics which it applies samples from a distribution over situations. As such, an ordering of informativity emerges. The informativity ordering in our model is the reciprocal function of the prior over propositions. 
+\citeA{Chater1999} introduced the Probability Heuristic Model (PHM) as an attempt to capture the intuition that people are using \emph{everyday} reasoning when asked to resolve syllogisms. To accomplish this, the PHM lays out a computational level theory which includes an ordering of propositional informativity, a probabilistic semantics, and a probabilistic notion of validity. The PHM derives its informativity ordering at the propositional level by assuming categories are represented as hyperspheres in a high-dimensional concept space. Our model takes a different approach. PQR uses a truth-functional semantics which it applies to samples from a distribution over situations. An ordering of informativity emerges from the fact that all quantified propositions are not equally likely across situations.
 
-The PHM relies on a number of {\em generation} and {\em test} heuristics to produce and quantify confidence in conclusions. We do not believe these heuristics are necessary for deriving a probabilistic model of reasoning. Further, the very nature of their heuristics suggests reasoners are engaging with the syllogisms at a propositional level and not at the level of concrete representations. We consider heuristic accounts analogous to formal rule theories (e.g. \cite{rips1994}) in that people are reasoning at the level of propositions, which in the case of the PHM, are determined by probabilities. We also do not believe this to be the case.
+The PHM relies on a number of {\em generation} and {\em test} heuristics to produce and quantify confidence in conclusions. We do not believe these heuristics are necessary for deriving a probabilistic model of reasoning. Further, the very nature of their heuristics suggests reasoners are engaging with the syllogisms at a propositional level and not at the level of concrete representations. We consider heuristic accounts analogous to formal rule theories (e.g. \citeA{rips1994}) in that people are reasoning at the level of propositions, which in the case of the PHM, are determined by probabilities. We also do not believe this to be the case.
 
 \section{Discussion}
 
-The theoretical partitioning described above places the Questioner-Reasoner models in a previously unexplored quadrant of the two-dimensional theoretical space described: we consider reasoning over concrete situations and situations to be constructed probabilistically by sampling.
+The theoretical partitioning described above places the Probabilistic Questioner-Reasoner model in a previously unexplored quadrant of the two-dimensional theoretical space described: we consider reasoning over concrete situations and situations to be constructed probabilistically by sampling.
 
-We have presented a formal model of syllogistic reasoning based on the \emph{Rational Speech-act} framework. We have shown that in this model, reasoners construct mental situations by sampling, and reasoning over these situations, much like has been described in the Mental Models literature. Unlike Mental Models, however, our model is inherently probabilistic and thus assumes reasoners are in some way gaging degrees of plausibility in syllogistic reasoning tasks. Further, the Conditional Semantics model is fundamentally quantitative, and thus can be considered an elaboration of the Mental Models theory.
+We have presented a formal model of syllogistic reasoning based on the \emph{Rational Speech-act} framework. This formalizes the notion that reasoners construct mental situations by sampling and reasoning over these situations, much like has been described in the Mental Models literature. Unlike Mental Models, however, PQR is inherently probabilistic and thus assumes reasoners are in some way gaging degrees of plausibility in syllogistic reasoning tasks. Further, PQR is fundamentally quantitative, and thus can be considered an elaboration of the Mental Models theory.
 
 The inspiration for this model comes from the idea that syllogistic reasoning can not be disentangled from language understanding. In particular, natural language semantics is insufficient to explain the variability in such a data set. We argue that understanding conversational pragmatics is necessary to understanding how people reason with syllogistic arguments. We have found that the meanings of quantifiers are important insofar as \emph{some} might imply \emph{not all} and so people prefer to conclude \emph{all} when it is warranted. 
 
