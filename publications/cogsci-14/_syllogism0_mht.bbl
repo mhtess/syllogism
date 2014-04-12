@@ -1,0 +1,335 @@
+\begin{thebibliography}{}
+
+\bibitem [\protect \citeauthoryear {%
+Chater%
+\ \BBA {} Oaksford%
+}{%
+Chater%
+\ \BBA {} Oaksford%
+}{%
+{\protect \APACyear {1999}}%
+}]{%
+Chater1999}
+\APACinsertmetastar {%
+Chater1999}%
+\begin{APACrefauthors}%
+Chater, N.%
+\BCBT {}\ \BBA {} Oaksford, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1999}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{The Probability Heuristics Model of Syllogistic
+  Reasoning}} {{The Probability Heuristics Model of Syllogistic
+  Reasoning}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Cognitive psychology}{258}{}{191--258}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Frank%
+\ \BBA {} Goodman%
+}{%
+Frank%
+\ \BBA {} Goodman%
+}{%
+{\protect \APACyear {2012}}%
+}]{%
+Frank2012a}
+\APACinsertmetastar {%
+Frank2012a}%
+\begin{APACrefauthors}%
+Frank, M\BPBI C.%
+\BCBT {}\ \BBA {} Goodman, N\BPBI D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2012}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Quantifying pragmatic inference in language games}}
+  {{Quantifying pragmatic inference in language games}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Science}{336}{}{1--9}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Goodman%
+, Mansinghka%
+, Roy%
+, Bonawitz%
+\BCBL {}\ \BBA {} Tenenbaum%
+}{%
+Goodman%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2008}}%
+}]{%
+Goodman2008}
+\APACinsertmetastar {%
+Goodman2008}%
+\begin{APACrefauthors}%
+Goodman, N\BPBI D.%
+, Mansinghka, V\BPBI K.%
+, Roy, D\BPBI M.%
+, Bonawitz, K.%
+\BCBL {}\ \BBA {} Tenenbaum, J\BPBI B.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2008}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Church : a language for generative models}} {{Church :
+  a language for generative models}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Uncertainty in Artificial Intelligence}{}{}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Goodman%
+\ \BBA {} Stuhlm\"{u}ller%
+}{%
+Goodman%
+\ \BBA {} Stuhlm\"{u}ller%
+}{%
+{\protect \APACyear {2013}}%
+}]{%
+Goodman2013}
+\APACinsertmetastar {%
+Goodman2013}%
+\begin{APACrefauthors}%
+Goodman, N\BPBI D.%
+\BCBT {}\ \BBA {} Stuhlm\"{u}ller, A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2013}{{\APACmonth{01}}}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Knowledge and implicature: modeling language
+  understanding as social cognition.}} {{Knowledge and implicature: modeling
+  language understanding as social cognition.}}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Topics in cognitive science}{5}{1}{173--84}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Horn%
+}{%
+Horn%
+}{%
+{\protect \APACyear {1989}}%
+}]{%
+negationHorn}
+\APACinsertmetastar {%
+negationHorn}%
+\begin{APACrefauthors}%
+Horn, L\BPBI R.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{1989}.
+\newblock
+\APACrefbtitle {A natural history of negation} {A natural history of negation}.
+\newblock
+\APACaddressPublisher{Chicago}{University of Chicago}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Khemlani%
+\ \BBA {} Johnson-Laird%
+}{%
+Khemlani%
+\ \BBA {} Johnson-Laird%
+}{%
+{\protect \APACyear {2012}}%
+}]{%
+Khemlani2012}
+\APACinsertmetastar {%
+Khemlani2012}%
+\begin{APACrefauthors}%
+Khemlani, S.%
+\BCBT {}\ \BBA {} Johnson-Laird, P\BPBI N.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2012}{{\APACmonth{05}}}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Theories of the syllogism: A meta-analysis.}}
+  {{Theories of the syllogism: A meta-analysis.}}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Psychological bulletin}{138}{3}{427--57}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Luce%
+}{%
+Luce%
+}{%
+{\protect \APACyear {1959}}%
+}]{%
+luce1959}
+\APACinsertmetastar {%
+luce1959}%
+\begin{APACrefauthors}%
+Luce, R\BPBI D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{1959}.
+\newblock
+\APACrefbtitle {Individual choice behavior} {Individual choice behavior}.
+\newblock
+\APACaddressPublisher{New York, NY}{Wiley}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Oakhill%
+, Johnson-Laird%
+\BCBL {}\ \BBA {} Garnham%
+}{%
+Oakhill%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {1989}}%
+}]{%
+Oakhill1989}
+\APACinsertmetastar {%
+Oakhill1989}%
+\begin{APACrefauthors}%
+Oakhill, J.%
+, Johnson-Laird, P.%
+\BCBL {}\ \BBA {} Garnham, A.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1989}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Believability and syllogistic reasoning}}
+  {{Believability and syllogistic reasoning}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Cognition}{31}{}{117--140}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Oaksford%
+\ \BBA {} Chater%
+}{%
+Oaksford%
+\ \BBA {} Chater%
+}{%
+{\protect \APACyear {1994}}%
+}]{%
+Oaksford1994}
+\APACinsertmetastar {%
+Oaksford1994}%
+\begin{APACrefauthors}%
+Oaksford, M.%
+\BCBT {}\ \BBA {} Chater, N.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1994}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{A rational analysis of the selection task as optimal
+  data selection.}} {{A rational analysis of the selection task as optimal data
+  selection.}}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Psychological Review}{101}{4}{608--631}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Rips%
+}{%
+Rips%
+}{%
+{\protect \APACyear {1994}}%
+}]{%
+rips1994}
+\APACinsertmetastar {%
+rips1994}%
+\begin{APACrefauthors}%
+Rips, L\BPBI J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{1994}.
+\newblock
+\APACrefbtitle {The psychology of proof: Deductive reasoning in human thinking}
+  {The psychology of proof: Deductive reasoning in human thinking}.
+\newblock
+\APACaddressPublisher{Cambridge, MA}{MIT Press}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+C.~Roberts%
+}{%
+C.~Roberts%
+}{%
+{\protect \APACyear {2004}}%
+}]{%
+Roberts2004QUD}
+\APACinsertmetastar {%
+Roberts2004QUD}%
+\begin{APACrefauthors}%
+Roberts, C.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2004}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Information structure in discourse}} {{Information
+  structure in discourse}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Semanatics and Pramatics}{}{5}{1-69}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+M\BPBI J.~Roberts%
+, Newstead%
+\BCBL {}\ \BBA {} Griggs%
+}{%
+M\BPBI J.~Roberts%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2001}}%
+}]{%
+Roberts2001}
+\APACinsertmetastar {%
+Roberts2001}%
+\begin{APACrefauthors}%
+Roberts, M\BPBI J.%
+, Newstead, S\BPBI E.%
+\BCBL {}\ \BBA {} Griggs, R\BPBI a.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2001}{{\APACmonth{05}}}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Quantifier interpretation and syllogistic reasoning}}
+  {{Quantifier interpretation and syllogistic reasoning}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Thinking \& Reasoning}{7}{2}{173--204}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+St\"{o}rring%
+}{%
+St\"{o}rring%
+}{%
+{\protect \APACyear {1908}}%
+}]{%
+storring1908}
+\APACinsertmetastar {%
+storring1908}%
+\begin{APACrefauthors}%
+St\"{o}rring, G.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1908}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Experimentelle Untersuchungen uber einfache
+  Schlussprozesse} {Experimentelle untersuchungen uber einfache
+  schlussprozesse}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{{Arch. f. d. ges. Psychol}}{}{}{1-127}.
+\PrintBackRefs{\CurrentBib}
+
+\end{thebibliography}
