@@ -1,6 +1,6 @@
 
 
-def syllogism_model(n_balls,base_rate,qdepth,serv,nvc):
+def syllogism_model(n_balls,base_rate,qdepth,rdepth,serv,nvc):
     #### IMPORT LOTS OF STUFF
     import itertools as it
     import random
@@ -13,13 +13,14 @@ def syllogism_model(n_balls,base_rate,qdepth,serv,nvc):
     import scipy
     import shutil
     import glob
-    from write_churchListen_syll import write_church
+    from write_churchLattice_syll import write_church
     ndepth = str(int(qdepth))
+    mdepth = str(int(rdepth))
     ### SET UP FOLDERS FOR WRITING
     if (nvc==1):
-        destfold = ('LISTENER_withNVC_%s/' % (qdepth))
+        destfold = ('QR_withNVC_%s/' % (qdepth))
     else:
-        destfold = ('LISTENER_%s/' % (qdepth))
+        destfold = ('QR_%s/' % (qdepth))
     if (serv==1):
         destination = ('/home/mht/MODEL/%s' % destfold)
     else:
@@ -33,10 +34,16 @@ def syllogism_model(n_balls,base_rate,qdepth,serv,nvc):
     threshold = 0.5
     ### if literal model, don't iterate over rationalities
     ### if pragmatics model, iterate over different rationalities
-    if int(qdepth) > 0:
-        rationQrange = np.arange(1,5.00,0.25)
-    else:
-        rationQrange = np.arange(1,1.20,0.25)
+    # if int(qdepth) > 0:
+    #     rationQrange = np.arange(1,5.00,0.25)
+    # else:
+    #     rationQrange = np.arange(1,1.20,0.25)
+    # if int(rdepth) > 0:
+    #     rationRrange = np.arange(1,5.00,0.25)
+    # else:
+    #     rationRrange = np.arange(1,1.20,0.25)
+    rationQrange = np.arange(5,5.20,0.25)
+    rationRrange = np.arange(2.5,2.6,0.25)
     ### existential presupposition, WARNING: has not been updated to work with EP = 0
     EP = 1
     # This is the logic of the model, the definitions of all, some, not-all, none
@@ -105,20 +112,19 @@ def syllogism_model(n_balls,base_rate,qdepth,serv,nvc):
         figure = figdict[premise[1]+premise[0]]
         return mood+str(figure)
     ### RUNS CHURCH
-    def run_church(rtnQ):
+    def run_church(rtnQ,rtnR):
         prefix = 'EP%d_n%d_base%.2f_s%dk' % (EP,n_balls,base_rate,n_samples)
-        fname = 'listener_' + prefix + '.church'
+        fname = 'qr_' + prefix + '.church'
         if (serv==1):
             os.chdir('/home/mht/webchurch/')
         else:
             os.chdir('/Users/mht/webchurch/')
-        rname = 'listener_N' + ndepth + '_' + prefix + '_a' + str(rtnQ) + '.results'
-        print 'listening, reasoning...' + str(rtnQ)
+        rname = 'qr_N' + ndepth + '_M'  + mdepth + '_' + prefix + '_aQ' + str(rtnQ) + '_aR' + str(rtnR) + '.results'
+        print 'listening, reasoning...' + str(rtnQ) + str(rtnR)
         rid = open(destination + rname, 'w')
     #    subprocess.call(['node','test/run_sandbox.js', destination+fname],stdout=rid)
-        arguments = str(rtnQ) +',' + ndepth
+        arguments = str(rtnQ) +','+ str(rtnR) +',' + ndepth +','+ mdepth
         subprocess.call(['church', '-a' ,arguments, destination+fname],stdout=rid)
-        rid.close()
     def parse_church(fnl,rnm):
         os.chdir(destination)
         rg = open(rnm)
@@ -183,30 +189,29 @@ def syllogism_model(n_balls,base_rate,qdepth,serv,nvc):
     passdict = {'nvc':nvc,'posspremises':posspremises,'premises':premises,'equiv_prob':equiv_prob,'propositions':propositions,'equiv_rs0':equiv_rs0,'ndepth':ndepth,'n_balls':n_balls}
     #for rtnQ in rationQrange:
     prefix = 'EP%d_n%d_base%.2f_s%dk' % (EP,n_balls,base_rate,n_samples)
-    fname = 'listener_' + prefix + '.church'
+    fname = 'qr_' + prefix + '.church'
     passdict['fname'] = fname
     write_church(passdict)
  #   prefix = 'EP%d_alphQ%.1f_n%d_base%.2f_s%dk' % (EP,0,n_balls,base_rate,n_samples)
-  #  fname = 'listener_N' + ndepth + '_' + prefix + '.church'
+  #  fname = 'qr_N' + ndepth + '_' + prefix + '.church'
   #  passdict['fname'] = fname
   #  write_church(0,passdict)
     for rationalityQ in rationQrange:
-        final = np.zeros((64,9))
-        run_church(rationalityQ)
-        rname = 'listener_N' + ndepth + '_' + prefix + '_a' + str(rationalityQ) + '.results'
-        final = parse_church(final,rname)
-        aprefix = 'EP%d_alphQ%.1f_n%d_base%.2f_s%dk' % (EP,rationalityQ,n_balls,base_rate,n_samples)
-        afname = 'listener_N' + ndepth + '_' + aprefix + '.csv'
-        np.savetxt(afname, final, delimiter=',',header='Aps,Eps,Ips,Ops,Asp,Esp,Isp,Osp,NVCsp')
+        for rationalityR in rationRrange:
+            final = np.zeros((64,9))
+            final = run_church(rationalityQ,rationalityR,final)
+            aprefix = 'EP%d_alphQ%.1f_alphR%.1f_n%d_base%.2f_s%dk' % (EP,rationalityQ,rationalityR,n_balls,base_rate,n_samples)
+            afname = 'qr_N' + ndepth + '_M' + mdepth + '_' + aprefix + '.csv'
+            np.savetxt(afname, final, delimiter=',',header='Aps,Eps,Ips,Ops,Asp,Esp,Isp,Osp,NVCsp')
     # run and parse the prior predictions
     final = np.zeros((64,9))
-    final = run_church(0,final)
+    final = run_church(0,0,final)
     aprefix = 'prior_n%d_base%.2f_s%dk' % (n_balls,base_rate,n_samples)
-    afname = 'listener_N' + ndepth + '_' + aprefix + '.csv'
+    afname = 'qr_N' + ndepth + '_M' + mdepth + '_' + aprefix + '.csv'
     np.savetxt(afname, final, delimiter=',',header='Aps,Eps,Ips,Ops,Asp,Esp,Isp,Osp,NVCsp')
     figdict = {'mpsm':1, 'pmsm': 2, 'mpms': 3, 'pmms':4}
     syll = [decode_premises(p) for p in premises]
-    fname = 'syllistener_premiseorder.csv' 
+    fname = 'sylqr_premiseorder.csv' 
     fid = open(fname,'w')
     for s,p in zip(syll,premises):
         fid.write('%s,%s%s%s %s%s%s%s\n' % (s, "(list '",p[2],p[1],"'",p[3],p[0],")"))

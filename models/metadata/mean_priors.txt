@@ -1,0 +1,32 @@
+> cast(p0, Condition~SYLL,value = "p1n",fun=mean, na.rm=FALSE)
+  Condition       AE4        IA4       EA3        EI3       AI4       AA2
+1         1 0.2059447 0.18489333 0.1732038 0.17336448 0.1644287 0.1916912
+2         2 0.1725915 0.07854537 0.1256791 0.07910544 0.1185518 0.1569497
+> cast(p0, Condition~SYLL,value = "p2n",fun=mean, na.rm=FALSE)
+  Condition        AE4       IA4        EA3       EI3        AI4       AA2
+1         1 0.04529423 0.1815963 0.06778655 0.1718968 0.05771434 0.1555069
+2         2 0.09025516 0.1086691 0.14312597 0.1058253 0.05371802 0.1192537
+> cast(p0, Condition~SYLL,value = "p3n",fun=mean, na.rm=FALSE)
+  Condition        AE4       IA4       EA3        EI3       AI4       AA2
+1         1 0.07907765 0.0429599 0.1374785 0.05320536 0.1272199 0.1051061
+2         2 0.10651246 0.1515548 0.1124968 0.14858798 0.1193732 0.1281595
+> cast(p0, Condition~SYLL,value = "p4n",fun=mean, na.rm=FALSE)
+  Condition        AE4        IA4       EA3        EI3        AI4       AA2
+1         1 0.06395962 0.06042403 0.1196903 0.04549434 0.09893997 0.1217318
+2         2 0.09979204 0.12238522 0.0971035 0.10326231 0.06671363 0.1097585
+> cast(p0, Condition~SYLL,value = "p5n",fun=mean, na.rm=FALSE)
+  Condition       AE4        IA4       EA3       EI3       AI4        AA2
+1         1 0.1874724 0.09287414 0.1334335 0.1080801 0.1617542 0.08411399
+2         2 0.1664674 0.12297559 0.1086966 0.1373626 0.1726063 0.14597310
+> cast(p0, Condition~SYLL,value = "p6n",fun=mean, na.rm=FALSE)
+  Condition        AE4       IA4        EA3       EI3        AI4        AA2
+1         1 0.08551071 0.1363727 0.06303435 0.1058088 0.06457811 0.05895991
+2         2 0.11521930 0.1250252 0.12721797 0.1402912 0.15795665 0.08807695
+> cast(p0, Condition~SYLL,value = "p7n",fun=mean, na.rm=FALSE)
+  Condition        AE4       IA4       EA3       EI3       AI4       AA2
+1         1 0.13101364 0.1875643 0.1414439 0.2015697 0.1472630 0.1307474
+2         2 0.09811345 0.1401773 0.1548485 0.1440256 0.1608222 0.1173971
+> cast(p0, Condition~SYLL,value = "p8n",fun=mean, na.rm=FALSE)
+  Condition       AE4       IA4       EA3       EI3       AI4       AA2
+1         1 0.2017271 0.1133154 0.1639292 0.1405804 0.1781019 0.1521427
+2         2 0.1510487 0.1506674 0.1308314 0.1415396 0.1502581 0.1344314

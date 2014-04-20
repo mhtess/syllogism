@@ -1,15 +1,17 @@
 ### RIPS 1994
-
-r0<-read.csv('/Users/mht/Documents/research/models/rips/model_00/lattice_N0_M0_EP1_alphQ1.0_alphR1.0_n6_base0.35_s100k.csv',col.names=c('A','E','I','O'))
-r0$syll <- read.csv('/Users/mht/Documents/research/models/rips/ripsmodel_syllorder.csv',header=T)[,1]
+library(ggplot2)
+library(reshape2)
+library(plyr)
+r0<-read.csv('/Users/mht/Documents/research/syllogism/models/rips/model_00/lattice_N0_M0_EP1_alphQ1.0_alphR1.0_n6_base0.35_s100k.csv',col.names=c('A','E','I','O'))
+r0$syll <- read.csv('/Users/mht/Documents/research/syllogism/models/rips/ripsmodel_syllorder.csv',header=T)[,1]
 r0$src <- 'lbr'
 
-r1<-read.csv('/Users/mht/Documents/research/models/rips/model_10/lattice_N1_M0_EP1_alphQ2.2_alphR1.0_n6_base0.35_s100k.csv',col.names=c('A','E','I','O'))
-#r1<-read.csv('/Users/mht/Documents/research/models/rips/model_10/lattice_N1_M0_EP1_alphQ2.5_alphR1.0_n7_base0.35_s100k.csv',col.names=c('A','E','I','O'))
-r1$syll <- read.csv('/Users/mht/Documents/research/models/rips/ripsmodel_syllorder.csv',header=T)[,1]
+r1<-read.csv('/Users/mht/Documents/research/syllogism/models/rips/model_10/lattice_N1_M0_EP1_alphQ2.2_alphR1.0_n6_base0.35_s100k.csv',col.names=c('A','E','I','O'))
+#r1<-read.csv('/Users/mht/Documents/research/syllogism/models/rips/model_10/lattice_N1_M0_EP1_alphQ2.5_alphR1.0_n7_base0.35_s100k.csv',col.names=c('A','E','I','O'))
+r1$syll <- read.csv('/Users/mht/Documents/research/syllogism/models/rips/ripsmodel_syllorder.csv',header=T)[,1]
 r1$src <- 'pbr'
 
-rips<-read.csv('/Users/mht/Documents/research/models/rips/rips-data.csv',header=F,col.names=c('syll','A','E','I','O'))
+rips<-read.csv('/Users/mht/Documents/research/syllogism/models/rips/rips-data.csv',header=F,col.names=c('syll','A','E','I','O'))
 nrips <- rips[2:5]/rowSums(rips[2:5])
 nrips$syll <- rips$syll
 nrips$src <- 'data'
@@ -25,11 +27,11 @@ h$Conclusion <- factor(h$Conclusion, levels =c('A','I','O','E') ,labels=c("All",
 
 ####
 rbspectr <- c('#ca0020','#f4a582','#92c5de','#0571b0')
-med <- summary(endrips$endorsement)[3]
 
 ######## OVERALL endorsement
 endrips <- data.frame(endorsement = rowSums(rips[2:5]), syll = rips$syll)
 endrips$syll <- rips$syll
+med <- summary(endrips$endorsement)[3]
 endrips$topmed<-endrips$syll %in% endrips[endrips$endorsement > med,]$syll
 endrips$Median<-factor(endrips$topmed, levels = c('TRUE','FALSE'), labels = c("Top","Bottom"))
 
@@ -47,7 +49,7 @@ h<-merge(h,endrips[,c(2,5)],by="syll")
 ######## Megabarplot
 mega <- melt(rips,id.vars='syll')
 ####Logical reasoners data
-v0<-read.csv('/Users/mht/Documents/research/models/allvalid.txt')
+v0<-read.csv('/Users/mht/Documents/research/syllogism/models/allvalid.txt')
 v0$cncl = substring(v0$syll,3,3)
 v0$syll = paste(substring(v0$syll,1,2),substring(v0$syll,4),sep='')
 v1 = data.frame(syll=mega$syll, cncl=mega$variable)
