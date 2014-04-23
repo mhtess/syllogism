@@ -166,26 +166,22 @@ var allConditions = [
 {"condition":2, "mood":"OA"},{"condition":2, "mood":"OE"},{"condition":2, "mood":"OI"},{"condition":2, "mood":"OO"}]
 ];
 
-var allAdjectives = [[{"adjno":1,"adjcond":1,"A":"blue"},{"adjno":1,"adjcond":2,"A":"red"}],
-      [{"adjno":2,"adjcond":1,"A":"small"},{"adjno":2,"adjcond":2,"A":"large"}],
-      [{"adjno":3,"adjcond":1,"A":"old"},{"adjno":3,"adjcond":2,"A":"new"}]];
-
-var allNouns = [{"noun":"ball"},
-{"noun":"bike"},
-{"noun":"bottle"},
-{"noun":"car"},
-{"noun":"lamp"},
-{"noun":"sofa"},
-{"noun":"table"},
-{"noun":"chair"},
-{"noun":"kite"},
-{"noun":"building"},
-{"noun":"pen"},
-{"noun":"eraser"},
-{"noun":"basket"},
-{"noun":"rug"},
-{"noun":"cushion"},
-{"noun":"vacuum"}];
+var allMaterials = [{"matID":1,"noun":"ball","adj1":"red","adj2":"large","adj3":"new","suffix":"s","article":"a"},
+{"matID":2,"noun":"bike","adj1":"blue","adj2":"small","adj3":"old","suffix":"s","article":"a"},
+{"matID":3,"noun":"bottle","adj1":"green","adj2":"empty","adj3":"large","suffix":"s","article":"a"},
+{"matID":4,"noun":"car","adj1":"white","adj2":"old","adj3":"fast","suffix":"s","article":"a"},
+{"matID":5,"noun":"lamp","adj1":"grey","adj2":"large","adj3":"new","suffix":"s","article":"a"},
+{"matID":6,"noun":"couch","adj1":"brown","adj2":"new","adj3":"leather","suffix":"es","article":"a"},
+{"matID":7,"noun":"table","adj1":"wooden","adj2":"long","adj3":"new","suffix":"s","article":"a"},
+{"matID":8,"noun":"chair","adj1":"orange","adj2":"hard","adj3":"small","suffix":"s","article":"a"},
+{"matID":9,"noun":"kite","adj1":"yellow","adj2":"old","adj3":"small","suffix":"s","article":"a"},
+{"matID":10,"noun":"building","adj1":"tall","adj2":"new","adj3":"brown","suffix":"s","article":"a"},
+{"matID":11,"noun":"pen","adj1":"black","adj2":"small","adj3":"old","suffix":"s","article":"a"},
+{"matID":12,"noun":"eraser","adj1":"pink","adj2":"hard","adj3":"new","suffix":"s","article":"an"},
+{"matID":13,"noun":"basket","adj1":"purple","adj2":"soft","adj3":"old","suffix":"s","article":"a"},
+{"matID":14,"noun":"rug","adj1":"beige","adj2":"new","adj3":"expensive","suffix":"s","article":"a"},
+{"matID":15,"noun":"cushion","adj1":"colorful","adj2":"soft","adj3":"small","suffix":"s","article":"a"},
+{"matID":16,"noun":"vacuum","adj1":"maroon","adj2":"light","adj3":"powerful","suffix":"s","article":"a"}];
 
 
 /*
@@ -218,6 +214,7 @@ var termOrder = random(2);
 // choosing word orders as well
 var trial;
 var trialNoun;
+var trialMaterial;
 var adjOrder;
 var nTargets = 4;
 var shuffledTargets = shuffledArray(nTargets);
@@ -228,6 +225,7 @@ var shuffledProp = shuffledArray(nPropPermute+1);
 var numComplete = 0;
 var	num2Complete = 0;
 var currNounNum;
+var currMatNum;
 var quantifiers = ["A","E","I","O"];
 var quantmap = {"A":"All","E":"No","I":"Some","O":"Some not"};
 var conclusionTerms = ["sp","ps"];
@@ -405,18 +403,23 @@ var experiment = {
 			$("#targetError").hide(); 
 			currentTrialNum = shuffledOrder[numComplete];
 			trial = allTrialOrders[currentTrialNum];
-      adjOrder = shuffledArray(allAdjectives.length);
-      currNounNum = shuffledNorder[numComplete];
+      currMatNum = shuffledNorder[numComplete];
       //pick a random noun
-      trialNoun = allNouns[currNounNum].noun;
+      trialNoun = allMaterials[currMatNum].noun;
       var trialAdj = [];
+      var b=[];
       // randomize the adjectives
-      for (var i=0; i < adjOrder.length; i++){
-        trialAdj[i] = allAdjectives[adjOrder[i]][random(0,1)].A
+      var a=Object.keys(allMaterials[currMatNum]).filter(function(x) {return (x.indexOf("adj")==0)})
+      while (a.length>0) {
+        var item = a.splice(Math.floor(Math.random()*a.length), 1)[0];
+        b.push(item);
+      }
+      for (var i=0; i < b.length; i++){
+        trialAdj[i] = allMaterials[currMatNum][b[i]]
         };
-      var termP = trialAdj[0]+" "+trialNoun+"s";
-      var termM = trialAdj[1]+" "+trialNoun+"s";
-      var termS = trialAdj[2]+" "+trialNoun+"s";
+      var termP = trialAdj[0]+" "+trialNoun+allMaterials[currMatNum].suffix;
+      var termM = trialAdj[1]+" "+trialNoun+allMaterials[currMatNum].suffix;
+      var termS = trialAdj[2]+" "+trialNoun+allMaterials[currMatNum].suffix;
     		$('.bar').css('width', (200.0 * (1+numComplete)/numTrials) + 'px');
     		$("#trial-num").html(numComplete+1);
     		$("#total-num").html(numTrials);
@@ -572,38 +575,66 @@ var experiment = {
     	// to occur
     	} else {
 			$("#targetError2").hide(); 
-			currentTrialNum = shuffledPorder[num2Complete];
-			trial = allPropOrders[currentTrialNum];		
-      adjOrder = shuffledArray(allAdjectives.length);
-      adjOrder = [0,1,2]
-      currNounNum = shuffledNorder[num2Complete];
-      //pick a random noun
-      trialNoun = allNouns[currNounNum].noun;
-      var trialAdj = [];
-      var trialNadj = [];
-      // randomize the adjectives
-      for (var i=0; i < adjOrder.length; i++){
-        trialAdj[i] = allAdjectives[adjOrder[i]][random(0,1)].A
-        trialNadj[i] = allAdjectives[adjOrder[i]][(1+random(0,1))%2].A
-        };
-      var termP = trialAdj[0]+" "+trialNoun+"s";
-      var termM = trialAdj[1]+" "+trialNoun+"s";
-      var termS = trialAdj[2]+" "+trialNoun+"s";
-    		$('.bar').css('width', (200.0 * num2Complete/numTrials) + 'px');
+			// currentTrialNum = shuffledPorder[num2Complete];
+			// trial = allPropOrders[currentTrialNum];		
+   //    adjOrder = shuffledArray(allAdjectives.length);
+   //    adjOrder = [0,1,2]
+   //    currNounNum = shuffledNorder[num2Complete];
+   //    //pick a random noun
+   //    trialNoun = allNouns[currNounNum].noun;
+   //    var trialAdj = [];
+   //    var trialNadj = [];
+   //    // randomize the adjectives
+   //    for (var i=0; i < adjOrder.length; i++){
+   //      trialAdj[i] = allAdjectives[adjOrder[i]][random(0,1)].A
+   //      trialNadj[i] = allAdjectives[adjOrder[i]][(1+random(0,1))%2].A
+   //      };
+   //    var termP = trialAdj[0]+" "+trialNoun+"s";
+   //    var termM = trialAdj[1]+" "+trialNoun+"s";
+   //    var termS = trialAdj[2]+" "+trialNoun+"s";
+        currentTrialNum = shuffledOrder[num2Complete];
+        trial = allTrialOrders[currentTrialNum];
+        currMatNum = shuffledNorder[num2Complete];
+        //pick a random noun
+        trialNoun = allMaterials[currMatNum].noun;
+        var trialobj = allMaterials[currMatNum].article + " " + trialNoun;
+        $("#object").html(trialobj);
+        var trialAdj = [];
+        var b=[];
+        // randomize the adjectives
+        var a=Object.keys(allMaterials[currMatNum]).filter(function(x) {return (x.indexOf("adj")==0)})
+        while (a.length>0) {
+          var item = a.splice(Math.floor(Math.random()*a.length), 1)[0];
+          b.push(item);
+        }
+        for (var i=0; i < b.length; i++){
+          trialAdj[i] = allMaterials[currMatNum][b[i]]
+          };
+        var termP = trialAdj[0]+" "+trialNoun+allMaterials[currMatNum].suffix;
+        var termM = trialAdj[1]+" "+trialNoun+allMaterials[currMatNum].suffix;
+        var termS = trialAdj[2]+" "+trialNoun+allMaterials[currMatNum].suffix;    		
+        $('.bar').css('width', (200.0 * num2Complete/numTrials) + 'px');
     		$("#trial-num").html(num2Complete);
     		$("#total-num").html(numTrials);
     		$("#condition").html(experiment.condition);
         // 111, 110, 101, 011, 100, 010, 001, 000
-		 	propPermute = ["A " +trialNoun+ " which is " + trialAdj[2]+", " + trialAdj[1] + ", and "+trialAdj[0], 
-      "A " +trialNoun+ " which is " + trialAdj[2]+", " + trialAdj[1] + ", and not "+trialAdj[0], 
-      "A " +trialNoun+ " which is " + trialAdj[2]+", " + trialAdj[0] + ", and not "+trialAdj[1], 
-      "A " +trialNoun+ " which is " + trialAdj[0]+", " + trialAdj[1] + ", and not "+trialAdj[2],
-      "A " +trialNoun+ " which is " + trialAdj[2]+", not " + trialAdj[1] + ", and not "+trialAdj[0], 
-      "A " +trialNoun+ " which is " + trialAdj[1]+", not " + trialAdj[2] + ", and not "+trialAdj[0], 
-      "A " +trialNoun+ " which is " + trialAdj[0]+", not " + trialAdj[1] + ", and not "+trialAdj[2], 
-      "A " +trialNoun+ " which is " + "not " + trialAdj[2]+", not " + trialAdj[1] + ", and not "+trialAdj[0]]
-		//	propPermute = [trial.c1,trial.c2,trial.c3,trial.c4,trial.c5,trial.c6,trial.c7,trial.c8];
-			var priorchecktext = '';
+		 	// propPermute = ["A " +trialNoun+ " which is " + trialAdj[2]+", " + trialAdj[1] + ", and "+trialAdj[0], 
+    //   "A " +trialNoun+ " which is " + trialAdj[2]+", " + trialAdj[1] + ", and not "+trialAdj[0], 
+    //   "A " +trialNoun+ " which is " + trialAdj[2]+", " + trialAdj[0] + ", and not "+trialAdj[1], 
+    //   "A " +trialNoun+ " which is " + trialAdj[0]+", " + trialAdj[1] + ", and not "+trialAdj[2],
+    //   "A " +trialNoun+ " which is " + trialAdj[2]+", not " + trialAdj[1] + ", and not "+trialAdj[0], 
+    //   "A " +trialNoun+ " which is " + trialAdj[1]+", not " + trialAdj[2] + ", and not "+trialAdj[0], 
+    //   "A " +trialNoun+ " which is " + trialAdj[0]+", not " + trialAdj[1] + ", and not "+trialAdj[2], 
+    //   "A " +trialNoun+ " which is " + "not " + trialAdj[2]+", not " + trialAdj[1] + ", and not "+trialAdj[0]]
+      propPermute = ["The " +trialNoun+ " is " + trialAdj[2]+", " + trialAdj[1] + ", and "+trialAdj[0], 
+      "The " +trialNoun+ " is " + trialAdj[2]+", " + trialAdj[1] + ", and not "+trialAdj[0], 
+      "The " +trialNoun+ " is " + trialAdj[2]+", " + trialAdj[0] + ", and not "+trialAdj[1], 
+      "The " +trialNoun+ " is " + trialAdj[0]+", " + trialAdj[1] + ", and not "+trialAdj[2],
+      "The " +trialNoun+ " is " + trialAdj[2]+", not " + trialAdj[1] + ", and not "+trialAdj[0], 
+      "The " +trialNoun+ " is " + trialAdj[1]+", not " + trialAdj[2] + ", and not "+trialAdj[0], 
+      "The " +trialNoun+ " is " + trialAdj[0]+", not " + trialAdj[1] + ", and not "+trialAdj[2], 
+      "The " +trialNoun+ " is " + "not " + trialAdj[2]+", not " + trialAdj[1] + ", and not "+trialAdj[0]];			
+      var priorchecktext = '';
 			var priorResponses = {};
 			var nResponses = 0;
       var propertyOrder = {};
@@ -671,9 +702,9 @@ var experiment = {
 
          priorResponses["propertiesFull"] = propertyOrder;
          priorResponses["trialID"] = currentTrialNum;
-			   priorResponses["mood"] = (trial.mood + trial.figure);
-			   priorResponses["termContent"] = {"S":trial.S,"M":trial.M,"P":trial.P};
-    //     console.log(priorResponses);
+			  // priorResponses["mood"] = (trial.mood + trial.figure);
+			   priorResponses["termContent"] = {"A":termS,"B":termM,"C":termP};
+         console.log(priorResponses);
 
 			   var trialData = experiment.data["trialInfo"].push(priorResponses);
 				experiment.priors();	

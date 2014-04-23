@@ -166,26 +166,26 @@ var allConditions = [
 {"condition":2, "mood":"OA"},{"condition":2, "mood":"OE"},{"condition":2, "mood":"OI"},{"condition":2, "mood":"OO"}]
 ];
 
-var allAdjectives = [[{"adjno":1,"adjcond":1,"A":"blue"},{"adjno":1,"adjcond":2,"A":"red"}],
-      [{"adjno":2,"adjcond":1,"A":"small"},{"adjno":2,"adjcond":2,"A":"large"}],
-      [{"adjno":3,"adjcond":1,"A":"old"},{"adjno":3,"adjcond":2,"A":"new"}]];
+// var allAdjectives = [[{"adjno":1,"adjcond":1,"A":"blue"},{"adjno":1,"adjcond":2,"A":"red"}],
+//       [{"adjno":2,"adjcond":1,"A":"small"},{"adjno":2,"adjcond":2,"A":"large"}],
+//       [{"adjno":3,"adjcond":1,"A":"old"},{"adjno":3,"adjcond":2,"A":"new"}]];
 
-var allNouns = [{"noun":"ball"},
-{"noun":"bike"},
-{"noun":"bottle"},
-{"noun":"car"},
-{"noun":"lamp"},
-{"noun":"sofa"},
-{"noun":"table"},
-{"noun":"chair"},
-{"noun":"kite"},
-{"noun":"building"},
-{"noun":"pen"},
-{"noun":"eraser"},
-{"noun":"basket"},
-{"noun":"rug"},
-{"noun":"cushion"},
-{"noun":"vacuum"}];
+var allMaterials = [{"matID":1,"noun":"ball","adj1":"red","adj2":"large","adj3":"new","suffix":"s"},
+{"matID":2,"noun":"bike","adj1":"blue","adj2":"small","adj3":"old","suffix":"s"},
+{"matID":3,"noun":"bottle","adj1":"green","adj2":"empty","adj3":"large","suffix":"s"},
+{"matID":4,"noun":"car","adj1":"white","adj2":"old","adj3":"fast","suffix":"s"},
+{"matID":5,"noun":"lamp","adj1":"grey","adj2":"large","adj3":"new","suffix":"s"},
+{"matID":6,"noun":"couch","adj1":"brown","adj2":"new","adj3":"leather","suffix":"es"},
+{"matID":7,"noun":"table","adj1":"wooden","adj2":"long","adj3":"new","suffix":"s"},
+{"matID":8,"noun":"chair","adj1":"orange","adj2":"hard","adj3":"small","suffix":"s"},
+{"matID":9,"noun":"kite","adj1":"yellow","adj2":"old","adj3":"small","suffix":"s"},
+{"matID":10,"noun":"building","adj1":"tall","adj2":"new","adj3":"brown","suffix":"s"},
+{"matID":11,"noun":"pen","adj1":"black","adj2":"small","adj3":"old","suffix":"s"},
+{"matID":12,"noun":"eraser","adj1":"pink","adj2":"hard","adj3":"new","suffix":"s"},
+{"matID":13,"noun":"basket","adj1":"purple","adj2":"soft","adj3":"old","suffix":"s"},
+{"matID":14,"noun":"rug","adj1":"beige","adj2":"new","adj3":"expensive","suffix":"s"},
+{"matID":15,"noun":"cushion","adj1":"colorful","adj2":"soft","adj3":"small","suffix":"s"},
+{"matID":16,"noun":"vacuum","adj1":"maroon","adj2":"light","adj3":"powerful","suffix":"s"}];
 
 
 /*
@@ -198,6 +198,8 @@ var numConditions = allConditions.length;
 // Randomly select a condition number for this particular participant
 var chooseCondition = random(0, numConditions-1);
 var otherCondition = (chooseCondition+1)%2;
+// THIS IS GOING TO BE SYLL02-1, FIGURE 1 SYLLOGISMS ONLY
+chooseCondition = 0;
 // Based on condition number, choose set of input (trials)
 var allTrialOrders = allConditions[chooseCondition];
 var allPropOrders = allConditions[chooseCondition];
@@ -217,7 +219,7 @@ var termOrder = random(2);
 // A variable special for this experiment because we're randomly
 // choosing word orders as well
 var trial;
-var trialNoun;
+var trialMaterial;
 var adjOrder;
 var nTargets = 4;
 var shuffledTargets = shuffledArray(nTargets);
@@ -227,7 +229,7 @@ var shuffledProp = shuffledArray(nPropPermute+1);
 // Keep track of how many trials have been completed
 var numComplete = 0;
 var	num2Complete = 0;
-var currNounNum;
+var currMatNum;
 var quantifiers = ["A","E","I","O"];
 var quantmap = {"A":"All","E":"No","I":"Some","O":"Some not"};
 var conclusionTerms = ["sp","ps"];
@@ -243,12 +245,12 @@ otherOrderingStuff["quantifiers"] = shuffledTargets.map(function(i) {return quan
 otherOrderingStuff["properties"] = shuffledProp.map(function(i) {return properties[i];});
 
 function getLabel(index) {
-  if (index == 8) {
+  if (index == 4) {
     return "N";
   } else {
-    var quantInd = shuffledTargets[index % 4];
+    var quantInd = shuffledTargets[index];
     var ordInd = index > 3 ? 1 : 0;
-    return quantifiers[quantInd] + termOrderList[ordInd];
+    return quantifiers[quantInd];// + termOrderList[ordInd];
   }
 }
 
@@ -393,7 +395,7 @@ var experiment = {
 			  // experiment.description2();
 
         $('.bar').css('width', (200.0 * num2Complete/numTrials) + 'px');
-        $("#trial-num").html(num2Complete);
+        $("#trial-num").html(numComplete);
         $("#total-num").html(numTrials);
         experiment.questionaire();
         
@@ -404,24 +406,30 @@ var experiment = {
 			$("#targetError").hide(); 
 			currentTrialNum = shuffledOrder[numComplete];
 			trial = allTrialOrders[currentTrialNum];
-      adjOrder = shuffledArray(allAdjectives.length);
-      currNounNum = shuffledNorder[numComplete];
+      // adjOrder = shuffledArray(allAdjectives.length);
+      currMatNum = shuffledNorder[numComplete];
       //pick a random noun
-      trialNoun = allNouns[currNounNum].noun;
+      trialNoun = allMaterials[currMatNum].noun;
       var trialAdj = [];
+      var b=[];
       // randomize the adjectives
-      for (var i=0; i < adjOrder.length; i++){
-        trialAdj[i] = allAdjectives[adjOrder[i]][random(0,1)].A
+      var a=Object.keys(allMaterials[currMatNum]).filter(function(x) {return (x.indexOf("adj")==0)})
+      while (a.length>0) {
+        var item = a.splice(Math.floor(Math.random()*a.length), 1)[0];
+        b.push(item);
+      }
+      for (var i=0; i < b.length; i++){
+        trialAdj[i] = allMaterials[currMatNum][b[i]]
         };
-      var termP = trialAdj[0]+" "+trialNoun+"s";
-      var termM = trialAdj[1]+" "+trialNoun+"s";
-      var termS = trialAdj[2]+" "+trialNoun+"s";
+      var termP = trialAdj[0]+" "+trialNoun+allMaterials[currMatNum].suffix;
+      var termM = trialAdj[1]+" "+trialNoun+allMaterials[currMatNum].suffix;
+      var termS = trialAdj[2]+" "+trialNoun+allMaterials[currMatNum].suffix;
     		$('.bar').css('width', (200.0 * (1+numComplete)/numTrials) + 'px');
     		$("#trial-num").html(numComplete+1);
     		$("#total-num").html(numTrials);
     		$("#condition").html(experiment.condition);
 /* 			pConclusionDef = ["All "+trial.S+" " + trial.v3 + " "+trial.P, "Some "+trial.S+" " + trial.v3 + " "+trial.P, "Some "+trial.S+" " + trial.v3 + " not "+trial.P, "None "+trial.S+" " + trial.v3 + " "+trial.P, "None of these conclusions"] */
-			pConclusion = ["All "+termS+" are "+termP,"No "+termS+" are "+ termP, "Some "+termS+" are "+ termP, "Some "+termS+" are not "+ termP, "None of these conclusions"]
+			pConclusion = ["<strong>All</strong> "+termS+" are "+termP,"<strong>No</strong> "+termS+" are "+ termP, "<strong>Some</strong> "+termS+" are "+ termP, "<strong>Some</strong> "+termS+" are <strong>not</strong> "+ termP, "None of these conclusions"]
       //altpConclusion = ["All "+trial.P+"s are "+ trial.S + "s","No "+trial.P+"s are "+ trial.S + "s", "Some "+trial.P+"s are "+ trial.S + "s", "Some "+trial.P+"s are not "+ trial.S + "s", "None of these conclusions"]
 			var bowls = '';
 			var responses = {};
@@ -516,9 +524,9 @@ var experiment = {
 			} else {
 				$("#sliderMoveon").unbind("click");
 			   responses["trialID"] = currentTrialNum;
-			   responses["mood"] = (trial.mood + trial.figure);
-         responses["termContent"] = {"S":trial.S,"M":trial.M,"P":trial.P};
-         responses["conclusionsFull"] = conclusionOrder;
+			   responses["mood"] = (trial.mood + trial.condition);
+         responses["termContent"] = {"S":termS,"M":termM,"P":termP};
+        // responses["conclusionsFull"] = conclusionOrder;
          console.log(responses);
 			   var trialData = experiment.data["trialInfo"].push(responses);
 				experiment.next();	

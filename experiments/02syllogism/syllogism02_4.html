@@ -184,17 +184,6 @@ function pressEnter(e) {
 	<p id="direct">Adjust the slider to rate how likely you think each conclusion follows from the statements above.</p>
     <br>
     <table align="center" cellspacing="10">
-<!--         <tr><th>Definitely does not follow</th>
-        <th> </th>
-        <th>Definitely follows</th>
-        <th></th>
-
-        '<td class="bowltd"><div>'+pConclusion[shuffledTargets[i]]+'</div><br><div>Definitely follows</div><div id="slidy'+i+'" align="center"></div><div>Definitely does not follow</div></td><td width="8px"></td>');//}
-            };
-        <th></th>
-        <th>Definitely does not follow</th>
-        <th></th>
-        <th>Definitely follows</th></tr> -->
         <tbody id="vagueBowls" align="center">
             <tr>
                 <td>
@@ -203,7 +192,7 @@ function pressEnter(e) {
                             <td class="boxtd">
                                 <table>
                                     <tbody id="vaguebox0" align="center">
-                                <tr><td id="conclusion0" class="cncltd"></td></tr>
+                                <tr><td><div id="conclusion0" class="cncltd" style="height: 35px; overflow:hidden;"></div></td></tr>
                                 <tr><td class="rightsliderHeader">Definitely follows</td></tr>
                                 <tr><td class="sliderContainer" id="sliderContainer0"></td></tr>
                                 <tr><td class="leftsliderHeader">Definitely does not follow</td></tr>
@@ -213,7 +202,7 @@ function pressEnter(e) {
                             <td class="boxtd">
                                 <table>
                                     <tbody id="vaguebox1" align="center">
-                                <tr><td id="conclusion1" class="cncltd"></td></tr>
+                                <tr><td><div id="conclusion1" class="cncltd" style="height: 35px; overflow:hidden;"></div></td></tr>
                                 <tr><td class="rightsliderHeader">Definitely follows</td></tr>
                                 <tr><td class="sliderContainer" id="sliderContainer1"></td></tr>
                                 <tr><td class="leftsliderHeader">Definitely does not follow</td></tr>
@@ -223,17 +212,17 @@ function pressEnter(e) {
                             <td class="boxtd">
                                 <table>
                                     <tbody id="vaguebox2" align="center">
-                                <tr><td id="conclusion2" class="cncltd"></td></tr>
+                                <tr><td><div id="conclusion2" class="cncltd" style="height: 35px; overflow:hidden;"></div></td></tr>
                                 <tr><td class="rightsliderHeader">Definitely follows</td></tr>
                                 <tr><td class="sliderContainer" id="sliderContainer2"></td></tr>
                                 <tr><td class="leftsliderHeader">Definitely does not follow</td></tr>
                                     </tbody>
                             </table>
                             </td>
-                            <td class="boxtd">
+                            <td>
                                 <table>
                                 <tbody id="vaguebox3" align="center">
-                                <tr><td id="conclusion3" class="cncltd"></td></tr>
+                                <tr><td><div id="conclusion3" class="cncltd" style="height: 35px; overflow:hidden;"></div></td></tr>
                                 <tr><td class="rightsliderHeader">Definitely follows</td></tr>
                                 <tr><td class="sliderContainer" id="sliderContainer3"></td></tr>
                                 <tr><td class="leftsliderHeader">Definitely does not follow</td></tr>
@@ -242,7 +231,7 @@ function pressEnter(e) {
                             </td>
                         </tr>
                     <tr> 
-                    <tr><table class="bowltd"><tbody align="center"><tr>
+                    <tr><table class="nvctd"><tbody align="center"><tr>
                         <td class="cncltd">
                             None of the above conclusions definitely follows
                         </td>

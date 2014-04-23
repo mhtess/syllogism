@@ -146,7 +146,7 @@ function pressEnter(e) {
 
 <div class="slide" id="description2">
     <p id='logo-text'>Instructions</p>
-    <p class ="block-text"> You will see <span id="total2-num">{{}}</span> sets of descriptions of possible objects. Each set has 8 different possibilities. Please rate how likely it is that each object actually exists.</p>
+    <p class ="block-text"> You will see <span id="total2-num">{{}}</span> sets of descriptions of objects. Imagine you have come across this object. Please rate how likely it is that the object has each of the 8 descriptions listed.</p>
     <div id="form">
         <button type="button" onclick="this.blur(); experiment.priors()">Next</button>
     </div>
@@ -309,7 +309,8 @@ function pressEnter(e) {
 <!-- prior elicitation slide -->
 
 <div class="slide" id="priors">
-    <p id="question">Rate how likely it is that these objects actually exist.</p>
+    <p id="setup">Imagine you've come across <span id="object">{{}}</span>.</p> 
+    <p id="question">Rate how likely it is that it has the following properties.</p>
     <br>
 	<table align="center" cellspacing="10">
          <div id="priorCheck" align="center" >{{}}</div>
