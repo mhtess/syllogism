@@ -66,8 +66,8 @@
 
 
 \begin{abstract}
-We develop a computational-level theory of syllogistic reasoning which places reasoning at the intersection of communication and logic. The model considers reasoning over concrete situations and situations to be constructed probabilistically by sampling. We compare our model predictions with behavioral data from a recent meta-analysis. We show the flexibility of the model to account for reasoning behavior in a study of syllogisms using the generalized quantifiers \emph{most} and \emph{few}. We conclude by relating our model to two extant theories of syllogistic reasoning -- Mental Models and Probability Heuristics -- and discussing future directions.  
-\\
+Reasoning using syllogisms has been studied by cognitive psychologists for the past century to elicit the conclusions people naturally draw from these same arguments, to study how people reason. Syllogistic reasoning lies at the intriguing intersection of natural and formal reasoning, of language and logic. Syllogisms comprise a formal system of reasoning yet use natural language quantifiers, and invite natural language conclusions. How can we make sense of the interactions between logic and language? We develop a computational-level theory of syllogistic reasoning which places reasoning at the intersection of communication and logic. The model considers reasoning over concrete situations and situations to be constructed probabilistically by sampling. We compare our model predictions with behavioral data from a recent meta-analysis. We show the flexibility of the model to account for reasoning behavior in a study of syllogisms using the generalized quantifiers \emph{most} and \emph{few}. We conclude by relating our model to two extant theories of syllogistic reasoning -- Mental Models and Probability Heuristics -- and discussing future directions.  
+
 \textbf{Keywords:} 
 Reasoning, language understanding, probabilistic model
 \end{abstract}
@@ -85,13 +85,13 @@ Or do you respond
 % 
 This cartoon illustrates a critical dimension along which cognitive theories of reasoning differ: whether the core and ideal of reasoning is deductive validity or probabilistic support. A separate dimension concerns the extent to which principles of natural language---pragmatics and semantics---are necessary for understanding reasoning. In this paper we explore a theory of syllogistic reasoning inspired by recent advances in probabilistic semantics and pragmatics.
 
-The form of the argument above resembles a syllogism: an argument with two quantifier expressions (premises) used to relate two properties (or terms) via a middle term. Fit into a formal syllogistic form, this argument would read:
+The form of the argument above resembles a syllogism: a two-sentence argument used relate two properties (or terms) via a middle term; the relations used in syllogisms are quantifiers. Fit into a formal syllogistic form, this argument would read:
 \begin{quote}
 All officemates are out with the flu\\
 Some people out with the flu are out for weeks\\
 Therefore, some officemates are out for weeks
 \end{quote}
-The full space of syllogistic arguments is derived by shuffling the term-ordering (``All A are B'' vs. ``All B are A'') and changing the quantifier (\emph{all, some, none, not all}). Most syllogisms have no valid conclusion, i.e. there is no deductive relation between A \& C determined by the premises. This is the case with the argument above. A recent meta-analysis of syllogistic reasoning tasks showed that over the population, accuracy on producing valid conclusions ranges from 90 \% to 1\% and ability to produce appropriate \emph{no valid conclusion} responses ranges from 76\% to 12\% \cite{Khemlani2012}: people are not good at drawing deductively valid conclusions.
+The full space of syllogistic arguments is derived by shuffling the term-ordering (``All A are B'' vs. ``All B are A'') and changing the quantifier (\emph{all, some, none, not all}). Most syllogisms have no valid conclusion, i.e. there is no deductive relation between A \& C determined by the premises. This is the case with the argument above. Often in these cases, however, people are perfectly comfortable drawing some conclsuion. A recent meta-analysis of syllogistic reasoning showed that over the population, the ability to produce \emph{no valid conclusion} responses for these invalid arguments ranges from 76\% to 12\%. For valid arguments, the accuracy of producing valid conclusions ranges from 90 \% to 1\% \cite{Khemlani2012}: people are not good at drawing deductively valid conclusions.
 %
 
 Perhaps because of this divergence between human behavior and deductive logic, syllogistic reasoning has been a topic of considerable interest in cognitive psychology for over one hundred years \cite{storring1908}, and before that in philosophy, dating back to Aristotle. In cognitive psychology we are interested in how people reason, and syllogisms lie at the intriguing intersection of natural and formal reasoning, of language and logic. They are undoubtedly logical; indeed, syllogisms were the first and only formal system of logic for millennia. At the same time, they use natural language quantifiers and invite natural language conclusions; precisely pinning down the meaning and use of quantifiers has been an ongoing area of inquiry since Aristotle \cite<e.g.>{negationHorn}.
@@ -99,8 +99,8 @@ Perhaps because of this divergence between human behavior and deductive logic, s
 
 Many theories of syllogistic reasoning take deduction as a given and try to explain errors as a matter of noise during cognition. These errors may arise from improper use of deductive rules or biased construction of logical models. 
 %In either case, logic makes the connection to natural language semantics natural (though not central).
-At the same time, many other kinds of reasoning have been explained as probabilistic inference under uncertainty. Probability provides a natural description of a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to start charging.
-We suggest that combining probabilistic reasoning with formal semantics and pragmatics of natural language leads to a useful combination of approaches, in which our knowledge describes distributions on possible situations and sentences naturally update these distributions with new information.
+At the same time, many other kinds of reasoning have been explained as probabilistic inference under uncertainty. Probability provides a natural description of a world in which you don't know how many people are in the hallway outside your door or whether or not the lion is going to charge.
+We suggest that combining probabilistic reasoning with natural language semantics and pragmatics is a useful approach, in which  knowledge describes distributions on possible situations and sentences naturally update these distributions with new information.
 In this formalism, deduction emerges as those arguments which are always true and syllogistic reasoning becomes a process of determining what is most probable, relevant, and informative.
 
 
@@ -128,7 +128,7 @@ Properties \lstinline{A}, \lstinline{B}, and \lstinline{C} of these objects are 
 \end{lstlisting}
 Note that the operator \lstinline{mem} memoizes these functions, so that a given object has the same value each time it is examined within a given situation, even though it is initially determined probabilistically (via \lstinline{flip}). 
 %This allows the properties to be defined independently of the set of objects. 
-Previous probabilistic models \cite{Oaksford1994} have invoked a principle of rarity from the observation that properties are relatively rare of objects in the world\footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}. For us this simply means the base rate, \lstinline{br}, of properties is small.  
+Previous probabilistic models \cite{Oaksford1994} have invoked a principle of rarity from the observation that properties are relatively rare of objects in the world\footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}. For us, this simply means the base rate, \lstinline{br}, of properties is small.  
 
 %, each with 1, 2 or 3 properties corresponding to the three terms of a syllogism. Situations are sampled from a naive prior. In this setting, it is reasonable to assume that the prior probability, $P(situation)$, is a binomial distribution (i.e. the probability of a coin of a given weight coming up Heads $n$ times in a row, where $n$ is the number of objects). We assume properties are relatively rare of objects; this means the base rate (\lstinline{br}) of properties is less than 0.50.  This principle of rarity comes from the intuition that properties are relative rare \footnote{This article is an article and it's about reasoning, but it's not a cat, and it's not a car, nor an elephant nor the color red. In fact, there's a very large number of things which this article is not.}, and this has been used in probabilistic models previously. 
 %
@@ -158,7 +158,7 @@ A quantifier (e.g. \emph{all}) is a function of two properties (e.g. \emph{As} a
 \end{lstlisting}
 Here the helper function \lstinline{all-true} simply checks that all elements of a list are true, i.e. that all the \emph{As} are indeed \emph{Bs}. The function \lstinline{map} applies the given function ---\lstinline{(lambda ...)}--- to each element of the list \lstinline{objects}. Similarly we can define \lstinline{some}, \lstinline{no}, \lstinline{not-all} to have their standard meanings. For a first test of the model, we assume sets are non-empty, i.e. \emph{all} and \emph{none} cannot be trivially true.
 
-The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over worlds into a posterior belief distribution. For syllogistic reasoning we are interested not in the posterior distribution over situations directly, but the distribution on true conclusions that these situations imply. In Church this looks like:
+The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over situations into a posterior belief distribution. For syllogistic reasoning we are interested not in the posterior distribution over situations directly, but the distribution on true conclusions that these situations imply. In Church this looks like:
 \begin{lstlisting}
 (query
  (define objects (list 'o1 'o2 ... 'on))
@@ -173,7 +173,7 @@ The key observation to connect these truth-functional meanings of quantifier exp
       (premise-two B C)))
 \end{lstlisting}
 
-The first arguments to a query function are a generative model: definitions or the background knowledge with which a reasoning agent is endowed. Definitions with which a prior is stipulated (e.g. \lstinline{conclusion}) denote concepts over which the agent has uncertainty . The second argument, called the \emph{query expression}, is the aspect of the computation about which we are interested; it is what we want to know. The final argument, called the \emph{conditioner}, is the information with which we update our beliefs; it is what we know. 
+The first arguments to a query function are a generative model: definitions or the background knowledge with which a reasoning agent is endowed. Definitions with which a prior is stipulated (e.g. \lstinline{conclusion}) denote aspects of the world over which the agent has uncertainty\footnote{Note that for brevity, the properties \lstinline{A, B, C} are wrapped-up; together with objects, these properties generate situations, and this is also an aspect over which the agent has uncertainty.}. The second argument, called the \emph{query expression}, is the aspect of the computation about which we are interested; it is what we want to know. The final argument, called the \emph{conditioner}, is the information with which we update our beliefs; it is what we know. 
 
 We assume that the prior distribution over conclusions (and premises, below) is uniform.
 
@@ -196,7 +196,7 @@ We assume that the prior distribution over conclusions (and premises, below) is 
 %One reason to be skeptical of mere \emph{posterior matching} in syllogistic reasoning is that language understanding and language production are central to the syllogistic task, and truth-functional semantics can only go so far. 
 We have suggested viewing syllogistic reasoning as a case of communication, and this in turn suggests that reasoning should go beyond the semantics of language, to its pragmatics.
 Natural language pragmatics could enter in two places in the above model: premise interpretation and conclusion production. 
-We address pragmatic production, or choice of conclusion, first.
+We address pragmatic interpretation first.
 
 Following the Rational Speech Act theory \cite{Goodman2013,Frank2012a} we imagine a reasoner who chooses the conclusions which are more likely to convey information about which only the reasoner has access---in this case, the premises. That is, we imagine that the reasoner treats the conclusion as a message chosen for a listener who lacks the premises (or perhaps lacks only the ability to reason from premises to conclusions).
 This listener can be thought of concretely as the (rather naive) person evaluating the participant's responses. In the original Rational Speech Act model, the listener hears an utterance and tries to reconstruct the situation observed by the speaker. In our model, the \emph{conclusion-listener} hears a conclusion and tries to reconstruct the premises with which the reasoner was presented. This distinction between situation and premise reconstruction turns out to be important as the reasoner does not observe a situation directly but rather only constructs situations consistent with the premises: our reasoner attempts to convey her \emph{knowledge state}, not her guess about the situation.
