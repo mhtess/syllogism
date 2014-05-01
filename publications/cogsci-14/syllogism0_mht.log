@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  1 MAY 2014 12:14
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  1 MAY 2014 16:09
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -351,52 +351,52 @@ LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
 (Font)              Font shape `OMS/pzccm/m/n' tried instead on input line 65.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 71.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 96.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 96.
 
-<figures/fig0_cartoon.png, id=1, 660.4675pt x 444.66125pt>
-File: figures/fig0_cartoon.png Graphic file (type png)
+<figures/fig0_cartoon3.png, id=1, 680.5425pt x 428.09938pt>
+File: figures/fig0_cartoon3.png Graphic file (type png)
 
-<use figures/fig0_cartoon.png>
-Package pdftex.def Info: figures/fig0_cartoon.png used on input line 100.
-(pdftex.def)             Requested size: 243.91125pt x 164.21675pt.
+<use figures/fig0_cartoon3.png>
+Package pdftex.def Info: figures/fig0_cartoon3.png used on input line 100.
+(pdftex.def)             Requested size: 243.91125pt x 153.42976pt.
  [1{/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
 
- <./figures/fig0_cartoon.png>]
+ <./figures/fig0_cartoon3.png>]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 122.
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 140.
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 140.
 
 Underfull \hbox (badness 1189) in paragraph at lines 170--171
 []\OT1/ptm/m/n/10 The key ob-ser-va-tion to con-nect these truth-functional
  []
 
-
+[2]
 Underfull \hbox (badness 1571) in paragraph at lines 213--214
 []\OT1/ptm/m/n/10 However, a lis-tener (our rea-soner) may con-sider the
  []
 
-[2]
+
 Overfull \hbox (26.00668pt too wide) in paragraph at lines 311--318
 [][] 
  []
 
-<figures/multibar_fig1.png, id=17, 2958.05125pt x 2358.8125pt>
+[3] <figures/multibar_fig1.png, id=20, 3011.25pt x 2409.0pt>
 File: figures/multibar_fig1.png Graphic file (type png)
 
 <use figures/multibar_fig1.png>
 Package pdftex.def Info: figures/multibar_fig1.png used on input line 325.
-(pdftex.def)             Requested size: 243.91125pt x 194.46765pt.
- [3]
-<figures/multiScatter_fig2.png, id=21, 4784.87625pt x 1955.305pt>
+(pdftex.def)             Requested size: 243.91125pt x 195.11322pt.
+
+<figures/multiScatter_fig2.png, id=21, 4776.84625pt x 1965.3425pt>
 File: figures/multiScatter_fig2.png Graphic file (type png)
 
 <use figures/multiScatter_fig2.png>
 Package pdftex.def Info: figures/multiScatter_fig2.png used on input line 371.
-(pdftex.def)             Requested size: 505.89pt x 206.70044pt.
+(pdftex.def)             Requested size: 505.89pt x 208.12138pt.
  [4 <./figures/multibar_fig1.png>]
 <figures/fig4_multiScatter_colorset_AMFO_MFIE_n6_br0,30.png, id=26, 4818.0pt x 
 1294.8375pt>
@@ -411,31 +411,29 @@ Overfull \hbox (17.3339pt too wide) in paragraph at lines 403--410
 [][] 
  []
 
+[5 <./figures/multiScatter_fig2.png>] (./syllogism0_mht.bbl [6 <./figures/fig4_
+multiScatter_colorset_AMFO_MFIE_n6_br0,30.png>]) [7
 
-Underfull \vbox (badness 2512) has occurred while \output is active []
-
- [5 <./figures/multiScatter_fig2.png>] (./syllogism0_mht.bbl) [6 <./figures/fig
-4_multiScatter_colorset_AMFO_MFIE_n6_br0,30.png>] (./syllogism0_mht.aux) ) 
+] (./syllogism0_mht.aux) ) 
 Here is how much of TeX's memory you used:
- 5780 strings out of 493315
- 85065 string characters out of 6137904
- 193142 words of memory out of 5000000
- 9126 multiletter control sequences out of 15000+600000
+ 5779 strings out of 493315
+ 85053 string characters out of 6137904
+ 195142 words of memory out of 5000000
+ 9125 multiletter control sequences out of 15000+600000
  43004 words of font info for 84 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 38i,10n,40p,1359b,987s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr
-/local/texlive/2013/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/
-2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/20
-13/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/201
-3/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2013/texmf-
-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2013/texmf-dist/fonts
-/type1/urw/times/utmr8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw
-/times/utmri8a.pfb>
-Output written on syllogism0_mht.pdf (6 pages, 1105528 bytes).
+ 38i,10n,40p,1465b,987s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2013/texmf-dist/fonts/enc/dvips/b
+ase/8r.enc}</usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+y10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb>
+</usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/loca
+l/texlive/2013/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/
+2013/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on syllogism0_mht.pdf (7 pages, 1119855 bytes).
 PDF statistics:
- 57 PDF objects out of 1000 (max. 8388607)
- 34 compressed objects within 1 object stream
+ 62 PDF objects out of 1000 (max. 8388607)
+ 38 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  21 words of extra memory for PDF output out of 10000 (max. 10000000)
 
