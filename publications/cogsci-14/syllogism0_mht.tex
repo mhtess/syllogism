@@ -66,10 +66,8 @@
 
 
 \begin{abstract}
-Syllogistic reasoning lies at the intriguing intersection of natural and formal reasoning, of language and logic. Syllogisms comprise a formal system of reasoning yet use natural language quantifiers, and invite natural language conclusions. How can we make sense of the interplay between logic and language? We develop a computational-level theory that considers reasoning over concrete situations and situations to be constructed probabilistically by sampling. The base model can be enriched to consider the pragmatics of natural language arguments. The model predictions are compared with behavioral data from a recent meta-analysis. The flexibility of the model is then explored in a published study of syllogisms using the generalized quantifiers \emph{most} and \emph{few}. We conclude by relating our model to two extant theories of syllogistic reasoning -- Mental Models and Probability Heuristics.
-
-\textbf{Keywords:} 
-Reasoning; language; Bayesian model
+Syllogistic reasoning lies at the intriguing intersection of natural and formal reasoning, of language and logic. Syllogisms comprise a formal system of reasoning yet use natural language quantifiers, and invite natural language conclusions. How can we make sense of the interplay between logic and language? We develop a computational-level theory that considers reasoning over concrete situations constructed probabilistically by sampling. The base model can be enriched to consider the pragmatics of natural language arguments. The model predictions are compared with behavioral data from a recent meta-analysis. The flexibility of the model is then explored in a data set of syllogisms using the generalized quantifiers \emph{most} and \emph{few}. We conclude by relating our model to two extant theories of syllogistic reasoning -- Mental Models and Probability Heuristics. \textbf{Keywords:} 
+Reasoning; language; QUD; Bayesian model
 \end{abstract}
 
 
@@ -87,13 +85,13 @@ Or do you respond
 % 
 This cartoon illustrates a critical dimension along which cognitive theories of reasoning differ: whether the core and ideal of reasoning is deductive validity or probabilistic support. A separate dimension concerns the extent to which principles of natural language---pragmatics and semantics---are necessary for understanding reasoning tasks. In this paper we explore a theory of syllogistic reasoning inspired by recent advances in probabilistic pragmatics.
 
-The form of the argument above resembles a syllogism: a two-sentence argument used relate two properties (or terms: A, C) via a middle term (B); the relations used in syllogisms are quantifiers. Fit into a formal syllogistic form, this argument would read:
+The form of the argument above resembles a syllogism: a two-sentence argument used to relate two properties (or terms: A, C) via a middle term (B); the relations used in syllogisms are quantifiers. Fit into a formal syllogistic form, this argument would read:
 \begin{quote}
 All officemates are out with the flu\\
 Some out with the flu are out for weeks\\
 Therefore, some officemates are out for weeks
 \end{quote}
-The full space of syllogistic arguments is derived by shuffling the ordering of the terms in a sentence (``All A are B'' vs. ``All B are A'') and changing the quantifier (\emph{all, some, none, not all}\footnote{For distinctiveness, we will refer to the quantifiers as such. Note that in sentence-form, the last two quantifiers are typically presented as ``\emph{No} A are B" and ``\emph{Some} A are \emph{not} B", respectively.}). Most syllogisms have no valid conclusion, i.e. there is no relation between \emph{A} \& \emph{C} which is true in every situation in which the premises are true. This is the case with the argument above. Often in these cases, however, people are perfectly comfortable drawing some conclusion. A recent meta-analysis of syllogistic reasoning showed that over the population, the proper production of \emph{no valid conclusion} responses for invalid arguments ranged from 76\% to 12\%. For valid arguments, the accuracy of producing valid conclusions ranged from 90 \% to 1\% \cite{Khemlani2012}: people do not seem to find drawing deductively valid conclusions particularly natural.
+The full space of syllogistic arguments is derived by shuffling the ordering of the terms in a sentence (``All A are B'' vs. ``All B are A'') and changing the quantifier (\emph{all, some, none, not all}\footnote{For distinctiveness, we will refer to the quantifiers as such. Note that in sentence-form, the last two quantifiers are typically presented as ``\emph{No} A are B" and ``\emph{Some} A are \emph{not} B", respectively.}). Most syllogisms have no valid conclusion, i.e. there is no relation between A \& C which is true in every situation in which the premises are true. This is the case with the argument above. Often in these cases, however, people are perfectly comfortable drawing \emph{some} conclusion. A recent meta-analysis of syllogistic reasoning showed that over the population, the proper production of \emph{no valid conclusion} responses for invalid arguments ranged from 76\% to 12\%. For valid arguments, the accuracy of producing valid conclusions ranged from 90 \% to 1\% \cite{Khemlani2012}: people do not seem to find drawing deductively valid conclusions particularly natural.
 %
 \begin{figure}
 \centering
@@ -109,7 +107,7 @@ Syllogisms are undoubtedly logical; indeed, the syllogistic form was the only fo
 Many theories of syllogistic reasoning take deduction as a given and try to explain reasoning errors as a matter of noise during cognition. Errors, then, may arise from improper use of deductive rules or biased construction of logical models. 
 %In either case, logic makes the connection to natural language semantics natural (though not central).
 Many other kinds of reasoning, however, can be well-explained as probabilistic inference under uncertainty. Probability theory provides a natural description of a world in which you don't know exactly how many people are in the hallway outside your door, or whether or not the lion is going to charge.
-We suggest that combining probabilistic reasoning with natural language semantics and pragmatics is a useful approach: an approach in which knowledge can describe distributions on possible situations, and in which these distributions can be updated by sentences with new information.
+We suggest that combining probabilistic reasoning with natural language semantics and pragmatics is a useful approach in that knowledge can describe distributions on possible situations, and these distributions can be updated by new information in sentences.
 In this formalism, deduction emerges as those arguments which are always true and syllogistic reasoning becomes a process of determining that which is most probable, relevant, and informative.
 
 
@@ -128,7 +126,7 @@ Situations are composed of $n$ objects:
 (define objects (list 'o1 'o2 ... 'on))
 \end{lstlisting}
 %\lstinline{(define objects (list 'o1 'o2 ...))}. 
-(Ellipses indicate omissions for brevity, otherwise models are specified via runnable Church code.)
+(Ellipses indicate omissions for brevity, otherwise models are specified via runnable Church code\footnote{A fully-specified version of this model can be accessed at: \url{http://forestdb.org/models/syllogisms-cogsci14.html}}.)
 Properties \lstinline{A}, \lstinline{B}, and \lstinline{C} of these objects are represented by functions from objects to the property value. We assume properties are Boolean, and so property values can be \lstinline{true} or \lstinline{false}. We assume no \emph{a priori} information about the meaning of the properties and thus they are determined independently:
 \begin{lstlisting}
 (define A (mem (lambda (x) (flip br))))
@@ -182,9 +180,7 @@ The key observation to connect these truth-functional meanings of quantifier exp
       (premise-two B C)))
 \end{lstlisting}
 
-The first arguments to a query function are a generative model: definitions or the background knowledge with which a reasoning agent is endowed. Definitions with which a prior is stipulated (e.g. \lstinline{conclusion}) denote aspects of the world over which the agent has uncertainty\footnote{Note that for brevity, the properties \lstinline{A, B, C} are wrapped-up; together with objects, these properties generate situations, and this is also an aspect over which the agent has uncertainty.}. The second argument, called the \emph{query expression}, is the aspect of the computation about which we are interested; it is what we want to know. The final argument, called the \emph{conditioner}, is the information with which we update our beliefs; it is what we know. 
-
-We assume that the prior distribution over conclusions (and premises, below) is uniform.
+The first arguments to a query function are a generative model: definitions or the background knowledge with which a reasoning agent is endowed. Definitions for which a prior is stipulated (e.g. \lstinline{conclusion}) denote aspects of the world over which the agent has uncertainty. The second argument, called the \emph{query expression}, is the aspect of the computation about which we are interested; it is what we want to know. The final argument, called the \emph{conditioner}, is the information with which we update our beliefs; it is what we know. We assume that the prior distribution over conclusions (and premises, below) is uniform.
 
 %The Conditional Semantics model treats the premises of a syllogism as evidence by which to update its belief prior over propositions (which are now potential conclusions). This update rule we take to be probabilistic conditioning. Thus, we get a posterior distribution of propositions, conditioned on premises being true. This has the nice feature of returning a degree of belief in each of the possible conclusions for every syllogism. Using this, we can test the hypothesis that reasoners in syllogistic reasoning tasks are essentially drawing samples from the posterior distribution of the conclusion conditioned on the premises (so-called ``posterior matching") \cite{Griffiths2006}.
 %
@@ -222,7 +218,7 @@ The A-C QUD is naturally captured by a \lstinline{reasoner} who considers an \ls
 
 %In the model, the \lstinline{reasoner} considers an agent who is selecting premises according to the conclusion the literal \emph{reasoner} is likely to draw. The agent who receives the conclusion from the \lstinline{reasoner} described above and the agent that provides the premises are each tasked with selecting premises based on a conclusion as input. The only difference is that the agent that provides the premises is grounded in the truth of the premises while the agent that receives the conclusion is grounded in the conclusion being true. Because of this, we can formalize the two into a single function -- the \lstinline{questioner}.
 
-We can combine the above intuitions about pragmatic comprehension into a model in which \lstinline{reasoner} and \lstinline{experimenter} jointly reason about each other. Critically, each agent reasons about the other at recursive depth \lstinline{depth} of comprehension:
+We can combine the above intuitions about pragmatic comprehension into a model in which \lstinline{reasoner} and \lstinline{experimenter} jointly reason about each other. Critically, each agent reasons about the other at recursive \lstinline{depth} of comprehension:
 \begin{lstlisting}
 (define (experimenter conclusion depth)
   (query 
@@ -248,8 +244,11 @@ We can combine the above intuitions about pragmatic comprehension into a model i
           (equal? premises (experimenter conclusion (- depth 1)))))))
             
 \end{lstlisting}
-The \lstinline{reasoner} and \lstinline{experimenter} functions produce a distribution over conclusions and premises\footnote{As a first pass, we consider the alternative premises generated by \lstinline{premise-prior} to be the set of all premises of the same term orderings, i.e. alternative quantifiers, keeping the structure of the sentences fixed.}, respectively. Since we take these functions to represent actual persons in a communicative setting, we take premises to be selected from these distributions according to a Luce choice, or \lstinline{softmax}, decision rule with a parameter \lstinline{alpha} that denotes the degree to which argument is chosen optimally \cite{luce1959}. This takes the distribution, raises it to a power \lstinline{alpha} and renormalizes. As \lstinline{depth} increases, the premises becomes more informative with respect to the uniquely-implicated conclusions (unique, for those premises); i.e. the arguments are interpreted as more tailored for a particular conclusion. When \lstinline{depth} is 0, the model collapses to produce the $P$(conclusion $\arrowvert$ premises), which we refer to as the \emph{literal bayesian reasoner}. We refer to the model with \lstinline{depth} equal\footnote{To a first approximation, increasing \lstinline{depth} to greater than 1 produces results  similar to increasing \lstinline{alpha}.} to 1 as the \emph{pragmatic bayesian reasoner}.
+The \lstinline{reasoner} and \lstinline{experimenter} functions produce a distribution over conclusions and premises\footnote{As a first pass, we consider the alternative premises generated by \lstinline{premise-prior} to be the set of all premises of the same term orderings, i.e. alternative quantifiers, keeping the structure of the sentences fixed.}, respectively. Since we take these functions to represent actual persons in a communicative setting, we take premises to be selected from these distributions according to a Luce choice, or \lstinline{softmax}, decision rule with a parameter \lstinline{alpha} that denotes the degree to which argument is chosen optimally \cite{luce1959}. This takes the distribution, raises it to a power \lstinline{alpha} and renormalizes. As \lstinline{depth} increases, the premises becomes more informative with respect to the uniquely-implicated conclusions (unique, for those premises). When \lstinline{depth} is 0, the model collapses to produce the $P$(conclusion $\arrowvert$ premises), which we refer to as the \emph{literal Bayesian reasoner}. We refer to the model with \lstinline{depth} equal\footnote{To a first approximation, increasing \lstinline{depth} to greater than 1 produces results  similar to increasing \lstinline{alpha}.} to 1 as the \emph{pragmatic Bayesian reasoner}. 
 %Using this framework, we can investigate the complementary influences of pragmatic interpretation of premises and production of conclusions. %
+
+The three parameters of the model --- \lstinline{n_objects}, \lstinline{br}, and \lstinline{alpha} --- were fit via grid-search by maximum-likelihood estimation. These fit parameter values were 5, 0.25, and 4.75, respectively.%\footnote{n.b. \lstinline{n_objects} = 5 keeps the number of distinct objects in a situation to a minimum while \lstinline{br} = 0.25 is in accord with the rarity assumption.}%.
+
 
 %addresses the problem of language understanding as that of a speaker trying to convey information about a world or situation that the speaker has observed \cite{Goodman2013,Frank2012a}. The speaker draws on common-ground of communicative goals to maximize information content of a given utterance. In particular, choosing an utterance in proportion to the likelihood of a listener inferring the situations about which the speaker wishes to convey information. In turn, a listener considers situations in which the given utterance heard is not only true but would be chosen to disambiguate amongst multiple consistent situations by an informatve speaker. This results in the canonical ``scalar implicature" wherein the literal meaning of ``{\em some} of the apples are red" is enriched to communicate ``some {\em but not all} of the apples are red".
 %
@@ -300,20 +299,14 @@ The \lstinline{reasoner} and \lstinline{experimenter} functions produce a distri
 \section{Results}
 
 %\subsection{Meta-analysis data}
-To test the predictions of the model we used data from the meta-analysis of syllogistic reasoning tasks presented by \citeA{Chater1999}. These data were compiled from five studies on syllogistic reasoning, completed from 1978-1984. The data include percentage response for conclusions that contain each of the 4 quantifiers as well as for ``No Valid Conclusion" (NVC). The bayesian reasoning models described so far are not equipped to handle NVC\footnote{This is because in each possible situation, one of the four quantifiers will be true. In fact, since the four possible conclusions form two pairs of logical contradictions, exactly two conclusions will be true in each situation.}. We removed the NVC responses from the meta-analysis and renormalized so the endorsement of all conclusions for a syllogism adds to 1. Some studies in the meta-analysis asked participants to draw conclusions which were restricted to the classical ordering of terms (C-A) while others allowed conclusions in either direction (A-C or C-A). To accommodate this, we allowed our model to draw conclusions in either order and collapsed responses across these two orderings to compare it to this data set.
-%
-
-The three parameters of the model --- \lstinline{n_objects}, \lstinline{br}, and \lstinline{alpha} --- were fit via grid-search to produce the maximum likelihood of the data given the model. These fit parameter values were 5, 0.25, and 4.75, respectively\footnote{n.b. \lstinline{n_objects} = 5 keeps the number of distinct objects in a situation to a minimum while \lstinline{br} = 0.25 is in accord with the rarity assumption.}.
-
-\subsection{Qualitative results}
-For each model, we report the total number of syllogisms for which the model's modal response is the same as for in the meta-analysis data. This is a qualitative assessment of fit. The table below shows the number of modal responses for which the model matched the data (columns ``matches"). We separate these into valid and invalid syllogisms\footnote{Since the response format in the meta-analysis varied across studies, the number of valid syllogisms was also not the same. Here we count as valid only the syllogisms that would have been considered valid in all studies.}. The total numbers of valid and invalid syllogisms are 24 and 40, respectively. 
-
-\begin{tabular}{l*{4}{c}r}
+To test the predictions of the model we used data from the meta-analysis of syllogistic reasoning tasks presented by \citeA{Chater1999}. These data were compiled from five studies on syllogistic reasoning, completed from 1978-1984. The data include percentage response for conclusions that contain each of the 4 quantifiers as well as for ``No Valid Conclusion" (NVC). The Bayesian reasoning models described so far are not equipped to handle NVC\footnote{In each possible situation, at least one of the four conclusions will be true. In fact, since the four possible quantifiers form two pairs of logical contradictions, exactly two conclusions will be true in each situation.  For example, \emph{all} and \emph{not all} cannot both be true, but one must be true. The same is the case for \emph{none} and \emph{some}.}. We removed the NVC responses from the meta-analysis and renormalized so the endorsement of all conclusions for a syllogism adds to 1. Some studies in the meta-analysis asked participants to draw conclusions which were restricted to the classical ordering of terms (C-A) while others allowed conclusions in either direction (A-C or C-A). To accommodate this, we allowed our model to draw conclusions in either order and collapsed responses across these two orderings to compare it to this data set.
+\subsection{Qualitative results}For each model, we report the total number of syllogisms for which the model's modal response is the same as for in the meta-analysis data. This is a qualitative assessment of fit. The table below shows the number of modal responses for which the model matched the data (columns ``matches"). We separate these into valid and invalid syllogisms\footnote{Since the response format in the meta-analysis varied across studies, the number of valid syllogisms was also not the same. Here we count as valid only the syllogisms that would have been considered valid in all studies.}. The total numbers of valid and invalid syllogisms are 24 and 40, respectively. 
+\begin{tabular}{l*{3}{c}r}
 Model              & matches$_{valid}$ & matches$_{invalid}$ & r$_{valid}$ & r$_{invalid}$  \\
 \hline
 Prior & 5 & 24 & -.46 & .41  \\
 Literal & 17 & 20 & -.20 & .64  \\
-Pragmatic & 17 & 26 & .77 & .74 &   \\
+Pragmatic & 17 & 26 & .77 & .74 \\
 \end{tabular}
 
 As a baseline, we first examined the posterior distribution of conclusions conditioned only on the truth of the conclusion (what we refer to as the ``Prior") to see if it alone accounted for human reasoning patterns. It did not (Figure \ref{fig:megaScatter}, column 1). Since \emph{not all X are Y} is the most likely conclusion to be true, the Prior matches only the syllogisms with a \emph{not all} modal response. 
@@ -336,22 +329,22 @@ The literal Bayesian reasoner matches the modal response on 37 of the 64 syllogi
 %
 
 
-Conversational pragmatics can enrich the meaning of the premises given to the reasoner --- PBR --- by considering ``why has the experimenter produced this argument --- these premises --- given that she may have given other arguments?'' 
+Conversational pragmatics can enrich the meaning of the premises given to the pragmatic reasoner by considering ``why has the experimenter produced this argument --- these premises --- given that she may have given other arguments?'' 
 %Critically, the reasoner does not consider these alternatives with respect to the full state of the world (i.e. the sets A, B and C) but rather only with respect to the QUD (i.e. the sets A and C, marginalizing out B). This captures the intuition that people are considering specifically the relationship between A \& C.
-PBR maximally-prefers the modal response of subjects for 43 out of 64 syllogisms. As well, it picks up on some of the subtle phenomena present in syllogistic reasoning. Example [3] in Figure \ref{fig:barplots} is one such case. The premises considered literally are relatively uninformative. The literal reasoner is very similar to the Prior (not shown in Figure \ref{fig:barplots}; but see Figure \ref{fig:megaScatter}, column 1). 
+The pragmatic Bayesian maximally-prefers the modal response of subjects for 43 out of 64 syllogisms. As well, it picks up on some of the subtle phenomena present in syllogistic reasoning. Example [3] in Figure \ref{fig:barplots} is one such case. The premises considered literally are relatively uninformative. The literal reasoner is very similar to the Prior (not shown in Figure \ref{fig:barplots}; but see Figure \ref{fig:megaScatter}, column 1). 
 
 In addition to capturing many of the modal responses, the model is able to accommodate more than one plausible conclusion. Example [4] in Figure \ref{fig:barplots} is one such example. This is a syllogism with a valid conclusion, but one which people find difficult to draw. The literal reasoner model tells us why: in many of the possible situations in which the premises are true, a \emph{none} conclusion is true. In addition, \emph{none} is a more difficult conclusion to convey in an argument---relative to \emph{not all}---and so the pragmatic Bayesian strengthens the plausible but invalid \emph{none}.
 
 
-The pragmatic bayesian reasoner considers the space of all arguments. Many arguments in the syllogistic space are relatively vacuous, i.e. they do not update the prior substantially. As such, the most probable conclusion given all arguments is  \emph{not all X are Y}. Since the argument in [3] is more informative relative to others (e.g. the argument in [5]), the most likely intention of the experimenter is to convey that \emph{some A are C}.
+The pragmatic Bayesian reasoner considers the space of all arguments. Many arguments in the syllogistic space are relatively vacuous, i.e. they do not update the prior substantially. As such, the most probable conclusion given all arguments is  \emph{not all X are Y}. Since the argument in [3] is more informative relative to others (e.g. the argument in [5]), the most likely intention of the imagined experimenter was to convey that \emph{some A are C}.
 
-Though this is encouraging qualitative data, there are a number of syllogisms for which reasoning patterns are not accounted for by the bayesian reasoners. Many of these are syllogisms use two negative quantifiers (\emph{not all} or \emph{none}) as the premises. For these arguments, the predictions of the literal reasoner do not differ appreciably from the predictions of the Prior (Figure \ref{fig:barplots} [5]), because the rarity prior assumes most relations will be false to begin with. 
+Though this is encouraging qualitative data, there are a number of syllogisms for which reasoning patterns are not accounted for by the Bayesian reasoners. Many of these are syllogisms use two negative quantifiers (\emph{not all} or \emph{none}) as the premises. For these arguments, the predictions of the literal reasoner do not differ appreciably from the predictions of the Prior (Figure \ref{fig:barplots}, [5]), because the rarity prior assumes most relations will be false to begin with. 
 
 \subsection{Model fit}
 
 To assess our models' quantitative fits we examine correlations across all 256 data points (64 syllogisms x 4 conclusions), shown in Figure \ref{fig:megaScatter}.
 %
-The Prior's predictions are the same for all syllogisms and the overall fit is poor (r = 0.36).  After conditioning on the truth of the premises, the model is able to make graded responses. These responses are a reflection of the types of situations consistent with the premises. The overall correlation is appreciably higher (r = 0.64). Among valid conclusions, however, (squares in Figure \ref{fig:megaScatter}) the fit is terrible (r = -0.20 for valid conclusions only). This is a direct consequence of the reasoner's literalness: the model has no preference among multiple valid conclusions, since a valid conclusion -- by definition -- is one which is true in every situation in which the premises are true\footnote{An upper bound of 50 percent endorsement emerges from the fact that the 4 quantifiers form 2 sets of logical contradictions. For example, \emph{all} and \emph{not all} cannot both be true, but one must be true. The same is the case for \emph{none} and \emph{some}. Each pair of quantifiers has something true in each situation; thus, the maximum endorsement after normalization is 50.}.
+The Prior's predictions are the same for all syllogisms and the overall fit is poor (r = 0.36).  After conditioning on the truth of the premises, the model is able to make graded responses. These responses are a reflection of the types of situations consistent with the premises. The overall correlation is appreciably higher (r = 0.64). Among valid conclusions, however, (squares in Figure \ref{fig:megaScatter}) the fit is terrible (r = -0.20 for valid conclusions only). This is a direct consequence of the reasoner's literalness: the model has no preference among multiple valid conclusions, since a valid conclusion -- by definition -- is one which is true in every situation in which the premises are true\footnote{An upper bound of 50 percent endorsement emerges from the fact that the 4 quantifiers form 2 sets of logical contradictions. Each pair of quantifiers has something true in each situation; thus, the maximum endorsement after normalization is 50.}.
 
 This symmetry is broken by the reasoner who interprets the premises as coming from a pragmatic experimenter (Figure \ref{fig:megaScatter}, column 3), and the overall fit improves (r = 0.77). The model is now able to make graded responses among valid conclusions (r = 0.77 for valid conclusions only). 
 
@@ -382,9 +375,9 @@ This symmetry is broken by the reasoner who interprets the premises as coming fr
 %Using the correlated prior, the Conditional Semantics model gets 45 out of 64 modal responses. The overall fit is also improved, r = 0.75 (Figure \ref{fig:megaScatter}, row 3). The Conditional Pragmatics model does better as well, predicted the modal response for 52 syllogisms. Additionally, the quantitative fit is high (r = 0.85). Among valid syllogisms, it is correspondingly higher as well (r = 0.88). 
 
 
-\section{Model flexibility: generalized quantifiers}
+\section{Generalized quantifiers}
 
-Our model is based on a truth-functional semantics and as such, it is able to accommodate any quantified sentence with a truth-functional meaning. The meaning of generalized quantifiers like ``most" and ``few" is a topic of debate in formal semantics, but can be modeled to a first approximation as a thresholded function. As a first test of the generality of the model, we define most and few by a threshold of 0.5 such that ``most As are Bs" is true if more than half of the As are Bs. Once we have added these lexical items, the bayesian reasoning models extend naturally. 
+Our model is based on a truth-functional semantics and as such, it is able to accommodate any quantified sentence with a truth-functional meaning. The meaning of generalized quantifiers like ``most" and ``few" is a topic of debate in formal semantics, but can be modeled to a first approximation as a thresholded function. As a first test of the generality of the model, we define most and few by a threshold of 0.5 such that ``most As are Bs" is true if more than half of the As are Bs. Once we have added these lexical items, the Bayesian reasoning models extend naturally. 
 %
 We compare our model predictions to two studies carried out by \citeA{Chater1999} on syllogisms using the generalized quantifiers \emph{most} and \emph{few} e.g. \emph{Most artists are beekeepers; Few chemists are beekeepers}. Participants were told to indicate which, if any, of the four quantifier conclusions followed from the premises and were allowed to select multiple options.
 %
@@ -399,12 +392,11 @@ The set of syllogisms was divided into two experiments to avoid subject fatigue.
 
 
 We find good correspondence between the experimental data and the model, even with only a local parameter search\footnote{ \lstinline{n_objects} fit to 6, \lstinline{br} to 0.30, \lstinline{alpha} to 4.75. The words ``most" and ``few" might pragmatically implicate sets of substantially larger size, and thus the data might be captured better by searching over a larger parameter space for  \lstinline{n_objects}.  In this analysis, we examined only a small search radius around the parameter estimates used to model the meta-analysis data.} (Figure \ref{fig:mfScatter}). In Experiment 1, the quantifiers \emph{all}, \emph{most}, \emph{few}, and \emph{not all} were used. In Experiment 2, the quantifiers \emph{most}, \emph{few}, \emph{some}, and \emph{none} were used. Note again the total number of syllogisms in an experiment is 64.
-
-\begin{tabular}{l*{4}{c}r}
+\begin{tabular}{l*{3}{c}r}
 Model              & matches$_{Exp_{1}}$ & matches$_{Exp_{2}}$ & r$_{Exp_{1}}$ & r$_{Exp_{2}}$  \\
 \hline
 Prior & 23 & 23 & .55 & .34  \\
-Literal & 42 & 36 & .79 & .65 &   \\
+Literal & 42 & 36 & .79 & .65   \\
 Pragmatic & 47 & 35 & .83 & .67  \\
 \end{tabular}
 
@@ -418,11 +410,11 @@ The fit is appreciably better for Experiment 1 than for Experiment 2, and the sa
 
 \section{Discussion}
 
-The inspiration for the pragmatic bayesian reasoning model comes from the idea that syllogistic reasoning cannot be disentangled from language understanding. Natural language semantics alone seems to be insufficient to explain the variability in reasoning, however. We have shown that a combination of semantics and conversational pragmatics provides insight into how people reason with syllogistic arguments. 
+The inspiration for the pragmatic Bayesian reasoning model comes from the idea that syllogistic reasoning cannot be disentangled from language understanding. Natural language semantics alone seems to be insufficient to explain the variability in reasoning, however. We have shown that a combination of semantics and conversational pragmatics provides insight into how people reason with syllogistic arguments. 
 
-A recent meta-analysis carved the space of reasoning theories into three partitions: those based on models or diagrammatic reasoning, those based on formal logical rules, and those based on heuristics \cite{Khemlani2012}. We see the space slightly differently. In one dimension, theories may be based on the direct application of derivation rules---be they heuristic or logical---or they may be based on the construction of concrete representations or models. In another dimension, theories may fundamentally be interested in deductive validity or probabilistic support. This theoretical partitioning places the Bayesian reasoning models in a previously unexplored quadrant of the two-dimensional theoretical space described: we consider probabilistic reasoning over concrete situations.
+A recent meta-analysis carved the space of reasoning theories into three partitions: those based on models or diagrammatic reasoning, those based on formal logical rules, and those based on heuristics \cite{Khemlani2012}. We see the space slightly differently. In one dimension, theories are based on the direct application of derivation rules---be they heuristic or logical---or they are based on the construction of concrete representations or models. In another dimension, theories may fundamentally be interested in deductive validity or probabilistic support. This theoretical partitioning places the Bayesian reasoning models in a previously unexplored quadrant of the two-dimensional theoretical space described: we consider probabilistic reasoning over concrete situations.
 
-Mental Models Theory (MMT) was offered to capture the intuition that people are able to reason about sets of things explicitly and with respect to context by constructing mental representations of individuals over which to reason. The situations described in our computational models are analogous to mental models. MMT, however, leaves the problem of determining which models come into existence to complex heuristics. By contrast, we derive a distribution over models or situations from natural language semantics and pragmatics, with no further assumptions.
+Mental Models Theory (MMT) was offered to capture the intuition that people are able to reason about sets of things explicitly and with respect to context by constructing mental representations of individuals over which to reason. The situations described in our computational models are analogous to mental models. To address the problem of determining which models come into existence, however, MMT relies on a number of complex heuristics  By contrast, we derive a distribution over models or situations from natural language semantics and pragmatics, with no further assumptions.
 
 %In LBR the situations follow from the semantic assumptions and fundamental laws of probability with no further assumptions; pragmatics then modifies this well-defined reasoning process.%
 
@@ -438,7 +430,7 @@ The syllogistic reasoning task involves reading a pair of sentences and producin
 %Natural language pragmatics could enter in two places in the above model: premise interpretation and conclusion production. %
 %We address premise interpretation in this paper.%
 
-%The pragmatic bayesian reasoner accounts for much of the data. The number of syllogisms whose modal response was not predicted by either model is a mere 9 (i.e. 55 out of 64 syllogisms were accounted for by one of the models). However, PQR$_{1,1}$ in its current formulation is not simply a sum of its parts. Evidence from the individual models suggests some complex interaction between pragmatic interpretation of premises and production of conclusions is at work in human reasoning behavior. %
+%The pragmatic Bayesian reasoner accounts for much of the data. The number of syllogisms whose modal response was not predicted by either model is a mere 9 (i.e. 55 out of 64 syllogisms were accounted for by one of the models). However, PQR$_{1,1}$ in its current formulation is not simply a sum of its parts. Evidence from the individual models suggests some complex interaction between pragmatic interpretation of premises and production of conclusions is at work in human reasoning behavior. %
 
 
 \section{Conclusion}
@@ -450,7 +442,7 @@ This is early work and we have found promising evidence, both qualitative and qu
 A major virtue of the pragmatic reasoning framework is that it extends naturally to incorporate any terms for which a truth-functional semantics can be given.
 For instance, we tested the model on \emph{most} and \emph{few} using the simplest, most standard semantics (most is more than half, etc). It is likely that these quantifiers actually have more complex semantics, but even so we accounted for a significant fraction of the data.
 
-In this framework, a syllogism is read as an argument given as a part of discourse between interlocutors. Indeed, this is how syllogisms were used in the time of Aristotle and in the long tradition of scholastic philosophers since. Fundamentally, syllogisms are a tool used to convince others. The results of the Pragmatic Bayesian Reasoner recast the ancient idea that human reasoning behavior is as much reason as it is human. Gauging degrees of truth or plausibility alone is not sufficient. An agent needs to be posited at the other end of the line so that a conclusion makes sense; so that an argument may convince!
+In this framework, a syllogism is read as an argument given as a part of discourse between interlocutors. Indeed, this is how syllogisms were used in the time of Aristotle and in the long tradition of scholastic philosophers since. Fundamentally, syllogisms are a tool used to convince others. The results of the pragmatic Bayesian reasoner recast the ancient idea that human reasoning behavior is as much reason as it is human. Gauging degrees of truth or plausibility alone is not sufficient. An agent needs to be posited at the other end of the line so that a conclusion makes sense; so that an argument may convince!
 
 \bibliographystyle{apacite}
 

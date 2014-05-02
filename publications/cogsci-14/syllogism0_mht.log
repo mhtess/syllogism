@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  1 MAY 2014 16:09
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  1 MAY 2014 18:01
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -350,17 +350,17 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
 (Font)              Font shape `OMS/pzccm/m/n' tried instead on input line 65.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 71.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 69.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 96.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 94.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 96.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 94.
 
 <figures/fig0_cartoon3.png, id=1, 680.5425pt x 428.09938pt>
 File: figures/fig0_cartoon3.png Graphic file (type png)
 
 <use figures/fig0_cartoon3.png>
-Package pdftex.def Info: figures/fig0_cartoon3.png used on input line 100.
+Package pdftex.def Info: figures/fig0_cartoon3.png used on input line 98.
 (pdftex.def)             Requested size: 243.91125pt x 153.42976pt.
  [1{/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
@@ -368,34 +368,64 @@ Package pdftex.def Info: figures/fig0_cartoon3.png used on input line 100.
 
  <./figures/fig0_cartoon3.png>]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 122.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 120.
 
-Underfull \hbox (badness 1189) in paragraph at lines 170--171
+Underfull \hbox (badness 1189) in paragraph at lines 168--169
 []\OT1/ptm/m/n/10 The key ob-ser-va-tion to con-nect these truth-functional
  []
 
-[2]
-Underfull \hbox (badness 1571) in paragraph at lines 213--214
+
+Underfull \hbox (badness 1571) in paragraph at lines 209--210
 []\OT1/ptm/m/n/10 However, a lis-tener (our rea-soner) may con-sider the
  []
 
-
-Overfull \hbox (26.00668pt too wide) in paragraph at lines 311--318
-[][] 
+[2]
+Underfull \hbox (badness 1552) in paragraph at lines 303--311
+\OT1/ptm/m/n/10 For each model, we re-port the to-tal num-ber of syl-lo-
  []
 
-[3] <figures/multibar_fig1.png, id=20, 3011.25pt x 2409.0pt>
+
+Underfull \hbox (badness 1033) in paragraph at lines 303--311
+\OT1/ptm/m/n/10 as for in the meta-analysis data. This is a qual-i-ta-tive
+ []
+
+
+Underfull \hbox (badness 2261) in paragraph at lines 303--311
+\OT1/ptm/m/n/10 as-sess-ment of fit. The ta-ble be-low shows the num-
+ []
+
+
+Underfull \hbox (badness 1845) in paragraph at lines 303--311
+\OT1/ptm/m/n/10 ber of modal re-sponses for which the model matched
+ []
+
+
+Underfull \hbox (badness 1127) in paragraph at lines 303--311
+\OT1/ptm/m/n/10 the data (columns ``matches"). We sep-a-rate these into
+ []
+
+
+Underfull \hbox (badness 2384) in paragraph at lines 303--311
+\OT1/ptm/m/n/10 valid and in-valid syl-lo-gisms[]. The to-tal num-bers of
+ []
+
+
+Overfull \hbox (4.0067pt too wide) in paragraph at lines 303--311
+[] 
+ []
+
+<figures/multibar_fig1.png, id=17, 3011.25pt x 2409.0pt>
 File: figures/multibar_fig1.png Graphic file (type png)
 
 <use figures/multibar_fig1.png>
-Package pdftex.def Info: figures/multibar_fig1.png used on input line 325.
+Package pdftex.def Info: figures/multibar_fig1.png used on input line 318.
 (pdftex.def)             Requested size: 243.91125pt x 195.11322pt.
-
+ [3]
 <figures/multiScatter_fig2.png, id=21, 4776.84625pt x 1965.3425pt>
 File: figures/multiScatter_fig2.png Graphic file (type png)
 
 <use figures/multiScatter_fig2.png>
-Package pdftex.def Info: figures/multiScatter_fig2.png used on input line 371.
+Package pdftex.def Info: figures/multiScatter_fig2.png used on input line 364.
 (pdftex.def)             Requested size: 505.89pt x 208.12138pt.
  [4 <./figures/multibar_fig1.png>]
 <figures/fig4_multiScatter_colorset_AMFO_MFIE_n6_br0,30.png, id=26, 4818.0pt x 
@@ -404,36 +434,31 @@ File: figures/fig4_multiScatter_colorset_AMFO_MFIE_n6_br0,30.png Graphic file (
 type png)
  <use figures/fig4_multiScatter_colorset_AMFO_MFIE_n6_br0,30.png>
 Package pdftex.def Info: figures/fig4_multiScatter_colorset_AMFO_MFIE_n6_br0,30
-.png used on input line 395.
+.png used on input line 388.
 (pdftex.def)             Requested size: 505.89pt x 135.95207pt.
 
-Overfull \hbox (17.3339pt too wide) in paragraph at lines 403--410
-[][] 
- []
-
-[5 <./figures/multiScatter_fig2.png>] (./syllogism0_mht.bbl [6 <./figures/fig4_
-multiScatter_colorset_AMFO_MFIE_n6_br0,30.png>]) [7
-
-] (./syllogism0_mht.aux) ) 
+[5 <./figures/multiScatter_fig2.png>] (./syllogism0_mht.bbl) [6 <./figures/fig4
+_multiScatter_colorset_AMFO_MFIE_n6_br0,30.png>] (./syllogism0_mht.aux) ) 
 Here is how much of TeX's memory you used:
- 5779 strings out of 493315
- 85053 string characters out of 6137904
+ 5782 strings out of 493315
+ 85077 string characters out of 6137904
  195142 words of memory out of 5000000
- 9125 multiletter control sequences out of 15000+600000
- 43004 words of font info for 84 fonts, out of 8000000 for 9000
+ 9126 multiletter control sequences out of 15000+600000
+ 43857 words of font info for 87 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 38i,10n,40p,1465b,987s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2013/texmf-dist/fonts/enc/dvips/b
-ase/8r.enc}</usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mr10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cms
-y10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb>
-</usr/local/texlive/2013/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/loca
-l/texlive/2013/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/
-2013/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on syllogism0_mht.pdf (7 pages, 1119855 bytes).
+ 38i,10n,40p,1384b,984s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/
+local/texlive/2013/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2
+013/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/201
+3/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2013
+/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2013/texmf-d
+ist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/
+type1/urw/times/utmr8a.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/urw/
+times/utmri8a.pfb>
+Output written on syllogism0_mht.pdf (6 pages, 1118916 bytes).
 PDF statistics:
- 62 PDF objects out of 1000 (max. 8388607)
- 38 compressed objects within 1 object stream
+ 57 PDF objects out of 1000 (max. 8388607)
+ 34 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  21 words of extra memory for PDF output out of 10000 (max. 10000000)
 
