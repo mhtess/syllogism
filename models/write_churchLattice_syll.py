@@ -17,8 +17,9 @@ def write_church(pd):
     # <codecell>
     fid.write('(define premise-prior (lambda (figure)\n')
     fid.write('\t(case figure\n')
-    lp = int(len(pd['posspremises'])/4)
-    for h in range(1,5):
+    lp = 16
+    figs = divmod(len(pd['posspremises']),lp)[0]
+    for h in range(1,figs+1):
         fid.write('\t\t((%d) (uniform-draw (list ' % h)
         for e in range(lp):
             fid.write("(list '%s '%s) " % ((pd['posspremises'][e+(lp*(h-1))][2]+pd['posspremises'][e+(lp*(h-1))][1]),(pd['posspremises'][e+(lp*(h-1))][3]+pd['posspremises'][e+(lp*(h-1))][0])))
@@ -85,8 +86,8 @@ def write_church(pd):
     #     fid.write('))\n')
     # fid.write('\n')
     fid.write('(define figures (list')
-    for h in range(1,5):
-        for e in range(int(len(pd['premises'])/4)):
+    for h in range(1,figs+1):
+        for e in range(lp):
             fid.write(' %d' % h)
     fid.write('))\n\n')
     fid.write('(define args\n\t(map string->number (regexp_split argstring ",")))\n\n')
@@ -94,14 +95,42 @@ def write_church(pd):
     fid.write('(define alphaR (second args))\n')
     fid.write('(define Ndepths (repeat (length figures) (lambda () (third args))))\n')
     fid.write('(define Mdepths (repeat (length figures) (lambda () (fourth args))))\n')
-    if (pd['nvc']==1):
+    if ((pd['nvc']==1) & (pd['vc']==8)):
         fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Asp 'Isp 'Esp 'Osp 'Aps 'Ips 'Eps 'Ops 'NVCsp)))")
-    else:
+    if ((pd['nvc']==0) & (pd['vc']==8)):
         fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Asp 'Isp 'Esp 'Osp 'Aps 'Ips 'Eps 'Ops)))")
+    if ((pd['nvc']==1) & (pd['vc']==4)):
+        if (pd['vcord']=='CA'):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Asp 'Isp 'Esp 'Osp 'NVCsp)))")
+        if (pd['vcord']=='AC'):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Aps 'Ips 'Eps 'Ops 'NVCsp)))")
+    if ((pd['nvc']==0) & (pd['vc']==4)):
+        if (pd['vcord']=='CA'):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Asp 'Isp 'Esp 'Osp)))")
+        if (pd['vcord']=='AC'):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Aps 'Ips 'Eps 'Ops)))")
+    if (pd['exp']=='AMFO'):
+        if ((pd['nvc']==1) & (pd['vc']==8)):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Asp 'Msp 'Fsp 'Osp 'Aps 'Mps 'Fps 'Ops 'NVCsp)))")
+        if ((pd['nvc']==0) & (pd['vc']==8)):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Asp 'Msp 'Fsp 'Osp 'Aps 'Mps 'Fps 'Ops)))")
+        if ((pd['nvc']==1) & (pd['vc']==4)):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Asp 'Msp 'Fsp 'Osp 'NVCsp)))")
+        if ((pd['nvc']==0) & (pd['vc']==4)):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Asp 'Msp 'Fsp 'Osp)))")
+    if (pd['exp']=='MFIE'):
+        if ((pd['nvc']==1) & (pd['vc']==8)):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Msp 'Fsp 'Isp 'Esp 'Mps 'Fps 'Ips 'Eps 'NVCsp)))")
+        if ((pd['nvc']==0) & (pd['vc']==8)):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Msp 'Fsp 'Isp 'Esp 'Mps 'Fps 'Ips 'Eps)))")
+        if ((pd['nvc']==1) & (pd['vc']==4)):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Msp 'Fsp 'Isp 'Esp 'NVCsp)))")
+        if ((pd['nvc']==0) & (pd['vc']==4)):
+            fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'Msp 'Fsp 'Isp 'Esp)))")
     fid.write('\n(define (raise-to-power dist alph)\n')
     fid.write('\t(list (first dist) (map (lambda (x) (pow x alph)) (second dist))))\n\n')
     # <codecell>
-    fid.write('(define questioner\n')
+    fid.write('(define experimenter\n')
     fid.write('  (mem (lambda (conclusion figure n m)\n')
     fid.write('\t(enumeration-query\n')
     fid.write('\t (define premises  (premise-prior figure))\n')
@@ -119,10 +148,10 @@ def write_church(pd):
     fid.write('\t\t(if (= alphaQ 0)\n')
     fid.write('\t\t\ttrue\n')
     fid.write('\t\t\t(sentence-eval premises state))\n')
-    fid.write('\t\t\t (equal? premises (apply multinomial (raise-to-power (questioner conclusion figure (- n 1) m) alphaQ))))\n')
+    fid.write('\t\t\t (equal? premises (apply multinomial (raise-to-power (experimenter conclusion figure (- n 1) m) alphaQ))))\n')
     fid.write('\t     (if (= m 0)\n')
     fid.write('\t\t\t (sentence-eval conclusion state)\n')
-    fid.write('\t\t\t (equal? premises (apply multinomial (raise-to-power (questioner conclusion figure n (- m 1)) alphaR))))\n')
+    fid.write('\t\t\t (equal? premises (apply multinomial (raise-to-power (experimenter conclusion figure n (- m 1)) alphaR))))\n')
     fid.write('\t\t)))))\n\n')
     fid.write('(map reasoner allprems figures Ndepths Mdepths)\n')
     fid.close()
