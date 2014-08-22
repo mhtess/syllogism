@@ -1,0 +1,248 @@
+\documentclass[letterpaper]{article} 
+\usepackage{pslatex}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subfigure}
+%\usepackage{subcaption}
+\usepackage{subfigure}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{tablefootnote}
+ \usepackage{listings}
+\usepackage{epigraph} 
+\usepackage{etoolbox} 
+\usepackage{amsmath}
+\usepackage{xcolor} %to use colored text
+\usepackage{titlesec} 
+\usepackage{color}
+\usepackage{array}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{apacite}
+
+\linespread{1.5}
+
+\setcounter{secnumdepth}{5} %for subsubsubsection
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+
+
+\makeatletter
+\patchcmd{\epigraph}{\@epitext{#1}}{\itshape\@epitext{#1}}{}{}
+\makeatother \def\signed
+#1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip2em
+\hbox{}\nobreak\hfil#1% \parfillskip=0pt \finalhyphendemerits=0
+\endgraf}} \newsavebox\mybox \newenvironment{aquote}[1]
+{\savebox\mybox{#1}\begin{quote}} {\signed{\usebox\mybox}\end{quote}}
+
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+% Default margins are too wide all the way around. I reset them here
+
+\setlength{\topmargin}{-.5in} 
+\setlength{\textheight}{9in}
+\setlength{\oddsidemargin}{.5in} 
+\setlength{\textwidth}{5.5in}
+
+\graphicspath{{figures/}}
+  
+\newenvironment{Table}
+  {\par\bigskip\noindent\minipage{\columnwidth}\centering}
+  {\endminipage\par\bigskip}  
+  
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+\definecolor{Red}{RGB}{255,0,0}
+\newcommand{\red}[1]{\textcolor{Red}{#1}}  
+  
+%\usepackage{inconsolata}
+
+%\lstset{
+%language=Scheme,
+%basicstyle=\footnotesize\ttfamily,
+%mathescape=true,
+%frame=single
+%}
+
+\lstset{
+  language=Scheme, % Andreas Stuhlmüller. Scheme listings. https://github.com/stuhlmueller/scheme-listings.git
+  columns=fixed,
+  tabsize=2,
+  extendedchars=true,
+  breaklines=true,
+  frame=single,
+%  numbers=left,
+  numbersep=5pt,
+    basicstyle=\scriptsize\ttfamily
+%  rulesepcolor=\color{solarized@base03},
+%  numberstyle=\tiny\color{solarized@base01},
+%  keywordstyle=\color{solarized@green},
+%  stringstyle=\color{solarized@cyan}\ttfamily,
+%  identifierstyle=\color{blue},
+%  commentstyle=\color{solarized@base01},
+%  emphstyle=\color{solarized@red}
+}
+\AtBeginDocument{
+  \catcode`_=12
+  \begingroup\lccode`~=`_
+  \lowercase{\endgroup\let~}\sb
+  \mathcode`_="8000
+}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\begin{document} \title{Syllogistic reasoning as communication}
+\author{Michael Henry Tessler, Noah D. Goodman} \renewcommand{\today}{manuscript draft} \maketitle
+
+
+\begin{aquote}{\textbf{Roger Bacon}, \emph{Opus Majus} (1267)} Reasoning draws the conclusion and makes us grant the conclusion, but does not make the conclusion certain. Nor does it remove doubt so that the mind may rest on the intuition of truth, unless the mind discovers it by the path of experience. \end{aquote}
+
+\begin{aquote}{\textbf{Walter J. Ong}, \emph{Orality and Literacy} (1982)}The syllogism is like a text: fixed, boxed-off, isolated... The riddle [by contrast] belongs in the oral world. To solve a riddle, canniness is needed: one draws on knowledge, often deeply subconscious, beyond the words themselves in the riddle. \end{aquote}
+
+\HRule
+
+Imagine you're discussing the 2014 World Cup with your friend. Your friend notices and remarks: 
+
+\begin{quote} ``\emph{All} of the teams that made it to the semifinals were expected to advance; they had favorable standings before the tournament. And did you notice that \emph{some} of the teams expected to advance had favorable referees? Remember the opening match: Brazil versus Croatia?"
+\end{quote}
+
+At this point, you might be wiling to conclude that probably some of the teams that made it to semifinals had favorable referees. The argument seems reasonable, but it isn't valid in the deductive sense. Why does it seem reasonable? 
+
+\section{Introduction}
+
+Your friends argument sounds like a syllogism: a two sentence argument that uses quantifiers as relations (e.g. \emph{all}, \emph{some}) between terms (e.g. \emph{semifinalists}, \emph{teams expected to advance}). We can represent the syllogism without the content (Table \ref{tab:wc-ex}, left) and without  the relations between terms (i.e. just as a logical form; Table \ref{tab:wc-ex}, right). 
+
+The syllogism is considered the first formal system of reasoning, developed by Aristotle in the 4th century BC. Syllogistic reasoning has been replaced by more modern formalisms (e.g. the predicate calculus), yet persists in the experiments of cognitive psychologists. Syllogisms seem like an intriguing testing ground for human reasoning because they (a) are a formal system of logic and (b) use natural language in their construction. The former ensures there is a normatively correct solution, while the latter allows people with no training in formal logic to analyze these arguments.
+
+\begin{table}
+\centering
+\begin{tabularx}{.8\textwidth}{XX}
+&  \\
+\bf All A are B & \bf A \--- B  \\
+\bf Some B are C & \bf B \--- C  \\
+\bf \textemdash & \textemdash \\
+\bf Some A are C & \bf A \--- C \\
+&  \\
+\end{tabularx}
+\caption{World cup syllogism, without content [left] and without quantifiers [right]}
+\label{tab:wc-ex}
+\end{table}
+
+\section{The variety of syllogistic reasoning tasks}
+
+\section{The argument strength of a syllogism}
+
+We begin with the assumption that reasoning with language, of which syllogisms era a special case, is no different than reasoning in everyday contexts. We follow in a tradition suggesting that everyday reasoning is uncertain and best described by the tools of probability theory. In this line of thinking, a deductive argument is understood as an argument that is maximally strong, with a spectrum of argument strength existing below it, given by $\Pr(conclusion \mid premises)$ \cite{Oaksford2007, Lassiter2014}.
+
+\subsection{Not all invalid syllogisms are weak arguments}
+
+Evans and colleagues \citeyear{Evans1999} had participants rate all possible combinations of 64 syllogistic premises and 4 conclusions using an evaluation task with abstract content (letters e.g. D, H, Z for terms). The study was aimed at examining the differences between instructions (what is a \{\emph{necessary, possible}\} conclusion) to test some predictions of the mental models framework. 
+
+The investigators discovered unexpectedly that among syllogisms with possible (but not necessary) conclusions (i.e. \emph{fallacies}, in the deductive sense), some are very strongly endorsed (in both instructional conditions) while others are very weakly endorsed. They replicated this finding in a separate experiment, in which participants were presented with four problem types: Necessary (i.e. valid), Possible Strong (PS), Possible Weak (PW), and Impossible (a contradiction of a Necessary conclusion). They found that the PS problems were endorsed about as often as the Necessary problems, and the PW problems were endorsed almost as little as Impossible problems.
+
+The notion of Possible Strong and Possible Weak syllogisms falls right out of analyzing the argument strength of syllogisms. 
+
+[Plot here a histogram/density-plot of argument strength of 256 sylls X 2 term orderings and highlight the possibly weak and possible strong ones (i.e. from the Evans study). ]
+
+\section{The influence of background knowledge}
+
+The contents of a syllogism affect syllogistic reasoning \cite{Wilkins1928}. This has traditionally been explored in the interaction between logical validity and the \emph{a priori} believability of the conclusion. The effect is most prominent in the syllogistic evaluation task and has loosely been described as a tendency to endorse \emph{a priori} believable conclusions, regardless of the logical validity of the argument. However, the degree to which conclusion-believability influences acceptance rates is more marked on invalid than on valid syllogisms \cite{Evans1983}. When experimenters have included neutral materials for baseline comparisons, they find belief bias is primarily associated with \emph{rejecting} unbelievable conclusions particularly when the argument is fallacious (i.e. an increase in correct rejections for invalids), leading some investigators to refer to it as ``belief debias'' \cite{Morley2004, Newstead1992}.
+
+Evans and colleagues \citeyear{Evans2001} followed up on the \citeA{Evans1999} study that found different endorsement rates for Possible Weak and Possible Strong syllogisms. The investigators hypothesized that PW problems would exhibit a positive belief bias (enhancement of endorsements for believable, invalid conclusions --- relative to neutral conclusions) and PS problems would exhibit a negative belief bias (the typical ``belief debias''). This predictions follow from the \citeA{Evans1999}  finding that with neutral or abstract content, PS endorsements are near ceiling and PW endorsements are near floor. 
+
+\subsection{Extant theories}
+
+Much of the theoretical discussion on belief bias is concerned with \emph{the stage of processing} where the influence of background knowledge is taken into account. According to this, theoretical accounts can be understood as arguing that background knowledge is incorporated during (1) the encoding of the problem (the translation of the syllogism into a mental representation); (2) the reasoning process (the manipulation of the mental representation); or (3) the decoding of the reasoning process (the translation of the mental representation into a response). 
+
+\subsubsection{Some old qualitative theories}
+Selective scrutiny, misinterpreted necessity, mental models
+
+\subsubsection{Recent quantitative theories}
+Two recent investigations of belief bias have used computational models to disambiguate a stage 2 effect from a stage 3 effect.
+
+\citeA{Klauer2000} used a Multinomial Process Tree (MPT) model to argue that that the belief bias effects occur during the reasoning process (stage 2). This comes  directly from the model itself, which models the task as consisting of either (i) accurately reasoning, i.e. decided whether or not the problem is valid or invalid, and responding correctly (with probability determined by model parameter $r_{problem.type}$) or (ii) guessing (with probability $1- r_{problem.type}$). Guessing leads to a guessing subtree, where it is assumed prior beliefs about the conclusion can have influence. Prior beliefs are modeled using parameters $\beta_{believable}$ and $\beta_{unbelievable}$. Problem type (for the reasoning parameters) consists of four possibilities, resulting from crossing believability and validity; hence, there are 4 $r$ parameters, and these are used to test the hypothesis that the \emph{reasoning process} is different across the 4 conditions. There are two $\beta$ parameters corresponding to believable and unbelievable response biases, and these are used to test if beliefs influence the response stage. The investigators found significant differences between the reasoning parameters across conditions, while constraining the $\beta$ belief parameters to be equal had little effect on the fit. From this, the authors concluded belief bias is a largely an effect on the reasoning process, consistent with dual-process theories of reasoning. 
+
+\citeA{Dube2010} drew issue with the use of \citeauthor{Klauer2000}'s MPT models because the models assumed a ``simple threshold''. \citeauthor{Dube2010} pointed out that the assumptions of threshold models are the same as the assumptions of measuring accuracy by \emph{Hits - False Alarms}: that, for a given problem type and a constant level of accuracy, changes in response bias are associated with \emph{equal changes} in acceptance rates. If the relationship between response bias and acceptance rates is empirically nonlinear however, the above assumption could lead one to infer a difference in sensitivity, when only a difference in bias is present (i.e. a Type I error on the null hypothesis that there is no difference in sensitivity / accuracy between belief conditions). To interrogate this assumption, the investigators measured ROC curves by using confidence ratings following a ``valid''/``invalid'' judgment. They found that the assumption of linear ROCs is unwarranted, calling into question all current models of belief bias (which implicitly use this assumption). 
+
+The authors went on to argue that the ``belief bias'' effect is a ``response bias'' effect. They do this using two null results. 
+First, they observe that the points for believable and unbelievable ROC curves appear to lie on a single curve, ``indicating subjects showed little to no difference in accuracy when judging conclusion validity''. They compare the estimated area under the ROC curve for the two conditions using $A_{z}$, a SDT statistic used for accuracy when the equal-variance assumption cannot be applied\footnote{\citeauthor{Dube2010} mention $A_{z}$ is an unbiased estimator of proportion correct in a 2AFC, and that it has smaller standard error than $d_{a}$ in simulations by Mamillian et al. (2004)}. They find no significant difference in the estimated area under the two ROCs. Second, they constrain the ``reasoning'' parameters of their Signal Detection Model ($d_{believable}$ and $d_{unbelievable}$; the distance between valid and invalid distributions of argument strength in the 2 belief conditions) to be equal. They observe a non-significant effect on the fit of the SDT models, ``indicating a negligible effect of believability on accuracy''. 
+
+\subsection{Belief and argument strength}
+
+For both of these approaches, it's important to bear in mind the particular materials used to elicit the effect. As we've suggested above, the syllogistic space actually defines a distribution over argument strengths. Qualitative differences present in this distribution have been talked about before in terms of ``single model'' vs. ``multiple model'' problems (a distinction among valid syllogisms) \cite{JL1991} as well as ``strong possible'' and ``weak possible'' (a distinction among invalid syllogisms) \cite{Evans1999}.
+
+The argument strength distribution depends critically on the prior distribution over situations. Though the argument strength of a valid syllogism is always 1, the argument strength of an invalid syllogism will vary with the content. Consider the content used in the recents studies of belief bias by \citeauthor{Dube2010} and \citeauthor{Klauer2000} The syllogistic content was chosen so that the subject would not have strong prior beliefs about the truth of the premises (e.g. by choosing an esoteric or nonsense middle term, \emph{some birds are metazoans; no sparrows are metazoans}), while having strong beliefs about the truth of the conclusion (\emph{some birds are not sparrows}). We can import such a prior distribution over properties -- $\Pr(bird,sparrow,metazoan)$ -- into the model of argument strength to examine how such a distribution over properties shapes the prior distributions over sentences as well as the posterior distribution over argument strengths. 
+
+From the probabilistic perspective, the prior probability of \emph{some birds are not sparrows} is very high. It's hard to know exactly what you could say to a person to convince them that \emph{some birds are not sparrows} is not the case. This is reflected in the number of invalid syllogisms for which \emph{some birds are not sparrows} is still highly probable [data needed]. 
+
+The same argument applies for \emph{a priori} false (or, low probability) conclusions (e.g. \emph{some sparrows are not birds}). This is reflected in the distribution of argument strength for this content over all 64 syllogisms [plot needed]. The distribution is heavily skewed towards the end-points. The prior probability of the conclusion is so low (or so high) that there is almost nothing you could tell a person to convince them otherwise. 
+
+\subsubsection{Implications for previous studies}
+
+All of the invalid syllogisms used in \citeA{Dube2010} would be classified as ``strong possible'' problems, with endorsement rates around 80\% for plausibility judgments and 50\% for necessity judgments using abstract content \cite{Evans1999}. \citeA{Evans2001} showed that ``strong possible'' problems were most susceptible to ``debiasing'' effects, wherein the argument is correctly rejected when an unbelievable conclusion is used. 
+
+To put this in quantitative terms, we can analyze the informational content of the syllogism, as defined by the degree to which the syllogism updates our prior beliefs over sentences (into our posterior beliefs --- the argument strength distribution). We can formalize this by using the expected KL divergence between a model of argument strength and a model of prior beliefs over sentences. We see that given the priors elicited from the content of previous belief bias experiments (Klauer, Dube), there is .... [probably, what we'll see is a bimodal distribution, with high information content for valid syllogisms improbable conclusions, and low informational content for everything else]. The invalid syllogisms used by Dube et al. (2010) all have very low informational content. These are relatively poor experiments for distinguishing a model of reasoning (the argument strength model) from a model of not-reasoning (the prior distribution over sentences). Thus, any interpretations about the relative contribution of a ``reasoning stage'' based on these syllogisms should be called into question.
+
+For the valid problems, the strength of the argument is always 1, no matter the content. Thus, logically valid arguments are poor experiments for distinguishing a model that analyzes the syllogism strictly in terms of abstract content from a model that analyzes the syllogism with respect to prior knowledge. Previous experiments have put logic and prior knowledge in, one might say, logical contradiction (i.e. a logically valid conclusion which is literally false). This design may lead to unexpected pragmatic effects e.g. the subject believing the experiment has an error, the subject believing the term sparrow means something other than the what the term sparrow usually means, defaulting to prior knowledge. We believe the pragmatic effects of logically valid false conclusions are interesting, but not at the core of how content affects reasoning.
+
+It should be noted that previous studies of belief bias present subjects with a syllogism and ask them to evaluate a particular conclusion. This provides 1 bit of information (a 2AFC judgment). In our framework, we are interested in disambiguating 3 models: (1) a model of reasoning over arbitrary terms, (2) a model of evaluating the conclusion based on prior knowledge [no reasoning] and (3) a model of reasoning over prior knowledge. To qualitatively disambiguate 3 models, one must have at least 2 data points. 
+
+\subsection{The probabilistic approach / the way forward}
+
+Studies of belief bias in syllogistic reasoning have looked at categorical distinctions between ``believable'' and ``unbelievable'' statements. In the most extreme cases, ``unbelievable'' conclusions are taken to be those which are literally false of the real world. 
+
+We began our discussion of belief bias with the statement that the content of a syllogism can affect the conclusions drawn. In a general sense, if we consider the syllogistic sentence --- a statement about two terms or properties --- the properties can be considered independent (e.g. novel words: \emph{blickets} and \emph{tomas}) or there can be some correlation between the terms (e.g. \emph{religious people} and \emph{church-goers}). Quantitatively, correlations can vary between -1 and +1. So far, most (possibly all [?]) studies of belief bias in syllogistic reasoning explore only the extreme end points of this spectrum.
+
+Given the results of the argument-strength models above, it would be unwise to explore potentially intricate interactions between logic and belief using content that is either necessary (\emph{some birds are not sparrows}) or impossible (\emph{some sparrows are not birds}) given prior knowledge. This is because for [most / many / all?] syllogisms, the argument strength either implies one must disregard the content (valid syllogisms) or be driven by your prior beliefs (invalid syllogisms). It would be more useful to see how prior beliefs can shape  reasoning. 
+
+\subsection{Experiment 2}
+
+We set out to explore how the content of the syllogistic argument can affect conclusions drawn. For this, we want use domains over which people have background knowledge while staying away from the endpoints of the \emph{believable -- unbelievable} spectrum. 
+
+\subsubsection{Method}
+
+\paragraph{Prior elicitation}
+
+Causal knowledge is ideal for studying belief in reasoning because (1) people have strong intuitions about causal domains and (2) causal knowledge is uncertain, thus keeping us away from the extreme endpoints of the \emph{believable -- unbelievable} spectrum \red{[citations?]}. 
+
+We began with causal domains that fell into two structural forms: common cause and multiple cause. For each structure, we used \red{some number} of different domains. 
+
+We based our selection of domains on simulations of argument-strength using qualitatively different priors (elicited from people in the lab). Our simulations suggested that domains using: \red{\{common-cause / multiple-cause\}} with \red{\{2-enabling / 2-preventative / 1-enabling,1-preventative \}}.
+
+We asked participants on Mechanical Turk to rate the likelihood of the properties co-occurring. Participants rated all 8 combinations of properties for each domain. Participants' responses were normalized for each domain so that the ratings added to 1. Syllogism selection simulations (see below) were based on the mean normalized ratings across participants. 
+
+\paragraph{Syllogism selection}
+
+We compared the posterior distribution of argument-strength using the empirically measured priors with the distribution of argument-strength using the best-fit \lstinline{base-rate} parameter as an i.i.d. variable that generated situations (i.e. a model without structured background knowledge... a \emph{naive} model) and the distribution on true conclusion sentences using the empirically measured priors (i.e. a model of just beliefs, no reasoning).  
+
+We examined the model predictions using conclusion terms coming from different parts of the structural form (e.g. in a common cause model, we considered arguments where the conclusion is between a cause and an effect as well as between the two effects). 
+
+We examined the expected information gain for each syllogism with the goal of disambiguating the 3 models (belief w/ reasoning, belief w/o reasoning, reasoning w/o beliefs).  
+
+\paragraph{Participants}
+
+\paragraph{Materials}
+
+\paragraph{Instructions}
+
+\section{Formal semantics and generalized quantifiers}
+
+\section{Pragmatics in syllogistic reasoning}
+
+\subsection{Can nothing ever actually follow?}
+
+
+
+\bibliographystyle{apacite}
+
+\setlength{\bibleftmargin}{.125in}
+\setlength{\bibindent}{-\bibleftmargin}
+
+%%\bibliography{mhtbib}
+\bibliography{belief}
+
+\end{document}

@@ -1,0 +1,53 @@
+---
+title: "syll-manuscript"
+author: "mht"
+date: "August 13, 2014"
+output: html_document
+---
+
+###Section **not all invalid syllogisms are weak arguments**
+
+Distribution of argument strength.
+
+```{r, echo=FALSE, hello}
+library(ggplot2)
+library(reshape2)
+
+fpath = '/Users/mht/Documents/research/syllogism/models/modeldata/'
+fig = 'Full'
+n_obj = '6'
+br = '0.25'
+dom = ''
+depl='0'
+deps='0'
+nsamp = '100'
+alph='1'
+f0 = paste(fpath,'LATTICE_4',dom,'/',depl,deps,'/csv/lis_N',depl,'_M',deps,'_qud1fig',fig,'_AIEOc4CAEP1_n',n_obj,'_base',br,'_s',nsamp,'k_alphQ',alph,'_alphR1.csv',sep="")
+
+df = read.csv(f0)[c(1,6:9)]
+
+dm<-melt(df,id.vars=c("X..syll"),value.name='argstrength',variable.name='conclusion')
+dm$argstrength <- dm$argstrength*2
+
+
+
+ggplot(dm, aes(x = argstrength,fill=conclusion,alpha=0.6)) + 
+  geom_histogram(binwidth=.025)+
+  #geom_density()+
+  ggtitle("argument strength of 64 syllogisms with C-A conclusions")+
+  xlab("argument strength")+
+  ylab("density of syllogisms")+
+  theme_bw()+
+  theme(plot.title=element_text(size=20),
+        axis.title.x = element_text(size=18),
+        axis.title.y = element_text(size=18),
+        axis.text.x = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        legend.text = element_text(size=14),
+        legend.title = element_text(size=14))
+
+
+```
+
+
+Section **
