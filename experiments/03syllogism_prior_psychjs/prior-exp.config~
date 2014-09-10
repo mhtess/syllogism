@@ -1,0 +1,18 @@
+{
+"rewriteProperties":"yes",
+"liveHIT":"no",
+"title":"Reasoning study",
+"description":"Evaluate the plausibility of various situations",
+"nameofexperimentfiles":"prior-exp",
+"experimentURL":"http://stanford.edu/~mtessler/experiments/syllogism-belief-priors/prior-exp.html",
+"keywords":"language reasoning cognitive experiment study",
+"USonly?":"yes",
+"minPercentPreviousHITsApproved":"95",
+"frameheight":"650",
+"reward":"0.00",
+"numberofassignments":"1",
+"assignmentduration":"1800",
+"hitlifetime":"2592000",
+"autoapprovaldelay":"60000",
+"conditions":"cond"
+}

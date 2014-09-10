@@ -1,0 +1,108 @@
+[
+ {
+  "trial_type": "html",
+  "trial_index": 0,
+  "rt": 7163,
+  "url": "../common/consent.html"
+ },
+ {
+  "trial_type": "text",
+  "trial_index": 0,
+  "rt": 11135,
+  "key_press": 32
+ },
+ {
+  "trial_type": "survey-likert",
+  "trial_index": 0,
+  "rt": 134845,
+  "Q_nXnYZ": 17,
+  "Q_XYZ": 63,
+  "Q_nXYnZ": 13,
+  "Q_nXnYnZ": 80,
+  "Q_XnYnZ": 45,
+  "Q_XnYZ": 63,
+  "Q_nXYZ": 41,
+  "Q_XYnZ": 58
+ },
+ {
+  "trial_type": "survey-likert",
+  "trial_index": 1,
+  "rt": 145908,
+  "Q_nXnYZ": 0,
+  "Q_XYZ": 64,
+  "Q_nXYnZ": 60,
+  "Q_nXnYnZ": 60,
+  "Q_XnYnZ": 82,
+  "Q_XnYZ": 90,
+  "Q_nXYZ": 92,
+  "Q_XYnZ": 53
+ },
+ {
+  "trial_type": "survey-likert",
+  "trial_index": 2,
+  "rt": 163847,
+  "Q_nXnYZ": 55,
+  "Q_XYZ": 82,
+  "Q_nXYnZ": 50,
+  "Q_nXnYnZ": 88,
+  "Q_XnYnZ": 69,
+  "Q_XnYZ": 77,
+  "Q_nXYZ": 77,
+  "Q_XYnZ": 22
+ },
+ {
+  "trial_type": "survey-likert",
+  "trial_index": 3,
+  "rt": 140655,
+  "Q_nXnYZ": 80,
+  "Q_XYZ": 29,
+  "Q_nXYnZ": 52,
+  "Q_nXnYnZ": 60,
+  "Q_XnYnZ": 34,
+  "Q_XnYZ": 70,
+  "Q_nXYZ": 35,
+  "Q_XYnZ": 88
+ },
+ {
+  "trial_type": "survey-likert",
+  "trial_index": 4,
+  "rt": 114283,
+  "Q_nXnYZ": 66,
+  "Q_XYZ": 61,
+  "Q_nXYnZ": 87,
+  "Q_nXnYnZ": 72,
+  "Q_XnYnZ": 22,
+  "Q_XnYZ": 85,
+  "Q_nXYZ": 17,
+  "Q_XYnZ": 58
+ },
+ {
+  "trial_type": "survey-likert",
+  "trial_index": 5,
+  "rt": 71835,
+  "Q_nXnYZ": 85,
+  "Q_XYZ": 63,
+  "Q_nXYnZ": 36,
+  "Q_nXnYnZ": 36,
+  "Q_XnYnZ": 58,
+  "Q_XnYZ": 25,
+  "Q_nXYZ": 70,
+  "Q_XYnZ": 86
+ },
+ {
+  "trial_type": "text",
+  "trial_index": 0,
+  "rt": 2538,
+  "key_press": 32
+ },
+ {
+  "trial_type": "questionnaire",
+  "trial_index": 0,
+  "rt": 10481,
+  "url": "../common/questionnaire.html",
+  "gender": "M",
+  "natlang": "English",
+  "logic": "Yes",
+  "age": "25"
+ }
+]
