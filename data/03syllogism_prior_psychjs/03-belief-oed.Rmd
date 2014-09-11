@@ -1,0 +1,276 @@
+---
+title: "syll04-belief-oed"
+author: "mht"
+date: "August 7, 2014"
+output: html_document
+---
+
+This is document outlining the design practices behind an experiment aimed to elicit effects of prior knowledge on syllogistic reasoning --- so called *belief bias* effects. 
+
+We've run a model of argument strength with various prior distributions over worlds. We consider 3 distributions for the following analysis: 
+
+1. C is a subset of A; B independent 
+
+2. A is a subset of C; B independent 
+
+3. A, B, C independent
+
+The conclusions for these syllogisms are always **C--A**. These were chosen to match the content used in recent studies of belief bias: Klauer, Musch, and Naumer (2000) and Dube, Rotello, and Heit (2010).
+
+
+```{r, echo=FALSE}
+library(ggplot2)
+library(reshape2)
+
+domains = c('allblf','nalblf','naive')
+types = c('argstrength', 'clonly')
+
+
+fpath = '/Users/mht/Documents/research/syllogism/models/modeldata/'
+fig = 'Full'
+n_obj = '8'
+best_fit_br = '0.51'
+
+N = 0
+model.pred = data.frame(X..syll=rep(NA,N),Asp=rep(NA,N),
+                        Esp=rep(NA,N),Isp=rep(NA,N),
+                        Osp=rep(NA,N),domain=rep(NA,N),
+                        stringsAsFactors=FALSE)
+
+for (d in domains){
+  for (t in types){
+  
+  
+    if (d == 'naive') {
+      dom <- ''
+      br <- best_fit_br
+      nsamp <- '100'}
+    else {
+      dom <- paste('_',d,sep="")
+      br <- '0.00'
+      nsamp <- '1000'}
+  
+    if (t == 'pragmatics')
+      {depl = '1'
+       deps = '0'
+       alph = '3'}
+    else{depl ='0'
+         deps = '0'
+         alph='1'}
+    
+    if (t == 'clonly'){
+        f0 = paste(fpath,'LATTICE_4',dom,'/00/csv/lis_N0_M0_Conly_qud1fig',fig,'_AIEOc4CAEP1_n',n_obj,'_base',br,'_s',nsamp,'k.csv',sep="")}
+    else{
+        f0 = paste(fpath,'LATTICE_4',dom,'/',depl,deps,'/csv/lis_N',depl,'_M',deps,'_qud1fig',fig,'_AIEOc4CAEP1_n',n_obj,'_base',br,'_s',nsamp,'k_alphQ',alph,'_alphR1.csv',sep="")
+    }
+  
+  
+  
+  
+  df = read.csv(f0)[c(1,6:9)]
+  dm = d
+  if (d=='belief'){dm = 'unbelief'}
+  if (d=='unbelief'){dm = 'belief'}
+  df$domain = as.factor(dm)
+  df$type = as.factor(t)
+  model.pred = rbind(model.pred,df)
+  }
+}
+
+m.pred = melt(model.pred, id.vars=c("X..syll","domain","type"),value.name='posterior',variable.name='conclusion')
+m.pred$domty = paste(m.pred$type,m.pred$domain,sep='.')
+
+mc.pred = dcast(m.pred, value.var='posterior', X..syll + conclusion ~ domain + type)
+```
+
+Here are models (1) and (2) plotted against each other: correlation = `r with(mc.pred,cor(allblf_argstrength,nalblf_argstrength))`
+
+```{r,echo=FALSE}
+ggplot(mc.pred,aes(x=allblf_argstrength,y=nalblf_argstrength,colour=conclusion))+
+  geom_point(position=position_jitter(width=0.02,height=0.02))
+```
+
+[N.B. a 2% jitter has been added to this plot to reveal more completely overlapping data points e.g. valid conclusions]
+
+It's clear the the models diverge the greatest on their predictions of the *all* and *not all* predictions, as we would expect with subset relations. 
+
+Now, let's look at each of the belief models vs. the naive model. So let's call this: (1) vs (3): correlation = `r with(mc.pred,cor(allblf_argstrength,naive_argstrength))`
+
+```{r, echo=FALSE}
+ggplot(mc.pred,aes(x=naive_argstrength,y=allblf_argstrength,colour=conclusion))+
+  geom_point(position=position_jitter(width=0.02,height=0.02))
+
+```
+
+and this one (2) vs (3): correlation = `r with(mc.pred,cor(nalblf_argstrength,naive_argstrength))`
+
+```{r, echo=FALSE}
+ggplot(mc.pred,aes(x=naive_argstrength,y=nalblf_argstrength,colour=conclusion))+
+  geom_point(position=position_jitter(width=0.02,height=0.02))
+
+```
+
+The two "belief" priors yield argument-strength predictions that are not equally as different from the model that uses an independent prior. This is because "belief" prior (2) that A is a subset of C, would often yield the conclusion: *not all Cs are As*, which is same conclusion you often draw when the properties are independent. 
+
+---
+
+Let's now turn our attention to the syllogisms used in Dube et al. (2010). [N.B. Dube et al. used more syllogisms than those included below. The others ones should be identical in argument strength, but they use A--C conclusion orderings, which we have not modelled here. (but we could very easily)]
+
+Also note that the conclusion to be evaluated, in all cases, was the Osp (not all) conclusion.
+
+```{r}
+dube.valid = c('EI2','EI3','EI4','AO2','OA3')
+dube.invalid = c('IE2','IE3','IE4','EO2','EO3')
+
+tud = 'argstrength'
+
+ggplot(data=subset(m.pred,X..syll%in%dube.valid & type==tud),aes(x=conclusion,y=posterior,fill=domain))+
+  geom_bar(stat='identity',position='dodge',color="black")+
+  facet_wrap(~X..syll)+
+  ggtitle("Argument strength of Valid syllogisms used in Dube et al. (2010)")
+
+ggplot(data=subset(m.pred,X..syll%in%dube.invalid & type==tud),aes(x=conclusion,y=posterior,fill=domain))+
+  geom_bar(stat='identity',position='dodge',color="black")+
+  facet_wrap(~X..syll)+
+  ggtitle("Argument strength of Invalids used in Dube et al. (2010)")
+
+```
+
+---
+The effects of belief are pretty striking in these invalid syllogisms, especially for the "All" and "Not all" responses. But what are these arguments? It's possible these arguments do not convey much information, and thus the prior is determining the responses. If this were the case, it would be impossible to disambiguate a model of reasoning with such a prior from a model of the prior itself (a Conclusion only model).
+
+```{r}
+
+ggplot(data=subset(m.pred,X..syll%in%dube.invalid & (domain=='nalblf' & type%in%c('argstrength','clonly'))),aes(x=conclusion,y=posterior,fill=type))+
+  geom_bar(stat='identity',position='dodge',color="black")+
+  facet_wrap(~X..syll)+
+  ggtitle("Belief priors models for Invalids used in Dube et al. (2010)")
+```
+
+
+Indeed it seems to be the case. The striking effects of belief bias may in fact be effects of non-optimal experiment design. Experimenters choose syllogisms without regard for their intrinsic informational content, and thus effects of prior knowledge may in fact be effects of vacuous arguments; or something like that.
+
+From an OED analysis based on causal priors, the subsequent selection of syllogisms seems to be informative. A brief look at an OED based on argstrength_naive, argstrength.not-all-belief, and clonly.not-all-belief shows some of the same syllogisms. (To do: proper OED on these three models. Also note that the naive model is based on br=0.5 model. *It should be based on a model matched for marginal distribution*.
+
+
+```{r}
+
+selection = c("AA2","IA2","OA2","OA1","AI4","OA4","AI3")
+
+ggplot(data=subset(m.pred,X..syll%in%selection & 
+                     ((domain=='nalblf' & type%in%c('argstrength','clonly'))
+                      | (domain=='naive') & type=='argstrength')
+                   ),aes(x=conclusion,y=posterior,fill=domty))+
+  geom_bar(stat='identity',position='dodge',color="black")+
+  facet_wrap(~X..syll)+
+  ggtitle("Belief priors models for proposed exp 3 syllogisms")
+```
+
+With all the above grains of salt, consider the AA2 syllogism. At the very least, this is an item where logic with priors and just priors diverge. The item reads:
+
+All robbins are metazoans
+
+All birds are metazoans
+
+... All birds are robbins
+
+Intuitively, it doesn't seem like we're any closer to endorsing this obviously incorrect conclusion. But consider a slightly different argument.
+
+All of the robbins are metazoans
+
+All of the birds are metazoans
+
+... All of the birds are robbins
+
+This argument seems to have some support. Of course, the prior endorsement over *All birds are robbins* and *All of the birds are robbins* cannot be same. We need to make a decision of the definite determiner.
+
+I think the decision needs to come out as follows: potential strange pragmatic confounds might enter into the game when you have statements which are obviously false of the world, except perhaps with heavy heavy instructions (the terms were generated at random, disregard their meanings in the English language, etc.). To avoid this, to make everything at least within the bounds of reasonable, we use the definite determiner.
+
+---
+
+### OED on belief and logic
+
+I ran an OED to try to discriminate three models: 
+
+1. argument-strength strong belief 1 -- All robins (C) are birds (A)
+
+2. argument-strength naive -- A, B, C independent
+
+3. conclusion-only strong belief 1
+
+```{r}
+oed <- read.table('/Users/mht/Documents/research/syllogism/models/modeldata/oed_naiveArgStr_beliefArgStr_beliefCLonly_sorted.txt')
+
+ggplot(data=subset(m.pred,X..syll%in%oed[1:64,1] &
+              domty%in%c('argstrength.allblf',
+                         'argstrength.naive',
+                         'clonly.allblf',
+                         'clonly.anive')),
+       aes(x=conclusion,y=posterior,fill=domty,alpha=0.8))+
+  geom_bar(stat='identity',position=position_dodge(),color="black")+
+  facet_wrap(~X..syll)+
+  ggtitle("Belief priors models for OED")
+```
+
+
+For the "causal" priors (first: the "prevent" priors)
+
+```{r}
+in.c <-read.csv('/Users/mht/Documents/research/syllogism/data/03belief_tests/causal_naive_argstr_clonly.csv')[2:7]
+
+c.pred<-melt(in.c, id.vars=c("X..syll","model"),value.name='posterior',variable.name='conclusion')
+
+c.oed <- read.table('/Users/mht/Documents/research/syllogism/models/modeldata/oed_preventArgStr_naiveArgStr_preventCLonly_sorted.txt')
+
+selection = c("AA2","IA2","OA2","OA1","AI4","OA4","AI3")
+#selection = c.oed[1:64,1]
+ggplot(data=subset(c.pred,X..syll%in%selection),
+       aes(x=conclusion,y=posterior,fill=model,alpha=0.8))+
+  geom_bar(stat='identity',position=position_dodge(),color="black")+
+  facet_wrap(~X..syll)+
+  ggtitle("Causal (prevent) priors models for OED")
+```
+
+
+This selection seems well posed. A more challenging test to disambiguate the models would be if the distributions have the same marginal probabilities. Using the causal-prevent priors above, I generated a distribution with independent properties that have the same marginal distribution. This turns to be roughly P(A)=P(B)=0.3, P(C)=0.7.
+
+
+```{r}
+in.cm <-read.csv('/Users/mht/Documents/research/syllogism/data/03belief_tests/causal_marg_argstr_clonly.csv')[2:7]
+
+cm.pred<-melt(in.cm, id.vars=c("X..syll","model"),value.name='posterior',variable.name='conclusion')
+
+#cm.oed <- read.table('/Users/mht/Documents/research/syllogism/models/modeldata/oed_preventArgStr_margArgStr_preventCLonly_sorted.txt')
+
+selection = c("AA2","IA2","OA2","OA1","AI4","OA4","AI3")
+#selection = c.oed[1:64,1]
+ggplot(data=subset(cm.pred,X..syll%in%dube.invalid),
+       aes(x=conclusion,y=posterior,fill=model,alpha=0.8))+
+  geom_bar(stat='identity',position=position_dodge(),color="black")+
+  facet_wrap(~X..syll)+
+  ggtitle("Causal (prevent) priors models for OED")
+```
+
+
+### Pragmatics models and belief
+
+** Put off for later... too complicated **
+
+I now turn my attention to how priors affect the pragmatic enrichments of arguments. We'll look at the 3 models we looked at before: belief, unbelief, and naive.
+
+We're interested in different among valid conclusions based on priors. For this, we'll examine the barplots of the valid syllogisms we saw before, focusing on the "Not all" responses.
+
+```{r}
+# tud = 'pragmatics'
+# 
+# ggplot(data=subset(m.pred,X..syll%in%dube.valid & type==tud),aes(x=conclusion,y=posterior,fill=domain))+
+#   geom_bar(stat='identity',position='dodge',color="black")+
+#   facet_wrap(~X..syll)+
+#   ggtitle("Pragmatic endorsement of Valid syllogisms used in Dube et al. (2010)")
+# 
+# 
+# ggplot(data=subset(m.pred,X..syll%in%dube.invalid & type==tud),aes(x=conclusion,y=posterior,fill=domain))+
+#   geom_bar(stat='identity',position='dodge',color="black")+
+#   facet_wrap(~X..syll)+
+#   ggtitle("Pragmatic endorsement of Invalids used in Dube et al. (2010)")
+```

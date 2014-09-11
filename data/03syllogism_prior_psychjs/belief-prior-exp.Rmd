@@ -1,0 +1,304 @@
+---
+title: "belief-prior-exp"
+author: "mht"
+date: "September 8, 2014"
+output: html_document
+---
+```{r setup, echo=FALSE}
+library(plyr)
+library(bootstrap)
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
+
+agr.ci <- function(x){
+  agr = aggregate(value ~ domain + condition + variable, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + condition + variable, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + condition + variable, data=x, FUN=ci.high)$value
+  agr$YMin = agr$value - agr$CILow
+  agr$YMax = agr$value + agr$CIHigh
+  return(agr)
+}
+```
+This report looks at the data elicited from 03syllogism-prior-exp. We asked people about the plausibility or frequency of various combinations of objects occurring. This is the so-called *prior elicitation* part of the experiment. 
+
+Let's start with the RT distribution. This is the time to complete the 8-state multinomial elicitation. 
+
+```{r}
+library(ggplot2)
+library(reshape2)
+
+
+fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/'
+
+df<-read.csv((paste(fpath,'prior-exp-mturk_all_n71.csv',sep="")))[c(1:12,16)]
+df$condition<-factor(df$condition,labels=c('plausibility','frequency'))
+
+ggplot(df, aes(x=(rt/1000)))+
+  geom_histogram(binwidth=1)+
+  theme_bw()+
+  ggtitle("time to complete item (RTs), binsize = 1s")+
+  xlab('time (sec)')+
+  ylab('number of items')
+
+ggplot(df, aes(x=(rt/1000),fill=condition))+
+  geom_histogram(binwidth=3)+
+  theme_bw()+
+  facet_wrap(~condition)+
+  ggtitle("time to complete item (RTs), binsize = 3s")+
+  xlab('time (sec)')+
+  ylab('number of items')
+```
+
+Looks like one person fell asleep in the chair. Otherwise, normalish around 50seconds per 8 state elicitation. Reasonable.
+
+### raw slider value distribution
+
+```{r}
+ggplot(melt(df[3:11]), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=10)+
+  facet_wrap(~condition)+
+  theme_bw()+
+  ggtitle('raw slider values')+
+  xlab('slider value, binsize = 10')+
+  ylab('number of responses')
+property_labels <- c('Q_XYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ','Q_XnYnZ','Q_nXYnZ','Q_nXnYZ','Q_nXnYnZ')
+
+df$sum<-rowSums(df[,property_labels])
+df$max<-apply(df[,property_labels],1,max)
+
+ggplot(melt(df[c('condition','max')]), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=5)+
+  facet_wrap(~condition)+
+  theme_bw()+
+  ggtitle('max raw slider values')+
+  xlab('slider value, binsize = 5')+
+  ylab('number of responses')
+
+```
+
+[with n=29 for plausibility and n=21 for frequency] 
+the frequency distribution appears exponential while the plausibility distribution appears uniform. There are many more 0 responses for the frequency prompt. This in unnormalized data remember.
+
+### Raw sum distributions
+```{r}
+
+
+ggplot(melt(df[c('condition','sum')]), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=10)+
+  facet_wrap(~condition)+
+  theme_bw()+
+  ggtitle('Sum of slider values')+
+  xlab('slider value, binsize = 10')+
+  ylab('number of responses')
+```
+
+Raw sums of plausibility elicitations are normalish around 400. This is (by coincidence?) 8 (state) * 100 / 2, fyi.
+
+Frequency doesn't show this. Instead, we get a great number which sum to approximately 100, and others that go beyond.
+
+**mini-hypothesis: the sum=100 responses occur when max response is near 100, i.e. when the 8-state is {100, 0, 0, 0, 0, 0, 0, 0}.** We're going to plot the max response vs. the sum of responses, for each item.
+
+```{r}
+ggplot(df[c('condition','sum','max')],aes(x=sum,y=max,color=condition))+
+  geom_point(alpha=0.8,position=position_jitter(10))+
+  facet_wrap(~condition)+
+  theme_bw()
+```
+
+This plot must reside above the y=x line. The only thing I take away from this is that there are many points in the top left corner for the frequency judgments, supporting the mini-hypothesis above.
+
+### normalized slider value distribution
+
+```{r}
+df_norm = ddply(df, .(domain, condition), function(x) {
+  means = x[,c('Q_XYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ','Q_XnYnZ','Q_nXYnZ','Q_nXnYZ','Q_nXnYnZ')]
+  means / rowSums(means)
+})
+
+ggplot(melt(df_norm), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=0.1)+
+  facet_wrap(~condition)+
+  theme_bw()+
+  ggtitle('normalized slider values')+
+  xlab('slider value, binsize = 0.1')+
+  ylab('number of responses')
+
+ggplot(melt(df_norm), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=0.01)+
+  facet_wrap(~condition)+
+  theme_bw()+
+  ggtitle('normalized slider values')+
+  xlab('slider value, binsize = 0.01')+
+  ylab('number of responses')
+```
+
+[with n=29 for plausibility and n=21 for frequency] 
+both distributinos look exponential, but frequency has more in the tail than plausibility, which really doesn't go above 0.4
+
+This note holds for n's = 35. Frequency is mostly strictly decreasing, while plausibility avoids the "impossible" endpoint.
+
+### 8-state multinomial elicitation
+
+```{r, fig.width=16, fig.height=8}
+ci_bs <- agr.ci(melt(df_norm))
+ci_bs$domain<-factor(ci_bs$domain,
+                     levels=c('lightbulb','tomatoplant','strawberry',
+                              'cracker','knife','painting'))
+ci_bs$variable<-factor(ci_bs$variable,
+                       levels=c('Q_nXnYnZ','Q_XnYnZ','Q_nXYnZ',
+                                'Q_nXnYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ',
+                                'Q_XYZ'))
+
+
+ggplot(ci_bs, aes(x=variable, y=value, fill=condition)) + 
+  geom_bar(position=position_dodge(.6), stat='identity')+
+    geom_errorbar(aes(ymin=YMin,ymax=YMax),width=0.5,alpha=0.6,
+                position=position_dodge(.6))+
+  xlab("property set")+
+  ylab("rating")+
+  facet_grid(condition~domain)+
+  ggtitle("priors")+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.x = element_text(size=20),
+    strip.text.y = element_text(size=24,angle=270))
+```
+
+NOTE: Properties on the X-axis are arranged from Absence of all properties (Left) to Presence of all proeprties (Right)
+
+### dot plot
+
+```{r, fig.width=16, fig.height=24}
+
+df_nmelt<-melt(df_norm)
+
+df_nmelt$variable<-factor(df_nmelt$variable,
+                          levels=c('Q_nXnYnZ','Q_XnYnZ','Q_nXYnZ',
+                                'Q_nXnYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ',
+                                'Q_XYZ'))
+
+df_nmelt$domain<-factor(df_nmelt$domain,
+                     levels=c('lightbulb','tomatoplant','strawberry',
+                              'cracker','knife','painting'))
+
+
+ggplot(df_nmelt, aes(x=variable, y=value, colour=condition, fill=condition))+
+  geom_dotplot(binaxis = "y", binwidth=.03, dotsize=1)+
+  xlab("property set")+
+  ylab("rating")+
+  facet_grid(domain~condition)+
+  ggtitle("priors")+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),    strip.text.x = element_text(size=20),
+    strip.text.y = element_text(size=24,angle=270))
+```
+
+-----
+
+OED stuff
+
+```{r, kl plots,fig.width=10,fig.height=6,echo=TRUE}
+fpath<-'/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/'
+oeds<-list.files(fpath,pattern='oed.*\\.txt')
+
+oed.res = data.frame(syll=rep(NA,0),prior=rep(NA,0),
+                        kl=rep(NA,0),valid=rep(NA,0),
+                        stringsAsFactors=FALSE)
+
+valid.ca <- read.table('/Users/mht/Documents/research/syllogism/models/metadata/allvalidmoodsCA.txt',header=TRUE)
+
+for (o in oeds){
+  df.tm <- read.table(paste(fpath,o,sep=''),col.names=c('syll','kl'))
+  df.tm$valid<-df.tm$syll%in%valid.ca$syll
+  df.tm$prior<-substr(o,5,12)
+  df.tm$syll<- factor(df.tm$syll,levels=df.tm$syll[order(df.tm$kl)])
+  oed.res<-rbind(oed.res,df.tm)
+}
+
+
+oed.res$syll = as.character(oed.res$syll)
+oed.res$n = as.numeric(factor(oed.res$prior))
+
+oed.res = ddply(oed.res, .(syll,valid,prior), transform,
+                x=paste(c(rep(' ',n-1), syll), collapse=''))
+
+oed.res$x = factor(oed.res$x, levels=oed.res[order(-oed.res$kl), 'x'])
+
+ggplot(data=oed.res,aes(x=x,y=kl,fill=valid))+
+  geom_bar(stat='identity')+
+  facet_wrap(~prior,scale='free_x')+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
+```
+
+Good to see that these basically look the same.
+
+
+
+```{r,predicition plots, fig.width=9,echo=FALSE}
+#oed.res,!valid & 
+library(stringr)
+
+substrRight <- function(x, n){
+  substr(x, nchar(x)-n+1, nchar(x))
+}
+
+toonec<-c("AE4","AA1","EA1","AE2","EA2")
+
+oed.ccee<-subset(oed.res, !(syll%in%toonec) & prior=='plausibi')
+
+top16<-oed.ccee[order(-oed.ccee$kl)[seq(1,16,4)],]
+fpath<-'/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/'
+m.df<-read.csv(paste(fpath,'3modeldata_oed_plausibility_depth0iidArgStr_emprArgStr_emprCLonly.csv',sep=''))[-1]
+
+m.df<-subset(m.df,X..syll%in%top16$syll)
+mm.df<-melt(m.df,id.vars=c('model','X..syll'))
+mm.df$response<-as.character(mm.df$variable)
+
+mm.df$domain<-str_split_fixed(mm.df$response, "[.]", 2)[,1]
+mm.df$conclusion<-str_split_fixed(mm.df$response, "[.]", 2)[,2]
+
+ggplot(data=subset(mm.df,substrRight(as.character(variable),3)%in%c("Isp","Osp")),aes(x=domain,y=value))+
+  geom_bar(aes(alpha=conclusion,fill=model),stat='identity',position='dodge')+
+  facet_wrap(~X..syll)+
+scale_alpha_manual(values=c(1,0.5))+
+  #scale_x_discrete(labels=c("some C are A","some C are not A"))+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
