@@ -2,6 +2,7 @@
 
 def write_church(pd):
     import numpy as np
+    import pdb
 #    print str(rtnQ) + ' = rationalityQ'
     print str(pd['n_balls']) + ' = n balls'
     # <codecell>
@@ -39,9 +40,11 @@ def write_church(pd):
     for i, line in enumerate(pd['propositions']):
         fa = "(('"+line[1]+line[0][0].lower()+line[0][1].lower()+') (or '
         fid.write('\n%s' % (fa))
-        if sum(pd['equiv_rs0'][:,i])==0:
+        if sum(pd['equiv_rs0'][:,i])==0: # if no worlds are true of this sentence
             fid.write('%s' % ('false))'))    
         else:
+            # this is where the magic happens: 
+            # printing the equivalence-class worlds (ECW) true of the sentences
             for j, term in enumerate(pd['equiv_rs0'][:,i]):
                 if term:
                     fid.write('%s%s%s' % ('(equal? feature ',term*("'f"+str(j)),') '))
@@ -58,6 +61,43 @@ def write_church(pd):
                 if term:
                     fid.write('%s%s%s' % ('(equal? feature ',term*("'f"+str(k)),') '))
             fid.write('))')      
+    #for j, prm in enumerate(premisesalt):
+    #    fa = "(((list '"+prm[2]+prm[1]+" '"+prm[3]+prm[0]+')) (or '
+    #    fid.write('\n%s' % (fa))
+    #    a = pd['equiv_rs0'][:,pd['propositions'].index(((prm[1][0].upper(),prm[1][1].upper()), prm[2].upper()))]
+    #    b = pd['equiv_rs0'][:,pd['propositions'].index(((prm[0][0].upper(),prm[0][1].upper()), prm[3].upper()))]
+    #    if sum(np.multiply(a,b))==0:
+    #        fid.write('%s' % ('false))'))    
+    #    else:
+    #        for k, term in enumerate(np.multiply(a,b)):
+    #            if term:
+    #                fid.write('%s%s%s' % ('(equal? feature ',term*("'f"+str(k)),') '))
+    #        fid.write('))')            
+    fid.write(')))\n\n')
+    #### write mapping from situations to sentences
+    fid.write('%s\n\t' % '(define true-conclusions (lambda (feature)')
+    fid.write("%s" % "(case feature")
+    for i, term in enumerate(pd['equiv_rs0']):
+        fa = "(('f"+str(i)+") (list "
+        fid.write('\n%s' % (fa))
+        for j, trth in enumerate(term):
+            if trth:
+                line = pd['propositions'][j]
+                prettier_sentence = "'"+line[1]+line[0][0].lower()+line[0][1].lower()
+                fid.write('%s ' % prettier_sentence)
+        fid.write('))')
+    # for j, prm in enumerate(pd['posspremises']):
+    #     fa = "(((list '"+prm[2]+prm[1]+" '"+prm[3]+prm[0]+')) (list '
+    #     fid.write('\n%s' % (fa))
+    #     a = pd['equiv_rs0'][:,pd['propositions'].index(((prm[1][0].upper(),prm[1][1].upper()), prm[2].upper()))]
+    #     b = pd['equiv_rs0'][:,pd['propositions'].index(((prm[0][0].upper(),prm[0][1].upper()), prm[3].upper()))]
+    #     if sum(np.multiply(a,b))==0:
+    #         fid.write('%s' % ('false))'))    
+    #     else:
+    #         for k, term in enumerate(np.multiply(a,b)):
+    #             if term:
+    #                 fid.write('%s%s%s' % ('(equal? feature ',term*("'f"+str(k)),') '))
+    #         fid.write('))')      
     #for j, prm in enumerate(premisesalt):
     #    fa = "(((list '"+prm[2]+prm[1]+" '"+prm[3]+prm[0]+')) (or '
     #    fid.write('\n%s' % (fa))
@@ -135,17 +175,17 @@ def write_church(pd):
     fid.write('\n(define (raise-to-power dist alph)\n')
     fid.write('\t(list (first dist) (map (lambda (x) (pow x alph)) (second dist))))\n\n')
     # <codecell>
+    fid.write("(define is-conclusion? (lamdba (x) (equal? (string-slice x 1) 'sp)))\n\n")
     fid.write('(define reasoner1\n')
     fid.write('  (mem (lambda  (premises figure)\n')
     fid.write('\t(enumeration-query\n')
     fid.write('\t (define state (state-prior))\n')
-    fid.write('\t (define conclusion (conclusion-prior))\n\n')
+    fid.write('\t (define conclusion (uniform-draw (filter is-conclusion? (true-conclusions state))))\n\n')
     fid.write('\t conclusion\n\n')
-    fid.write('\t(and (sentence-eval conclusion state)\n')
     if (pd['qud']==0):
-        fid.write('\t\t\t (equal? premises (apply multinomial (experimenter state figure))))))))\n')
+        fid.write('\t\t (equal? premises (apply multinomial (experimenter state figure)))))))\n')
     else:
-        fid.write('\t\t\t (equal? premises (apply multinomial (experimenter conclusion figure))))))))\n')
+        fid.write('\t\t (equal? premises (apply multinomial (experimenter conclusion figure)))))))\n')
     fid.write('(define experimenter\n')
     if (pd['qud']==0):
         fid.write('  (mem (lambda (state figure)\n')
@@ -153,8 +193,6 @@ def write_church(pd):
         fid.write('  (mem (lambda (conclusion figure)\n')
     fid.write('\t(enumeration-query\n')
     fid.write('\t (define premises  (premise-prior figure))\n')
-    if (pd['qud']==1):
-        fid.write('\t (define state  (state-prior))\n\n')
     fid.write('\t premises\n\n')
     if (pd['qud']==0):
         fid.write('\t (equal? state (apply multinomial (raise-to-power (reasoner0 premises figure) alphaQ))\n')
@@ -165,7 +203,7 @@ def write_church(pd):
     fid.write('  (mem (lambda  (premises figure)\n')
     fid.write('\t(enumeration-query\n')
     fid.write('\t (define state (state-prior))\n')
-    fid.write('\t (define conclusion (conclusion-prior))\n\n')
+    fid.write('\t (define conclusion (uniform-draw (filter is-conclusion? (true-conclusions state))))\n\n')
     if (pd['qud']==0):
         fid.write('\t state\n\n')
         fid.write('\t\t\t(if (= alphaQ 0)\n')
@@ -173,10 +211,9 @@ def write_church(pd):
         fid.write('\t\t\t\t(sentence-eval premises state))\n')
     else:
         fid.write('\t conclusion\n\n')
-        fid.write('\t\t(and (sentence-eval conclusion state)\n')
         fid.write('\t\t\t(if (= alphaQ 0)\n')
         fid.write('\t\t\t\ttrue\n')
-        fid.write('\t\t\t\t(sentence-eval premises state)))\n')
+        fid.write('\t\t\t\t(sentence-eval premises state))\n')
     fid.write('\t\t))))\n\n')
     fid.write('(if (= depth 1)\n')
     fid.write('\t(map reasoner1 allprems figures)\n')

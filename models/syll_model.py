@@ -27,7 +27,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     EP = int(EPin)
     latlis = lis
     qud=1
-    n_samples = 100
+    n_samples = 10
     #fig = 'Full'
     ### FOR MOST / FEW, Set threshold; right now, only one threshold for the two
     threshold = 0.5
@@ -163,6 +163,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
         rs1 = np.array([rw for rw in np.transpose(rs0) if sum(rw) != 0])
         equiv_rs0, equiv_count = myunique(rs1)
         equiv_prob = [float(ec)/len(rs1) for ec in equiv_count]
+
 
         # run model
         passdict = {'fname':fname,'qud':qud,'listener':latlis,'nvc':nvc,"vc":vc,
