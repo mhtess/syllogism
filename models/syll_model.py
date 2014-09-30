@@ -27,7 +27,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     EP = int(EPin)
     latlis = lis
     qud=1
-    n_samples = 10
+    n_samples = 100
     #fig = 'Full'
     ### FOR MOST / FEW, Set threshold; right now, only one threshold for the two
     threshold = 0.5
@@ -180,12 +180,12 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
             os.remove(data)
 
     # parse and write to csv
-    head = 'Aps,Eps,Ips,Ops,Asp,Esp,Isp,Osp,NVCsp'
+    head = 'all.A-C,none.A-C,some.A-C,not-all.A-C,all.C-A,none.C-A,some.C-A,not-all.C-A,mu,undefined'
     if (exp=='AMFO'):
-        head = 'Aps,Mps,Fps,Ops,Asp,Msp,Fsp,Osp,NVCsp'
+        head = 'all.A-C,most.A-C,few.A-C,not-all.A-C,all.C-A,most.C-A,few.C-A,not-all.C-A,mu,undefined'
     if (exp=='MFIE'):
-        head = 'Mps,Fps,Ips,Eps,Msp,Fsp,Isp,Esp,NVCsp'
-    final_out = np.zeros((64,9))
+        head = 'most.A-C,few.A-C,some.A-C,none.A-C,most.C-A,few.C-A,some.C-A,none.C-A,mu,undefined'
+    final_out = np.zeros((64,10))
     run_church(churchfile,rationalityQ,rationalityR,ndepth,mdepth,serv,prefix,latlis,
         destination)
     rname = (latlis+'_N' + ndepth + '_M' + mdepth +'_' + prefix + '_aq' + 
@@ -209,7 +209,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
                 '_ar' + str(0) + '.results')
 
     if not os.path.exists((destination+'results/'+rname)):
-        final = np.zeros((64,9))
+        final = np.zeros((64,10))
         run_church(churchfile,0,0,ndepth,mdepth,serv,prefix,latlis,destination)
         rname = (latlis+'_N' + ndepth + '_M' + mdepth + '_' + prefix + '_aq' + str(0) + 
                 '_ar' + str(0) + '.results')
