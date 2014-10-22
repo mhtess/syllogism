@@ -56,9 +56,9 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     #destfold = destpref +'_'+str(vc)+'c/'
     destfold = ('%s%s/' % (qdepth,rdepth))
     if (serv==1):
-        macpth = ('/home/mht/MODEL/%s' % macfold)
+        macpth = ('/home/mht/projectsyll/MODELDATA/%s/%s/' % (macfold,domain))
     else:
-        macpth = ('/Users/mht/Documents/research/syllogism/models/modeldata/%s' 
+        macpth = ('/Users/mht/Documents/research/syllogism/models/modeldata/%s/' 
             % macfold)
     #expname = '02syllogism-4ac'
     #expname = '03causalbelief_tests'
@@ -154,7 +154,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
         churchfile = macpth+'church/'+fname
         high_passingdict['churchfile']=churchfile
         passdict['fname']=fname
-        high_passingdict['subjnum']='mean'
+        high_passingdict['bs']='mean'
         
         if not os.path.exists(churchfile):
             print 'sampling and featurizing... br=' + str(base_rate)
@@ -171,9 +171,13 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
 
     else:
 
+        if (serv==0):
+            priorpath = ('/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/')
+        else:
+            priorpath = ('/home/mht/projectsyll/EXPDATA/03syllogism_prior_psychjs/')
+
         if (priortype=='bootstrap'):
             expname = 'prior-exp-mturk_all_n71'
-            priorpath = ('/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/')
             priorfile = priorpath + expname +'.csv'
             phead = pd.read_csv(priorfile,dtype='string',index_col=0)
             pr_dom = phead[phead['domain']==domain].reset_index(drop=True) # get priors for this domain
@@ -189,7 +193,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
                 passdict['fname']=fname
                 high_passingdict['bs']=str(bs)
                 if not os.path.exists(churchfile):
-                    print 'sampling and featurizing ' + str(n_balls) + ' ' + domain + ' bssamp ' + bs
+                    print 'sampling and featurizing ' + str(n_balls) + ' ' + domain + ' bssamp ' + str(bs)
                     smp_wr = np.array([np.random.randint(0,pr_dist.shape[0]) for _ in range(pr_dist.shape[0])])
                     smp_pr = pr_dist.iloc[smp_wr]
                     norm_pr = smp_pr.div(smp_pr.sum(axis=1),axis=0)
@@ -210,13 +214,16 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
 
         else:
 
-            high_passingdict['subjnum']='mean'
+            high_passingdict['bs']='mean'
             fname = latlis+ '_' + prefix + '_Smean.church'
             churchfile = macpth+'church/'+fname
             high_passingdict['churchfile']=churchfile
             passdict['fname']=fname
             expname = 'prior-exp-mturk_means_n71'
-            priorpath = ('/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/')
+            if (priortype=='tfbt'):
+                expname = 'prior-exp-mturk_collapsed_means_n71'
+            #expname = 'prior-exp-mturk_means_CAswitch_n71'
+            #expname = 'prior-exp-mturk_means_samenode_n71'
             priorfile = priorpath + expname +'.csv'
 
             print 'sampling and featurizing ' + str(n_balls) + ' ' + domain + 's' + ' ' + priortype
