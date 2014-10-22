@@ -1,0 +1,380 @@
+---
+title: "Experiments 1, 2: Basic data analysis"
+author: "mht"
+date: "September 22, 2014"
+output: html_document
+---
+
+# 1. RTs (time to complete each item)
+
+
+```{r RTs1}
+
+library(ggplot2)
+library(reshape2)
+library(plyr)
+library(stringr)
+library(gridExtra)
+
+fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_reasoning/'
+fpath2 = '/Users/mht/Documents/research/syllogism/data/04syllogism_reasoning/'
+
+
+df<-read.csv((paste(fpath,'syllbelief-exp-mturk_all_n250.csv',sep="")))
+df2<-read.csv((paste(fpath2,'syllbelief-exp2-mturk.csv',sep="")))
+
+exp1sylls<-levels(df$syll)
+exp2sylls<-levels(df2$syll)
+resp_labels<-c("Q_A","Q_E","Q_I","Q_O")
+
+a1<-ggplot(df, aes(x=(rt/1000)))+
+  geom_histogram(binwidth=1)+
+  theme_bw()+
+  ggtitle("Experiment 1 RTs, binsize = 1s")+
+  xlab('time (sec)')+
+  ylab('number of items')
+
+a2<-ggplot(df2, aes(x=(rt/1000)))+
+  geom_histogram(binwidth=1)+
+  theme_bw()+
+  ggtitle("Experiment 2 RTs, binsize = 1s")+
+  xlab('time (sec)')+
+  ylab('number of items')
+grid.arrange(a1,a2)
+```
+
+*mean RT for Exp 1 = `r mean(df$rt/1000)`*
+
+*mean RT for Exp 2 = `r mean(df2$rt/1000)`*
+
+*standard deviation for Exp 1 = `r sqrt(var(df$rt/1000))`*
+
+*standard deviation for Exp 2 = `r sqrt(var(df2$rt/1000))`*
+
+Removing items greater than 2 standard deviations above the mean RT.
+
+For experiment 1: `r mean(df$rt)+2*sqrt(var(df$rt))`
+
+For experiment 2: `r mean(df2$rt)+2*sqrt(var(df2$rt))`
+
+```{r RTs2}
+
+df<-subset(df,rt<mean(df$rt)+2*sqrt(var(df$rt)))
+df2<-subset(df2,rt<mean(df2$rt)+2*sqrt(var(df2$rt)))
+
+
+b1<-ggplot(df, aes(x=(rt/1000),fill=condition))+
+  geom_histogram(binwidth=1)+
+  theme_bw()+
+  facet_wrap(~condition,scales='fixed')+
+  ggtitle("Experiment 1 RTs (sans outliers), binsize = 1s")+
+  xlab('time (sec)')+
+  ylab('number of items')
+
+b2<-ggplot(df2, aes(x=(rt/1000),fill=condition))+
+  geom_histogram(binwidth=1)+
+  theme_bw()+
+  facet_wrap(~condition,scales='fixed')+
+  ggtitle("Experiment 2 RTs (sans outliers), binsize = 1s")+
+  xlab('time (sec)')+
+  ylab('number of items')
+
+grid.arrange(b1,b2)
+```
+
+Map radio values to continuous values
+
+```{r map-radio-to-cnts}
+map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
+
+for (i in 1:length(df$subj)){
+  if (df[i,]$condition=='radio'){
+    df[i,]$Q_A <- map_radio_to_continuous(df[i,]$radio_A,df[i,]$Q_A)
+    df[i,]$Q_E <- map_radio_to_continuous(df[i,]$radio_E,df[i,]$Q_E)
+    df[i,]$Q_I <- map_radio_to_continuous(df[i,]$radio_I,df[i,]$Q_I)
+    df[i,]$Q_O <- map_radio_to_continuous(df[i,]$radio_O,df[i,]$Q_O)
+  }
+}
+```
+
+# 2. Raw slider value distribution
+
+```{r raw-slide}
+length(subset(df,condition=='slide')$subj)
+length(subset(df,condition=='radio')$subj)
+
+ggplot(melt(df[3:7]), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=10)+
+  facet_wrap(~condition)+
+  theme_bw()+
+  ggtitle('raw slider values')+
+  xlab('slider value, binsize = 10')+
+  ylab('number of responses')
+
+ggplot(melt(df[3:7]), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=5)+
+  facet_wrap(~condition)+
+  theme_bw()+
+  ggtitle('raw slider values')+
+  xlab('slider value, binsize = 5')+
+  ylab('number of responses')
+
+df$sum<-rowSums(df[,resp_labels])
+df$max<-apply(df[,resp_labels],1,max)
+```
+
+
+### normalized slider value distribution
+
+```{r}
+df_norm = ddply(df, .(domain, condition,syll), function(x) {
+  resp = x[,resp_labels]
+  resp / rowSums(resp)
+})
+
+ggplot(melt(df_norm), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=0.01)+
+  facet_wrap(~condition)+
+  theme_bw()+
+  ggtitle('normalized slider values')+
+  xlab('slider value, binsize = 0.01')+
+  ylab('number of responses')
+```
+
+### Raw sum distributions
+
+```{r rawsum}
+ggplot(melt(df[c('condition','sum')]), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=5)+
+  facet_wrap(~condition)+
+  theme_bw()+
+  ggtitle('Sum of slider values')+
+  xlab('slider value, binsize = 5')+
+  ylab('number of responses')
+```
+
+```{r rawmax}
+
+ggplot(melt(df[c('condition','max')]), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=1)+
+  facet_wrap(~condition)+
+  theme_bw()+
+  ggtitle('max raw slider values')+
+  xlab('slider value, binsize = 1')+
+  ylab('number of responses')
+```
+
+
+
+### syllogistic reasoning data
+
+```{r, fig.width=16, fig.height=8}
+library(bootstrap)
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
+
+agr.ci <- function(x){
+  agr = aggregate(value ~ domain + condition + syll + variable, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + condition + syll + variable, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + condition + syll + variable, data=x, FUN=ci.high)$value
+  agr$YMin = agr$value - agr$CILow
+  agr$YMax = agr$value + agr$CIHigh
+  return(agr)
+}
+
+ci_bs <- agr.ci(melt(df_norm))
+
+exp_domains = c('cracker','knife','lightbulb','strawberry')
+quantifiers = c("All","None","Some","Some_not")
+ci_bs$domain<-factor(ci_bs$domain,labels=exp_domains)
+ci_bs$conclusion<-factor(ci_bs$variable,labels=quantifiers)
+
+
+
+mean_cast <-dcast(ci_bs[,1:5], value.var='value',...~condition)
+with(mean_cast,cor(radio,slide))
+
+ggplot(mean_cast,aes(x=radio,y=slide,color=variable))+
+geom_point(size=4)+
+  theme_bw()+
+  xlim(0,0.7)+
+  ylim(0,0.7)
+quartz()
+
+ggplot(ci_bs, aes(x=conclusion, y=value, fill=condition)) + 
+  geom_bar(position=position_dodge(.6), stat='identity')+
+    geom_errorbar(aes(ymin=YMin,ymax=YMax),width=0.5,alpha=0.6,
+                position=position_dodge(.6))+
+  xlab("conclusion")+
+  ylab("endorsement")+
+  facet_grid(domain~syll)+
+  ggtitle("belief reasoning")+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.x = element_text(size=20),
+    strip.text.y = element_text(size=24,angle=270))
+```
+
+Collapsing across dependent measures.
+```{r}
+agr.ci <- function(x){
+  agr = aggregate(value ~ domain + syll + variable, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + syll + variable, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + syll + variable, data=x, FUN=ci.high)$value
+  agr$YMin = agr$value - agr$CILow
+  agr$YMax = agr$value + agr$CIHigh
+  return(agr)
+}
+
+col_bs <- agr.ci(melt(df_norm))
+col_bs$domain<-factor(col_bs$domain,labels=exp_domains)
+col_bs$conclusion<-factor(col_bs$variable,labels=quantifiers)
+
+ggplot(col_bs, aes(x=conclusion, y=value, fill=conclusion)) + 
+  geom_bar(position=position_dodge(.6), stat='identity')+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=0.5,alpha=0.6,
+                position=position_dodge(.6))+
+  xlab("conclusion")+
+  ylab("endorsement")+
+  facet_grid(domain~syll)+
+  ggtitle("belief reasoning")+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.x = element_text(size=20),
+    strip.text.y = element_text(size=24,angle=270))
+```
+
+Write collapsed means to csv
+
+```{r}
+collapsed_wide<-dcast(col_bs[,c("domain","syll","conclusion","value")], value.var='value',...~conclusion)
+write.csv(collapsed_wide,file='syllogism/data/03syllogism_reasoning/syllbelief-exp-means_collapsed_sansOutliers.csv')
+```
+
+
+```{r predictions}
+exp_domains = c('lightbulb','strawberry','cracker','knife')
+
+fpath<-'/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/'
+m.df<-read.csv(paste(fpath,'3modeldata_oed_plausibility_depth0iidArgStr_emprArgStr_emprCLonly.csv',sep=''))[-1]
+prag.df<-read.csv(paste(fpath,'prgmtcOED_oed_frequency_depth1_alpha5iidArgStr_emprArgStr_emprCLonly.csv',sep=''))[-1]
+prag.df<-subset(prag.df,model=='prgmtc_empr')
+
+m.df<-subset(m.df,X..syll%in%levels(ci_bs$syll))
+prag.df<-subset(prag.df,X..syll%in%levels(ci_bs$syll))
+
+m.df<-rbind(m.df,prag.df)
+
+
+mm.df<-melt(m.df,id.vars=c('model','X..syll'))
+mm.df$response<-as.character(mm.df$variable)
+mm.df$domain<-str_split_fixed(mm.df$response, "[.]", 2)[,1]
+mm.df$conclusion<-str_split_fixed(mm.df$response, "[.]", 2)[,2]
+mm.df<-subset(mm.df,domain%in%exp_domains)
+mm.df$domain<-factor(mm.df$domain,levels = exp_domains)
+
+
+ggplot(data=mm.df,aes(x=conclusion,y=value))+
+  geom_bar(aes(fill=model),stat='identity',position='dodge')+
+  facet_grid(domain~X..syll)+
+  scale_alpha_manual(values=c(1,0.5))+
+  #scale_x_discrete(labels=c("some C are A","some C are not A"))+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
+```
+
+
+### model data correlations
+
+```{r}
+flds<-c('syll','value','domain','conclusion')
+
+d1.df<-subset(ci_bs,condition=='slide')[,flds]
+names(d1.df)[2]<-'value.slide'
+d2.df<-subset(ci_bs,condition=='radio')[,flds]
+names(d2.df)[2]<-'value.radio'
+
+m1.df<-subset(mm.df,model=='argstr_iid')
+m2.df<-subset(mm.df,model=='argstr_empr')
+m3.df<-subset(mm.df,model=='clonly_empr')
+m4.df<-subset(mm.df,model=='prgmtc_empr')
+
+m1.df$conclusion<-factor(m1.df$conclusion,labels=quantifiers)
+m2.df$conclusion<-factor(m2.df$conclusion,labels=quantifiers)
+m3.df$conclusion<-factor(m3.df$conclusion,labels=quantifiers)
+m4.df$conclusion<-factor(m4.df$conclusion,labels=quantifiers)
+
+names(m1.df)[2]<-'syll'
+names(m2.df)[2]<-'syll'
+names(m3.df)[2]<-'syll'
+names(m4.df)[2]<-'syll'
+
+m1.df<-m1.df[,flds]
+m2.df<-m2.df[,flds]
+m3.df<-m3.df[,flds]
+m4.df<-m4.df[,flds]
+
+names(m1.df)[2]<-'value.argstr_iid'
+names(m2.df)[2]<-'value.argstr_empr'
+names(m3.df)[2]<-'value.clonly_empr'
+names(m4.df)[2]<-'value.prgmtc_empr'
+
+mega.df<-join_all(list(d1.df,d2.df,m1.df,m2.df,m3.df,m4.df),by=c('domain','syll','conclusion'))
+cor(mega.df[,c("value.slide",'value.radio','value.argstr_iid','value.argstr_empr','value.clonly_empr','value.prgmtc_empr')])
+
+#mega.df<-join_all(list(d1.df,d2.df,m1.df,m2.df,m3.df),by=c('domain','syll','conclusion'))
+#cor(mega.df[,c("value.slide",'value.radio','value.argstr_iid','value.argstr_empr','value.clonly_empr')])
+
+
+```
+
+### pairwise ggplots
+
+```{r}
+makePairs <- function(data) 
+{
+  grid <- expand.grid(x = 1:ncol(data), y = 1:ncol(data))
+  grid <- subset(grid, x != y)
+  all <- do.call("rbind", lapply(1:nrow(grid), function(i) {
+    xcol <- grid[i, "x"]
+    ycol <- grid[i, "y"]
+    data.frame(xvar = names(data)[ycol], yvar = names(data)[xcol], 
+               x = data[, xcol], y = data[, ycol], data)
+  }))
+  all$xvar <- factor(all$xvar, levels = names(data))
+  all$yvar <- factor(all$yvar, levels = names(data))
+  densities <- do.call("rbind", lapply(1:ncol(data), function(i) {
+    data.frame(xvar = names(data)[i], yvar = names(data)[i], x = data[, i])
+  }))
+  list(all=all, densities=densities)
+}
+ 
+# expand iris data frame for pairs plot
+gg1 = makePairs(mega.df[,c("value.slide",'value.radio','value.argstr_iid','value.argstr_empr','value.clonly_empr')])
+ 
+# new data frame mega iris
+mega_gg1 = data.frame(gg1$all, colorvar=rep(mega.df$conclusion, length=nrow(gg1$all)))
+ 
+# pairs plot
+ggplot(mega_gg1, aes_string(x = "x", y = "y")) + 
+  facet_grid(xvar ~ yvar, scales = "free") + 
+  geom_point(aes(colour=colorvar), na.rm = TRUE, alpha=0.8,size=3) + 
+  stat_density(aes(x = x, y = ..scaled.. * diff(range(x)) + min(x)), 
+               data = gg1$densities, position = "identity", 
+               colour = "grey20", geom = "line")+
+  theme_bw()+
+  theme(strip.text = element_text(size = 20, angle = 0))
+```
+
+
+### reasoning with priors vs. data
+
+```{r}
+ggplot(mega.df, aes(x=value.argstr_empr, y=value.radio, color=conclusion))+
+  geom_point(size=5)+
+  theme_bw()
+
+```
