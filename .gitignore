@@ -1,0 +1,11 @@
+*.csv
+*.pyc
+publications/14manuscript/inconsolata/
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.synctex.gz
+_cleanup
+_oldpcRSCRIPTS
