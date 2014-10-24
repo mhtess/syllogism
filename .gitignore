@@ -9,3 +9,5 @@ publications/14manuscript/inconsolata/
 *.synctex.gz
 _cleanup
 _oldpcRSCRIPTS
+*church
+*results
