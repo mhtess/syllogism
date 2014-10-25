@@ -21,11 +21,23 @@ fpath2 = '/Users/mht/Documents/research/syllogism/data/04syllogism_reasoning/'
 
 
 df<-read.csv((paste(fpath,'syllbelief-exp-mturk_all_n250.csv',sep="")))
-df2<-read.csv((paste(fpath2,'syllbelief-exp2-mturk.csv',sep="")))
+df<-read.csv((paste(fpath2,'syllbelief-exp2-mturk.csv',sep="")))
 
 exp1sylls<-levels(df$syll)
 exp2sylls<-levels(df2$syll)
 resp_labels<-c("Q_A","Q_E","Q_I","Q_O")
+
+map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
+
+
+for (i in 1:length(df$subj)){
+  if (df[i,]$condition=='radio'){
+    df[i,]$Q_A <- map_radio_to_continuous(df[i,]$radio_A,df[i,]$Q_A)
+    df[i,]$Q_E <- map_radio_to_continuous(df[i,]$radio_E,df[i,]$Q_E)
+    df[i,]$Q_I <- map_radio_to_continuous(df[i,]$radio_I,df[i,]$Q_I)
+    df[i,]$Q_O <- map_radio_to_continuous(df[i,]$radio_O,df[i,]$Q_O)
+  }
+}
 
 a1<-ggplot(df, aes(x=(rt/1000)))+
   geom_histogram(binwidth=1)+
@@ -82,21 +94,6 @@ b2<-ggplot(df2, aes(x=(rt/1000),fill=condition))+
 grid.arrange(b1,b2)
 ```
 
-Map radio values to continuous values
-
-```{r map-radio-to-cnts}
-map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
-
-for (i in 1:length(df$subj)){
-  if (df[i,]$condition=='radio'){
-    df[i,]$Q_A <- map_radio_to_continuous(df[i,]$radio_A,df[i,]$Q_A)
-    df[i,]$Q_E <- map_radio_to_continuous(df[i,]$radio_E,df[i,]$Q_E)
-    df[i,]$Q_I <- map_radio_to_continuous(df[i,]$radio_I,df[i,]$Q_I)
-    df[i,]$Q_O <- map_radio_to_continuous(df[i,]$radio_O,df[i,]$Q_O)
-  }
-}
-```
-
 # 2. Raw slider value distribution
 
 ```{r raw-slide}
@@ -128,6 +125,11 @@ df$max<-apply(df[,resp_labels],1,max)
 
 ```{r}
 df_norm = ddply(df, .(domain, condition,syll), function(x) {
+  resp = x[,resp_labels]
+  resp / rowSums(resp)
+})
+
+df_norm = ddply(df, .(domain,syll), function(x) {
   resp = x[,resp_labels]
   resp / rowSums(resp)
 })
@@ -185,10 +187,22 @@ agr.ci <- function(x){
   return(agr)
 }
 
+agr.ci <- function(x){
+  agr = aggregate(value ~ domain + syll + variable, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + syll + variable, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + syll + variable, data=x, FUN=ci.high)$value
+  agr$YMin = agr$value - agr$CILow
+  agr$YMax = agr$value + agr$CIHigh
+  return(agr)
+}
+
 ci_bs <- agr.ci(melt(df_norm))
 
-exp_domains = c('cracker','knife','lightbulb','strawberry')
-quantifiers = c("All","None","Some","Some_not")
+exp_domains = c('_ crackers that have lots of flavor are soggy',
+                '_ knives that cut well are sharp',
+                '_ lightbulbs that are hot are on',
+                '_ strawberries that are warm are in the freezer')
+quantifiers = c("All of the","None of the","Some of the","Some of the...not")
 ci_bs$domain<-factor(ci_bs$domain,labels=exp_domains)
 ci_bs$conclusion<-factor(ci_bs$variable,labels=quantifiers)
 
@@ -204,18 +218,20 @@ geom_point(size=4)+
   ylim(0,0.7)
 quartz()
 
-ggplot(ci_bs, aes(x=conclusion, y=value, fill=condition)) + 
+ggplot(ci_bs, aes(x=conclusion, y=value, fill=conclusion)) + 
   geom_bar(position=position_dodge(.6), stat='identity')+
-    geom_errorbar(aes(ymin=YMin,ymax=YMax),width=0.5,alpha=0.6,
+    geom_errorbar(aes(ymin=YMin,ymax=YMax),width=0.3,alpha=0.6,
                 position=position_dodge(.6))+
   xlab("conclusion")+
   ylab("endorsement")+
   facet_grid(domain~syll)+
-  ggtitle("belief reasoning")+
+  ggtitle("experiment 1 data")+
   theme_bw()+
-  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
-    strip.text.x = element_text(size=20),
-    strip.text.y = element_text(size=24,angle=270))
+  xlab('')+
+  guides(fill=F)+
+  theme(axis.text.x=element_text(angle=90,size=13,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.x = element_text(),
+    strip.text.y = element_text(size=13,angle=0))
 ```
 
 Collapsing across dependent measures.

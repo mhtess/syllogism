@@ -1,0 +1,254 @@
+<!-- Sets up templates for the actual "slides" and forms that are 
+supposed to be shown at each stage of the experiment. -->
+
+<html>
+<head>
+  <title>Syllogistic Arguments</title>
+	<script src="commonJS/jquery.min.js"></script>
+    <script src="commonJS/mmturkey.js"></script>
+    <script src="commonJS/browserCheck.js"></script>
+    <script src="commonJS/dragdealer.js"></script>
+    <script src="syllogism_newslide.js"></script>
+	 <script src="commonJS/jquery-ui.js"></script>
+     <link rel="stylesheet" href="commonJS/jquery-ui.css">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="progress">
+	<div class="bar-wrapper">
+	  <div class="bar"></div>
+	</div>
+	<p><span id="trial-num">{{}}</span><span>/</span><span id="total-num">{{}}</span></p>
+</div>
+<div class="slide" id="instructions">
+  <img src="images/stanford.png" alt="Stanford University">
+    <p id='logo-text'>Stanford Computation and Cognition Lab</p>
+  <p class="block-text">
+  Thank you for participating in our experiment. In this experiment, we are interested in how
+  people combine information in order to draw conclusions. You will answer 2 sets of 6 questions. We expect this will take about 15 minutes.
+  </p>
+  <button type="button" onclick="this.blur(); experiment.description()">Start</button>
+<p class="block-text" id="legal">Legal information: By answering the
+    following questions, you are participating in a study being performed by
+    cognitive scientists in the Stanford Department of Psychology. If you have
+    questions about this research, please contact <b>M.H. Tessler at <a
+    href="mailto://mhtessler@stanford.edu">mhtessler@stanford.edu</a></b> or Noah
+    Goodman, at ngoodman@stanford.edu. You must be  at least 18 years old to
+    participate. Your participation in this research is voluntary. You may
+    decline to answer any or all of the following questions. You may decline
+    further participation, at any time, without adverse consequences. Your
+    anonymity is assured; the researchers who have requested your
+    participation will not receive any personal information about you.</p>
+</div>
+<script LANGUAGE="JavaScript">
+<!--
+function ValidateForm(form){
+    var valid = 0;
+    for(var i = 0; i < form.elements.length; i++) {
+        if (form.elements[i].checked == true ) { 
+            valid = 1; 
+            return true;
+        } 
+    } 
+    if (valid == 0) {
+        alert ( "Please answer this question." );
+        return false; 
+    }
+}
+
+function ValidateSelect(form) {
+    if (form.ageRange.selectedIndex != 0 && form.ageRange.selectedIndex != 1 && form.ageRange.selectedIndex != 2 && form.ageRange.selectedIndex != 3 && form.ageRange.selectedIndex != 4 && form.ageRange.selectedIndex != 5 && form.ageRange.selectedIndex != 6) {
+        alert ( "Please answer this question." );
+        return false;
+    }
+    return true; 
+}
+
+function ValidateNumber(field)
+{
+    valid = true;
+    if (field.value == "")
+    {
+        alert ("Please answer all the questions.");
+        valid = false;
+    }
+    if (field.value < 0 || field.value > 10) {
+    	alert ("Please answer between 0 and 10.");
+    	valid = false;
+    }
+    if (isNaN(field.value)) {
+        alert ("Please answer using only numbers.");
+        valid = false;
+    }
+    return valid;
+
+}
+
+function checkPreview() {
+    if (turk.previewMode) {
+        alert ("Please accept this HIT to see more questions.");
+        return false;
+    }
+    return true;
+}
+
+function ValidateText(field)
+{
+    valid = true;
+
+    if (field.value == "" )
+    {
+        alert ("Please answer all the questions.");
+        valid = false;
+    }
+
+    return valid;
+}
+
+function pressEnter(e) {
+    if (e.keyCode == 13) {
+    	document.rating.next.click();
+    	return false;
+    }
+}
+
+//-->
+</script>
+
+</script>
+
+<div class="slide" id="description">
+<p id='logo-text'>Instructions</p>
+<p class="block-text"> In this section, you will see a series of <span id="tot-num">{{}}</span> randomly selected arguments displayed on the screen. Your task is to draw conclusions for each argument.</p>
+<p class="block-text"> Assume the statements in the argument are true. Five proposed conclusions will be displayed. Each conclusion either does or does not follow from the argument. Please rate how <b>confident</b> you are that each conclusion does or does not follow from the argument.
+<p class="block-text"> In the second section, we will ask you to rate the likelihood of people with various traits existing.</p>
+<div id="form">
+<button type="button" onclick="this.blur(); experiment.next()">Next</button>
+</div>
+</div>
+
+<div class="slide" id="description2">
+<p id='logo-text'>Instructions</p>
+<p class="block-text"> Thank you for completing the first section. </p>
+<p class="block-text"> In this last section, you will see 6 sets of descriptions of people. Please rate how likely it is for a person to exist with the traits shown.
+<div id="form">
+<button type="button" onclick="this.blur(); experiment.priors()">Next</button>
+</div>
+</div>
+
+
+
+<div class="slide" id="example1">
+<p id="question"> Here is an example of an argument with a valid conclusion relating the non-repeated terms, A & C. </p>
+<p id="question"> All A's are B's <br> All B's are C's </p><br> 
+<div id="form">
+<button type="button" id="concbutton"> See conclusion </button>
+<p id = "conclusion">All A's are C's</p>	
+</div>
+<div id="form">
+<br>
+<button type="button" id="next1" onclick="this.blur(); experiment.example2()">Next</button>
+</div>
+</div>
+
+<div class="slide" id="example2">
+<p id="question"> Here is an example of an argument with no valid conclusion relating the non-repeated terms, A & C.</p>
+<p id="question"> No A's are B's <br> No C's are B's </p><br>
+<div id="form">
+<button type="button" id="concbutton2">See conclusion</button>
+<p id = "conclusion2">No valid conclusion</p>
+</div>	
+<br>
+<div id="form">
+<button type="button" id="next2" onclick="this.blur(); experiment.next();">Next</button>
+</div>
+</div>
+
+
+<div class="slide" id="stage">
+	<p id="direct">Assuming that</p>
+    <p id="question"> <span id="premise1">{{}}</span><br><span id="premise2">{{}}</span></p>
+    <br>
+	<p id="direct">Adjust the slider to rate how likely you think each conclusion follows from the statements above.</p>
+<br>
+	<table align="center" cellspacing="12">
+    <tr>
+		<div id="vagueBowls" align="center">{{}}</div>
+    </tr>
+	</table>
+    <div><p id="sliderAdjustText"<{{}}</p></div>
+	<div id="form">
+    <button type="button" id="sliderMoveon" align="center">Continue</button>  
+	</div>
+    <p id="targetError">Please make sure to adjust all the red sliders before 
+    continuing (or tap the slider if you think it's already in the right position).</p>    
+
+</div>
+
+<div class="slide" id="priors">
+    <p id="question"> Rate how likely it is for a person with the following characteristics to exist.</p>
+    </br>
+	<table align="center" cellspacing="10">
+         <div id="priorCheck" align="center" >{{}}</div>
+	</table>
+    <div><p id="sliderAdjustText"<{{}}</p></div>
+		<div id="form">
+    <button type="button" id="sliderMoveon2" align="center">Continue</button>     
+		</div>
+    <p id="targetError2">Please make sure to adjust all the red sliders before 
+    continuing (or tap the slider if you think it's already in the right position).</p>    
+
+</div>
+
+<div class="slide" id="questionaire">
+    <p>Last section! Please enter your responses below, and then click 'Submit'</p>.
+    <br/>
+	 <form name="gender">
+    </br>
+    <span id="infoQ">Gender:</span>&nbsp;&nbsp;
+    <input type="radio" name="genderButton" value="M" /><span id="opt">Male</span>&nbsp;&nbsp;
+    <input type="radio" name="genderButton" value="F" /><span id="opt">Female</span>
+    </form>
+	
+	<form name="age">
+    <span id="infoQ">Age range:</span>&nbsp;&nbsp;
+    <select name=ageRange id="ageRange">
+    <option value=17><span id="opt">Under 18</span></option>
+    <option value=25><span id="opt">18-25</span></option>
+    <option value=35><span id="opt">26-35</span></option>
+    <option value=45><span id="opt">36-45</span></option>
+    <option value=55><span id="opt">46-55</span></option>
+    <option value=65><span id="opt">56-65</span></option>
+    <option value=66><span id="opt">Above 66</span></option>
+    </select>
+    </form>
+	<form name="logic">
+    </br>
+    <span id="infoL">Have you ever taken a class in formal logic?</span>&nbsp;&nbsp;
+    <input type="radio" name="logicButton" value="Yes" /><span id="opt">Yes</span>&nbsp;&nbsp;
+    <input type="radio" name="logicButton" value="No" /><span id="opt">No</span>
+    </form>
+    <form id="questionaireform">
+	  <p>Your native language*:<input type="text" name="lg"></input><br/>(the language that
+	  was spoken at home when you were a child)</p>
+	  <br/>
+	  <p>Please leave any comments or suggestions regarding this HIT:</p>
+	  <textarea rows="7" cols="70" name="comments"></textarea>
+	  <br/>
+	  <br/>
+    <button type="button" id="formsubmit">Submit</button>
+    </form>
+    <br/>
+    <p>*required</p>
+  </div>
+
+  <div class="slide" id="finished">
+  You're finished - thanks for participating! Submitting to Mechanical Turk...
+  <div>
+
+
+
+<script src="syllogism_newslide.js"></script>
+
+</body>
+</html>
