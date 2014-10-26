@@ -8,8 +8,8 @@ output: html_document
 # 1. RTs (time to complete each item)
 
 
-```{r RTs1}
-
+```{r RTs1, echo=FALSE}
+  
 library(ggplot2)
 library(reshape2)
 library(plyr)
@@ -21,7 +21,12 @@ fpath2 = '/Users/mht/Documents/research/syllogism/data/04syllogism_reasoning/'
 
 
 df<-read.csv((paste(fpath,'syllbelief-exp-mturk_all_n250.csv',sep="")))
-df<-read.csv((paste(fpath2,'syllbelief-exp2-mturk.csv',sep="")))
+df$experiment <- factor(1)
+df2<-read.csv((paste(fpath2,'syllbelief-exp2-mturk.csv',sep="")))
+df2$condition<-paste(df2$condition,'2',sep='.')
+df2$experiment <- factor(2)
+
+df.c <- rbind(df,df2)
 
 exp1sylls<-levels(df$syll)
 exp2sylls<-levels(df2$syll)
@@ -30,29 +35,24 @@ resp_labels<-c("Q_A","Q_E","Q_I","Q_O")
 map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
 
 
-for (i in 1:length(df$subj)){
-  if (df[i,]$condition=='radio'){
-    df[i,]$Q_A <- map_radio_to_continuous(df[i,]$radio_A,df[i,]$Q_A)
-    df[i,]$Q_E <- map_radio_to_continuous(df[i,]$radio_E,df[i,]$Q_E)
-    df[i,]$Q_I <- map_radio_to_continuous(df[i,]$radio_I,df[i,]$Q_I)
-    df[i,]$Q_O <- map_radio_to_continuous(df[i,]$radio_O,df[i,]$Q_O)
-  }
-}
+#for (i in 1:length(df2$subj)){
+#  if (df2[i,]$condition=='radio'){
+#    df2[i,]$Q_A <- map_radio_to_continuous(df2[i,]$radio_A,df2[i,]$Q_A)
+#    df2[i,]$Q_E <- map_radio_to_continuous(df2[i,]$radio_E,df2[i,]$Q_E)
+#    df2[i,]$Q_I <- map_radio_to_continuous(df2[i,]$radio_I,df2[i,]$Q_I)
+#    df2[i,]$Q_O <- map_radio_to_continuous(df2[i,]$radio_O,df2[i,]$Q_O)
+#  }
+#}
 
-a1<-ggplot(df, aes(x=(rt/1000)))+
-  geom_histogram(binwidth=1)+
+ggplot(df.c, aes(x=(rt/1000)))+
+  geom_histogram(binwidth=3,
+                 aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
   theme_bw()+
-  ggtitle("Experiment 1 RTs, binsize = 1s")+
+  facet_wrap(~experiment,scales='fixed',nrow=1)+
+  ggtitle("Experiments 1 & 2 RTs, binsize = 3s")+
   xlab('time (sec)')+
-  ylab('number of items')
+  ylab('proportion of items')
 
-a2<-ggplot(df2, aes(x=(rt/1000)))+
-  geom_histogram(binwidth=1)+
-  theme_bw()+
-  ggtitle("Experiment 2 RTs, binsize = 1s")+
-  xlab('time (sec)')+
-  ylab('number of items')
-grid.arrange(a1,a2)
 ```
 
 *mean RT for Exp 1 = `r mean(df$rt/1000)`*
@@ -65,112 +65,120 @@ grid.arrange(a1,a2)
 
 Removing items greater than 2 standard deviations above the mean RT.
 
-For experiment 1: `r mean(df$rt)+2*sqrt(var(df$rt))`
+For experiment 1: `r (mean(df$rt)+2*sqrt(var(df$rt)))/1000`
 
-For experiment 2: `r mean(df2$rt)+2*sqrt(var(df2$rt))`
+For experiment 2: `r (mean(df2$rt)+2*sqrt(var(df2$rt)))/1000`
 
-```{r RTs2}
+```{r RTs2, echo=FALSE}
 
 df<-subset(df,rt<mean(df$rt)+2*sqrt(var(df$rt)))
 df2<-subset(df2,rt<mean(df2$rt)+2*sqrt(var(df2$rt)))
 
+df.c <- rbind(df,df2)
+df.c$condition<-factor(df.c$condition,levels=c('slide','radio','radio.2'))
 
-b1<-ggplot(df, aes(x=(rt/1000),fill=condition))+
-  geom_histogram(binwidth=1)+
+for (i in 1:length(df.c$subj)){
+  if (substring(df.c[i,]$condition,1,5)=='radio'){
+    df.c[i,]$Q_A <- map_radio_to_continuous(df.c[i,]$radio_A,df.c[i,]$Q_A)
+    df.c[i,]$Q_E <- map_radio_to_continuous(df.c[i,]$radio_E,df.c[i,]$Q_E)
+    df.c[i,]$Q_I <- map_radio_to_continuous(df.c[i,]$radio_I,df.c[i,]$Q_I)
+    df.c[i,]$Q_O <- map_radio_to_continuous(df.c[i,]$radio_O,df.c[i,]$Q_O)
+  }
+}
+
+ggplot(df.c, aes(x=(rt/1000),fill=condition))+
+  geom_histogram(binwidth=3,
+      aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
   theme_bw()+
-  facet_wrap(~condition,scales='fixed')+
-  ggtitle("Experiment 1 RTs (sans outliers), binsize = 1s")+
+ facet_wrap(~condition,scales='fixed')+
+  ggtitle("Experiment RTs (sans outliers), binsize = 3s")+
   xlab('time (sec)')+
-  ylab('number of items')
-
-b2<-ggplot(df2, aes(x=(rt/1000),fill=condition))+
-  geom_histogram(binwidth=1)+
-  theme_bw()+
-  facet_wrap(~condition,scales='fixed')+
-  ggtitle("Experiment 2 RTs (sans outliers), binsize = 1s")+
-  xlab('time (sec)')+
-  ylab('number of items')
-
-grid.arrange(b1,b2)
+  ylab('proportion of items')
 ```
 
-# 2. Raw slider value distribution
+# 2. Slider value distributions
 
-```{r raw-slide}
-length(subset(df,condition=='slide')$subj)
-length(subset(df,condition=='radio')$subj)
+n _ slider for experiment 1 (sans outliers): `r length(subset(df,condition=='slide')$subj)/4`
 
-ggplot(melt(df[3:7]), aes(x=value,fill=condition))+
-  geom_histogram(binwidth=10)+
-  facet_wrap(~condition)+
-  theme_bw()+
-  ggtitle('raw slider values')+
-  xlab('slider value, binsize = 10')+
-  ylab('number of responses')
+n _ radio for experiment 1 (sans outliers): `r length(subset(df,condition=='radio')$subj)/4`
 
-ggplot(melt(df[3:7]), aes(x=value,fill=condition))+
-  geom_histogram(binwidth=5)+
+n _ radio for experiment 2 (sans outliers): `r length(subset(df2,condition=='radio')$subj)/4`
+
+## Raw slider value distributions
+
+```{r raw-slide, echo=FALSE}
+ggplot(melt(df.c[3:7]), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=5,aes(y=..count../sum(..count..)))+
   facet_wrap(~condition)+
   theme_bw()+
   ggtitle('raw slider values')+
   xlab('slider value, binsize = 5')+
-  ylab('number of responses')
+  ylab('proportion of responses')+
+  guides(fill=FALSE)
 
-df$sum<-rowSums(df[,resp_labels])
-df$max<-apply(df[,resp_labels],1,max)
+
+df.c$sum<-rowSums(df.c[,resp_labels])
+df.c$max<-apply(df.c[,resp_labels],1,max)
 ```
 
 
-### normalized slider value distribution
+## Normalized slider value distribution
 
 ```{r}
-df_norm = ddply(df, .(domain, condition,syll), function(x) {
+df_norm = ddply(df.c, .(domain,condition,syll,experiment), function(x) {
   resp = x[,resp_labels]
   resp / rowSums(resp)
 })
 
-df_norm = ddply(df, .(domain,syll), function(x) {
-  resp = x[,resp_labels]
-  resp / rowSums(resp)
-})
+#df_norm = ddply(df, .(domain,syll), function(x) {
+#  resp = x[,resp_labels]
+#  resp / rowSums(resp)
+#})
 
 ggplot(melt(df_norm), aes(x=value,fill=condition))+
-  geom_histogram(binwidth=0.01)+
+  geom_histogram(binwidth=0.02,
+      aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
   facet_wrap(~condition)+
   theme_bw()+
   ggtitle('normalized slider values')+
-  xlab('slider value, binsize = 0.01')+
-  ylab('number of responses')
+  xlab('slider value, binsize = 0.02')+
+  ylab('proportion of responses')+
+  guides(fill=FALSE)
 ```
 
-### Raw sum distributions
+## Raw *sum* distributions
 
-```{r rawsum}
-ggplot(melt(df[c('condition','sum')]), aes(x=value,fill=condition))+
-  geom_histogram(binwidth=5)+
+```{r rawsum, echo=FALSE}
+ggplot(melt(df.c[c('condition','sum')]), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=5,
+      aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
   facet_wrap(~condition)+
   theme_bw()+
   ggtitle('Sum of slider values')+
   xlab('slider value, binsize = 5')+
-  ylab('number of responses')
+  ylab('number of responses')+
+  guides(fill=FALSE)
 ```
 
-```{r rawmax}
+## Raw *max* distributions
 
-ggplot(melt(df[c('condition','max')]), aes(x=value,fill=condition))+
-  geom_histogram(binwidth=1)+
+```{r rawmax}
+ggplot(melt(df.c[c('condition','max')]), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=1,
+      aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
   facet_wrap(~condition)+
   theme_bw()+
   ggtitle('max raw slider values')+
   xlab('slider value, binsize = 1')+
-  ylab('number of responses')
+  ylab('number of responses')+
+  guides(fill=FALSE)
 ```
 
+# 3. Syllogistic reasoning data
 
+## Experiment 1
 
-### syllogistic reasoning data
-
-```{r, fig.width=16, fig.height=8}
+```{r, fig.width=16, fig.height=8, echo=FALSE}
 library(bootstrap)
 theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
 ci.low <- function(x,na.rm=T) {
@@ -179,48 +187,42 @@ ci.high <- function(x,na.rm=T) {
   quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
 
 agr.ci <- function(x){
-  agr = aggregate(value ~ domain + condition + syll + variable, data=x, FUN=mean)
-  agr$CILow = aggregate(value ~ domain + condition + syll + variable, data=x, FUN=ci.low)$value
-  agr$CIHigh = aggregate(value ~ domain + condition + syll + variable, data=x, FUN=ci.high)$value
+  agr = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=ci.high)$value
   agr$YMin = agr$value - agr$CILow
   agr$YMax = agr$value + agr$CIHigh
   return(agr)
 }
 
-agr.ci <- function(x){
-  agr = aggregate(value ~ domain + syll + variable, data=x, FUN=mean)
-  agr$CILow = aggregate(value ~ domain + syll + variable, data=x, FUN=ci.low)$value
-  agr$CIHigh = aggregate(value ~ domain + syll + variable, data=x, FUN=ci.high)$value
+agr.ci.collapsed <- function(x){
+  agr = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=ci.high)$value
   agr$YMin = agr$value - agr$CILow
   agr$YMax = agr$value + agr$CIHigh
   return(agr)
 }
 
-ci_bs <- agr.ci(melt(df_norm))
 
 exp_domains = c('_ crackers that have lots of flavor are soggy',
                 '_ knives that cut well are sharp',
                 '_ lightbulbs that are hot are on',
                 '_ strawberries that are warm are in the freezer')
+
 quantifiers = c("All of the","None of the","Some of the","Some of the...not")
+
+ci_bs <- agr.ci(melt(df_norm))
 ci_bs$domain<-factor(ci_bs$domain,labels=exp_domains)
 ci_bs$conclusion<-factor(ci_bs$variable,labels=quantifiers)
 
-
-
-mean_cast <-dcast(ci_bs[,1:5], value.var='value',...~condition)
-with(mean_cast,cor(radio,slide))
-
-ggplot(mean_cast,aes(x=radio,y=slide,color=variable))+
-geom_point(size=4)+
-  theme_bw()+
-  xlim(0,0.7)+
-  ylim(0,0.7)
-quartz()
-
-ggplot(ci_bs, aes(x=conclusion, y=value, fill=conclusion)) + 
-  geom_bar(position=position_dodge(.6), stat='identity')+
-    geom_errorbar(aes(ymin=YMin,ymax=YMax),width=0.3,alpha=0.6,
+ggplot(subset(ci_bs,experiment==1), 
+       aes(x=conclusion, y=value, fill=condition)) + 
+    geom_bar(position=position_dodge(.6), 
+             width = .6,
+             stat='identity')+
+    geom_errorbar(aes(ymin=YMin,ymax=YMax),
+                  width=0.3,
                 position=position_dodge(.6))+
   xlab("conclusion")+
   ylab("endorsement")+
@@ -228,50 +230,91 @@ ggplot(ci_bs, aes(x=conclusion, y=value, fill=conclusion)) +
   ggtitle("experiment 1 data")+
   theme_bw()+
   xlab('')+
-  guides(fill=F)+
-  theme(axis.text.x=element_text(angle=90,size=13,hjust=1,vjust=.5,colour='gray50'),
+  theme(axis.text.x=element_text(
+    angle=90,size=13,hjust=1,vjust=.5,colour='gray50'),
     strip.text.x = element_text(),
     strip.text.y = element_text(size=13,angle=0))
+
+ci_bs_col <- agr.ci.collapsed(melt(df_norm))
+ci_bs_col$domain<-factor(ci_bs_col$domain,labels=exp_domains)
+ci_bs_col$conclusion<-factor(ci_bs_col$variable,labels=quantifiers)
+
+mean_cast <-dcast(subset(ci_bs,experiment==1)
+                  [,c('syll','conclusion','condition','value','domain')], 
+                  value.var='value',...~condition)
 ```
 
-Collapsing across dependent measures.
-```{r}
-agr.ci <- function(x){
-  agr = aggregate(value ~ domain + syll + variable, data=x, FUN=mean)
-  agr$CILow = aggregate(value ~ domain + syll + variable, data=x, FUN=ci.low)$value
-  agr$CIHigh = aggregate(value ~ domain + syll + variable, data=x, FUN=ci.high)$value
-  agr$YMin = agr$value - agr$CILow
-  agr$YMax = agr$value + agr$CIHigh
-  return(agr)
-}
+### An aside to examine similiarity of dependent measures
 
-col_bs <- agr.ci(melt(df_norm))
-col_bs$domain<-factor(col_bs$domain,labels=exp_domains)
-col_bs$conclusion<-factor(col_bs$variable,labels=quantifiers)
+Correlation between mean responses for radio button + slider vs. just slider is `r with(mean_cast,cor(radio,slide))`
 
-ggplot(col_bs, aes(x=conclusion, y=value, fill=conclusion)) + 
-  geom_bar(position=position_dodge(.6), stat='identity')+
-  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=0.5,alpha=0.6,
+```{r radioslidescatter, echo=FALSE}
+
+ggplot(mean_cast,aes(x=radio,y=slide,color=conclusion))+
+  geom_point(size=4)+
+  geom_abline(intercept=0,slope=1)+
+  theme_bw()+
+  xlim(0,0.7)+
+  ylim(0,0.7)
+
+```
+
+### Experiment 1, collapsed across dependent measures
+
+```{r, echo=FALSE, fig.width=16, fig.height=8}
+ggplot(subset(ci_bs_col,experiment==1), 
+       aes(x=conclusion, y=value, fill=conclusion)) + 
+    geom_bar(position=position_dodge(.6), 
+             width = .6,
+             stat='identity')+
+    geom_errorbar(aes(ymin=YMin,ymax=YMax),
+                  width=0.3,
                 position=position_dodge(.6))+
   xlab("conclusion")+
   ylab("endorsement")+
   facet_grid(domain~syll)+
-  ggtitle("belief reasoning")+
+  ggtitle("experiment 1 data --- collapsed across dependent measure")+
   theme_bw()+
-  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
-    strip.text.x = element_text(size=20),
-    strip.text.y = element_text(size=24,angle=270))
+  xlab('')+
+  guides(fill=F)+
+  theme(axis.text.x=element_text(
+    angle=90,size=13,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.x = element_text(),
+    strip.text.y = element_text(size=13,angle=0))
 ```
+
+## Experiment 2
+
+```{r, echo=FALSE, fig.width=16, fig.height=8}
+ggplot(subset(ci_bs_col,experiment==2), 
+       aes(x=conclusion, y=value, fill=conclusion)) + 
+    geom_bar(position=position_dodge(.6), 
+             width = .6,
+             stat='identity')+
+    geom_errorbar(aes(ymin=YMin,ymax=YMax),
+                  width=0.3,
+                position=position_dodge(.6))+
+  xlab("conclusion")+
+  ylab("endorsement")+
+  facet_grid(domain~syll)+
+  ggtitle("experiment 2 data")+
+  theme_bw()+
+  xlab('')+
+  guides(fill=F)+
+  theme(axis.text.x=element_text(
+    angle=90,size=13,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.x = element_text(),
+    strip.text.y = element_text(size=13,angle=0))
+```
+
+# Fin 
 
 Write collapsed means to csv
 
-```{r}
 collapsed_wide<-dcast(col_bs[,c("domain","syll","conclusion","value")], value.var='value',...~conclusion)
 write.csv(collapsed_wide,file='syllogism/data/03syllogism_reasoning/syllbelief-exp-means_collapsed_sansOutliers.csv')
-```
 
 
-```{r predictions}
 exp_domains = c('lightbulb','strawberry','cracker','knife')
 
 fpath<-'/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/'
@@ -300,12 +343,11 @@ ggplot(data=mm.df,aes(x=conclusion,y=value))+
   #scale_x_discrete(labels=c("some C are A","some C are not A"))+
   theme_bw()+
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
-```
 
 
 ### model data correlations
 
-```{r}
+
 flds<-c('syll','value','domain','conclusion')
 
 d1.df<-subset(ci_bs,condition=='slide')[,flds]
@@ -345,11 +387,10 @@ cor(mega.df[,c("value.slide",'value.radio','value.argstr_iid','value.argstr_empr
 #cor(mega.df[,c("value.slide",'value.radio','value.argstr_iid','value.argstr_empr','value.clonly_empr')])
 
 
-```
+
 
 ### pairwise ggplots
 
-```{r}
 makePairs <- function(data) 
 {
   grid <- expand.grid(x = 1:ncol(data), y = 1:ncol(data))
@@ -383,14 +424,12 @@ ggplot(mega_gg1, aes_string(x = "x", y = "y")) +
                colour = "grey20", geom = "line")+
   theme_bw()+
   theme(strip.text = element_text(size = 20, angle = 0))
-```
+
 
 
 ### reasoning with priors vs. data
 
-```{r}
 ggplot(mega.df, aes(x=value.argstr_empr, y=value.radio, color=conclusion))+
   geom_point(size=5)+
   theme_bw()
 
-```
