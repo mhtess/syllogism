@@ -8,7 +8,10 @@ output: html_document
 # The Full Bayesian Thing for syllogisms
 
 
-```{r tfbt, echo=FALSE}
+```{r dataload, echo=FALSE}
+map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
+
+# Load data from 2 experiments
 fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_reasoning/'
 fpath2 = '/Users/mht/Documents/research/syllogism/data/04syllogism_reasoning/'
 
@@ -23,7 +26,6 @@ exp1sylls<-levels(df$syll)
 exp2sylls<-levels(df2$syll)
 resp_labels<-c("Q_A","Q_E","Q_I","Q_O")
 
-map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
 
 df<-subset(df,rt<mean(df$rt)+2*sqrt(var(df$rt)))
 df2<-subset(df2,rt<mean(df2$rt)+2*sqrt(var(df2$rt)))
@@ -31,6 +33,7 @@ df2<-subset(df2,rt<mean(df2$rt)+2*sqrt(var(df2$rt)))
 df.c <- rbind(df,df2)
 df.c$condition<-factor(df.c$condition,levels=c('slide','radio','radio.2'))
 
+# map radio + slider to just radio
 for (i in 1:length(df.c$subj)){
   if (substring(df.c[i,]$condition,1,5)=='radio'){
     df.c[i,]$Q_A <- map_radio_to_continuous(df.c[i,]$radio_A,df.c[i,]$Q_A)
@@ -40,39 +43,50 @@ for (i in 1:length(df.c$subj)){
   }
 }
 
+```
 
+
+```{r modelload, echo=FALSE}
+# Load model predictions, for different parameter (n_object) values
 model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
 domains<- c('cracker', 'knife', 'lightbulb', 'strawberry')
 syllogisms = c('AO2', 'EA3', 'IE1', 'OA1')
 n_obj = 4
 corrs = c()
+if (exists('models')){remove(models)}
 for (n_obj in 4:10){
-  model = data.frame()
+  model.domains = data.frame()
   for (d in domains){
     model.all<-read.csv(paste(model.dir,d,'/00/csv/lis_N0_M0_tfbt',
                    d,'_qud1figFull_AIEOc4CAEP1_n',n_obj,
                    '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
     model.sub<-model.all[model.all$X..syll%in%syllogisms,]
     model.sub$domain <- d
-    model<-rbind(model, model.sub)
+    model.m<-melt(model.sub,id.vars=c('X..syll','domain'))
+    model.domains<-rbind(model.domains, model.m)
   }
   #rename for merging
-  names(model)<-c('syll','All','None','Some','Some_not','domain')
-  
-  
-  
-  
-  dm.m<-merge(melt(model,value.name='model'),melt(data1,value.name='data'))
-  corrs<-append(corrs,with(dm.m,cor(data,model)))
+  names(model.domains)<-c('syll','domain','conclusion',paste('n',n_obj,sep=''))
+  if (exists('models')){
+    models = merge(models,model.domains)
+  } else {
+    models = model.domains
+  }
 }
-
-
 ```
 
-You can also embed plots, for example:
+# 1. Outline
 
-```{r, echo=FALSE}
-plot(cars)
-```
+The full Bayesian thing can take a variety of forms. To do this properly, we must consider the generative process behind the data. This requires taking a careful look at the dependent measure and how it can be related to probability distributions. It also requires careful consideration of the cogntive model, and especially, the *query statement*. 
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## The cognitive model
+
+Let's start with the cognitive model. Grossly, the model samples a situation from a binomial mixture and applies the quantifier premises to that situations. The model will reject the situation is it is inconsistent with the premises. If it is consistent with the premises, the model samples a conclusion which is true of the situation.
+
+The model does this infinite times and returns a posterior distribution over conclusions (this is $P(conclusion | premises)$, or argument strength). 
+
+## The experimental paradigm
+
+For Experiment 1, I used 2 different dependent measures (let's call them R and S). For Experiment 2, I used only dependent measure R.
+
+
