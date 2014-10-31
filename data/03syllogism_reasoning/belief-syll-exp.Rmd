@@ -8,13 +8,40 @@ output: html_document
 # 1. RTs (time to complete each item)
 
 
-```{r RTs1, echo=FALSE}
-  
+```{r prep, echo=FALSE}
 library(ggplot2)
 library(reshape2)
 library(plyr)
 library(stringr)
 library(gridExtra)
+library(bootstrap)
+
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
+
+agr.ci <- function(x){
+  agr = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=ci.high)$value
+  agr$YMin = agr$value - agr$CILow
+  agr$YMax = agr$value + agr$CIHigh
+  return(agr)
+}
+
+agr.ci.collapsed <- function(x){
+  agr = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=ci.high)$value
+  agr$YMin = agr$value - agr$CILow
+  agr$YMax = agr$value + agr$CIHigh
+  return(agr)
+}
+```
+
+```{r RTs1, echo=FALSE}
 
 fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_reasoning/'
 fpath2 = '/Users/mht/Documents/research/syllogism/data/04syllogism_reasoning/'
@@ -179,32 +206,6 @@ ggplot(melt(df.c[c('condition','max')]), aes(x=value,fill=condition))+
 ## Experiment 1
 
 ```{r, fig.width=16, fig.height=8, echo=FALSE}
-library(bootstrap)
-theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
-ci.low <- function(x,na.rm=T) {
-  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
-ci.high <- function(x,na.rm=T) {
-  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
-
-agr.ci <- function(x){
-  agr = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=mean)
-  agr$CILow = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=ci.low)$value
-  agr$CIHigh = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=ci.high)$value
-  agr$YMin = agr$value - agr$CILow
-  agr$YMax = agr$value + agr$CIHigh
-  return(agr)
-}
-
-agr.ci.collapsed <- function(x){
-  agr = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=mean)
-  agr$CILow = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=ci.low)$value
-  agr$CIHigh = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=ci.high)$value
-  agr$YMin = agr$value - agr$CILow
-  agr$YMax = agr$value + agr$CIHigh
-  return(agr)
-}
-
-
 exp_domains = c('_ crackers that have lots of flavor are soggy',
                 '_ knives that cut well are sharp',
                 '_ lightbulbs that are hot are on',
@@ -244,6 +245,114 @@ mean_cast <-dcast(subset(ci_bs,experiment==1)
                   value.var='value',...~condition)
 ```
 
+### Compare (radio + slider) value to just radio buttons
+
+#### Experiment 1: [normalized]
+
+```{r radiocomp1_norm, echo=FALSE}
+
+df_rad<-ddply(subset(df,condition=='radio'), .(syll,domain), summarize,
+      all=mean(radio_A),
+      some=mean(radio_I),
+      none=mean(radio_E),
+      notall=mean(radio_O))
+
+df_rad_norm<-data.frame(t(apply(df_rad[,3:6],1,function(x)(x/sum(x)))))
+df_rad_norm$syll <- df_rad$syll
+df_rad_norm$domain <- df_rad$domain
+
+df_rad.m<- melt(df_rad_norm, id.vars=c('syll','domain'),value.name='justrad')
+
+ci_bs <- subset(agr.ci(melt(df_norm)),condition=='radio')
+ci_bs$variable<-factor(ci_bs$variable, labels= c('all','none','some','notall'))
+
+radios<-merge(df_rad.m,ci_bs[,c('domain','syll','variable','value')])
+
+ggplot(radios,aes(x=value,y=justrad,color=variable))+
+  geom_point(size=2.5)+
+  theme_bw()+
+  xlim(0,0.6)+
+  ylim(0,0.6)
+
+```
+
+#### Experiment 1 [unnormalized]
+
+```{r radiocomp1_unnorm, echo=FALSE}
+
+df_rad<-ddply(subset(df,condition=='radio'), .(syll,domain), summarize,
+      all=mean(radio_A),
+      some=mean(radio_I),
+      none=mean(radio_E),
+      notall=mean(radio_O))
+
+
+ci_unnorm <- agr.ci(melt(subset(df,condition=='radio'), id.vars=c('syll','domain','experiment','condition')))
+ci_bs$variable<-factor(ci_bs$variable, labels= c('all','none','some','notall'))
+
+radios<-merge(df_rad.m,ci_bs[,c('domain','syll','variable','value')])
+
+ggplot(radios,aes(x=value,y=justrad,color=variable))+
+  geom_point(size=2.5)+
+  theme_bw()+
+  xlim(0,0.6)+
+  ylim(0,0.6)
+
+```
+
+### An aside to check iPython notebook on Bayesian analysis
+
+```{r tfbt, echo=FALSE}
+data1<-read.csv(file='/Users/mht/Documents/research/syllogism/data/03syllogism_reasoning/syllbelief-exp-means_collapsed_sansOutliers.csv')[2:7]
+data1.m <- melt(data1)
+# renaming for merge
+data1.m$variable<-factor(data1.m$variable, labels=c('Q_A','Q_E','Q_I','Q_O'))
+data1.m$domain<-factor(data1.m$domain,labels=exp_domains) # rename domains for merge
+names(data1.m)[4]<-'data1.m' # rename "value" col for merge
+
+## correspondence with slider DM
+ci_bs.sub<-subset(ci_bs,(condition=='slide' & experiment==1)) #subset by DM
+ci_bs.sub<-ci_bs.sub[c('domain','syll','variable','value')] # subset relavent cols
+
+data1.cibs<-merge(data1.m,ci_bs.sub)
+
+print(with(data1.cibs,cor(value,data1.m)))
+
+## correspondence with radio DM
+ci_bs.sub<-subset(ci_bs,(condition=='radio' & experiment==1)) #subset by DM
+ci_bs.sub<-ci_bs.sub[c('domain','syll','variable','value')] # subset relavent cols
+
+data1.cibs<-merge(data1.m,ci_bs.sub)
+
+print(with(data1.cibs,cor(value,data1.m)))
+
+## all of this suggests we are dealing with the same DATA as before
+
+# am I computing correlation between data and models correctly?
+model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
+domains<- c('cracker', 'knife', 'lightbulb', 'strawberry')
+syllogisms = c('AO2', 'EA3', 'IE1', 'OA1')
+n_obj = 4
+corrs = c()
+for (n_obj in 4:10){
+  model = data.frame()
+  for (d in domains){
+    model.all<-read.csv(paste(model.dir,d,'/00/csv/lis_N0_M0_tfbt',
+                   d,'_qud1figFull_AIEOc4CAEP1_n',n_obj,
+                   '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
+    model.sub<-model.all[model.all$X..syll%in%syllogisms,]
+    model.sub$domain <- d
+    model<-rbind(model, model.sub)
+  }
+  #rename for merging
+  names(model)<-c('syll','All','None','Some','Some_not','domain')
+  dm.m<-merge(melt(model,value.name='model'),melt(data1,value.name='data'))
+  corrs<-append(corrs,with(dm.m,cor(data,model)))
+}
+
+
+
+```
 ### An aside to examine similiarity of dependent measures
 
 Correlation between mean responses for radio button + slider vs. just slider is `r with(mean_cast,cor(radio,slide))`
