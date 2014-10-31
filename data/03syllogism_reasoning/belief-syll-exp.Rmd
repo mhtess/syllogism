@@ -39,6 +39,13 @@ agr.ci.collapsed <- function(x){
   agr$YMax = agr$value + agr$CIHigh
   return(agr)
 }
+
+exp_domains = c('_ crackers that have lots of flavor are soggy',
+                '_ knives that cut well are sharp',
+                '_ lightbulbs that are hot are on',
+                '_ strawberries that are warm are in the freezer')
+
+quantifiers = c("All of the","None of the","Some of the","Some of the...not")
 ```
 
 ```{r RTs1, echo=FALSE}
@@ -152,10 +159,9 @@ df.c$max<-apply(df.c[,resp_labels],1,max)
 ## Normalized slider value distribution
 
 ```{r}
-df_norm = ddply(df.c, .(domain,condition,syll,experiment), function(x) {
-  resp = x[,resp_labels]
-  resp / rowSums(resp)
-})
+df_norm = ddply(df.c, .(domain,condition,syll,experiment), 
+  function(x) {resp = x[,resp_labels]
+  resp / rowSums(resp)})
 
 #df_norm = ddply(df, .(domain,syll), function(x) {
 #  resp = x[,resp_labels]
@@ -201,53 +207,9 @@ ggplot(melt(df.c[c('condition','max')]), aes(x=value,fill=condition))+
   guides(fill=FALSE)
 ```
 
-# 3. Syllogistic reasoning data
+## Compare (radio + slider) value to just radio buttons
 
-## Experiment 1
-
-```{r, fig.width=16, fig.height=8, echo=FALSE}
-exp_domains = c('_ crackers that have lots of flavor are soggy',
-                '_ knives that cut well are sharp',
-                '_ lightbulbs that are hot are on',
-                '_ strawberries that are warm are in the freezer')
-
-quantifiers = c("All of the","None of the","Some of the","Some of the...not")
-
-ci_bs <- agr.ci(melt(df_norm))
-ci_bs$domain<-factor(ci_bs$domain,labels=exp_domains)
-ci_bs$conclusion<-factor(ci_bs$variable,labels=quantifiers)
-
-ggplot(subset(ci_bs,experiment==1), 
-       aes(x=conclusion, y=value, fill=condition)) + 
-    geom_bar(position=position_dodge(.6), 
-             width = .6,
-             stat='identity')+
-    geom_errorbar(aes(ymin=YMin,ymax=YMax),
-                  width=0.3,
-                position=position_dodge(.6))+
-  xlab("conclusion")+
-  ylab("endorsement")+
-  facet_grid(domain~syll)+
-  ggtitle("experiment 1 data")+
-  theme_bw()+
-  xlab('')+
-  theme(axis.text.x=element_text(
-    angle=90,size=13,hjust=1,vjust=.5,colour='gray50'),
-    strip.text.x = element_text(),
-    strip.text.y = element_text(size=13,angle=0))
-
-ci_bs_col <- agr.ci.collapsed(melt(df_norm))
-ci_bs_col$domain<-factor(ci_bs_col$domain,labels=exp_domains)
-ci_bs_col$conclusion<-factor(ci_bs_col$variable,labels=quantifiers)
-
-mean_cast <-dcast(subset(ci_bs,experiment==1)
-                  [,c('syll','conclusion','condition','value','domain')], 
-                  value.var='value',...~condition)
-```
-
-### Compare (radio + slider) value to just radio buttons
-
-#### Experiment 1: [normalized]
+### Experiment 1: [normalized]
 
 ```{r radiocomp1_norm, echo=FALSE}
 
@@ -276,29 +238,86 @@ ggplot(radios,aes(x=value,y=justrad,color=variable))+
 
 ```
 
-#### Experiment 1 [unnormalized]
+Experiment 1: Correlation between (normalized) proportion of radio sliders saying *follows* and mean (normalized) endorsement [by combo of radio + slider] is `r with(radios,cor(value,justrad))`
+
+### Experiment 1: [unnormalized]
 
 ```{r radiocomp1_unnorm, echo=FALSE}
+df_rad.m.unnorm<-melt(df_rad, id.vars=c('syll','domain'),value.name='justrad')
 
-df_rad<-ddply(subset(df,condition=='radio'), .(syll,domain), summarize,
+df_unnorm = ddply(df.c, .(domain,condition,syll,experiment), 
+  function(x) {x[,resp_labels]})
+
+
+ci_unnorm <- subset(agr.ci(melt(df_unnorm)),condition=='radio')
+ci_unnorm$variable<-factor(ci_unnorm$variable, labels= c('all','none','some','notall'))
+
+radios.unnorm<-merge(df_rad.m.unnorm,ci_unnorm[,c('domain','syll','variable','value')])
+
+ggplot(radios.unnorm,aes(x=value,y=justrad,color=variable))+
+  geom_point(size=2.5)+
+  theme_bw()
+```
+
+Experiment 1: Correlation between (unnormalized) proportion of radio sliders saying *follows* and mean (unnormalized) endorsement [by combo of radio + slider] is `r with(radios.unnorm,cor(value,justrad))`
+
+
+
+### Experiment 2: [normalized]
+
+```{r radiocomp2_norm, echo=FALSE}
+
+df_rad2<-ddply(subset(df.c,condition=='radio.2'), .(syll,domain), summarize,
       all=mean(radio_A),
       some=mean(radio_I),
       none=mean(radio_E),
       notall=mean(radio_O))
 
+df_rad2_norm<-data.frame(t(apply(df_rad2[,3:6],1,function(x)(x/sum(x)))))
+df_rad2_norm$syll <- df_rad2$syll
+df_rad2_norm$domain <- df_rad2$domain
 
-ci_unnorm <- agr.ci(melt(subset(df,condition=='radio'), id.vars=c('syll','domain','experiment','condition')))
-ci_bs$variable<-factor(ci_bs$variable, labels= c('all','none','some','notall'))
+df_rad2.m<- melt(df_rad2_norm, id.vars=c('syll','domain'),value.name='justrad')
 
-radios<-merge(df_rad.m,ci_bs[,c('domain','syll','variable','value')])
+ci_bs2 <- subset(agr.ci(melt(df_norm)),condition=='radio.2')
+ci_bs2$variable<-factor(ci_bs2$variable, labels= c('all','none','some','notall'))
 
-ggplot(radios,aes(x=value,y=justrad,color=variable))+
+radios2<-merge(df_rad2.m,ci_bs2[,c('domain','syll','variable','value')])
+
+ggplot(radios2,aes(x=value,y=justrad,color=variable))+
   geom_point(size=2.5)+
-  theme_bw()+
-  xlim(0,0.6)+
-  ylim(0,0.6)
-
+  theme_bw()
 ```
+
+Experiment 2: Correlation between (normalized) proportion of radio sliders saying *follows* and mean (normalized) endorsement [by combo of radio + slider] is `r with(radios2,cor(value,justrad))`
+
+### Experiment 2: [unnormalized]
+
+```{r radiocomp2_unnorm, echo=FALSE}
+df_rad2.m.unnorm<-melt(df_rad2, id.vars=c('syll','domain'),value.name='justrad')
+
+
+ci_unnorm2 <- subset(agr.ci(melt(df_unnorm)),condition=='radio.2')
+ci_unnorm2$variable<-factor(ci_unnorm2$variable, labels= c('all','none','some','notall'))
+
+radios.unnorm2<-merge(df_rad2.m.unnorm,ci_unnorm2[,c('domain','syll','variable','value')])
+
+ggplot(radios.unnorm2,aes(x=value,y=justrad,color=variable))+
+  geom_point(size=2.5)+
+  theme_bw()
+```
+
+
+Experiment 2: Correlation between (normalized) proportion of radio sliders saying *follows* and mean (normalized) endorsement [by combo of radio + slider] is `r with(radios.unnorm2,cor(value,justrad))`
+
+#### Conclusions
+
+Radio+confidence is extremely highly correlated with proportion of radios, both normalized and unnormalized. This suggests two things interesting about the *combined* dependent measure:
+
+1. With a sample size of n~25, the combined measure doesn't buy you anything. However, it might still be the case that the combined measure would allow you to ahve a smaller n (i.e. it converges to an estimate of the endorsement rate quicker than the proportion of *yes* endorsements)
+2. The combined dependent measure reflects more of the *forced choice* dependent measure than the *slider* dependent measure. To see why this is so, it may be helpful to reference the Raw Slider Value Distributions in Section 2 above. For the radio and radio.2 distributions, there is a lull between 0.25 and 0.75. This is especially pronounced for radio.2. To understand why this is so, consider the following situation: you read the conclusion and you think it follows, so you click *Follows*; you are not super certain so put the slider below the midpoint of the scale; you reason that below "half confidence" for *Follows* is equivalent to greater than "half confidence" for *Doesn't follow*; you switch your response to *Doesn't follow* and put the confidence above the midway point.
+
+It might be worthwhile to look at the distributions of slider values faceted by syll and domain, to see if there are systematic differences in the way people use sliders.
 
 ### An aside to check iPython notebook on Bayesian analysis
 
@@ -309,9 +328,14 @@ data1.m <- melt(data1)
 data1.m$variable<-factor(data1.m$variable, labels=c('Q_A','Q_E','Q_I','Q_O'))
 data1.m$domain<-factor(data1.m$domain,labels=exp_domains) # rename domains for merge
 names(data1.m)[4]<-'data1.m' # rename "value" col for merge
+ci_bs <- agr.ci(melt(df_norm))
+
+
 
 ## correspondence with slider DM
 ci_bs.sub<-subset(ci_bs,(condition=='slide' & experiment==1)) #subset by DM
+ci_bs.sub$domain <- factor(ci_bs.sub$domain, labels = exp_domains)
+ci_bs.sub$variable<-factor(ci_bs.sub$variable, labels=c('Q_A','Q_E','Q_I','Q_O'))
 ci_bs.sub<-ci_bs.sub[c('domain','syll','variable','value')] # subset relavent cols
 
 data1.cibs<-merge(data1.m,ci_bs.sub)
@@ -355,18 +379,67 @@ for (n_obj in 4:10){
 ```
 ### An aside to examine similiarity of dependent measures
 
+```{r meancast, echo=FALSE}
+
+mean_cast <-dcast(subset(ci_bs,experiment==1)
+                  [,c('syll','condition','variable','value','domain')], 
+                  value.var='value',...~condition)
+
+```
+
 Correlation between mean responses for radio button + slider vs. just slider is `r with(mean_cast,cor(radio,slide))`
 
 ```{r radioslidescatter, echo=FALSE}
 
-ggplot(mean_cast,aes(x=radio,y=slide,color=conclusion))+
-  geom_point(size=4)+
+
+
+ggplot(mean_cast,aes(x=radio,y=slide,color=variable))+
+  geom_point(size=2.5)+
   geom_abline(intercept=0,slope=1)+
   theme_bw()+
   xlim(0,0.7)+
   ylim(0,0.7)
 
 ```
+
+# 3. Syllogistic reasoning data
+
+## Experiment 1
+
+```{r, fig.width=16, fig.height=8, echo=FALSE}
+
+
+ci_bs <- agr.ci(melt(df_norm))
+ci_bs$domain<-factor(ci_bs$domain,labels=exp_domains)
+ci_bs$conclusion<-factor(ci_bs$variable,labels=quantifiers)
+
+ggplot(subset(ci_bs,experiment==1), 
+       aes(x=conclusion, y=value, fill=condition)) + 
+    geom_bar(position=position_dodge(.6), 
+             width = .6,
+             stat='identity')+
+    geom_errorbar(aes(ymin=YMin,ymax=YMax),
+                  width=0.3,
+                position=position_dodge(.6))+
+  xlab("conclusion")+
+  ylab("endorsement")+
+  facet_grid(domain~syll)+
+  ggtitle("experiment 1 data")+
+  theme_bw()+
+  xlab('')+
+  theme(axis.text.x=element_text(
+    angle=90,size=13,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.x = element_text(),
+    strip.text.y = element_text(size=13,angle=0))
+
+ci_bs_col <- agr.ci.collapsed(melt(df_norm))
+ci_bs_col$domain<-factor(ci_bs_col$domain,labels=exp_domains)
+ci_bs_col$conclusion<-factor(ci_bs_col$variable,labels=quantifiers)
+
+
+```
+
+
 
 ### Experiment 1, collapsed across dependent measures
 
