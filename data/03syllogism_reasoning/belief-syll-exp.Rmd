@@ -22,7 +22,7 @@ ci.low <- function(x,na.rm=T) {
 ci.high <- function(x,na.rm=T) {
   quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
 
-agr.ci <- function(x){
+
   agr = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=mean)
   agr$CILow = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=ci.low)$value
   agr$CIHigh = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=ci.high)$value
@@ -142,11 +142,11 @@ n _ radio for experiment 2 (sans outliers): `r length(subset(df2,condition=='rad
 
 ```{r raw-slide, echo=FALSE}
 ggplot(melt(df.c[3:7]), aes(x=value,fill=condition))+
-  geom_histogram(binwidth=5,aes(y=..count../sum(..count..)))+
+  geom_histogram(binwidth=2,aes(y=..count../sum(..count..)))+
   facet_wrap(~condition)+
   theme_bw()+
   ggtitle('raw slider values')+
-  xlab('slider value, binsize = 5')+
+  xlab('slider value, binsize = 2')+
   ylab('proportion of responses')+
   guides(fill=FALSE)
 
@@ -183,12 +183,12 @@ ggplot(melt(df_norm), aes(x=value,fill=condition))+
 
 ```{r rawsum, echo=FALSE}
 ggplot(melt(df.c[c('condition','sum')]), aes(x=value,fill=condition))+
-  geom_histogram(binwidth=5,
+  geom_histogram(binwidth=2,
       aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
   facet_wrap(~condition)+
   theme_bw()+
   ggtitle('Sum of slider values')+
-  xlab('slider value, binsize = 5')+
+  xlab('slider value, binsize = 2')+
   ylab('number of responses')+
   guides(fill=FALSE)
 ```
@@ -197,15 +197,81 @@ ggplot(melt(df.c[c('condition','sum')]), aes(x=value,fill=condition))+
 
 ```{r rawmax}
 ggplot(melt(df.c[c('condition','max')]), aes(x=value,fill=condition))+
-  geom_histogram(binwidth=1,
+  geom_histogram(binwidth=2,
       aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
   facet_wrap(~condition)+
   theme_bw()+
   ggtitle('max raw slider values')+
-  xlab('slider value, binsize = 1')+
+  xlab('slider value, binsize = 2')+
   ylab('number of responses')+
   guides(fill=FALSE)
 ```
+
+## "Acquiescence": 
+
+Endorsement of an assertion made in a question, regardless of the assertion's content. An example of this is when subjects say something is both true and false. We can look at this in the syllogistic reasoning by comparing the endorsements for the logically contradictory conclusions (All vs. Not all; Some vs. None). We can do this in a number of ways.
+
+1. Radio buttons. Bar plots: proportion of contradictory claims (one bar for AO, one bar for EI).
+2. Radio buttons. Histogram: histogram of subject-wise contradictory claims.
+3. Slider bars. Scatterplot: each point is an slide (syll + 4 responses) [facet by DM]
+
+### 1. 
+
+```{r acquiescence, echo=FALSE}
+df.c$acqAO <- abs(df.c$radio_A - df.c$radio_O)
+df.c$acqEI <- abs(df.c$radio_E - df.c$radio_I)
+df.acq<-melt(subset(df.c,substring(condition,1,5)=='radio')[,c('experiment','acqAO','acqEI')])
+
+
+df.acqs<-ddply(df.acq, .(experiment, variable), summarise, prop=sum(1-value)/length(value))
+
+ggplot(df.acqs,aes(x=variable,y=prop,fill=experiment))+
+  geom_bar(stat='identity',position='dodge')+
+  theme_bw()+
+  facet_wrap(~experiment)+
+  ylim(0,1)+
+  ggtitle('proportion of contradictory claims')+
+  guides(fill=FALSE)+
+  xlab('')+
+  scale_x_discrete(labels=c('all & not all','some & none'))
+```
+
+### 2. 
+
+```{r acquiescence2,echo=FALSE}
+df.acq2<-melt(subset(df.c,substring(condition,1,5)=='radio')[,c('subj','experiment','acqAO','acqEI')])
+
+df.acqs2<-ddply(df.acq2, .(subj,experiment), summarise, contradicts=sum(1-value))
+
+ggplot(df.acqs2, aes(x=factor(contradicts),fill=experiment))+
+  geom_histogram(binwidth=1)+
+  facet_wrap(~experiment)+
+  theme_bw()+
+  ylab('number of subjects')+
+  xlab('number of contradictions')+
+  ggtitle('histogram of contradictions by subjects')
+```
+
+### 3.
+
+```{r acquiescence3, echo=FALSE}
+
+ggplot(df.c, aes(x=Q_A,y=Q_O,color=condition))+
+  geom_point()+
+  facet_wrap(~condition)+
+  theme_bw()
+```
+
+The correlations for these 3 plots from L-R are `r with(subset(df.c,condition=='slide'),cor(Q_A,Q_O))`, `r with(subset(df.c,condition=='radio'),cor(Q_A,Q_O))`, `r with(subset(df.c,condition=='radio.2'),cor(Q_A,Q_O))`.
+
+```{r acquiescence3b, echo=FALSE}
+ggplot(df.c, aes(x=Q_E,y=Q_I,color=condition))+
+  geom_point()+
+  facet_wrap(~condition)+
+  theme_bw()
+```
+
+The correlations for these 3 plots from L-R are `r with(subset(df.c,condition=='slide'),cor(Q_E,Q_I))`, `r with(subset(df.c,condition=='radio'),cor(Q_E,Q_I))`, `r with(subset(df.c,condition=='radio.2'),cor(Q_E,Q_I))`.
 
 ## Compare (radio + slider) value to just radio buttons
 
@@ -318,6 +384,31 @@ Radio+confidence is extremely highly correlated with proportion of radios, both 
 2. The combined dependent measure reflects more of the *forced choice* dependent measure than the *slider* dependent measure. To see why this is so, it may be helpful to reference the Raw Slider Value Distributions in Section 2 above. For the radio and radio.2 distributions, there is a lull between 0.25 and 0.75. This is especially pronounced for radio.2. To understand why this is so, consider the following situation: you read the conclusion and you think it follows, so you click *Follows*; you are not super certain so put the slider below the midpoint of the scale; you reason that below "half confidence" for *Follows* is equivalent to greater than "half confidence" for *Doesn't follow*; you switch your response to *Doesn't follow* and put the confidence above the midway point.
 
 It might be worthwhile to look at the distributions of slider values faceted by syll and domain, to see if there are systematic differences in the way people use sliders.
+
+
+#### Post-script
+
+Let's look at the distribution of actually raw slider values for the radio button dependent measure and for the slider bar.
+
+```{r sliderXdm}
+sv.1<-melt(df[,append(resp_labels,'condition')],id.vars='condition')
+sv.2<-melt(df2[,append(resp_labels,'condition')],id.vars='condition')
+sv.c<-rbind(sv.1,sv.2)
+sv.c$condition<-factor(sv.c$condition,levels=c('slide','radio','radio.2'))
+
+
+ggplot(data=sv.c,aes(x=value,fill=condition))+
+  geom_histogram(binwidth=2)+
+  facet_wrap(~condition,scales='fixed')+
+  theme_bw()
+
+ggplot(data=sv.c,aes(x=value,fill=condition))+
+  geom_histogram(binwidth=2)+
+  facet_wrap(~condition,scales='fixed')+
+  theme_bw()+
+  xlim(25,75)
+
+```
 
 ### An aside to check iPython notebook on Bayesian analysis
 
