@@ -9,6 +9,9 @@ output: html_document
 
 
 ```{r dataload, echo=FALSE}
+library(reshape2)
+library(ggplot2)
+library(plyr)
 map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
 
 # Load data from 2 experiments
@@ -87,6 +90,23 @@ The model does this infinite times and returns a posterior distribution over con
 
 ## The experimental paradigm
 
-For Experiment 1, I used 2 different dependent measures (let's call them R and S). For Experiment 2, I used only dependent measure R.
+For Experiment 1, I used 2 different dependent measures (let's call them R and S). For Experiment 2, I used only dependent measure R. Dependent Measure R was a 2AFC ("Follows"/"Doesn't follow") judgment accompanied with a confidence rating in the form of a slider bar (ranging form "Certain" to "Don't know"). Dependent Measure S was a combined judgment and confidence rating in the form of a slider bar ranging from "Certainly follows" to "Certainly doesn't follow". 
+
+An analysis of R comparing the proportion of "Follows" judgments to the mean combined rating (radio + slider) revealed a strikingly high correlation (r>0.99), strongly suggesting no information gain from the confidence rating (see `belief-syll-exp`.Rmd for the analysis). Part of Experiment 1 was designed to look at the relationship between dependent measure R & S. The two dependent measures were highly, though not perfectly, correlated (r=0.91).
+
+### Relating dependent measures to probability distributions
+
+To do the full Bayesian thing, we must first imagine that data collected are samples from some probability distribution. 
+
+#### Considering each conclusion independently.
+
+**R**: if each conclusion is considered independently, then it is natural to think of a subject's response of a 2AFC as the result of a Bernoulli trial. Then, the responses of the experimental sample would be considered to be coming from a Binomial distribution, with success parameter $p$ given by the posterior probability of that conclusion (the output of the cognitive model). 
+
+We may run into trouble with this approach because there are conclusions with posterior probability = 1 (and others, = 0). This will yield poor estimates of the marginal probability of the data given the model. We may get around this problem in a number of ways:
+
+1. The subjects' responses come from a mixture model. $\phi$ proportion of subjects' responses are imagined to be a result of random guessing. This will soak up some of the probabiltity mass and make non-zero outcomes to 0-probability conclusions at least somewhat pluasible. 
+2. 
+
+#### Considering the 4 conclusions jointly.
 
 
