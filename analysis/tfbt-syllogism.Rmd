@@ -12,6 +12,10 @@ output: html_document
 library(reshape2)
 library(ggplot2)
 library(plyr)
+
+library(R2jags)
+library(gridExtra)
+
 map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
 
 # Load data from 2 experiments
@@ -33,6 +37,8 @@ resp_labels<-c("Q_A","Q_E","Q_I","Q_O")
 df<-subset(df,rt<mean(df$rt)+2*sqrt(var(df$rt)))
 df2<-subset(df2,rt<mean(df2$rt)+2*sqrt(var(df2$rt)))
 
+df2$subj<- factor(df2$subj, labels=as.integer(substring(levels(df2$subj),2,4))+length(levels(df$subj)))
+
 df.c <- rbind(df,df2)
 df.c$condition<-factor(df.c$condition,levels=c('slide','radio','radio.2'))
 
@@ -46,10 +52,6 @@ for (i in 1:length(df.c$subj)){
   }
 }
 
-```
-
-
-```{r modelload, echo=FALSE}
 # Load model predictions, for different parameter (n_object) values
 model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
 domains<- c('cracker', 'knife', 'lightbulb', 'strawberry')
@@ -76,6 +78,11 @@ for (n_obj in 4:10){
     models = model.domains
   }
 }
+
+models$syll <- factor(models$syll)
+models$domain <- factor(models$domain)
+
+cncl_labels = levels(models$conclusion)
 ```
 
 # 1. Outline
@@ -127,37 +134,51 @@ Let's try to write down the model (2A).
 
 ```{r model2A}
 
-library(R2jags)
-library(gridExtra)
-library(reshape2)
-
 setwd("/Users/mht/Documents/research/syllogism/analysis/")
+models.c<-dcast(melt(models, id.vars=c('syll','domain','conclusion')), ... ~ conclusion)
+for nobj in levels(models.c$variable){
+  for dom in levels(models.c$domain){
+    for sl in levels(models.c$syll){
+      nobj = levels(models.c$variable)[1]
+      dom = levels(models.c$domain)[1]
+      sl = levels(models.c$syll)[1]
+      model.preds = subset(models.c, domain==dom & variable==nobj)
+      
+cat('model{
+  # cogntive model predictions, mu known
+  lambda[j,k] ~ dgamma(.001,.001)
+  sigma[j,k] <- 1/sqrt(lambda[j,k])
+  alpha[j,k] <- (((1 - mu[j,k]) / (sigma[j,k]^2)) - (1 / mu[j,k])) * mu[j,k] ^ 2
+  beta[j,k] <- alpha[j,k] * (1 / mu[j,k] - 1)
+  phi[j,k] ~ dbeta(alpha[j,k],beta[j,k])
 
-cat('# Exam Scores
-model{
+
   # Each response Belongs To One Of Two Latent Groups (reasoning or guessing)
-  for (i in 1:p){
-    z[i] ~ dbern(phi)
-  }
+    x[i,j] ~ dbern(psi)
   # Guesses
   psi <- 0.5
+  # base rate of guessing, for a particular syllogism
+  psi[j] ~ dbeta(1,1)
+  
   # Rate Of Success -- posterior of model
-  phi ~ dbeta(1,1)I(0.5,1)
-  # Data Follow Binomial With Rate Given By Each Persons Group Assignment
-  for (i in 1:p){
-    theta[i] <- equals(z[i],0)*psi+equals(z[i],1)*phi
-    k[i] ~ dbin(theta[i],n)
-  }
+  
+  # Data are Bernoulli With Rate Given either cogmod or guess
+    theta[i,j,k] <- equals(x[i,j],0)*phi+equals(x[i,j],1)*0.5
+    d[i,j,k] ~ dbin(theta[i,j,k],1)
+
 }', file={f<-tempfile()})
 
-k <- c(21,17,21,18,22,31,31,34,34,35,35,36,39,36,35)
-p <- length(k) #number of people
-n <- 40 # number of questions
+tot.subj <- length(levels(factor(subset(df.c,condition=='radio')$subj)))
+tot.syll <- length(levels(model.preds$syll)) #number of syllogisms
+tot.resp <- length(levels(models$conclusion)) # number of responses
 
 
-data <- list("p", "k", "n") # to be passed on to JAGS
+sapply(model.preds[1,cncl_labels], estBetaParams, var=0.01)
+
+
+data <- list("tot.subj", "tot.syll", "tot.resp") # to be passed on to JAGS
 myinits <-  list(
-  list(phi = 0.75, z = round(runif(p)))) # Initial group assignment
+  list(phi = 0.25, z = round(runif(p)))) # Initial group assignment
 
 # parameters to be monitored:  
 parameters <- c("phi","z")
@@ -166,6 +187,8 @@ samples <- jags(data, inits=myinits, parameters,
    			 model.file =f, n.chains=1, n.iter=1000, 
          n.burnin=1, n.thin=1, DIC=T)
 
-#### Considering the 4 conclusions jointly.
 
+    }
+  }
+}
 
