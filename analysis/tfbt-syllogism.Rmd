@@ -143,10 +143,14 @@ for nobj in levels(models.c$variable){
       dom = levels(models.c$domain)[1]
       sl = levels(models.c$syll)[1]
       model.preds = subset(models.c, domain==dom & variable==nobj)
+      data.obs = subset(df.c, domain==paste(dom,"s",sep="") & condition=='radio')[,c("subj","syll","radio_A","radio_E","radio_I","radio_O")]
+      data.obs = data.obs[order(data.obs[,1]),]
+      # data should be organized, subject X syll X response
+      # I stopped here
       
 cat('model{
-  # cogntive model predictions, mu known
-  lambda[j,k] ~ dgamma(.001,.001)
+  # cogntive model predictions, mu known, lambda maybe known
+  lambda[j,k] ~ dgamma(0.001,0.001)
   sigma[j,k] <- 1/sqrt(lambda[j,k])
   alpha[j,k] <- (((1 - mu[j,k]) / (sigma[j,k]^2)) - (1 / mu[j,k])) * mu[j,k] ^ 2
   beta[j,k] <- alpha[j,k] * (1 / mu[j,k] - 1)
@@ -163,25 +167,28 @@ cat('model{
   # Rate Of Success -- posterior of model
   
   # Data are Bernoulli With Rate Given either cogmod or guess
-    theta[i,j,k] <- equals(x[i,j],0)*phi+equals(x[i,j],1)*0.5
-    d[i,j,k] ~ dbin(theta[i,j,k],1)
+    theta[i,j,k] <- equals(x[i,j],0)*phi[j,k]+equals(x[i,j],1)*0.5
+    d[i,j,k] ~ dbern(theta[i,j,k])
 
 }', file={f<-tempfile()})
 
 tot.subj <- length(levels(factor(subset(df.c,condition=='radio')$subj)))
 tot.syll <- length(levels(model.preds$syll)) #number of syllogisms
 tot.resp <- length(levels(models$conclusion)) # number of responses
-
+emprior <- 1
+depth <- 0
 
 sapply(model.preds[1,cncl_labels], estBetaParams, var=0.01)
 
 
-data <- list("tot.subj", "tot.syll", "tot.resp") # to be passed on to JAGS
+data <- list("tot.subj", "tot.syll", "tot.resp",
+             "emprior","depth","emprecision","d") # to be passed on to JAGS
 myinits <-  list(
-  list(phi = 0.25, z = round(runif(p)))) # Initial group assignment
+  list(psi = rep(0.1,tot.syll), 
+       x = matrix(round(runif(tot.subj*tot.syll)),tot.subj)))
 
 # parameters to be monitored:  
-parameters <- c("phi","z")
+parameters <- c("psi","")
 
 samples <- jags(data, inits=myinits, parameters,
    			 model.file =f, n.chains=1, n.iter=1000, 
