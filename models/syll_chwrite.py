@@ -185,7 +185,10 @@ def write_church(pd):
     fid.write('\n(define (raise-to-power dist alph)\n')
     fid.write('\t(list (first dist) (map (lambda (x) (pow x alph)) (second dist))))\n\n')
     # <codecell>
-    fid.write("(define is-conclusion? (lambda (x) (equal? (second (regexp-split x '.)) 'C-A)))\n\n")
+    if (pd['vc']==8):
+        fid.write("(define is-conclusion? (lambda (x) (> (list-index (list 'C-A 'A-C) (second (regexp-split x '.))) -1)))\n\n")
+    else:
+        fid.write("(define is-conclusion? (lambda (x) (equal? (second (regexp-split x '.)) 'C-A)))\n\n")
     fid.write('(define reasoner1\n')
     fid.write('  (mem (lambda  (premises figure)\n')
     fid.write('\t(enumeration-query\n')
