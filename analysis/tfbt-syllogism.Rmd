@@ -16,6 +16,22 @@ library(plyr)
 library(R2jags)
 library(gridExtra)
 
+library(bootstrap)
+
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
+
+agr.ci.collapsed <- function(x){
+  agr = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=ci.high)$value
+  agr$YMin = agr$value - agr$CILow
+  agr$YMax = agr$value + agr$CIHigh
+  return(agr)
+}
 map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
 
 # Load data from 2 experiments
@@ -32,6 +48,8 @@ df2$experiment <- factor(2)
 exp1sylls<-levels(df$syll)
 exp2sylls<-levels(df2$syll)
 resp_labels<-c("Q_A","Q_E","Q_I","Q_O")
+domains<- c('cracker', 'knife', 'lightbulb', 'strawberry')
+
 
 
 df<-subset(df,rt<mean(df$rt)+2*sqrt(var(df$rt)))
@@ -52,14 +70,41 @@ for (i in 1:length(df.c$subj)){
   }
 }
 
+df.norm = ddply(df.c, .(domain,condition,syll,experiment), 
+  function(x) {resp = x[,resp_labels]
+  resp / rowSums(resp)})
+
+
+
+
+```
+
+
+
+
+
+# 0. Frequentist easy stuff
+
+## Experiment 1
+
+### $H_3$ = empirical prior (literal)
+
+```{r h3exp1,echo=FALSE}
+
+collapsed.bs <- subset(agr.ci.collapsed(melt(df.norm)),experiment==1)
+collapsed.bs$conclusion = factor(collapsed.bs$variable, labels=c('all.C.A','none.C.A','some.C.A','not.all.C.A'))
+collapsed.bs$domain = factor(collapsed.bs$domain, labels=domains)
+
+
 # Load model predictions, for different parameter (n_object) values
 model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
-domains<- c('cracker', 'knife', 'lightbulb', 'strawberry')
 syllogisms = c('AO2', 'EA3', 'IE1', 'OA1')
 n_obj = 4
 corrs = c()
 if (exists('models')){remove(models)}
-for (n_obj in 4:10){
+
+
+for (n_obj in 3:11){
   model.domains = data.frame()
   for (d in domains){
     model.all<-read.csv(paste(model.dir,d,'/00/csv/lis_N0_M0_tfbt',
@@ -83,6 +128,235 @@ models$syll <- factor(models$syll)
 models$domain <- factor(models$domain)
 
 cncl_labels = levels(models$conclusion)
+
+m.models<-melt(models, id.vars=c('syll','domain','conclusion'))
+
+all.stuff<-merge(m.models,collapsed.bs[c('domain','syll','value','conclusion')], 
+      by=c('syll','domain','conclusion'))
+
+model.fits<-ddply(all.stuff, .(variable), summarise, cor(value.x, value.y))
+names(model.fits)<-c('n','correlation')
+model.fits$n<-as.integer(substring(model.fits$n,2,3))
+max.loc<-which.max(model.fits$correlation)
+
+ggplot(model.fits, aes(x=n,y=factor(1)))+
+  geom_tile(aes(fill = correlation), colour = "white") + 
+  geom_tile(data=model.fits[max.loc,], aes(x=n,y=1, fill=correlation),
+            size=2,colour='black')+
+  geom_text(aes(x=n,y=1, label=round(correlation,2)),size=5,colour='black')+
+  scale_fill_gradient(low = "white", high = "steelblue",limits=c(0.6,0.85))+
+  theme_bw()+
+  scale_x_continuous(breaks=3:11)+
+  scale_y_discrete()
+
+```
+
+### $H_{4}$ = empirical prior with pragmatics
+
+```{r h4exp1, echo=FALSE}
+# Load model predictions, for different parameter (n_object) values               
+# H4: n_objects, alpha (empirical prior + pragmatics)
+
+model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
+domains<- c('cracker', 'knife', 'lightbulb', 'strawberry')
+syllogisms = c('AO2', 'EA3', 'IE1', 'OA1')
+n_obj = 4
+corrs = c()
+if (exists('models')){remove(models)}
+
+# this code relies upon the same parameter values being explored for all
+# e.g. same range of alpha values for all levels of n_obj
+for (n_obj in 3:11){
+  model.domains = data.frame()
+  for (d in domains){
+    dom.path = paste(model.dir,d,'/10/csv/',sep='')
+    model.files <- list.files(dom.path)
+    model.files <- model.files[!(grepl("CLonly",model.files))]
+    model.files <- model.files[!(grepl("1000k",model.files))]
+    model.files <- model.files[grepl(paste("_n",n_obj,'_base',sep=''),model.files)]
+    for (m.file in model.files){
+      model.all<-read.csv(paste(dom.path,m.file,sep=''))[c(1,6:9)]
+      model.sub<-model.all[model.all$X..syll%in%syllogisms,]
+      model.sub$domain <- as.factor(d)
+      model.sub$alpha <- as.numeric(substring(strsplit(m.file,'alphQ')[[1]][2],1,3))
+      model.m<-melt(model.sub,id.vars=c('X..syll','domain','alpha'))
+      model.domains<-rbind(model.domains, model.m)
+    }
+  }
+  #rename for merging
+  print(n_obj)
+  names(model.domains)<-c('syll','domain','alpha','conclusion',paste('n',n_obj,sep=''))
+  if (exists('models')){
+    models = merge(models,model.domains)
+  } else {
+    models = model.domains
+  }
+}
+
+models$syll <- factor(models$syll)
+
+m.models<-melt(models, id.vars=c('syll','domain','alpha','conclusion'))
+
+all.stuff<-merge(m.models,collapsed.bs[c('domain','syll','value','conclusion')], 
+      by=c('syll','domain','conclusion'))
+
+model.fits<-ddply(all.stuff, .(alpha, variable), summarise, cor(value.x, value.y))
+names(model.fits)<-c('alpha','n','correlation')
+model.fits$n<-as.integer(substring(model.fits$n,2,3))
+model.fits$alpha<-factor(model.fits$alpha)
+max.loc<-which.max(model.fits$correlation)
+
+ggplot(model.fits, aes(x=n,y=alpha))+
+  geom_tile(aes(fill = correlation), colour = "white") + 
+  geom_tile(data=model.fits[max.loc,], aes(x=n,y=alpha, fill=correlation),
+            size=2,colour='black')+
+  geom_text(data=model.fits[max.loc,], aes(x=n,y=alpha, label=round(correlation,2)),
+            size=5,colour='black')+
+  scale_fill_gradient(low = "white", high = "steelblue",limits=c(0.6,0.85))+
+  theme_bw()+
+  scale_x_continuous(breaks=3:11)
+
+```
+
+## Experiment 2
+
+### $H_3$ = empirical prior (literal)
+
+```{r h3exp2, echo=FALSE}
+
+collapsed.bs <- subset(agr.ci.collapsed(melt(df.norm)),experiment==2)
+collapsed.bs$conclusion = factor(collapsed.bs$variable, labels=c('all.C.A','none.C.A','some.C.A','not.all.C.A'))
+collapsed.bs$domain = factor(collapsed.bs$domain, labels=domains)
+
+
+# Load model predictions, for different parameter (n_object) values
+model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
+syllogisms = c("AA1", "AI1", "EA1", "EI1")
+
+if (exists('models')){remove(models)}
+
+
+for (n_obj in 3:11){
+  model.domains = data.frame()
+  for (d in domains){
+    model.all<-read.csv(paste(model.dir,d,'/00/csv/lis_N0_M0_tfbt',
+                   d,'_qud1figFull_AIEOc4CAEP1_n',n_obj,
+                   '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
+    model.sub<-model.all[model.all$X..syll%in%syllogisms,]
+    model.sub$domain <- d
+    model.m<-melt(model.sub,id.vars=c('X..syll','domain'))
+    model.domains<-rbind(model.domains, model.m)
+  }
+  #rename for merging
+  names(model.domains)<-c('syll','domain','conclusion',paste('n',n_obj,sep=''))
+  if (exists('models')){
+    models = merge(models,model.domains)
+  } else {
+    models = model.domains
+  }
+}
+
+models$syll <- factor(models$syll)
+models$domain <- factor(models$domain)
+
+cncl_labels = levels(models$conclusion)
+
+m.models<-melt(models, id.vars=c('syll','domain','conclusion'))
+
+all.stuff<-merge(m.models,collapsed.bs[c('domain','syll','value','conclusion')], 
+      by=c('syll','domain','conclusion'))
+
+model.fits<-ddply(all.stuff, .(variable), summarise, cor(value.x, value.y))
+names(model.fits)<-c('n','correlation')
+model.fits$n<-as.integer(substring(model.fits$n,2,3))
+max.loc<-which.max(model.fits$correlation)
+
+ggplot(model.fits, aes(x=n,y=factor(1)))+
+  geom_tile(aes(fill = correlation), colour = "white") + 
+  geom_tile(data=model.fits[max.loc,], aes(x=n,y=1, fill=correlation),
+            size=2,colour='black')+
+  geom_text(aes(x=n,y=1, label=round(correlation,2)),size=5,colour='black')+
+  scale_fill_gradient(low = "white", high = "steelblue",limits=c(0.8,0.95))+
+  theme_bw()+
+  scale_x_continuous(breaks=3:11)+
+  scale_y_discrete()
+
+#ggplot(subset(models), aes(x=conclusion,y=n7,fill=conclusion))+
+#  geom_bar(stat='identity')+
+#  facet_grid(domain~syll)+
+#  theme_bw()
+
+```
+
+### $H_{4}$ = empirical prior with pragmatics
+
+```{r h4exp2, echo=FALSE}
+# Load model predictions, for different parameter (n_object) values               
+# H4: n_objects, alpha (empirical prior + pragmatics)
+
+model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
+domains<- c('cracker', 'knife', 'lightbulb', 'strawberry')
+syllogisms = c("AA1", "AI1", "EA1", "EI1")
+
+if (exists('models')){remove(models)}
+
+# this code relies upon the same parameter values being explored for all
+# e.g. same range of alpha values for all levels of n_obj
+for (n_obj in 3:11){
+  model.domains = data.frame()
+  for (d in domains){
+    dom.path = paste(model.dir,d,'/10/csv/',sep='')
+    model.files <- list.files(dom.path)
+    model.files <- model.files[!(grepl("CLonly",model.files))]
+    model.files <- model.files[!(grepl("1000k",model.files))]
+    model.files <- model.files[grepl(paste("_n",n_obj,'_base',sep=''),model.files)]
+    for (m.file in model.files){
+      model.all<-read.csv(paste(dom.path,m.file,sep=''))[c(1,6:9)]
+      model.sub<-model.all[model.all$X..syll%in%syllogisms,]
+      model.sub$domain <- as.factor(d)
+      model.sub$alpha <- as.numeric(substring(strsplit(m.file,'alphQ')[[1]][2],1,3))
+      model.m<-melt(model.sub,id.vars=c('X..syll','domain','alpha'))
+      model.domains<-rbind(model.domains, model.m)
+    }
+  }
+  #rename for merging
+  print(n_obj)
+  names(model.domains)<-c('syll','domain','alpha','conclusion',paste('n',n_obj,sep=''))
+  if (exists('models')){
+    models = merge(models,model.domains)
+  } else {
+    models = model.domains
+  }
+}
+
+models$syll <- factor(models$syll)
+
+m.models<-melt(models, id.vars=c('syll','domain','alpha','conclusion'))
+
+all.stuff<-merge(m.models,collapsed.bs[c('domain','syll','value','conclusion')], 
+      by=c('syll','domain','conclusion'))
+
+model.fits<-ddply(all.stuff, .(alpha, variable), summarise, cor(value.x, value.y))
+names(model.fits)<-c('alpha','n','correlation')
+model.fits$n<-as.integer(substring(model.fits$n,2,3))
+model.fits$alpha<-factor(model.fits$alpha)
+max.loc<-which.max(model.fits$correlation)
+
+ggplot(model.fits, aes(x=n,y=alpha))+
+  geom_tile(aes(fill = correlation), colour = "white") + 
+  geom_tile(data=model.fits[max.loc,], aes(x=n,y=alpha, fill=correlation),
+            size=2,colour='black')+
+  geom_text(data=model.fits[max.loc,], aes(x=n,y=alpha, label=round(correlation,2)),
+            size=5,colour='black')+
+  scale_fill_gradient(low = "white", high = "steelblue",limits=c(0.6,0.99))+
+  theme_bw()+
+  scale_x_continuous(breaks=3:11)
+
+
+#ggplot(subset(models, alpha==2.5), aes(x=conclusion,y=n6,fill=conclusion))+
+#  geom_bar(stat='identity')+
+#  facet_grid(domain~syll)+
+#  theme_bw()
 ```
 
 # 1. Outline
@@ -132,7 +406,7 @@ C. Revise the cognitive model to take some number of samples. This will still ha
 
 Let's try to write down the model (2A).
 
-```{r model2A}
+{r model2A}
 
 setwd("/Users/mht/Documents/research/syllogism/analysis/")
 models.c<-dcast(melt(models, id.vars=c('syll','domain','conclusion')), ... ~ conclusion)
@@ -198,4 +472,6 @@ samples <- jags(data, inits=myinits, parameters,
     }
   }
 }
+
+
 
