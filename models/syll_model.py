@@ -31,14 +31,14 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     EP = int(EPin)
     latlis = lis
     qud=1
-    n_samples = 100
+    n_samples = 10
     bs_samples = 1000
     #fig = 'Full'
-    ### FOR MOST / FEW, Set threshold; right now, only one threshold for the two
+    ### FOR MOST / FEW, Set threshold; right now, same threshold for the two
     threshold = 0.5
 
-    high_passingdict = {'n_balls':n_b,'base_rate':br,'ndepth':ndepth,'mdepth':mdepth,'rationalityQ':rationalityQ,\
-        'rationalityR':rationalityR,'serv':serv,'latlis':latlis,'exp':exp}
+    high_passingdict = {'n_balls':n_b,'base_rate':br,'ndepth':ndepth,'mdepth':mdepth,\
+    'rationalityQ':rationalityQ,'rationalityR':rationalityR,'serv':serv,'latlis':latlis,'exp':exp}
 
     # Set up folders and file names
     if (nvc==1):
@@ -53,15 +53,12 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
             macfold = ('LATTICE_%s%s/' % (exp,vc))
     if (domain!='naive'):
         macfold = ('%s_%s/' % (macfold[:-1],priortype))
-    #destfold = destpref +'_'+str(vc)+'c/'
     destfold = ('%s%s/' % (qdepth,rdepth))
     if (serv==1):
         macpth = ('/home/mht/projectsyll/MODELDATA/%s/%s/' % (macfold,domain))
     else:
         macpth = ('/Users/mht/Documents/research/syllogism/models/modeldata/%s/' 
             % macfold)
-    #expname = '02syllogism-4ac'
-    #expname = '03causalbelief_tests'
 
 
     if not os.path.exists(macpth):
@@ -79,8 +76,8 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     high_passingdict['destination']=destination
     high_passingdict['macpath']=macpth
 
-    priordict = {'Q_XYZ':'111', 'Q_XYnZ':'110', 'Q_XnYZ':'101', 'Q_XnYnZ':'100', 'Q_nXYZ':'011', 'Q_nXYnZ':'010',
-       'Q_nXnYZ':'001', 'Q_nXnYnZ':'000'}
+    priordict = {'Q_XYZ':'111', 'Q_XYnZ':'110', 'Q_XnYZ':'101', 'Q_XnYnZ':'100', \
+                'Q_nXYZ':'011', 'Q_nXYnZ':'010','Q_nXnYZ':'001', 'Q_nXnYnZ':'000'}
 
     # Define syllogistic space
 
@@ -96,8 +93,10 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     Relations = [syll_logic.A_eval,syll_logic.E_eval,
                 syll_logic.I_eval,syll_logic.O_eval]
     RelationsnoEP = [syll_logic.A_evalnoEP,syll_logic.E_evalnoEP,
-                    syll_logic.I_evalnoEP,syll_logic.O_evalnoEP]
+                    syll_logic.I_evalnoEP,syll_logic.O_evalnoEP,
+                    syll_logic.N_eval]
     relations = ['A','E','I','O']
+
     if (exp=='AMFO'):
         Relations = [syll_logic.A_eval,syll_logic.M_eval,syll_logic.F_eval,syll_logic.O_eval]
         relations = ['A','M','F','O']
@@ -109,8 +108,8 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     #qudpropositions = list(it.product(qud,relations))
     #relations = ['A','I','E','O']
     if (EP == 0):
-        #prelations = ['A','E','I','O','N']
-        prelations=relations
+        prelations = ['A','E','I','O','N']
+        #prelations=relations
         propsorig = list(itertools.product(termpairs,RelationsnoEP))
       #  propsalt = list(it.product(termpairsalt,RelationsnoEP))
     else:
@@ -132,6 +131,20 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
         blements = ['ms']
     premises = list(itertools.product(blements,alements,relations,relations))
     posspremises = list(itertools.product(blements,alements,prelations,prelations))
+
+    def logic_check(prems):
+        if ('N' in prems[2:4]):
+            no_what = prems[prems.index('N')-2][0] # There are no what?
+            if ('I' in prems[2:4]):
+                return not(no_what in prems[prems.index('I')-2])
+            if ('O' in prems[2:4]):
+                return not(no_what in prems[prems.index('O')-2][0])
+            return True
+        else:
+            return True
+
+    posspremises = [prems for prems in posspremises if logic_check(prems)]
+
     alementsalt = ['np','pn']
     blementsalt = ['sn','ns']
     premisesalt = list(itertools.product(blementsalt,alementsalt,relations,relations))
@@ -142,12 +155,24 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     passdict = {'qud':qud,'listener':latlis,'nvc':nvc,"vc":vc,
     "vcord":vcord,'posspremises':posspremises,'premises':premises,
     'propositions':propositions,'figdict':figdict,'fig':fig,
-    'ndepth':ndepth,'mdepth':mdepth,'n_balls':n_balls,'exp':exp}
+    'ndepth':ndepth,'mdepth':mdepth,'n_balls':n_balls,'exp':exp,"EP":EP}
     
 
 
 
-    # preprocessing (equivalence class)
+    # preprocessing/lifting (equivalence class)
+
+    if (EP==0):
+        sampler = syll_logic.sample_joint_sansEP
+    else:
+        sampler = syll_logic.sample_joint
+
+    # NOTE: I'm not sure why sample_joint is the way it is.
+    # The 'naive' sampler doesn't have any existential madness...
+
+    if (domain=='naive'):
+        sampler = syll_logic.sample_fig1
+
 
     if (domain=='naive'):
         fname = latlis+ '_' + prefix + '_Smean.church'
@@ -158,7 +183,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
         
         if not os.path.exists(churchfile):
             print 'sampling and featurizing... br=' + str(base_rate)
-            samples = np.array([syll_logic.sample_fig1(n_balls,base_rate) for _ in range(1000*n_samples)])
+            samples = np.array([sampler(n_balls,base_rate) for _ in range(1000*n_samples)])
             S, M, P = samples.transpose(1, 0, 2)
             rs0 = np.array([p[1](eval(p[0][1]),eval(p[0][0])) for p in props])
             rs1 = np.array([rw for rw in np.transpose(rs0) if sum(rw) != 0])
@@ -200,7 +225,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
                     mean_pr = norm_pr.mean(axis=0)
                     priorVector = np.array(mean_pr)
                     features = [priordict[m] for m in mean_pr.index.values]
-                    samples = np.array([syll_logic.sample_joint(priorVector,features,n_balls) 
+                    samples = np.array([sampler(priorVector,features,n_balls) 
                                     for _ in range(1000*n_samples)])
                     S, M, P = samples.transpose(1, 0, 2)
                     rs0 = np.array([p[1](eval(p[0][1]),eval(p[0][0])) for p in props])
@@ -234,7 +259,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
             if not os.path.exists(churchfile):
 
                 priorVector = np.array(domain_priors,dtype=float)[0]
-                samples = np.array([syll_logic.sample_joint(priorVector,features,n_balls) 
+                samples = np.array([sampler(priorVector,features,n_balls) 
                                     for _ in range(1000*n_samples)])
                 S, M, P = samples.transpose(1, 0, 2)
                 rs0 = np.array([p[1](eval(p[0][1]),eval(p[0][0])) for p in props])
