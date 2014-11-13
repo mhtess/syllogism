@@ -34,7 +34,7 @@ def write_church(pd):
     count = 0
     while h<figs:
         print count
-        fid.write('\t\t((%d) (uniform-draw (list ' % h)
+        fid.write('\t\t((%d) (uniform-draw (list ' % (h+1))
         anchor = pd['posspremises'][count][0:2]
         while ((count<(len(pd['posspremises']))) and (pd['posspremises'][count][0:2] == anchor)):
                 fid.write("(list '%s '%s) " % \
@@ -203,7 +203,11 @@ def write_church(pd):
     if (pd['vc']==8):
         fid.write("(define is-conclusion? (lambda (x) (> (list-index (list 'C-A 'A-C) (second (regexp-split x '.))) -1)))\n\n")
     else:
-        fid.write("(define is-conclusion? (lambda (x) (equal? (second (regexp-split x '.)) 'C-A)))\n\n")
+        if (pd['EP']==0):
+            fid.write("(define is-conclusion? (lambda (x) (and (equal? (second (regexp-split x '.)) 'C-A)\n\t\t\t\t\t(not (equal? (first (regexp-split x '.)) 'there-is-no)))))\n\n")
+        else:
+            fid.write("(define is-conclusion? (lambda (x) (equal? (second (regexp-split x '.)) 'C-A)))\n\n")
+
     fid.write('(define reasoner1\n')
     fid.write('  (mem (lambda  (premises figure)\n')
     fid.write('\t(enumeration-query\n')
