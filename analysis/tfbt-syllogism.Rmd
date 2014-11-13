@@ -281,10 +281,11 @@ ggplot(model.fits, aes(x=n,y=factor(1)))+
   scale_x_continuous(breaks=3:11)+
   scale_y_discrete()
 
-#ggplot(subset(models), aes(x=conclusion,y=n7,fill=conclusion))+
-#  geom_bar(stat='identity')+
-#  facet_grid(domain~syll)+
-#  theme_bw()
+ggplot(subset(models), aes(x=conclusion,y=n7,fill=conclusion))+
+  geom_bar(stat='identity')+
+  facet_grid(domain~syll)+
+  theme_bw()+
+  ylim(0,0.7)
 
 ```
 
@@ -353,10 +354,11 @@ ggplot(model.fits, aes(x=n,y=alpha))+
   scale_x_continuous(breaks=3:11)
 
 
-#ggplot(subset(models, alpha==2.5), aes(x=conclusion,y=n6,fill=conclusion))+
-#  geom_bar(stat='identity')+
-#  facet_grid(domain~syll)+
-#  theme_bw()
+ggplot(subset(models, alpha==2.5), aes(x=conclusion,y=n6,fill=conclusion))+
+  geom_bar(stat='identity')+
+  facet_grid(domain~syll)+
+  theme_bw()+
+  ylim(0,0.8)
 ```
 
 # 1. Outline
@@ -406,7 +408,40 @@ C. Revise the cognitive model to take some number of samples. This will still ha
 
 Let's try to write down the model (2A).
 
-{r model2A}
+```{r model2A}
+
+# Load model predictions, for different parameter (n_object) values
+model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
+syllogisms = c('AO2', 'EA3', 'IE1', 'OA1')
+n_obj = 4
+corrs = c()
+if (exists('models')){remove(models)}
+
+
+for (n_obj in 3:11){
+  model.domains = data.frame()
+  for (d in domains){
+    model.all<-read.csv(paste(model.dir,d,'/00/csv/lis_N0_M0_tfbt',
+                   d,'_qud1figFull_AIEOc4CAEP1_n',n_obj,
+                   '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
+    model.sub<-model.all[model.all$X..syll%in%syllogisms,]
+    model.sub$domain <- d
+    model.m<-melt(model.sub,id.vars=c('X..syll','domain'))
+    model.domains<-rbind(model.domains, model.m)
+  }
+  #rename for merging
+  names(model.domains)<-c('syll','domain','conclusion',paste('n',n_obj,sep=''))
+  if (exists('models')){
+    models = merge(models,model.domains)
+  } else {
+    models = model.domains
+  }
+}
+
+models$syll <- factor(models$syll)
+models$domain <- factor(models$domain)
+
+cncl_labels = levels(models$conclusion)
 
 setwd("/Users/mht/Documents/research/syllogism/analysis/")
 models.c<-dcast(melt(models, id.vars=c('syll','domain','conclusion')), ... ~ conclusion)
@@ -416,53 +451,84 @@ for nobj in levels(models.c$variable){
       nobj = levels(models.c$variable)[1]
       dom = levels(models.c$domain)[1]
       sl = levels(models.c$syll)[1]
-      model.preds = subset(models.c, domain==dom & variable==nobj)
-      data.obs = subset(df.c, domain==paste(dom,"s",sep="") & condition=='radio')[,c("subj","syll","radio_A","radio_E","radio_I","radio_O")]
+      model.preds = subset(models.c, domain==dom) #subset by domain
+      data.obs = subset(df.c, domain==paste(dom,"s",sep="") & condition=='radio')[,c("subj","syll","radio_A","radio_E","radio_I","radio_O")] # subset data by domain and condition==radio and take only radio button vals
       data.obs = data.obs[order(data.obs[,1]),]
-      # data should be organized, subject X syll X response
-      # I stopped here
+      
+      data.obs$subj<- factor(data.obs$subj)
+      data.obs$syll<- factor(data.obs$syll)
+    
+      tot.subj <- length(levels(data.obs$subj))
+      tot.syll <- length(levels(model.preds$syll)) #number of syllogisms
+      tot.resp <- length(levels(models$conclusion)) # number of responses
+      tot.obj <- length(levels(model.preds$variable))
+      # data is organized,  syll X response X subj [i,j,k]
+      data.array<-abind(
+            Map(
+              function(x){
+                sb = subset(data.obs,subj==x)
+                a = sb$syll
+                j = Position(function(y){a==y},levels(data.obs$syll))
+                blank = array(NA,c(4,4))
+                blank[j,1:4] = sb[,c('radio_A','radio_E','radio_I','radio_O')]
+                b = matrix(blank,nrow=4)
+                return(b)
+                },
+               data.obs$subj),along=3)
+
+      # model to be organized,  syll X response X n_objects [i,j,k]
+      model.array<-abind(
+            Map(
+              function(x){
+                sb = subset(model.preds,variable==x)
+                a = sb$syll
+                j = match(a,levels(model.preds$syll))
+                blank = array(NA,c(4,4))
+                blank = sb[j,c('all.C.A','none.C.A','some.C.A','not.all.C.A')]
+                b = array(blank)
+                return(b)
+                },
+               levels(model.preds$variable)),along=3)
       
 cat('model{
-  # cogntive model predictions, mu known, lambda maybe known
-  lambda[j,k] ~ dgamma(0.001,0.001)
-  sigma[j,k] <- 1/sqrt(lambda[j,k])
-  alpha[j,k] <- (((1 - mu[j,k]) / (sigma[j,k]^2)) - (1 / mu[j,k])) * mu[j,k] ^ 2
-  beta[j,k] <- alpha[j,k] * (1 / mu[j,k] - 1)
-  phi[j,k] ~ dbeta(alpha[j,k],beta[j,k])
+  # cogntive model predictions
+  n ~ dcat(prior_on_objects[])
 
-
-  # Each response Belongs To One Of Two Latent Groups (reasoning or guessing)
-    x[i,j] ~ dbern(psi)
-  # Guesses
-  psi <- 0.5
-  # base rate of guessing, for a particular syllogism
-  psi[j] ~ dbeta(1,1)
-  
-  # Rate Of Success -- posterior of model
-  
+  # base rate of guessing, globally
+  phi  ~ dbeta(1,1)
+  for (i in 1:tot.syll){
+    for (j in 1:tot.resp){
+      for (k in 1:tot.subj){
+    # Each response Belongs To One Of Two Latent Groups (reasoning or guessing)
+    x[i,j,k] ~ dbern(phi)
   # Data are Bernoulli With Rate Given either cogmod or guess
-    theta[i,j,k] <- equals(x[i,j],0)*phi[j,k]+equals(x[i,j],1)*0.5
+    theta[i,j,k] <- equals(x[i,j,k],0)*churchmod[i,j,n]+equals(x[i,j,k],1)*0.5
     d[i,j,k] ~ dbern(theta[i,j,k])
+  }}}
 
 }', file={f<-tempfile()})
 
-tot.subj <- length(levels(factor(subset(df.c,condition=='radio')$subj)))
-tot.syll <- length(levels(model.preds$syll)) #number of syllogisms
-tot.resp <- length(levels(models$conclusion)) # number of responses
 emprior <- 1
 depth <- 0
-
-sapply(model.preds[1,cncl_labels], estBetaParams, var=0.01)
+prior_on_objects <- rep(1/tot.obj,tot.obj) # uniform prior on objects
+d<- data.array
+churchmod <- model.array
+#sapply(model.preds[1,cncl_labels], estBetaParams, var=0.01)
 
 
 data <- list("tot.subj", "tot.syll", "tot.resp",
-             "emprior","depth","emprecision","d") # to be passed on to JAGS
+             "emprior","depth","d","prior_on_objects",
+             "churchmod") # to be passed on to JAGS
+
 myinits <-  list(
-  list(psi = rep(0.1,tot.syll), 
-       x = matrix(round(runif(tot.subj*tot.syll)),tot.subj)))
+  list(phi = 0.25, 
+       x = array(round(runif(tot.subj*tot.syll*tot.resp)),
+                 c(tot.syll,tot.resp,tot.subj)),
+      n = 3
+       ))
 
 # parameters to be monitored:  
-parameters <- c("psi","")
+parameters <- c("n","phi")
 
 samples <- jags(data, inits=myinits, parameters,
    			 model.file =f, n.chains=1, n.iter=1000, 
@@ -473,5 +539,32 @@ samples <- jags(data, inits=myinits, parameters,
   }
 }
 
+# more complex; not complete
+
+# cat('model{
+#   # cogntive model predictions, mu known, lambda maybe known
+#   lambda[j,k] ~ dgamma(0.001,0.001)
+#   sigma[j,k] <- 1/sqrt(lambda[j,k])
+#   alpha[j,k] <- (((1 - mu[j,k]) / (sigma[j,k]^2)) - (1 / mu[j,k])) * mu[j,k] ^ 2
+#   beta[j,k] <- alpha[j,k] * (1 / mu[j,k] - 1)
+#   phi[j,k] ~ dbeta(alpha[j,k],beta[j,k])
+# 
+# 
+#   # Each response Belongs To One Of Two Latent Groups (reasoning or guessing)
+#     x[i,j] ~ dbern(psi)
+#   # Guesses
+#   psi <- 0.5
+#   # base rate of guessing, for a particular syllogism
+#   psi[j] ~ dbeta(1,1)
+#   
+#   # Rate Of Success -- posterior of model
+#   
+#   # Data are Bernoulli With Rate Given either cogmod or guess
+#     theta[i,j,k] <- equals(x[i,j],0)*phi[j,k]+equals(x[i,j],1)*0.5
+#     d[i,j,k] ~ dbern(theta[i,j,k])
+# 
+# }', file={f<-tempfile()})
 
 
+
+```
