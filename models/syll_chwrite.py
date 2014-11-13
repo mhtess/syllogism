@@ -36,11 +36,11 @@ def write_church(pd):
         print count
         fid.write('\t\t((%d) (uniform-draw (list ' % h)
         anchor = pd['posspremises'][count][0:2]
-        while ((pd['posspremises'][count][0:2] == anchor) & (count<(len(pd['posspremises'])-1))):
-            fid.write("(list '%s '%s) " % \
-                ((sylldict[pd['posspremises'][count][3]]+sylldict[pd['posspremises'][count][1]]),\
-                 (sylldict[pd['posspremises'][count][2]]+sylldict[pd['posspremises'][count][0]])))
-            count = count + 1
+        while ((count<(len(pd['posspremises']))) and (pd['posspremises'][count][0:2] == anchor)):
+                fid.write("(list '%s '%s) " % \
+                    ((sylldict[pd['posspremises'][count][3]]+sylldict[pd['posspremises'][count][1]]),\
+                     (sylldict[pd['posspremises'][count][2]]+sylldict[pd['posspremises'][count][0]])))
+                count = count + 1
 
         h = h + 1
         fid.write(')))\n')
