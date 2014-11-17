@@ -95,6 +95,8 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     RelationsnoEP = [syll_logic.A_evalnoEP,syll_logic.E_evalnoEP,
                     syll_logic.I_evalnoEP,syll_logic.O_evalnoEP,
                     syll_logic.N_eval]
+    RelationsDPEP = [syll_logic.A_evalDPEP,syll_logic.E_evalDPEP,
+                syll_logic.I_evalDPEP,syll_logic.O_evalDPEP]
     relations = ['A','E','I','O']
 
     if (exp=='AMFO'):
@@ -112,6 +114,9 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
         #prelations=relations
         propsorig = list(itertools.product(termpairs,RelationsnoEP))
       #  propsalt = list(it.product(termpairsalt,RelationsnoEP))
+    elif (EP ==2): # determiner phrase presupposition { q (X,Y) --> there exists some X}
+        prelations = ['A','E','I','O']
+        propsorig = list(itertools.product(termpairs,RelationsDPEP))
     else:
         propsorig = list(itertools.product(termpairs,Relations))
         if (nvc==1): propsorig.append((('S','P'),syll_logic.NVC))
@@ -163,6 +168,8 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     # preprocessing/lifting (equivalence class)
 
     if (EP==0):
+        sampler = syll_logic.sample_joint_sansEP
+    elif (EP==2):
         sampler = syll_logic.sample_joint_sansEP
     else:
         sampler = syll_logic.sample_joint

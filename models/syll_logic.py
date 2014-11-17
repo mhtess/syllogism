@@ -91,6 +91,23 @@ def I_evalnoEP(s,p):
 def N_eval(s,p):
     return np.array(~p.any(axis=1))
 
+# Set 3: Determiner presuppositions.
+###      q of the X are Y presupposes some X (not necessarily some Y)
+###### "Some" additional must have some S. "Not all" additionally must have some ~S.
+
+def A_evalDPEP(s,p):
+    return (np.array(np.logical_or(s,~p).all(axis=1))&p.any(axis=1))
+def O_evalDPEP(s,p):
+    return (np.array(~np.logical_or(s,~p).all(axis=1))&p.any(axis=1)&(~s).any(axis=1))
+def E_evalDPEP(s,p):
+    return (np.array(np.logical_or(~p,~s).all(axis=1))&p.any(axis=1))
+def I_evalDPEP(s,p):
+    return (np.array(~np.logical_or(~p,~s).all(axis=1))&s.any(axis=1)&p.any(axis=1)&p.any(axis=1))
+
+# "No P", returns true is there are no Ps
+# note order of operations: any is done before the ~
+def N_eval(s,p):
+    return np.array(~p.any(axis=1))
 
 def A_evaln(s,p):
     return (np.array(np.logical_or(s,abs(1-p)).all(axis=1))&s.any(axis=1)&p.any(axis=1))
