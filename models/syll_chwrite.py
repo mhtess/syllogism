@@ -43,8 +43,16 @@ def write_church(pd):
                 count = count + 1
 
         h = h + 1
-        fid.write(')))\n')
-
+        # this is the end of the one set of alternatives; last chance to add something
+        if (pd['altset']==2): # Standard + "There are no X" where X is the first position of figure
+            fid.write("'%s " % (sylldict["N"]+sylldict[anchor[0]]))
+            fid.write("'%s " % (sylldict["N"]+sylldict[anchor[1]]))
+        if (pd['altset']==3): # Standard + "There are no X" is just first term of conclusion
+            fid.write("'there-is-no.C-A ")
+        if (pd['altset']==5): # Standard + "There are no X", where X is any term not already presupposed
+            fid.write("'there-is-no.C-A 'there-is-no.A-B 'there-is-no.B-C")
+        
+        fid.write(')))\n\n')
     fid.write(')))\n\n')
 
     # write down situation prior
@@ -203,10 +211,10 @@ def write_church(pd):
     if (pd['vc']==8):
         fid.write("(define is-conclusion? (lambda (x) (> (list-index (list 'C-A 'A-C) (second (regexp-split x '.))) -1)))\n\n")
     else:
-        if (pd['EP']==0):
-            fid.write("(define is-conclusion? (lambda (x) (and (equal? (second (regexp-split x '.)) 'C-A)\n\t\t\t\t\t(not (equal? (first (regexp-split x '.)) 'there-is-no)))))\n\n")
-        else:
-            fid.write("(define is-conclusion? (lambda (x) (equal? (second (regexp-split x '.)) 'C-A)))\n\n")
+        #if (pd['EP']==0):
+        fid.write("(define is-conclusion? (lambda (x) (and (equal? (second (regexp-split x '.)) 'C-A)\n\t\t\t\t\t(not (equal? (first (regexp-split x '.)) 'there-is-no)))))\n\n")
+        #else:
+        #    fid.write("(define is-conclusion? (lambda (x) (equal? (second (regexp-split x '.)) 'C-A)))\n\n")
 
     fid.write('(define reasoner1\n')
     fid.write('  (mem (lambda  (premises figure)\n')

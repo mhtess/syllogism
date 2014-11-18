@@ -19,7 +19,7 @@ from equiv_to_end import f_e_t_e
 
 def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain, priortype,
                     serv=0, nvcstr=0, vcstr=4, vcord='CA', exp='AIEO', fig='Full', 
-                    lis='lis', EPin=1):
+                    lis='lis', EPin=1, altset=1):
 
     n_balls = int(n_b)
     base_rate = float(br)
@@ -29,16 +29,18 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     ndepth = str(int(qdepth))
     mdepth = str(int(rdepth))
     EP = int(EPin)
+    altset = int(altset)
     latlis = lis
     qud=1
-    n_samples = 10
+    n_samples = 100
     bs_samples = 1000
     #fig = 'Full'
     ### FOR MOST / FEW, Set threshold; right now, same threshold for the two
     threshold = 0.5
 
     high_passingdict = {'n_balls':n_b,'base_rate':br,'ndepth':ndepth,'mdepth':mdepth,\
-    'rationalityQ':rationalityQ,'rationalityR':rationalityR,'serv':serv,'latlis':latlis,'exp':exp}
+    'rationalityQ':rationalityQ,'rationalityR':rationalityR,'serv':serv,'latlis':latlis,\
+    'exp':exp,'altset':altset}
 
     # Set up folders and file names
     if (nvc==1):
@@ -55,7 +57,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
         macfold = ('%s_%s/' % (macfold[:-1],priortype))
     destfold = ('%s%s/' % (qdepth,rdepth))
     if (serv==1):
-        macpth = ('/home/mht/projectsyll/MODELDATA/%s/%s/' % (macfold,domain))
+        macpth = ('/home/mht/projectsyll/MODELDATA/%s/' % macfold)
     else:
         macpth = ('/Users/mht/Documents/research/syllogism/models/modeldata/%s/' 
             % macfold)
@@ -68,11 +70,10 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
         os.mkdir(destination)
     os.chdir(destination)
 
-    prefix = ('%s%s_qud%sfig%s_%sc%d%sEP%d_n%d_base%.2f_s%dk' % 
-              (priortype,domain,qud,fig,exp,vc,vcord,EP,n_balls,base_rate,n_samples))
+    prefix = ('%s%s_qud%sfig%s_%sc%d%sEP%dAlt%d_n%d_base%.2f_s%dk' % 
+              (priortype,domain,qud,fig,exp,vc,vcord,EP,altset,n_balls,base_rate,n_samples))
+
     high_passingdict['prefix'] = prefix
-
-
     high_passingdict['destination']=destination
     high_passingdict['macpath']=macpth
 
@@ -92,11 +93,13 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
 
     Relations = [syll_logic.A_eval,syll_logic.E_eval,
                 syll_logic.I_eval,syll_logic.O_eval]
+
     RelationsnoEP = [syll_logic.A_evalnoEP,syll_logic.E_evalnoEP,
-                    syll_logic.I_evalnoEP,syll_logic.O_evalnoEP,
-                    syll_logic.N_eval]
+                    syll_logic.I_evalnoEP,syll_logic.O_evalnoEP]
+    
     RelationsDPEP = [syll_logic.A_evalDPEP,syll_logic.E_evalDPEP,
                 syll_logic.I_evalDPEP,syll_logic.O_evalDPEP]
+                
     relations = ['A','E','I','O']
 
     if (exp=='AMFO'):
@@ -110,14 +113,20 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     #qudpropositions = list(it.product(qud,relations))
     #relations = ['A','I','E','O']
     if (EP == 0):
-        prelations = ['A','E','I','O','N']
-        #prelations=relations
+        prelations = ['A','E','I','O'] 
         propsorig = list(itertools.product(termpairs,RelationsnoEP))
-      #  propsalt = list(it.product(termpairsalt,RelationsnoEP))
+        #if (altset==2): 
+        #    RelationsnoEP.append(syll_logic.N_eval)
+        #    prelations.append('N')
+        #if (altset==3):
+         #   propsorig.append((('S','P'),syll_logic.N_eval))
     elif (EP ==2): # determiner phrase presupposition { q (X,Y) --> there exists some X}
         prelations = ['A','E','I','O']
+        #if (altset==5):
+        #    RelationsnoEP.append(syll_logic.N_eval)
+        #    prelations.append('N')        
         propsorig = list(itertools.product(termpairs,RelationsDPEP))
-    else:
+    else: # Standard with EP=1
         propsorig = list(itertools.product(termpairs,Relations))
         if (nvc==1): propsorig.append((('S','P'),syll_logic.NVC))
         prelations = relations
@@ -160,7 +169,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     passdict = {'qud':qud,'listener':latlis,'nvc':nvc,"vc":vc,
     "vcord":vcord,'posspremises':posspremises,'premises':premises,
     'propositions':propositions,'figdict':figdict,'fig':fig,
-    'ndepth':ndepth,'mdepth':mdepth,'n_balls':n_balls,'exp':exp,"EP":EP}
+    'ndepth':ndepth,'mdepth':mdepth,'n_balls':n_balls,'exp':exp,"EP":EP,"altset":altset}
     
 
 
