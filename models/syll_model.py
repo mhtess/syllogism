@@ -114,10 +114,10 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     #relations = ['A','I','E','O']
     if (EP == 0):
         prelations = ['A','E','I','O'] 
+        if (altset==6): 
+            RelationsnoEP = [syll_logic.A_evalnoEP,syll_logic.E_evalnoEP,syll_logic.I_evalnoEP,syll_logic.O_evalnoEP,syll_logic.N_eval]
+            prelations = ['A','E','I','O','N'] 
         propsorig = list(itertools.product(termpairs,RelationsnoEP))
-        #if (altset==2): 
-        #    RelationsnoEP.append(syll_logic.N_eval)
-        #    prelations.append('N')
         #if (altset==3):
          #   propsorig.append((('S','P'),syll_logic.N_eval))
     elif (EP ==2): # determiner phrase presupposition { q (X,Y) --> there exists some X}
