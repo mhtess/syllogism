@@ -16,14 +16,17 @@ allpriors = ['lightbulb','cracker','strawberry','knife']
 
 number_of_objects = [n]
 
-#list_of_alphas = [1]
-list_of_alphas = arange(1,6,0.5)
+list_of_alphas = [1]
+#list_of_alphas = arange(1,6,0.5)
 
 #base_rates = arange(0.05,1,0.1)
 base_rates = [0]
 
 pt = 'tfbt'
 depth = 1
+
+exispresupp = 0
+alternatives = 6
 
 if (srv=='0'):
 	os.chdir("/Users/mht/Documents/research/syllogism/models")
@@ -39,4 +42,5 @@ for n_obj in number_of_objects:
             for baserate in base_rates:
                 syllorder, model_data = syllogism_model(n_b=n_obj,br=baserate,qdepth=depth,rdepth=0,\
                                                         rationalityQ=alpha,rationalityR=1,\
-                                                        domain=prior,priortype=pt, serv=srv)
+                                                        domain=prior,priortype=pt, serv=srv, \
+							EPin=exispresupp, altset=alternatives)
