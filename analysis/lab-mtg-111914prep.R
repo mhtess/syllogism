@@ -166,8 +166,8 @@ model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_t
 syllogisms = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1')
 corrs = c()
 if (exists('models')){remove(models)}
-EP = 1
-total_objs = seq(3,11,2)
+EP = 2
+total_objs = seq(3,9,2)
 for (n_obj in total_objs){
   model.domains = data.frame()
   for (d in domains){
@@ -207,7 +207,9 @@ max.loc<-which.max(model.fits$correlation)
 
 
 plot1<-ggplot(model.fits, aes(x=n,y=correlation))+
-  geom_bar(stat='identity',fill='grey')+
+  geom_bar(
+           stat='identity',
+           fill='grey')+
   geom_text(aes(x=n,y=0.5, label=round(correlation,2)),size=10,colour='black')+
   theme_blackDisplay()+
   scale_x_continuous(breaks=seq(3,11,2))+
@@ -216,7 +218,7 @@ plot1<-ggplot(model.fits, aes(x=n,y=correlation))+
   xlab('\n n_objects')+
   ylab('correlation\n')
 
-ggsave(filename = 'literalEP1_corrbars_bothExp.png',plot1, width=8, height=6)
+ggsave(filename = paste('literalEP',EP,'_corrbars_bothExp.png',sep=''),plot1, width=8, height=6)
 
 
 
@@ -234,6 +236,8 @@ models$syllogism <- factor(models$syll, levels = c('AO2', 'EA3', 'IE1', 'OA1','A
                                     
 models$domain <- factor(models$domain, labels = exp_domains)
 models$conclusion<-factor(models$conclusion, labels = c('all','none','some','some...not'))
+
+# Faceted grids of model predictions (Syll X Domain)
 
 plot2<-ggplot(subset(models,syll%in%c('AO2', 'EA3', 'IE1', 'OA1')),
               aes(x=conclusion,y=n7,fill=conclusion))+
@@ -253,9 +257,59 @@ plot2<-ggplot(subset(models,syll%in%c('AO2', 'EA3', 'IE1', 'OA1')),
   xlab("\nconclusion")+
   ylab('posterior probability\n')
 
-ggsave(filename = 'literal_EP1_n7_exp1.png',plot2, width=32, height=16)
+ggsave(filename = paste('literal_EP',EP,'_n7_exp1.png',sep=''),plot2, width=32, height=16)
 
 
+plot3<-ggplot(subset(models,syll%in%c('AA1','AI1','EA1','EI1')),
+              aes(x=conclusion,y=n7,fill=conclusion))+
+  geom_bar(position=position_dodge(.6), 
+           width = .6,
+           stat='identity')+
+  facet_grid(domain~syllogism)+
+  theme_blackDisplay()+
+  guides(fill=F)+
+  theme(
+    axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.x = element_text(size=30),
+    strip.text.y = element_text(angle=0, size=30)
+  )+
+  coord_cartesian(ylim=c(0, 0.7)) + 
+  scale_y_continuous(breaks=c(0.25,0.5))+
+  xlab("\nconclusion")+
+  ylab('posterior probability\n')
+
+ggsave(filename = paste('literal_EP',EP,'_n7_exp2.png',sep=''),plot3, width=32, height=16)
+
+
+# Scatterplots, faceted by Experiment
+maxcorr.stuff<-subset(all.stuff,variable=='n7')
+maxcorr.stuff$experiment<-maxcorr.stuff$syll%in%c('AA1','AI1','EA1','EI1')
+maxcorr.stuff$experiment<-factor(maxcorr.stuff$experiment,labels=c('experiment 1','experiment 2'))
+corrs <- data.frame(correlations=c(with(subset(maxcorr.stuff,experiment=='experiment 1'), cor(value.x,value.y)),
+           with(subset(maxcorr.stuff,experiment=='experiment 2'), cor(value.x,value.y))
+           ))
+corrs$xpos<- 0.1
+corrs$ypos<- 0.55
+corrs$experiment <- c('experiment 1','experiment 2')
+
+
+plot4<-ggplot(maxcorr.stuff,aes(x=value.x,y=value.y,colour=conclusion))+
+  geom_point(size=4)+
+  geom_text(data=corrs,aes(x=xpos,y=ypos, label=paste('r =',round(correlations,2))),size=10,colour='white')+
+  geom_abline(intercept=0,slope=1,colour='grey50')+
+  facet_wrap(~experiment)+
+  theme_blackDisplay()+
+  coord_fixed(ratio=1,xlim = c(-0.02,0.7), ylim = c(-0.02,0.7))+
+  scale_y_continuous(breaks=c(0.25,0.5))+
+  scale_x_continuous(breaks=c(0.25,0.5))+
+  xlab('\n model posterior')+
+  ylab('human endorsement\n')+
+  #scale_colour_di(guide = guide_legend()) +
+  theme(legend.position="bottom",
+        legend.direction='horizontal',
+        legend.title=element_blank())
+
+ggsave(filename =paste('literal_EP',EP,'_n7_scatter.png',sep=''), plot4, height=14, width=14)
 
 
 
