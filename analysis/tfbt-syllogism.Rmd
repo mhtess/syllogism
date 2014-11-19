@@ -34,6 +34,12 @@ agr.ci.collapsed <- function(x){
 }
 map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
 
+
+exp_domains = c('_ crackers that have lots of flavor are soggy',
+                '_ knives that cut well are sharp',
+                '_ lightbulbs that are hot are on',
+                '_ strawberries that are warm are in the freezer')
+
 # Load data from 2 experiments
 fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_reasoning/'
 fpath2 = '/Users/mht/Documents/research/syllogism/data/04syllogism_reasoning/'
@@ -91,6 +97,8 @@ df.norm = ddply(df.c, .(domain,condition,syll,experiment),
 
 ```{r h3exp1,echo=FALSE}
 
+EP = 0
+
 collapsed.bs <- subset(agr.ci.collapsed(melt(df.norm)),experiment==1)
 collapsed.bs$conclusion = factor(collapsed.bs$variable, labels=c('all.C.A','none.C.A','some.C.A','not.all.C.A'))
 collapsed.bs$domain = factor(collapsed.bs$domain, labels=domains)
@@ -103,16 +111,17 @@ n_obj = 4
 corrs = c()
 if (exists('models')){remove(models)}
 
-
-for (n_obj in 3:11){
+total_objs = seq(3,9,2)
+for (n_obj in total_objs){
   model.domains = data.frame()
   for (d in domains){
     model.all<-read.csv(paste(model.dir,d,'/00/csv/lis_N0_M0_tfbt',
-                   d,'_qud1figFull_AIEOc4CAEP1_n',n_obj,
+                   d,'_qud1figFull_AIEOc4CAEP',EP,'_n',n_obj,
                    '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
     model.sub<-model.all[model.all$X..syll%in%syllogisms,]
     model.sub$domain <- d
-    model.m<-melt(model.sub,id.vars=c('X..syll','domain'))
+    model.m<-melt(model.sub,
+                  id.vars=c('X..syll','domain'))
     model.domains<-rbind(model.domains, model.m)
   }
   #rename for merging
@@ -166,14 +175,16 @@ if (exists('models')){remove(models)}
 
 # this code relies upon the same parameter values being explored for all
 # e.g. same range of alpha values for all levels of n_obj
-for (n_obj in 3:11){
+
+total_objs = seq(3,9,2)
+for (n_obj in total_objs){
   model.domains = data.frame()
   for (d in domains){
     dom.path = paste(model.dir,d,'/10/csv/',sep='')
     model.files <- list.files(dom.path)
     model.files <- model.files[!(grepl("CLonly",model.files))]
     model.files <- model.files[!(grepl("1000k",model.files))]
-    model.files <- model.files[grepl(paste("_n",n_obj,'_base',sep=''),model.files)]
+    model.files <- model.files[grepl(paste('EP',EP,"_n",n_obj,'_base',sep=''),model.files)]
     for (m.file in model.files){
       model.all<-read.csv(paste(dom.path,m.file,sep=''))[c(1,6:9)]
       model.sub<-model.all[model.all$X..syll%in%syllogisms,]
@@ -220,6 +231,11 @@ ggplot(model.fits, aes(x=n,y=alpha))+
 
 ## Experiment 2
 
+```{r syllabels}
+sylllabels = c('all / all', 'some / all', 'all / none', 'some / none')
+```
+
+
 ### $H_3$ = empirical prior (literal)
 
 ```{r h3exp2, echo=FALSE}
@@ -236,11 +252,12 @@ syllogisms = c("AA1", "AI1", "EA1", "EI1")
 if (exists('models')){remove(models)}
 
 
-for (n_obj in 3:11){
+total_objs = seq(3,9,2)
+for (n_obj in total_objs){
   model.domains = data.frame()
   for (d in domains){
-    model.all<-read.csv(paste(model.dir,d,'/00/csv/lis_N0_M0_tfbt',
-                   d,'_qud1figFull_AIEOc4CAEP1_n',n_obj,
+    model.all<-read.csv(paste(model.dir,'/00/csv/lis_N0_M0_tfbt',
+                   d,'_qud1figFull_AIEOc4CAEP',EP,'_n',n_obj,
                    '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
     model.sub<-model.all[model.all$X..syll%in%syllogisms,]
     model.sub$domain <- d
@@ -281,11 +298,25 @@ ggplot(model.fits, aes(x=n,y=factor(1)))+
   scale_x_continuous(breaks=3:11)+
   scale_y_discrete()
 
+models$syll <- factor(models$syll, labels = sylllabels)
+models$domain <- factor(models$domain, labels = exp_domains)
+models$conclusion<-factor(models$conclusion, labels = c('all','none','some','some...not'))
+
 ggplot(subset(models), aes(x=conclusion,y=n7,fill=conclusion))+
   geom_bar(stat='identity')+
   facet_grid(domain~syll)+
-  theme_bw()+
-  ylim(0,0.7)
+  #theme_bw()+
+  theme_blackDisplay()+
+  ylim(0,0.7)+
+  guides(fill=F)+
+    theme(axis.text.x=element_text(
+    angle=90,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.x = element_text(),
+    strip.text.y = element_text(angle=0, size=20),
+    title = element_text(size=30))+
+  xlab('')+
+  ylab('posterior probability\n')+
+  ggtitle('q1 of the A B \nq2 of the B C\n q3 of the A C\n')
 
 ```
 
@@ -303,14 +334,15 @@ if (exists('models')){remove(models)}
 
 # this code relies upon the same parameter values being explored for all
 # e.g. same range of alpha values for all levels of n_obj
-for (n_obj in 3:11){
+total_objs = seq(3,9,2)
+for (n_obj in total_objs){
   model.domains = data.frame()
   for (d in domains){
     dom.path = paste(model.dir,d,'/10/csv/',sep='')
     model.files <- list.files(dom.path)
     model.files <- model.files[!(grepl("CLonly",model.files))]
     model.files <- model.files[!(grepl("1000k",model.files))]
-    model.files <- model.files[grepl(paste("_n",n_obj,'_base',sep=''),model.files)]
+    model.files <- model.files[grepl(paste('EP',EP,"_n",n_obj,'_base',sep=''),model.files)]
     for (m.file in model.files){
       model.all<-read.csv(paste(dom.path,m.file,sep=''))[c(1,6:9)]
       model.sub<-model.all[model.all$X..syll%in%syllogisms,]
@@ -354,11 +386,11 @@ ggplot(model.fits, aes(x=n,y=alpha))+
   scale_x_continuous(breaks=3:11)
 
 
-ggplot(subset(models, alpha==2.5), aes(x=conclusion,y=n6,fill=conclusion))+
+ggplot(subset(models, alpha==5.5), aes(x=conclusion,y=n7,fill=conclusion))+
   geom_bar(stat='identity')+
   facet_grid(domain~syll)+
   theme_bw()+
-  ylim(0,0.8)
+  ylim(0,1)
 ```
 
 # 1. Outline
@@ -409,11 +441,13 @@ C. Revise the cognitive model to take some number of samples. This will still ha
 Let's try to write down the model (2A).
 
 ```{r model2A}
-
+library(abind)
 # Load model predictions, for different parameter (n_object) values
 model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
-syllogisms = c('AO2', 'EA3', 'IE1', 'OA1')
-n_obj = 4
+#syllogisms = c('AO2', 'EA3', 'IE1', 'OA1')
+syllogisms = c('AA1','AI1','EA1','EI1')
+
+
 corrs = c()
 if (exists('models')){remove(models)}
 
@@ -421,7 +455,7 @@ if (exists('models')){remove(models)}
 for (n_obj in 3:11){
   model.domains = data.frame()
   for (d in domains){
-    model.all<-read.csv(paste(model.dir,d,'/00/csv/lis_N0_M0_tfbt',
+    model.all<-read.csv(paste(model.dir,'/00/csv/lis_N0_M0_tfbt',
                    d,'_qud1figFull_AIEOc4CAEP1_n',n_obj,
                    '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
     model.sub<-model.all[model.all$X..syll%in%syllogisms,]
@@ -445,66 +479,127 @@ cncl_labels = levels(models$conclusion)
 
 setwd("/Users/mht/Documents/research/syllogism/analysis/")
 models.c<-dcast(melt(models, id.vars=c('syll','domain','conclusion')), ... ~ conclusion)
-for nobj in levels(models.c$variable){
-  for dom in levels(models.c$domain){
-    for sl in levels(models.c$syll){
-      nobj = levels(models.c$variable)[1]
-      dom = levels(models.c$domain)[1]
-      sl = levels(models.c$syll)[1]
-      model.preds = subset(models.c, domain==dom) #subset by domain
-      data.obs = subset(df.c, domain==paste(dom,"s",sep="") & condition=='radio')[,c("subj","syll","radio_A","radio_E","radio_I","radio_O")] # subset data by domain and condition==radio and take only radio button vals
-      data.obs = data.obs[order(data.obs[,1]),]
-      
-      data.obs$subj<- factor(data.obs$subj)
-      data.obs$syll<- factor(data.obs$syll)
-    
-      tot.subj <- length(levels(data.obs$subj))
-      tot.syll <- length(levels(model.preds$syll)) #number of syllogisms
-      tot.resp <- length(levels(models$conclusion)) # number of responses
-      tot.obj <- length(levels(model.preds$variable))
-      # data is organized,  syll X response X subj [i,j,k]
-      data.array<-abind(
-            Map(
-              function(x){
-                sb = subset(data.obs,subj==x)
-                a = sb$syll
-                j = Position(function(y){a==y},levels(data.obs$syll))
-                blank = array(NA,c(4,4))
-                blank[j,1:4] = sb[,c('radio_A','radio_E','radio_I','radio_O')]
-                b = matrix(blank,nrow=4)
-                return(b)
-                },
-               data.obs$subj),along=3)
 
-      # model to be organized,  syll X response X n_objects [i,j,k]
-      model.array<-abind(
-            Map(
-              function(x){
-                sb = subset(model.preds,variable==x)
-                a = sb$syll
-                j = match(a,levels(model.preds$syll))
-                blank = array(NA,c(4,4))
-                blank = sb[j,c('all.C.A','none.C.A','some.C.A','not.all.C.A')]
-                b = array(blank)
-                return(b)
-                },
-               levels(model.preds$variable)),along=3)
-      
+model.preds = subset(models.c)
+data.obs = subset(df.c, (condition=='radio.2'))[,c("subj","syll","domain","radio_A","radio_E","radio_I","radio_O")] # subset data condition==radio and take only radio button vals
+data.obs = data.obs[order(data.obs[,1]),]
+data.obs$subj<- factor(data.obs$subj)
+data.obs$syll<- factor(data.obs$syll)
+data.obs$domain<- factor(data.obs$domain)
+
+
+tot.subj <- length(levels(data.obs$subj))
+tot.syll <- length(levels(model.preds$syll)) #number of syllogisms
+tot.resp <- length(levels(models$conclusion)) # number of responses
+tot.dom <- length(levels(models$domain)) # number of domains
+tot.n <- length(levels(model.preds$variable))
+
+# # data is organized,  syll X response X domain X subj [i,j,u,k]
+data.array<-abind(
+      Map(
+        function(x){          
+          sb = subset(data.obs,subj==x)
+          list.of.sb.arrays <- Map(function(d) {
+            syll.data <- subset(sb,domain==d)
+            a = syll.data$syll
+            blank = array(NA,c(4,4))
+            if (nrow(syll.data)!=0){
+              j = Position(function(y){a==y},levels(data.obs$syll))
+              blank[j,1:4] = syll.data[,c('radio_A','radio_E','radio_I','radio_O')]
+              }
+            b = matrix(blank,nrow=4)
+            return(b)
+          }, 
+          levels(data.obs$domain))
+          return(abind(list.of.sb.arrays,along=3))
+          },
+         levels(data.obs$subj)),along=4)
+
+# model is organized,  syll X response X domain X subj [i,j,u,k]
+model.array<-abind(
+      Map(
+        function(x){          
+          sb = subset(model.preds,variable==x)
+          list.of.sb.arrays <- Map(function(d) {
+            syll.data <- subset(sb,domain==d)
+            a = syll.data$syll
+            blank = array(NA,c(4,4))
+            j = match(a,levels(model.preds$syll))
+            blank = syll.data[j,c('all.C.A','none.C.A','some.C.A','not.all.C.A')]
+            b = array(blank)
+            return(b)
+          }, 
+          levels(model.preds$domain))
+          return(abind(list.of.sb.arrays,along=3))
+          },
+         levels(model.preds$variable)),along=4)
+
+# data is organized,  syll X response X subj [i,j,k]
+# data.array<-abind(
+#       Map(
+#         function(x){          
+#           sb = subset(data.obs,subj==x)
+#             a = sb$syll
+#             blank = array(NA,c(4,4))
+#             if (nrow(sb)!=0){
+#               j = Position(function(y){a==y},levels(data.obs$syll))
+#               blank[j,1:4] = sb[,c('radio_A','radio_E','radio_I','radio_O')]
+#               }
+#             b = matrix(blank,nrow=4)
+#             return(b)
+#           },
+#          levels(data.obs$subj)),along=3)
+# 
+# 
+# 
+# # model to be organized,  syll X response X n_objects [i,j,k]
+# model.array<-abind(
+#       Map(
+#         function(x){
+#           sb = subset(model.preds,variable==x)
+#           a = sb$syll
+#           j = match(a,levels(model.preds$syll))
+#           blank = array(NA,c(4,4))
+#           blank = sb[j,c('all.C.A','none.C.A','some.C.A','not.all.C.A')]
+#           b = array(blank)
+#           return(b)
+#           },
+#          levels(model.preds$variable)),along=3)
+# cat('model{
+#   # cogntive model predictions
+#   n ~ dcat(prior_on_objects[])
+# 
+#   # base rate of guessing, globally
+#   phi  ~ dbeta(1,1)
+#     for (i in 1:tot.syll){
+#       for (j in 1:tot.resp){
+#         for (k in 1:tot.subj){
+#         # Each response Belongs To One Of Two Latent Groups (reasoning or guessing)
+#         x[i,j,k] ~ dbern(phi)
+#         # Data are Bernoulli With Rate Given either cogmod or guess
+#         theta[i,j,k] <- equals(x[i,j,k],0)*churchmod[i,j,n]+equals(x[i,j,k],1)*0.5
+#         d[i,j,k] ~ dbern(theta[i,j,k])
+#   }}}
+# 
+# }', file={f<-tempfile()})
+
+
 cat('model{
   # cogntive model predictions
   n ~ dcat(prior_on_objects[])
 
   # base rate of guessing, globally
   phi  ~ dbeta(1,1)
-  for (i in 1:tot.syll){
-    for (j in 1:tot.resp){
-      for (k in 1:tot.subj){
-    # Each response Belongs To One Of Two Latent Groups (reasoning or guessing)
-    x[i,j,k] ~ dbern(phi)
-  # Data are Bernoulli With Rate Given either cogmod or guess
-    theta[i,j,k] <- equals(x[i,j,k],0)*churchmod[i,j,n]+equals(x[i,j,k],1)*0.5
-    d[i,j,k] ~ dbern(theta[i,j,k])
-  }}}
+  for (u in 1:tot.dom){
+    for (i in 1:tot.syll){
+      for (j in 1:tot.resp){
+        for (k in 1:tot.subj){
+        # Each response Belongs To One Of Two Latent Groups (reasoning or guessing)
+        x[i,j,u,k] ~ dbern(phi)
+        # Data are Bernoulli With Rate Given either cogmod or guess
+        theta[i,j,u,k] <- equals(x[i,j,u,k],0)*churchmod[i,j,u,n]+equals(x[i,j,u,k],1)*0.5
+        d[i,j,u,k] ~ dbern(theta[i,j,u,k])
+  }}}}
 
 }', file={f<-tempfile()})
 
@@ -514,30 +609,86 @@ prior_on_objects <- rep(1/tot.obj,tot.obj) # uniform prior on objects
 d<- data.array
 churchmod <- model.array
 #sapply(model.preds[1,cncl_labels], estBetaParams, var=0.01)
+# 
+# data <- list("tot.subj", "tot.syll", "tot.resp",
+#              "d","prior_on_objects","churchmod") # to be passed on to JAGS
+# #initial values for guessing
+# x.init = array(round(runif(tot.subj*tot.syll*tot.resp)),
+#                  c(tot.syll,tot.resp,tot.subj))
+# postz = which(churchmod==0,arr.ind=TRUE)
+# for (pz in 1:length(postz[,1])){
+#   x.init[postz[pz,c('dim1')],postz[pz,c('dim2')],]=1
+# }
+# x.init2 = array(round(runif(tot.subj*tot.syll*tot.resp)),
+#                  c(tot.syll,tot.resp,tot.subj))
+# for (pz in 1:length(postz[,1])){
+#   x.init2[postz[pz,c('dim1')],postz[pz,c('dim2')],]=1
+# }
 
 
-data <- list("tot.subj", "tot.syll", "tot.resp",
-             "emprior","depth","d","prior_on_objects",
-             "churchmod") # to be passed on to JAGS
+
+data <- list("tot.subj", "tot.syll", "tot.resp","tot.dom",
+             "d","prior_on_objects","churchmod") # to be passed on to JAGS
+#initial values for guessing
+x.init = array(round(runif(tot.subj*tot.syll*tot.resp*tot.dom)),
+                 c(tot.syll,tot.resp,tot.dom,tot.subj))
+
+postz = which(churchmod==0,arr.ind=TRUE)
+for (pz in 1:length(postz[,1])){
+  x.init[postz[pz,c('dim1')],postz[pz,c('dim2')],postz[pz,c('dim3')],]=1
+}
+
+x.init2 = array(round(runif(tot.subj*tot.syll*tot.resp*tot.dom)),
+                 c(tot.syll,tot.resp,tot.dom,tot.subj))
+for (pz in 1:length(postz[,1])){
+  x.init2[postz[pz,c('dim1')],postz[pz,c('dim2')],postz[pz,c('dim3')],]=1
+}
 
 myinits <-  list(
-  list(phi = 0.25, 
-       x = array(round(runif(tot.subj*tot.syll*tot.resp)),
-                 c(tot.syll,tot.resp,tot.subj)),
-      n = 3
+  list(phi = 0.1, 
+       x = x.init,
+      n = 1
+       ),
+    list(phi = 0.2, 
+       x = x.init2,
+      n = 4
        ))
 
 # parameters to be monitored:  
 parameters <- c("n","phi")
 
 samples <- jags(data, inits=myinits, parameters,
-   			 model.file =f, n.chains=1, n.iter=1000, 
-         n.burnin=1, n.thin=1, DIC=T)
+   			 model.file =f, n.chains=2, n.iter=1000, 
+         n.burnin=100, n.thin=1, DIC=T)
 
 
-    }
-  }
-}
+df <-data.frame(n=samples$BUGSoutput$sims.list$n,
+                phi=samples$BUGSoutput$sims.list$phi)
+
+setwd("~/Documents/research/syllogism/presentations/labmtg-111914")
+
+plot1<-ggplot(df, aes(x=2+n))+
+  geom_histogram(fill='white')+
+  theme_blackDisplay()+
+  scale_x_continuous(breaks=seq(3,11))+
+  guides(fill=F)+
+  xlab("\n n_objects")
+
+ggsave(filename = paste('literalEP',EP,'_posteriorN_exp2.png',sep=''),plot1, width=16, height=12)
+
+
+
+plot2<-ggplot(df, aes(x=phi))+
+  geom_density(fill='white')+
+  theme_blackDisplay()+
+  xlab("\n phi")+
+    guides(fill=F)+
+    coord_cartesian(xlim=c(0, 1)) + 
+  scale_x_continuous(breaks=c(0.25,0.5,0.75))
+
+ggsave(filename = paste('literalEP',EP,'_posteriorPhi_exp2.png',sep=''),plot2, width=16, height=12)
+
+
 
 # more complex; not complete
 
@@ -565,6 +716,274 @@ samples <- jags(data, inits=myinits, parameters,
 # 
 # }', file={f<-tempfile()})
 
+
+
+```
+
+Let's try analyzing the 4 domains independently, 
+
+
+```{r model2A}
+library(abind)
+# Load model predictions, for different parameter (n_object) values
+model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
+#syllogisms = c('AO2', 'EA3', 'IE1', 'OA1')
+syllogisms = c('AA1','AI1','EA1','EI1')
+
+
+corrs = c()
+if (exists('models')){remove(models)}
+
+df<-data.frame()
+for (n_obj in 3:11){
+  model.domains = data.frame()
+  for (d in domains){
+    model.all<-read.csv(paste(model.dir,'/00/csv/lis_N0_M0_tfbt',
+                   d,'_qud1figFull_AIEOc4CAEP1_n',n_obj,
+                   '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
+    model.sub<-model.all[model.all$X..syll%in%syllogisms,]
+    model.sub$domain <- d
+    model.m<-melt(model.sub,id.vars=c('X..syll','domain'))
+    model.domains<-rbind(model.domains, model.m)
+  }
+  #rename for merging
+  names(model.domains)<-c('syll','domain','conclusion',paste('n',n_obj,sep=''))
+  if (exists('models')){
+    models = merge(models,model.domains)
+  } else {
+    models = model.domains
+  }
+}
+
+models$syll <- factor(models$syll)
+models$domain <- factor(models$domain)
+
+cncl_labels = levels(models$conclusion)
+
+setwd("/Users/mht/Documents/research/syllogism/analysis/")
+models.c<-dcast(melt(models, id.vars=c('syll','domain','conclusion')), ... ~ conclusion)
+
+plurd<- levels(df.c$domain)
+names(plurd)<-levels(models$domain)
+for (dom.index in levels(models$domain)){
+
+  model.preds = subset(models.c, domain==dom.index)
+  data.obs = subset(df.c, (condition=='radio.2' & domain==plurd[[dom.index]]))[,c("subj","syll","domain","radio_A","radio_E","radio_I","radio_O")] # subset data condition==radio and take only radio button vals
+  data.obs = data.obs[order(data.obs[,1]),]
+  data.obs$subj<- factor(data.obs$subj)
+  data.obs$syll<- factor(data.obs$syll)
+  data.obs$domain<- factor(data.obs$domain)
+  
+  
+  tot.subj <- length(levels(data.obs$subj))
+  tot.syll <- length(levels(model.preds$syll)) #number of syllogisms
+  tot.resp <- length(levels(models$conclusion)) # number of responses
+  tot.dom <- length(levels(models$domain)) # number of domains
+  tot.n <- length(levels(model.preds$variable))
+
+# # data is organized,  syll X response X domain X subj [i,j,u,k]
+# data.array<-abind(
+#       Map(
+#         function(x){          
+#           sb = subset(data.obs,subj==x)
+#           list.of.sb.arrays <- Map(function(d) {
+#             syll.data <- subset(sb,domain==d)
+#             a = syll.data$syll
+#             blank = array(NA,c(4,4))
+#             if (nrow(syll.data)!=0){
+#               j = Position(function(y){a==y},levels(data.obs$syll))
+#               blank[j,1:4] = syll.data[,c('radio_A','radio_E','radio_I','radio_O')]
+#               }
+#             b = matrix(blank,nrow=4)
+#             return(b)
+#           }, 
+#           levels(data.obs$domain))
+#           return(abind(list.of.sb.arrays,along=3))
+#           },
+#          levels(data.obs$subj)),along=4)
+# 
+# # model is organized,  syll X response X domain X subj [i,j,u,k]
+# model.array<-abind(
+#       Map(
+#         function(x){          
+#           sb = subset(model.preds,variable==x)
+#           list.of.sb.arrays <- Map(function(d) {
+#             syll.data <- subset(sb,domain==d)
+#             a = syll.data$syll
+#             blank = array(NA,c(4,4))
+#             j = match(a,levels(model.preds$syll))
+#             blank = syll.data[j,c('all.C.A','none.C.A','some.C.A','not.all.C.A')]
+#             b = array(blank)
+#             return(b)
+#           }, 
+#           levels(model.preds$domain))
+#           return(abind(list.of.sb.arrays,along=3))
+#           },
+#          levels(model.preds$variable)),along=4)
+
+  # data is organized,  syll X response X subj [i,j,k]
+  data.array<-abind(
+        Map(
+          function(x){          
+            sb = subset(data.obs,subj==x)
+              a = sb$syll
+              blank = array(NA,c(4,4))
+              if (nrow(sb)!=0){
+                j = Position(function(y){a==y},levels(data.obs$syll))
+                blank[j,1:4] = sb[,c('radio_A','radio_E','radio_I','radio_O')]
+                }
+              b = matrix(blank,nrow=4)
+              return(b)
+            },
+           levels(data.obs$subj)),along=3)
+
+
+
+  # model to be organized,  syll X response X n_objects [i,j,k]
+  model.array<-abind(
+        Map(
+          function(x){
+            sb = subset(model.preds,variable==x)
+            a = sb$syll
+            j = match(a,levels(model.preds$syll))
+            blank = array(NA,c(4,4))
+            blank = sb[j,c('all.C.A','none.C.A','some.C.A','not.all.C.A')]
+            b = array(blank)
+            return(b)
+            },
+           levels(model.preds$variable)),along=3)
+
+  cat('model{
+    # cogntive model predictions
+    n ~ dcat(prior_on_objects[])
+  
+    # base rate of guessing, globally
+    phi  ~ dbeta(1,1)
+      for (i in 1:tot.syll){
+        for (j in 1:tot.resp){
+          for (k in 1:tot.subj){
+          # Each response Belongs To One Of Two Latent Groups (reasoning or guessing)
+          x[i,j,k] ~ dbern(phi)
+          # Data are Bernoulli With Rate Given either cogmod or guess
+          theta[i,j,k] <- equals(x[i,j,k],0)*churchmod[i,j,n]+equals(x[i,j,k],1)*0.5
+          d[i,j,k] ~ dbern(theta[i,j,k])
+    }}}
+  
+  }', file={f<-tempfile()})
+
+
+# cat('model{
+#   # cogntive model predictions
+#   n ~ dcat(prior_on_objects[])
+# 
+#   # base rate of guessing, globally
+#   phi  ~ dbeta(1,1)
+#   for (u in 1:tot.dom){
+#     for (i in 1:tot.syll){
+#       for (j in 1:tot.resp){
+#         for (k in 1:tot.subj){
+#         # Each response Belongs To One Of Two Latent Groups (reasoning or guessing)
+#         x[i,j,u,k] ~ dbern(phi)
+#         # Data are Bernoulli With Rate Given either cogmod or guess
+#         theta[i,j,u,k] <- equals(x[i,j,u,k],0)*churchmod[i,j,u,n]+equals(x[i,j,u,k],1)*0.5
+#         d[i,j,u,k] ~ dbern(theta[i,j,u,k])
+#   }}}}
+# 
+# }', file={f<-tempfile()})
+
+  emprior <- 1
+  depth <- 0
+  prior_on_objects <- rep(1/tot.obj,tot.obj) # uniform prior on objects
+  d<- data.array
+  churchmod <- model.array
+#sapply(model.preds[1,cncl_labels], estBetaParams, var=0.01)
+
+  data <- list("tot.subj", "tot.syll", "tot.resp",
+               "d","prior_on_objects","churchmod") # to be passed on to JAGS
+  #initial values for guessing
+  x.init = array(round(runif(tot.subj*tot.syll*tot.resp)),
+                   c(tot.syll,tot.resp,tot.subj))
+  postz = which(churchmod==0,arr.ind=TRUE)
+  for (pz in 1:length(postz[,1])){
+    x.init[postz[pz,c('dim1')],postz[pz,c('dim2')],]=1
+  }
+  x.init2 = array(round(runif(tot.subj*tot.syll*tot.resp)),
+                   c(tot.syll,tot.resp,tot.subj))
+  for (pz in 1:length(postz[,1])){
+    x.init2[postz[pz,c('dim1')],postz[pz,c('dim2')],]=1
+  }
+
+
+
+# data <- list("tot.subj", "tot.syll", "tot.resp","tot.dom",
+#              "d","prior_on_objects","churchmod") # to be passed on to JAGS
+# #initial values for guessing
+# x.init = array(round(runif(tot.subj*tot.syll*tot.resp*tot.dom)),
+#                  c(tot.syll,tot.resp,tot.dom,tot.subj))
+# 
+# postz = which(churchmod==0,arr.ind=TRUE)
+# for (pz in 1:length(postz[,1])){
+#   x.init[postz[pz,c('dim1')],postz[pz,c('dim2')],postz[pz,c('dim3')],]=1
+# }
+# 
+# x.init2 = array(round(runif(tot.subj*tot.syll*tot.resp*tot.dom)),
+#                  c(tot.syll,tot.resp,tot.dom,tot.subj))
+# for (pz in 1:length(postz[,1])){
+#   x.init2[postz[pz,c('dim1')],postz[pz,c('dim2')],postz[pz,c('dim3')],]=1
+# }
+
+  myinits <-  list(
+    list(phi = 0.1, 
+         x = x.init,
+        n = 1
+         ),
+      list(phi = 0.2, 
+         x = x.init2,
+        n = 4
+         ))
+  
+  # parameters to be monitored:  
+  parameters <- c("n","phi")
+
+  samples <- jags(data, inits=myinits, parameters,
+       		 model.file =f, n.chains=2, n.iter=1000, 
+           n.burnin=100, n.thin=1, DIC=T)
+
+
+df.temp <-data.frame(n=samples$BUGSoutput$sims.list$n,
+                phi=samples$BUGSoutput$sims.list$phi,
+                domain=dom.index)
+
+df<-rbind(df,df.temp)
+}
+
+# PLOT
+
+setwd("~/Documents/research/syllogism/presentations/labmtg-111914")
+
+plot1<-ggplot(df, aes(x=2+n,fill=domain))+
+  geom_histogram()+
+  theme_blackDisplay()+
+  facet_wrap(~domain)+
+  scale_x_continuous(breaks=seq(3,11))+
+  guides(fill=F)+
+  xlab("\n n_objects")
+
+ggsave(filename = paste('literalEP',EP,'_posteriorN_exp2_facetDomain.png',sep=''),plot1, width=16, height=12)
+
+
+
+plot2<-ggplot(df, aes(x=phi,fill=domain))+
+  geom_density()+
+  theme_blackDisplay()+
+  facet_wrap(~domain)+
+  xlab("\n phi")+
+    guides(fill=F)+
+    coord_cartesian(xlim=c(0, 1)) + 
+  scale_x_continuous(breaks=c(0.25,0.5,0.75))
+
+
+ggsave(filename = paste('literalEP',EP,'_posteriorPhi_exp2_facetDomain.png',sep=''),plot2, width=16, height=12)
 
 
 ```
