@@ -444,9 +444,18 @@ Let's try to write down the model (2A).
 library(abind)
 # Load model predictions, for different parameter (n_object) values
 model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
-#syllogisms = c('AO2', 'EA3', 'IE1', 'OA1')
-syllogisms = c('AA1','AI1','EA1','EI1')
 
+experiment='Both'
+
+if (experiment==1){
+  syllogisms = c('AO2', 'EA3', 'IE1', 'OA1')
+  target.buttons = c('radio')}
+if (experiment==2){
+  syllogisms = c('AA1','AI1','EA1','EI1')
+  target.buttons = c('radio.2')}
+if (experiment=='Both'){
+  syllogisms = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1')
+  target.buttons = c('radio','radio.2')}
 
 corrs = c()
 if (exists('models')){remove(models)}
@@ -481,7 +490,7 @@ setwd("/Users/mht/Documents/research/syllogism/analysis/")
 models.c<-dcast(melt(models, id.vars=c('syll','domain','conclusion')), ... ~ conclusion)
 
 model.preds = subset(models.c)
-data.obs = subset(df.c, (condition=='radio.2'))[,c("subj","syll","domain","radio_A","radio_E","radio_I","radio_O")] # subset data condition==radio and take only radio button vals
+data.obs = subset(df.c, (condition%in%target.buttons))[,c("subj","syll","domain","radio_A","radio_E","radio_I","radio_O")] # subset data condition==radio and take only radio button vals
 data.obs = data.obs[order(data.obs[,1]),]
 data.obs$subj<- factor(data.obs$subj)
 data.obs$syll<- factor(data.obs$syll)
@@ -502,12 +511,12 @@ data.array<-abind(
           list.of.sb.arrays <- Map(function(d) {
             syll.data <- subset(sb,domain==d)
             a = syll.data$syll
-            blank = array(NA,c(4,4))
+            blank = array(NA,c(tot.syll,tot.resp))
             if (nrow(syll.data)!=0){
               j = Position(function(y){a==y},levels(data.obs$syll))
               blank[j,1:4] = syll.data[,c('radio_A','radio_E','radio_I','radio_O')]
               }
-            b = matrix(blank,nrow=4)
+            b = matrix(blank,nrow=tot.syll)
             return(b)
           }, 
           levels(data.obs$domain))
@@ -523,8 +532,8 @@ model.array<-abind(
           list.of.sb.arrays <- Map(function(d) {
             syll.data <- subset(sb,domain==d)
             a = syll.data$syll
-            blank = array(NA,c(4,4))
-            j = match(a,levels(model.preds$syll))
+            blank = array(NA,c(tot.syll,tot.resp))
+            j = match(levels(data.obs$syll),a)
             blank = syll.data[j,c('all.C.A','none.C.A','some.C.A','not.all.C.A')]
             b = array(blank)
             return(b)
@@ -603,6 +612,26 @@ cat('model{
 
 }', file={f<-tempfile()})
 
+# cat('model{
+#   # cogntive model predictions
+#   n ~ dcat(prior_on_objects[])
+# 
+# 
+# for (i in 1:tot.syll){
+#   # base rate of guessing, by syll
+#   phi[i]  ~ dbeta(1,1)
+#   for (u in 1:tot.dom){
+#     for (j in 1:tot.resp){
+#         for (k in 1:tot.subj){
+#         # Each response Belongs To One Of Two Latent Groups (reasoning or guessing)
+#         x[i,j,u,k] ~ dbern(phi[i])
+#         # Data are Bernoulli With Rate Given either cogmod or guess
+#         theta[i,j,u,k] <- equals(x[i,j,u,k],0)*churchmod[i,j,u,n]+equals(x[i,j,u,k],1)*0.5
+#         d[i,j,u,k] ~ dbern(theta[i,j,u,k])
+#   }}}}
+# 
+# }', file={f<-tempfile()})
+
 emprior <- 1
 depth <- 0
 prior_on_objects <- rep(1/tot.obj,tot.obj) # uniform prior on objects
@@ -645,14 +674,26 @@ for (pz in 1:length(postz[,1])){
 }
 
 myinits <-  list(
-  list(phi = 0.1, 
+  list(phi = 0.5, 
        x = x.init,
-      n = 1
+      n = 4
        ),
-    list(phi = 0.2, 
+    list(phi = 0.5, 
        x = x.init2,
       n = 4
        ))
+
+# myinits <-  list(
+#   list(
+#        x = x.init,
+#       n = 4
+#        ),
+#     list(
+#        x = x.init2,
+#       n = 4
+#        ))
+
+
 
 # parameters to be monitored:  
 parameters <- c("n","phi")
@@ -665,6 +706,8 @@ samples <- jags(data, inits=myinits, parameters,
 df <-data.frame(n=samples$BUGSoutput$sims.list$n,
                 phi=samples$BUGSoutput$sims.list$phi)
 
+
+
 setwd("~/Documents/research/syllogism/presentations/labmtg-111914")
 
 plot1<-ggplot(df, aes(x=2+n))+
@@ -674,7 +717,7 @@ plot1<-ggplot(df, aes(x=2+n))+
   guides(fill=F)+
   xlab("\n n_objects")
 
-ggsave(filename = paste('literalEP',EP,'_posteriorN_exp2.png',sep=''),plot1, width=16, height=12)
+ggsave(filename = paste('literalEP',EP,'_posteriorN_exp',experiment,'.png',sep=''),plot1, width=16, height=12)
 
 
 
@@ -686,7 +729,47 @@ plot2<-ggplot(df, aes(x=phi))+
     coord_cartesian(xlim=c(0, 1)) + 
   scale_x_continuous(breaks=c(0.25,0.5,0.75))
 
-ggsave(filename = paste('literalEP',EP,'_posteriorPhi_exp2.png',sep=''),plot2, width=16, height=12)
+ggsave(filename = paste('literalEP',EP,'_posteriorPhi_exp',experiment,'retest.png',sep=''),plot2, width=16, height=12)
+
+
+# df.m=melt(df[,2:9])
+# df.m$syll<-factor(df.m$variable,labels=levels(data.obs$syll))
+
+# df.m$syllogism <- factor(df.m$syll, levels = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1'),
+#                            labels=c("Some of the As are not Bs\n All of the Cs are Bs",
+#                                     "All of the Bs are As\n None of Bs are Cs",
+#                                     "None of the As are Bs\n Some of the Bs are Cs",
+#                                     "All of the As are Bs\n Some of the Bs are not Cs",
+#                                     "All of the As are Bs\n All of the Bs are Cs",
+#                                     "Some of the As are Bs\n All of the Bs are Cs",
+#                                     "All of the As are Bs\n None of the Bs are Cs",
+#                                     "Some of the As are Bs\n None of the Bs are Cs"
+#                            ))
+# 
+# plot1<-ggplot(df.m, aes(x=value,fill=syllogism))+
+#   geom_histogram()+
+#   theme_blackDisplay()+
+#   facet_wrap(~syllogism,nrow=2)+
+#     coord_cartesian(xlim=c(0, 1)) + 
+#   scale_x_continuous(breaks=c(0.5))+
+#   guides(fill=F)+
+#   xlab("\n phi")
+# 
+# ggsave(filename = paste('literalEP',EP,'_posteriorPhi_exp',experiment,'_facetSyll.png',sep=''),plot1, width=24, height=18)
+# 
+
+# plot2<-ggplot(df, aes(x=2+n))+
+#   geom_histogram(fill='white')+
+#   theme_blackDisplay()+
+#   scale_x_continuous(breaks=seq(3,11))+
+#   guides(fill=F)+
+#   xlab("\n n_objects")
+# 
+# ggsave(filename = paste('literalEP',EP,'_posteriorN_exp',experiment,'_facetSyll.png',sep=''),plot2, width=16, height=12)
+
+
+
+
 
 
 
