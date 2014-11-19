@@ -329,17 +329,18 @@ ggsave(filename =paste('literal_EP',EP,'_n7_scatter.png',sep=''), plot4, height=
 model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
 syllogisms = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1')
 if (exists('models')){remove(models)}
-EP = 1
-alt = 1
+EP = 2
+alt = 5
 total_objs = seq(3,10,1)
-total_alphas = seq(1,9,1)
+total_objs = c(7)
+total_alphas = seq(1,6,1)
 for (n_obj in total_objs){
   model.domains = data.frame()
   for (alpha in total_alphas){
   for (d in domains){
     model.all<-read.csv(paste(model.dir,'10/csv/lis_N1_M0_tfbt',
                               d,'_qud1figFull_AIEOc4CAEP',EP,'Alt',alt,'_n',n_obj,
-                              '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
+                              '_base0.00_s100k_alphQ',alpha,'_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
 #      model.all<-read.csv(paste(model.dir,'10/csv/lis_N1_M0_tfbt',
 #                               d,'_qud1figFull_AIEOc4CAEP',EP,'_n',n_obj,
 #                               '_base0.00_s100k_alphQ',alpha,'_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
@@ -394,7 +395,7 @@ plot5<-ggplot(model.fits, aes(x=n,y=alpha))+
   xlab("\n n")+
   ylab("alpha\n")
 
-ggsave(filename = paste('pragmaticEP',EP,'Alt',alt,'_corrTiles_Exp2.png',sep=''),plot5, width=16, height=12)
+ggsave(filename = paste('pragmaticEP',EP,'Alt',alt,'_corrTiles_ExpBoth.png',sep=''),plot5, width=16, height=12)
 
 
 
@@ -419,8 +420,8 @@ models$conclusion<-factor(models$conclusion, labels = c('all','none','some','som
 
 # Faceted grids of model predictions (Syll X Domain)
 
-plot2<-ggplot(subset(models,syll%in%c('AO2', 'EA3', 'IE1', 'OA1') & alpha==1),
-              aes(x=conclusion,y=n6,fill=conclusion))+
+plot2<-ggplot(subset(models,syll%in%c('AO2', 'EA3', 'IE1', 'OA1') & alpha==2),
+              aes(x=conclusion,y=n5,fill=conclusion))+
   geom_bar(position=position_dodge(.6), 
            width = .6,
            stat='identity')+
@@ -437,11 +438,11 @@ plot2<-ggplot(subset(models,syll%in%c('AO2', 'EA3', 'IE1', 'OA1') & alpha==1),
   xlab("\nconclusion")+
   ylab('posterior probability\n')
 
-ggsave(filename = paste('pragmatics_EP',EP,'alt',alt,'_n6alpha1_exp1.png',sep=''),plot2, width=32, height=16)
+ggsave(filename = paste('pragmatics_EP',EP,'alt',alt,'_n5alpha2_exp1.png',sep=''),plot2, width=32, height=16)
 
 
-plot3<-ggplot(subset(models,syll%in%c('AA1','AI1','EA1','EI1') & alpha==3),
-              aes(x=conclusion,y=n6,fill=conclusion))+
+plot3<-ggplot(subset(models,syll%in%c('AA1','AI1','EA1','EI1') & alpha==2),
+              aes(x=conclusion,y=n7,fill=conclusion))+
   geom_bar(position=position_dodge(.6), 
            width = .6,
            stat='identity')+
@@ -458,7 +459,7 @@ plot3<-ggplot(subset(models,syll%in%c('AA1','AI1','EA1','EI1') & alpha==3),
   xlab("\nconclusion")+
   ylab('posterior probability\n')
 
-ggsave(filename = paste('pragmatics_EP',EP,'alt',alt,'_n6alpha3_exp2.png',sep=''),plot3, width=32, height=16)
+ggsave(filename = paste('pragmatics_EP',EP,'alt',alt,'_n7alpha2_exp2.png',sep=''),plot3, width=32, height=16)
 
 
 # Scatterplots, faceted by Experiment

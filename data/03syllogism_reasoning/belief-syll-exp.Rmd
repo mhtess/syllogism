@@ -22,7 +22,7 @@ ci.low <- function(x,na.rm=T) {
 ci.high <- function(x,na.rm=T) {
   quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
 
-
+agr.ci <- function(x){
   agr = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=mean)
   agr$CILow = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=ci.low)$value
   agr$CIHigh = aggregate(value ~ domain + condition + syll + variable + experiment, data=x, FUN=ci.high)$value
@@ -142,13 +142,35 @@ n _ radio for experiment 2 (sans outliers): `r length(subset(df2,condition=='rad
 
 ```{r raw-slide, echo=FALSE}
 ggplot(melt(df.c[3:7]), aes(x=value,fill=condition))+
-  geom_histogram(binwidth=2,aes(y=..count../sum(..count..)))+
+  geom_histogram(binwidth=2,
+                aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
   facet_wrap(~condition)+
   theme_bw()+
   ggtitle('raw slider values')+
   xlab('slider value, binsize = 2')+
   ylab('proportion of responses')+
   guides(fill=FALSE)
+
+plot1<-ggplot(melt(subset(df.c[3:7],condition%in%c('slide','radio'))), 
+            aes(x=value,fill=condition))+
+  geom_histogram(binwidth=2)+
+  facet_wrap(~condition)+
+  theme_blackDisplay()+
+  xlab('\n endorsement value, binsize = 2')+
+  ylab('proportion of responses\n')+
+  guides(fill=FALSE)
+
+plot1<-ggplot(melt(subset(df.c[3:7],condition%in%c('slide','radio'))), 
+            aes(x=value,fill=condition))+
+  geom_histogram(binwidth=26)+
+  facet_wrap(~condition)+
+  theme_blackDisplay()+
+  xlab('\n endorsement value, binsize = 26')+
+  ylab('number of responses\n')+
+  guides(fill=FALSE)
+
+ggsave(filename = paste('rawEndorse_exp1_count_bin2.png',sep=''),plot1, width=16, height=8)
+
 
 
 df.c$sum<-rowSums(df.c[,resp_labels])
@@ -177,6 +199,23 @@ ggplot(melt(df_norm), aes(x=value,fill=condition))+
   xlab('slider value, binsize = 0.02')+
   ylab('proportion of responses')+
   guides(fill=FALSE)
+
+
+plot2<-ggplot(melt(subset(df_norm,condition%in%c('radio','slide'))), aes(x=value,fill=condition))+
+  geom_histogram(binwidth=0.02,
+      aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
+  facet_wrap(~condition)+
+  theme_blackDisplay()+
+   theme(
+   # axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='grey')
+  )+
+  coord_cartesian(xlim=c(0, 1)) + 
+  scale_x_continuous(breaks=c(0.25,0.5,0.75))+
+  xlab('\n slider value, binsize = 0.02')+
+  ylab('proportion of responses\n')+
+  guides(fill=FALSE)
+
+ggsave(filename = paste('normEndorse_exp1.png',sep=''),plot2, width=16, height=8)
 ```
 
 ## Raw *sum* distributions
@@ -191,6 +230,26 @@ ggplot(melt(df.c[c('condition','sum')]), aes(x=value,fill=condition))+
   xlab('slider value, binsize = 2')+
   ylab('number of responses')+
   guides(fill=FALSE)
+
+
+plot2<-ggplot(melt(subset(df.c,condition%in%c('radio','slide'))[c('condition','sum')]), 
+              aes(x=value,fill=condition))+
+  geom_histogram(binwidth=2,
+      aes(y=(..count..)/tapply(..count..,..PANEL..,sum)[..PANEL..]))+
+  facet_wrap(~condition)+
+  theme_blackDisplay()+
+   theme(
+   # axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='grey')
+  )+
+  coord_cartesian(ylim=c(0, .1)) + 
+  scale_y_continuous(breaks=c(0,0.05,0.1))+
+  xlab('\n slider value Sum, binsize = 2')+
+  ylab('proportion of responses\n')+
+  guides(fill=FALSE)
+
+ggsave(filename = paste('slideSum_exp1.png',sep=''),plot2, width=16, height=8)
+
+
 ```
 
 ## Raw *max* distributions
@@ -217,23 +276,25 @@ Endorsement of an assertion made in a question, regardless of the assertion's co
 
 ### 1. 
 
+Contradictions by trial number (facet by experiment, fill by quantifier-pair)
+
 ```{r acquiescence, echo=FALSE}
 df.c$acqAO <- abs(df.c$radio_A - df.c$radio_O)
 df.c$acqEI <- abs(df.c$radio_E - df.c$radio_I)
-df.acq<-melt(subset(df.c,substring(condition,1,5)=='radio')[,c('experiment','acqAO','acqEI')])
+df.acq<-melt(subset(df.c,substring(condition,1,5)=='radio')[,c('experiment','acqAO','acqEI','trial_index')], id.vars=c('experiment','trial_index'))
 
 
-df.acqs<-ddply(df.acq, .(experiment, variable), summarise, prop=sum(1-value)/length(value))
+df.acqs<-ddply(df.acq, .(experiment, variable, trial_index), summarise, prop=sum(1-value)/length(value))
 
-ggplot(df.acqs,aes(x=variable,y=prop,fill=experiment))+
+ggplot(df.acqs,aes(x=trial_index,y=prop,fill=variable))+
   geom_bar(stat='identity',position='dodge')+
   theme_bw()+
   facet_wrap(~experiment)+
   ylim(0,1)+
   ggtitle('proportion of contradictory claims')+
-  guides(fill=FALSE)+
-  xlab('')+
-  scale_x_discrete(labels=c('all & not all','some & none'))
+  xlab('')
+#+
+#  scale_x_discrete(labels=c('all & not all','some & none'))
 ```
 
 ### 2. 
@@ -319,10 +380,32 @@ ci_unnorm <- subset(agr.ci(melt(df_unnorm)),condition=='radio')
 ci_unnorm$variable<-factor(ci_unnorm$variable, labels= c('all','none','some','notall'))
 
 radios.unnorm<-merge(df_rad.m.unnorm,ci_unnorm[,c('domain','syll','variable','value')])
+conclusion_labels<- c('all','none','some','some...not')
 
-ggplot(radios.unnorm,aes(x=value,y=justrad,color=variable))+
+
+radios.unnorm$variable <- factor(radios.unnorm$variable, labels = conclusion_labels)
+
+plot2<-ggplot(radios.unnorm,aes(x=value,y=justrad,color=variable))+
   geom_point(size=2.5)+
-  theme_bw()
+  theme_blackDisplay()+
+   theme(
+   # axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='grey')
+  )+
+  coord_fixed(ratio=100,xlim = c(0,100), ylim = c(0,1))+
+  scale_y_continuous(breaks=c(0,0.5,1))+
+  scale_x_continuous(breaks=c(0,50,100))+
+  xlab('\n mean combined Radio + Confidence')+
+  ylab('proportion of "Follows"\n')+
+  guides(fill=FALSE)+
+    theme(legend.position="bottom",
+        legend.direction='horizontal',
+        legend.title=element_blank())
+
+ggsave(filename = paste('radioVsCombined_exp1_unnorm.png',sep=''),plot2, width=18, height=12)
+
+
+
+
 ```
 
 Experiment 1: Correlation between (unnormalized) proportion of radio sliders saying *follows* and mean (unnormalized) endorsement [by combo of radio + slider] is `r with(radios.unnorm,cor(value,justrad))`
@@ -482,7 +565,7 @@ Correlation between mean responses for radio button + slider vs. just slider is 
 
 ```{r radioslidescatter, echo=FALSE}
 
-
+mean_cast$conclusion<-factor(mean_cast$variable,labels=conclusion_labels)
 
 ggplot(mean_cast,aes(x=radio,y=slide,color=variable))+
   geom_point(size=2.5)+
@@ -490,6 +573,27 @@ ggplot(mean_cast,aes(x=radio,y=slide,color=variable))+
   theme_bw()+
   xlim(0,0.7)+
   ylim(0,0.7)
+
+plot2<-ggplot(mean_cast,aes(x=radio,y=slide,color=conclusion))+
+  geom_point(size=4)+
+  geom_abline(intercept=0,slope=1,color='white')+
+  geom_text(label=paste("r =",round(with(mean_cast,cor(radio,slide)),2)),x=0.1,y=0.6,size=10,color='white')+
+  theme_blackDisplay()+
+  coord_fixed(ratio=1,xlim = c(0,0.75), ylim = c(0,0.75))+
+  scale_y_continuous(breaks=c(0.25,0.5))+
+  scale_x_continuous(breaks=c(0.25,0.5))+
+  xlab('\n mean combined Radio + Confidence')+
+  ylab('mean Slider\n')+
+    theme(legend.position="bottom",
+        legend.direction='horizontal',
+        legend.title=element_blank())
+
+ggsave(filename = paste('SliderVsCombined_exp1_normed.png',sep=''),plot2, width=18, height=12)
+
+
+
+
+
 
 ```
 
