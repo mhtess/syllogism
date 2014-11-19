@@ -21,39 +21,63 @@ def write_church(pd):
     #     fid.write("(list '%s '%s)))\n" % ((pd['premises'][e][2]+pd['premises'][e][1]),(pd['premises'][e][3]+pd['premises'][e][0])))
     # fid.write(')))\n\n')
 
+
+
     # write down premise prior
-    fid.write('(define premise-prior (lambda (figure)\n')
-    fid.write('\t(case figure\n')
-    #lp = 16
-    if pd['fig'] == 'Full':
-        figs = 4
-    else:
-        figs = 1
+    if (pd['altset']==0):
+        fid.write('(define premise-prior (lambda (figure)\n')
+        if pd['fig'] == 'Full':
+            figs = 4
+        else:
+            figs = 1
 
-    h = 0
-    count = 0
-    while h<figs:
-        print count
-        fid.write('\t\t((%d) (uniform-draw (list ' % (h+1))
-        anchor = pd['posspremises'][count][0:2]
-        while ((count<(len(pd['posspremises']))) and (pd['posspremises'][count][0:2] == anchor)):
-                fid.write("(list '%s '%s) " % \
-                    ((sylldict[pd['posspremises'][count][3]]+sylldict[pd['posspremises'][count][1]]),\
-                     (sylldict[pd['posspremises'][count][2]]+sylldict[pd['posspremises'][count][0]])))
-                count = count + 1
-
-        h = h + 1
-        # this is the end of the one set of alternatives; last chance to add something
-        if (pd['altset']==2): # Standard + "There are no X" where X is the first position of figure
-            fid.write("'%s " % (sylldict["N"]+sylldict[anchor[0]]))
-            fid.write("'%s " % (sylldict["N"]+sylldict[anchor[1]]))
+        count = 0
+        fid.write('\t\t(uniform-draw (list ')
+        while (count<(len(pd['posspremises']))):
+            fid.write("(list '%s '%s) " % \
+                ((sylldict[pd['posspremises'][count][3]]+sylldict[pd['posspremises'][count][1]]),\
+                 (sylldict[pd['posspremises'][count][2]]+sylldict[pd['posspremises'][count][0]])))
+            count = count + 1
         if (pd['altset']==3): # Standard + "There are no X" is just first term of conclusion
             fid.write("'there-is-no.C-A ")
         if (pd['altset']==5): # Standard + "There are no X", where X is any term not already presupposed
             fid.write("'there-is-no.C-A 'there-is-no.A-B 'there-is-no.B-C")
-        
+            
+        fid.write('))))\n\n')
+
+    else:
+        fid.write('(define premise-prior (lambda (figure)\n')
+        fid.write('\t(case figure\n')
+        #lp = 16
+        if pd['fig'] == 'Full':
+            figs = 4
+        else:
+            figs = 1
+
+        h = 0
+        count = 0
+        while h<figs:
+            print count
+            fid.write('\t\t((%d) (uniform-draw (list ' % (h+1))
+            anchor = pd['posspremises'][count][0:2]
+            while ((count<(len(pd['posspremises']))) and (pd['posspremises'][count][0:2] == anchor)):
+                    fid.write("(list '%s '%s) " % \
+                        ((sylldict[pd['posspremises'][count][3]]+sylldict[pd['posspremises'][count][1]]),\
+                         (sylldict[pd['posspremises'][count][2]]+sylldict[pd['posspremises'][count][0]])))
+                    count = count + 1
+
+            h = h + 1
+            # this is the end of the one set of alternatives; last chance to add something
+            if (pd['altset']==2): # Standard + "There are no X" where X is the first position of figure
+                fid.write("'%s " % (sylldict["N"]+sylldict[anchor[0]]))
+                fid.write("'%s " % (sylldict["N"]+sylldict[anchor[1]]))
+            if (pd['altset']==3): # Standard + "There are no X" is just first term of conclusion
+                fid.write("'there-is-no.C-A ")
+            if (pd['altset']==5): # Standard + "There are no X", where X is any term not already presupposed
+                fid.write("'there-is-no.C-A 'there-is-no.A-B 'there-is-no.B-C")
+            
+            fid.write(')))\n')
         fid.write(')))\n\n')
-    fid.write(')))\n\n')
 
     # write down situation prior
     fid.write('%s' % '(define (situation-prior) (multinomial (list ')
