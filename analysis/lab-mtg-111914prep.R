@@ -166,8 +166,8 @@ model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_t
 syllogisms = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1')
 corrs = c()
 if (exists('models')){remove(models)}
-EP = 2
-total_objs = seq(3,9,2)
+EP = 1
+total_objs = seq(3,11,1)
 for (n_obj in total_objs){
   model.domains = data.frame()
   for (d in domains){
@@ -207,18 +207,17 @@ max.loc<-which.max(model.fits$correlation)
 
 
 plot1<-ggplot(model.fits, aes(x=n,y=correlation))+
-  geom_bar(
-           stat='identity',
-           fill='grey')+
-  geom_text(aes(x=n,y=0.5, label=round(correlation,2)),size=10,colour='black')+
+  geom_bar(stat='identity',
+           fill='white')+
+  geom_text(aes(x=n,y=0.7, label=round(correlation,2)),size=10,colour='black')+
   theme_blackDisplay()+
-  scale_x_continuous(breaks=seq(3,11,2))+
+  scale_x_continuous(breaks=seq(3,11,1))+
   coord_cartesian(ylim=c(0,1)) + 
   scale_y_continuous(breaks=c(0,1))+
   xlab('\n n_objects')+
   ylab('correlation\n')
 
-ggsave(filename = paste('literalEP',EP,'_corrbars_bothExp.png',sep=''),plot1, width=8, height=6)
+ggsave(filename = paste('literalEP',EP,'_corrbars_bothExp.png',sep=''),plot1, width=16, height=12)
 
 
 
