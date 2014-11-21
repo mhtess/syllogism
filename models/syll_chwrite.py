@@ -9,7 +9,7 @@ def write_church(pd):
 
     # to make church model more readable
     sylldict = {"pm":"A-B","mp":"B-A","ms":"B-C","sm":"C-B","ps":"A-C","sp":"C-A","A":"all.",\
-                "E":"none.","I":"some.","O":"not-all.","N":"there-is-no.","P":"A","M":"B","S":"C"}
+                "E":"none.","I":"some.","O":"not-all.","N":"there-is-no.","Q":"is.","P":"A","M":"B","S":"C"}
 
     fid = open(pd['fname'],'w')
     # <rawcell>
@@ -57,7 +57,6 @@ def write_church(pd):
         h = 0
         count = 0
         while h<figs:
-            print count
             fid.write('\t\t((%d) (uniform-draw (list ' % (h+1))
             anchor = pd['posspremises'][count][0:2]
             while ((count<(len(pd['posspremises']))) and (pd['posspremises'][count][0:2] == anchor)):
@@ -236,7 +235,7 @@ def write_church(pd):
         fid.write("(define is-conclusion? (lambda (x) (> (list-index (list 'C-A 'A-C) (second (regexp-split x '.))) -1)))\n\n")
     else:
         #if (pd['EP']==0):
-        fid.write("(define is-conclusion? (lambda (x) (and (equal? (second (regexp-split x '.)) 'C-A)\n\t\t\t\t\t(not (equal? (first (regexp-split x '.)) 'there-is-no)))))\n\n")
+        fid.write("(define is-conclusion? (lambda (x) (and (equal? (second (regexp-split x '.)) 'C-A)\n\t\t\t\t\t(not (equal? (first (regexp-split x '.)) 'there-is-no))\n\t\t\t\t\t(not (equal? (first (regexp-split x '.)) 'is)))))\n\n")
         #else:
         #    fid.write("(define is-conclusion? (lambda (x) (equal? (second (regexp-split x '.)) 'C-A)))\n\n")
 

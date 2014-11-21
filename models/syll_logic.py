@@ -62,11 +62,25 @@ def E_eval(s,p):
 def I_eval(s,p):
     return (np.array(~np.logical_or(~p,~s).all(axis=1))&s.any(axis=1)&p.any(axis=1))
 
+# Coextential alternative: As are Bs and Bs are As.
+
+def equality_eval(s,p):
+    return (s==p).all(axis=1)&s.any(axis=1)&p.any(axis=1)
+
+# Relaxed universals: All and None are relaxed by the smallest amount
+# All: True if All or All-1 have it
+# None: True if 0 or 1 have it
+def A_eval_slack(s,p):
+    return (np.sum(np.logical_and(s,p),axis=1)-np.sum(p,axis=1))>=-1
+
+def E_eval_slack(s,p):
+    return np.sum(np.logical_and(s,p),axis=1)<=1
+
 # This is a null utterance. always true.
 def NVC(s,p):
     return (np.ones((s.shape[0]),dtype=bool))
 
-# Treshold semantics most and few
+# Threshold semantics most and few
 def M_eval(s,p):
     return (np.array(np.nan_to_num(np.divide(np.sum(np.logical_and(s,p),axis=1),np.sum(p,axis=1),dtype=float))>(threshold)))
 def F_eval(s,p):
