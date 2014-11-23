@@ -79,13 +79,33 @@ def write_church(pd):
         fid.write(')))\n\n')
 
     # write down situation prior
-    fid.write('%s' % '(define (situation-prior) (multinomial (list ')
-    for a,b in enumerate(pd['equiv_prob']):
-        fid.write('\t%s%d' % ("'s",a))
-    fid.write(")\n'(")
-    for score in pd['equiv_prob']:
-        fid.write('%.6f ' % score)
-    fid.write(')))\n\n')
+
+    if (pd['madworld']==1): # madworld hypothesis
+        fid.write('(define (situation-prior) (lambda (madworld)\n')
+        fid.write('\t(if madworld\n') # if it's a madworld, use abstract prior; else use real life prior
+        fid.write('\t\t(multinomial (list ')
+        for a,b in enumerate(pd['equiv_prob_ab']):
+            fid.write('\t%s%d' % ("'ab",a))
+        fid.write(")\n\t\t'(")
+        for score in pd['equiv_prob_ab']:
+            fid.write('%.6f ' % score)
+        fid.write('))\n\n')
+
+        fid.write('\t\t(multinomial (list ')
+        for a,b in enumerate(pd['equiv_prob_rl']):
+            fid.write('\t%s%d' % ("'rl",a))
+        fid.write(")\n\t\t'(")
+        for score in pd['equiv_prob_rl']:
+            fid.write('%.6f ' % score)
+        fid.write(')))))\n\n')
+    else:
+        fid.write('%s' % '(define (situation-prior) (multinomial (list ')
+        for a,b in enumerate(pd['equiv_prob']):
+            fid.write('\t%s%d' % ("'s",a))
+        fid.write(")\n'(")
+        for score in pd['equiv_prob']:
+            fid.write('%.6f ' % score)
+        fid.write(')))\n\n')
 
     # sentence-eval function: mapping from situations to truth values
     fid.write('%s\n\t' % '(define sentence-eval (lambda (sentence situation)')
@@ -98,9 +118,17 @@ def write_church(pd):
         else:
             # this is where the magic happens: 
             # printing the equivalence-class worlds (ECW) true of the sentences
-            for j, term in enumerate(pd['equiv_rs0'][:,i]):
-                if term:
-                    fid.write('%s%s%s' % ('(equal? situation ',term*("'s"+str(j)),') '))
+            if (pd['madworld']==1):
+                for j, term in enumerate(pd['equiv_rs0_ab'][:,i]):
+                    if term:
+                        fid.write('%s%s%s' % ('(equal? situation ',term*("'ab"+str(j)),') '))
+                for j, term in enumerate(pd['equiv_rs0_rl'][:,i]):
+                    if term:
+                        fid.write('%s%s%s' % ('(equal? situation ',term*("'rl"+str(j)),') '))
+            else:
+                for j, term in enumerate(pd['equiv_rs0'][:,i]):
+                    if term:
+                        fid.write('%s%s%s' % ('(equal? situation ',term*("'s"+str(j)),') '))
             fid.write('))')
 
     for j, prm in enumerate(pd['posspremises']):
