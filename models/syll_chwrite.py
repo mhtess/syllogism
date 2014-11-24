@@ -142,18 +142,16 @@ def write_church(pd):
 
             a_ab = pd['equiv_rs0_ab'][:,pd['propositions'].index(((prm[1][0].upper(),prm[1][1].upper()), prm[2].upper()))]
             b_ab = pd['equiv_rs0_ab'][:,pd['propositions'].index(((prm[0][0].upper(),prm[0][1].upper()), prm[3].upper()))]
-            if sum(np.multiply(a_ab,b_ab))==0:
-                fid.write('%s' % ('false))'))    
+            a_rl = pd['equiv_rs0_rl'][:,pd['propositions'].index(((prm[1][0].upper(),prm[1][1].upper()), prm[2].upper()))]
+            b_rl = pd['equiv_rs0_rl'][:,pd['propositions'].index(((prm[0][0].upper(),prm[0][1].upper()), prm[3].upper()))]
+
+            if (sum(np.multiply(a_ab,b_ab))+sum(np.multiply(a_rl,b_rl)))==0:
+                fid.write('%s' % ('false))'))
             else:
                 for k, term in enumerate(np.multiply(a_ab,b_ab)):
                     if term:
                         fid.write('%s%s%s' % ('(equal? situation ',term*("'ab"+str(k)),') '))
 
-            a_rl = pd['equiv_rs0_rl'][:,pd['propositions'].index(((prm[1][0].upper(),prm[1][1].upper()), prm[2].upper()))]
-            b_rl = pd['equiv_rs0_rl'][:,pd['propositions'].index(((prm[0][0].upper(),prm[0][1].upper()), prm[3].upper()))]
-            if sum(np.multiply(a_rl,b_rl))==0:
-                fid.write('%s' % ('false))'))    
-            else:
                 for k, term in enumerate(np.multiply(a_rl,b_rl)):
                     if term:
                         fid.write('%s%s%s' % ('(equal? situation ',term*("'rl"+str(k)),') '))
