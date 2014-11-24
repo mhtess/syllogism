@@ -81,7 +81,7 @@ def write_church(pd):
     # write down situation prior
 
     if (pd['madworld']==1): # madworld hypothesis
-        fid.write('(define (situation-prior) (lambda (madworld)\n')
+        fid.write('(define situation-prior (lambda (madworld)\n')
         fid.write('\t(if madworld\n') # if it's a madworld, use abstract prior; else use real life prior
         fid.write('\t\t(multinomial (list ')
         for a,b in enumerate(pd['equiv_prob_ab']):
@@ -113,36 +113,64 @@ def write_church(pd):
     for i, line in enumerate(pd['propositions']):
         fa = "(('"+sylldict[line[1]]+sylldict[line[0][0].lower()+line[0][1].lower()]+') (or '
         fid.write('\n%s' % (fa))
-        if sum(pd['equiv_rs0'][:,i])==0: # if no worlds are true of this sentence
-            fid.write('%s' % ('false))'))    
-        else:
-            # this is where the magic happens: 
-            # printing the equivalence-class worlds (ECW) true of the sentences
-            if (pd['madworld']==1):
+        # this is where the magic happens: 
+        # printing the equivalence-class worlds (ECW) true of the sentences
+        if (pd['madworld']==1):
+            if (sum(pd['equiv_rs0_ab'][:,i])+sum(pd['equiv_rs0_rl'][:,i]))==0: # if no worlds are true of this sentence
+                fid.write('%s' % ('false))'))
+            else:
                 for j, term in enumerate(pd['equiv_rs0_ab'][:,i]):
                     if term:
                         fid.write('%s%s%s' % ('(equal? situation ',term*("'ab"+str(j)),') '))
                 for j, term in enumerate(pd['equiv_rs0_rl'][:,i]):
                     if term:
                         fid.write('%s%s%s' % ('(equal? situation ',term*("'rl"+str(j)),') '))
-            else:
+        else:
+            if sum(pd['equiv_rs0'][:,i])==0: # if no worlds are true of this sentence
+                fid.write('%s' % ('false))'))    
+            else:                
                 for j, term in enumerate(pd['equiv_rs0'][:,i]):
-                    if term:
-                        fid.write('%s%s%s' % ('(equal? situation ',term*("'s"+str(j)),') '))
-            fid.write('))')
+                        if term:
+                            fid.write('%s%s%s' % ('(equal? situation ',term*("'s"+str(j)),') '))
+        fid.write('))')
 
     for j, prm in enumerate(pd['posspremises']):
         fa = "(((list '"+sylldict[prm[2]]+sylldict[prm[1]]+" '"+sylldict[prm[3]]+sylldict[prm[0]]+')) (or '
         fid.write('\n%s' % (fa))
-        a = pd['equiv_rs0'][:,pd['propositions'].index(((prm[1][0].upper(),prm[1][1].upper()), prm[2].upper()))]
-        b = pd['equiv_rs0'][:,pd['propositions'].index(((prm[0][0].upper(),prm[0][1].upper()), prm[3].upper()))]
-        if sum(np.multiply(a,b))==0:
-            fid.write('%s' % ('false))'))    
+
+        if (pd['madworld']==1):
+
+            a_ab = pd['equiv_rs0_ab'][:,pd['propositions'].index(((prm[1][0].upper(),prm[1][1].upper()), prm[2].upper()))]
+            b_ab = pd['equiv_rs0_ab'][:,pd['propositions'].index(((prm[0][0].upper(),prm[0][1].upper()), prm[3].upper()))]
+            if sum(np.multiply(a_ab,b_ab))==0:
+                fid.write('%s' % ('false))'))    
+            else:
+                for k, term in enumerate(np.multiply(a_ab,b_ab)):
+                    if term:
+                        fid.write('%s%s%s' % ('(equal? situation ',term*("'ab"+str(k)),') '))
+
+            a_rl = pd['equiv_rs0_rl'][:,pd['propositions'].index(((prm[1][0].upper(),prm[1][1].upper()), prm[2].upper()))]
+            b_rl = pd['equiv_rs0_rl'][:,pd['propositions'].index(((prm[0][0].upper(),prm[0][1].upper()), prm[3].upper()))]
+            if sum(np.multiply(a_rl,b_rl))==0:
+                fid.write('%s' % ('false))'))    
+            else:
+                for k, term in enumerate(np.multiply(a_rl,b_rl)):
+                    if term:
+                        fid.write('%s%s%s' % ('(equal? situation ',term*("'rl"+str(k)),') '))
+
+            fid.write('))')
+
         else:
-            for k, term in enumerate(np.multiply(a,b)):
-                if term:
-                    fid.write('%s%s%s' % ('(equal? situation ',term*("'s"+str(k)),') '))
-            fid.write('))')      
+
+            a = pd['equiv_rs0'][:,pd['propositions'].index(((prm[1][0].upper(),prm[1][1].upper()), prm[2].upper()))]
+            b = pd['equiv_rs0'][:,pd['propositions'].index(((prm[0][0].upper(),prm[0][1].upper()), prm[3].upper()))]
+            if sum(np.multiply(a,b))==0:
+                fid.write('%s' % ('false))'))    
+            else:
+                for k, term in enumerate(np.multiply(a,b)):
+                    if term:
+                        fid.write('%s%s%s' % ('(equal? situation ',term*("'s"+str(k)),') '))
+                fid.write('))')      
 
     #for j, prm in enumerate(premisesalt):
     #    fa = "(((list '"+prm[2]+prm[1]+" '"+prm[3]+prm[0]+')) (or '
@@ -160,15 +188,38 @@ def write_church(pd):
     #### write mapping from situations to sentences
     fid.write('%s\n\t' % '(define true-conclusions (lambda (situation)')
     fid.write("%s" % "(case situation")
-    for i, term in enumerate(pd['equiv_rs0']):
-        fa = "(('s"+str(i)+") (list "
-        fid.write('\n%s' % (fa))
-        for j, trth in enumerate(term):
-            if trth:
-                line = pd['propositions'][j]
-                prettier_sentence = "'"+sylldict[line[1]]+sylldict[line[0][0].lower()+line[0][1].lower()]
-                fid.write('%s ' % prettier_sentence)
-        fid.write('))')
+
+    if (pd['madworld']==1):
+        for i, term in enumerate(pd['equiv_rs0_ab']):
+            fa = "(('ab"+str(i)+") (list "
+            fid.write('\n%s' % (fa))
+            for j, trth in enumerate(term):
+                if trth:
+                    line = pd['propositions'][j]
+                    prettier_sentence = "'"+sylldict[line[1]]+sylldict[line[0][0].lower()+line[0][1].lower()]
+                    fid.write('%s ' % prettier_sentence)
+            fid.write('))')
+        for i, term in enumerate(pd['equiv_rs0_rl']):
+            fa = "(('rl"+str(i)+") (list "
+            fid.write('\n%s' % (fa))
+            for j, trth in enumerate(term):
+                if trth:
+                    line = pd['propositions'][j]
+                    prettier_sentence = "'"+sylldict[line[1]]+sylldict[line[0][0].lower()+line[0][1].lower()]
+                    fid.write('%s ' % prettier_sentence)
+            fid.write('))')
+
+    else:
+
+        for i, term in enumerate(pd['equiv_rs0']):
+            fa = "(('s"+str(i)+") (list "
+            fid.write('\n%s' % (fa))
+            for j, trth in enumerate(term):
+                if trth:
+                    line = pd['propositions'][j]
+                    prettier_sentence = "'"+sylldict[line[1]]+sylldict[line[0][0].lower()+line[0][1].lower()]
+                    fid.write('%s ' % prettier_sentence)
+            fid.write('))')
     # for j, prm in enumerate(pd['posspremises']):
     #     fa = "(((list '"+prm[2]+prm[1]+" '"+prm[3]+prm[0]+')) (list '
     #     fid.write('\n%s' % (fa))
@@ -267,45 +318,80 @@ def write_church(pd):
         #else:
         #    fid.write("(define is-conclusion? (lambda (x) (equal? (second (regexp-split x '.)) 'C-A)))\n\n")
 
+    # reasoner 1 / pragmatic listener
     fid.write('(define reasoner1\n')
     fid.write('  (mem (lambda  (premises figure)\n')
     fid.write('\t(enumeration-query\n')
-    fid.write('\t (define situation (situation-prior))\n')
-    fid.write('\t (define conclusion (uniform-draw (filter is-conclusion? (true-conclusions situation))))\n\n')
-    fid.write('\t conclusion\n\n')
-    if (pd['qud']==0):
-        fid.write('\t\t (equal? premises (apply multinomial (experimenter situation figure)))))))\n')
+    if (pd['madworld']==1):
+        fid.write('\t(define madworld (flip))\n')
+        fid.write('\t(define situation (situation-prior madworld))\n')
     else:
-        fid.write('\t\t (equal? premises (apply multinomial (experimenter conclusion figure)))))))\n')
-    fid.write('(define experimenter\n')
-    if (pd['qud']==0):
-        fid.write('  (mem (lambda (situation figure)\n')
+        fid.write('\t(define situation (situation-prior))\n')
+
+    fid.write('\t(define conclusion (uniform-draw (filter is-conclusion? (true-conclusions situation))))\n\n')
+    fid.write('\tconclusion\n\n')
+    if (pd['madworld']==1):
+        if (pd['qud']==0):
+            fid.write('\t(equal? premises (apply multinomial (experimenter situation madworld figure)))))))\n')
+        else:
+            fid.write('\t(equal? premises (apply multinomial (experimenter conclusion madworld figure)))))))\n')
     else:
-        fid.write('  (mem (lambda (conclusion figure)\n')
+        if (pd['qud']==0):
+            fid.write('\t(equal? premises (apply multinomial (experimenter situation figure)))))))\n')
+        else:
+            fid.write('\t(equal? premises (apply multinomial (experimenter conclusion figure)))))))\n')
+
+    # experimenter / speaker
+    fid.write('\n(define experimenter\n')
+    if (pd['madworld']==1):
+        if (pd['qud']==0):
+            fid.write('  (mem (lambda (situation madworld figure)\n')
+        else:
+            fid.write('  (mem (lambda (conclusion madworld figure)\n')
+    else:
+        if (pd['qud']==0):
+            fid.write('  (mem (lambda (situation figure)\n')
+        else:
+            fid.write('  (mem (lambda (conclusion figure)\n')
     fid.write('\t(enumeration-query\n')
-    fid.write('\t (define premises  (premise-prior figure))\n')
-    fid.write('\t premises\n\n')
-    if (pd['qud']==0):
-        fid.write('\t (equal? situation (apply multinomial (raise-to-power (reasoner0 premises figure) alphaQ))\n')
+    fid.write('\t(define premises  (premise-prior figure))\n\n')
+    fid.write('\tpremises\n\n')
+
+    if (pd['madworld']==1):
+        if (pd['qud']==0):
+            fid.write('\t(equal? situation (apply multinomial (raise-to-power (reasoner0 premises madworld figure) alphaQ))')
+        else:
+            fid.write('\t(equal? conclusion (apply multinomial (raise-to-power (reasoner0 premises madworld figure) alphaQ))')    
     else:
-        fid.write('\t (equal? conclusion (apply multinomial (raise-to-power (reasoner0 premises figure) alphaQ))\n')       
-    fid.write('\t\t)))))\n\n')
+        if (pd['qud']==0):
+            fid.write('\t(equal? situation (apply multinomial (raise-to-power (reasoner0 premises figure) alphaQ))')
+        else:
+            fid.write('\t(equal? conclusion (apply multinomial (raise-to-power (reasoner0 premises figure) alphaQ))')       
+    fid.write(')))))\n\n')
+
+    # reasoner 0 / literal listener
     fid.write('(define reasoner0\n')
-    fid.write('  (mem (lambda  (premises figure)\n')
-    fid.write('\t(enumeration-query\n')
-    fid.write('\t (define situation (situation-prior))\n')
-    fid.write('\t (define conclusion (uniform-draw (filter is-conclusion? (true-conclusions situation))))\n\n')
-    if (pd['qud']==0):
-        fid.write('\t situation\n\n')
-        fid.write('\t\t\t(if (= alphaQ 0)\n')
-        fid.write('\t\t\t\ttrue\n')
-        fid.write('\t\t\t\t(sentence-eval premises situation))\n')
+    if (pd['madworld']==1):
+        fid.write('  (mem (lambda  (premises madworld figure)\n')
     else:
-        fid.write('\t conclusion\n\n')
+        fid.write('  (mem (lambda  (premises figure)\n')
+    fid.write('\t(enumeration-query\n')
+    if (pd['madworld']==1):
+        fid.write('\t(define situation (situation-prior madworld))\n')
+    else:
+        fid.write('\t(define situation (situation-prior))\n')
+    fid.write('\t(define conclusion (uniform-draw (filter is-conclusion? (true-conclusions situation))))\n\n')
+    if (pd['qud']==0):
+        fid.write('\tsituation\n\n')
         fid.write('\t\t\t(if (= alphaQ 0)\n')
         fid.write('\t\t\t\ttrue\n')
-        fid.write('\t\t\t\t(sentence-eval premises situation))\n')
-    fid.write('\t\t))))\n\n')
+        fid.write('\t\t\t\t(sentence-eval premises situation))')
+    else:
+        fid.write('\tconclusion\n\n')
+        fid.write('\t(if (= alphaQ 0)\n')
+        fid.write('\t\ttrue\n')
+        fid.write('\t\t(sentence-eval premises situation))')
+    fid.write('))))\n\n\n')
     fid.write('(if (= depth 1)\n')
     fid.write('\t(map reasoner1 allprems figures)\n')
     fid.write('\t(map reasoner0 allprems figures))\n')
