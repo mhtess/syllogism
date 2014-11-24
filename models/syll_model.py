@@ -251,7 +251,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
             passdict['equiv_rs0_rl']=equiv_rs0_rl
             passdict['equiv_prob_rl']=equiv_prob_rl
 
-            syllrows, nz_final = f_e_t_e(high_passingdict,passdict)
+        syllrows, nz_final = f_e_t_e(high_passingdict,passdict)
 
     else: # NO madworld hypothesis
 
