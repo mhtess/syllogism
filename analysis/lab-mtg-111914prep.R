@@ -57,9 +57,6 @@ df2<-subset(df2,rt<mean(df2$rt)+2*sqrt(var(df2$rt)))
 
 
 
-df.norm = ddply(df.c, .(domain,condition,syll,experiment), 
-                function(x) {resp = x[,resp_labels]
-                             resp / rowSums(resp)})
 
 
 
@@ -82,7 +79,7 @@ df.norm = ddply(df.c, .(domain,condition,syll,experiment),
                 function(x) {resp = x[,resp_labels]
                              resp / rowSums(resp)})
 
-EP = 0
+EP = 1
 
 # plot experiment 1 data
 
@@ -329,8 +326,8 @@ ggsave(filename =paste('literal_EP',EP,'_n7_scatter.png',sep=''), plot4, height=
 model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
 syllogisms = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1')
 if (exists('models')){remove(models)}
-EP = 2
-alt = 5
+EP = 1
+alt = 0
 total_objs = seq(3,10,1)
 total_objs = c(7)
 total_alphas = seq(1,6,1)
@@ -360,8 +357,6 @@ for (n_obj in total_objs){
     models = model.domains
 }
 }
-
-
 
 models$syll <- factor(models$syll)
 models$domain <- factor(models$domain)
@@ -441,7 +436,7 @@ plot2<-ggplot(subset(models,syll%in%c('AO2', 'EA3', 'IE1', 'OA1') & alpha==2),
 ggsave(filename = paste('pragmatics_EP',EP,'alt',alt,'_n5alpha2_exp1.png',sep=''),plot2, width=32, height=16)
 
 
-plot3<-ggplot(subset(models,syll%in%c('AA1','AI1','EA1','EI1') & alpha==2),
+plot3<-ggplot(subset(models,syll%in%c('AA1','AI1','EA1','EI1') & alpha==4),
               aes(x=conclusion,y=n7,fill=conclusion))+
   geom_bar(position=position_dodge(.6), 
            width = .6,
@@ -493,4 +488,171 @@ plot4<-ggplot(maxcorr.stuff,aes(x=value.x,y=value.y,colour=conclusion))+
 ggsave(filename =paste('pragmatics_EP',EP,'alt',alt,'_n3alpha1_scatter.png',sep=''), plot4, height=14, width=14)
 
 
+### Pragmatics models with mad-world RV
 
+model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
+syllogisms = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1')
+EP = 1
+alt = 1
+MW = 1
+total_objs = seq(3,10,1)
+#total_objs = c(7)
+total_alphas = seq(1,9,1)
+if (exists('models')){remove(models)}
+
+for (n_obj in total_objs){
+  #print(n_obj)
+  model.domains = data.frame()
+  for (alpha in total_alphas){
+    #print(alpha)
+    for (d in domains){
+      #print(d)
+      file.pattern <-paste(model.dir,'10/csv/lis_N1_M0_tfbt',
+                            d,'_qud1MW',MW,'figFull_AIEOc4CAEP',EP,'Alt',alt,'_n',n_obj,
+                            '_base*_s100k_alphQ',alpha,'_alphR1_bsmean.csv',sep='')
+      all.files<- Sys.glob(file.pattern)
+      for (fl in all.files){
+        model.all<-read.csv(fl)[c(1,6:9)]
+        model.sub<-model.all[model.all$X..syll%in%syllogisms,]
+        model.sub$base<-as.numeric(strsplit(strsplit(fl,'base')[[1]][2],'_s')[[1]][1])
+        model.sub$domain <- factor(d)
+        model.sub$alpha <- alpha
+        model.m<-melt(model.sub,
+                    id.vars=c('X..syll','domain','alpha','base'))
+        model.domains<-rbind(model.domains, model.m)
+      }
+    }
+  }
+  #rename for merging
+  names(model.domains)<-c('syll','domain','alpha','base','conclusion',paste('n',n_obj,sep=''))
+  if (exists('models')){
+    models = merge(models,model.domains,all=TRUE)
+  } else {
+    models = model.domains
+  }
+}
+
+models$syll <- factor(models$syll)
+models$domain <- factor(models$domain)
+models$conclusion <- factor(models$conclusion, labels = conclusion_labels)
+models$alpha <- factor(models$alpha)
+models$base<-factor(models$base)
+m.models<-melt(models, id.vars=c('syll','domain','conclusion','alpha','base'))
+
+all.stuff<-merge(m.models,
+                 collapsed.bs[c('domain','syll','value','conclusion')], 
+                 by=c('syll','domain','conclusion'))
+
+model.fits<-ddply(all.stuff, .(variable,base,alpha), summarise, cor(value.x, value.y))
+
+names(model.fits)<-c('n','base','alpha','correlation')
+
+model.fits$n<-as.integer(substring(model.fits$n,2,3))
+
+max.loc<-which.max(model.fits$correlation)
+
+plot5<-ggplot(model.fits, aes(x=base,y=alpha))+
+  geom_tile(aes(fill = correlation), colour = "white") + 
+  geom_tile(data=model.fits[max.loc,], aes(x=base,y=alpha, fill=correlation),
+            size=1,colour='black')+
+  geom_text(data=model.fits[max.loc,], aes(x=base,y=alpha, label=round(correlation,2)),
+            size=4,colour='black')+
+  scale_fill_gradient(low = "green", high = "yellow")+
+#  theme_blackDisplay()+
+  #scale_x_continuous(breaks=seq(3,11,2))+
+  theme_bw()+
+  facet_wrap(~n)+
+  xlab("\n base")+
+  ylab("alpha\n")
+
+#ggsave(filename = paste('pragmaticEP',EP,'Alt',alt,'_corrTiles_ExpBoth.png',sep=''),plot5, width=16, height=12)
+
+max.n <-paste('n',model.fits[max.loc,]$n,sep='')
+max.alpha<-model.fits[max.loc,]$alpha 
+max.base<-model.fits[max.loc,]$base
+
+maxcorr.stuff<-subset(all.stuff,variable==max.n&
+                        alpha==max.alpha&
+                        base==max.base)
+maxcorr.stuff$experiment<-maxcorr.stuff$syll%in%c('AA1','AI1','EA1','EI1')
+maxcorr.stuff$experiment<-factor(maxcorr.stuff$experiment,labels=c('experiment 1','experiment 2'))
+corrs <- data.frame(correlations=c(with(subset(maxcorr.stuff,experiment=='experiment 1'), cor(value.x,value.y)),
+                                   with(subset(maxcorr.stuff,experiment=='experiment 2'), cor(value.x,value.y))
+))
+corrs$xpos<- 0.1
+corrs$ypos<- 0.55
+corrs$experiment <- c('experiment 1','experiment 2')
+
+
+plot4<-ggplot(maxcorr.stuff,aes(x=value.x,y=value.y,colour=conclusion))+
+  geom_point(size=4)+
+  geom_text(data=corrs,aes(x=xpos,y=ypos, label=paste('r =',round(correlations,2))),size=10,colour='white')+
+  geom_abline(intercept=0,slope=1,colour='grey50')+
+  facet_wrap(~experiment)+
+  theme_blackDisplay()+
+  coord_fixed(ratio=1,xlim = c(-0.02,0.7), ylim = c(-0.02,0.7))+
+  scale_y_continuous(breaks=c(0.25,0.5))+
+  scale_x_continuous(breaks=c(0.25,0.5))+
+  xlab('\n model posterior')+
+  ylab('human endorsement\n')+
+  #scale_colour_di(guide = guide_legend()) +
+  theme(legend.position="bottom",
+        legend.direction='horizontal',
+        legend.title=element_blank())
+
+ggsave(filename =paste('pragmaticsMW_EP',EP,'alt',alt,max.n,'_alpha',max.alpha,'_base',max.base,'scatter.png',sep=''), plot4, height=14, width=14)
+
+models$syllogism <- factor(models$syll, levels = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1'),
+                           labels=c("Some of the As are not Bs\n All of the Cs are Bs",
+                                    "All of the Bs are As\n None of Bs are Cs",
+                                    "None of the As are Bs\n Some of the Bs are Cs",
+                                    "All of the As are Bs\n Some of the Bs are not Cs",
+                                    "All of the As are Bs\n All of the Bs are Cs",
+                                    "Some of the As are Bs\n All of the Bs are Cs",
+                                    "All of the As are Bs\n None of the Bs are Cs",
+                                    "Some of the As are Bs\n None of the Bs are Cs"
+                           ))
+
+models$domain <- factor(models$domain, labels = exp_domains)
+models$conclusion<-factor(models$conclusion, labels = c('all','none','some','some...not'))
+
+# Faceted grids of model predictions (Syll X Domain)
+
+plot2<-ggplot(subset(models,syll%in%c('AO2', 'EA3', 'IE1', 'OA1') & alpha==max.alpha & base==max.base),
+              aes(x=conclusion,y=n5,fill=conclusion))+
+  geom_bar(position=position_dodge(.6), 
+           width = .6,
+           stat='identity')+
+  facet_grid(domain~syllogism)+
+  theme_blackDisplay()+
+  guides(fill=F)+
+  theme(
+    axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.x = element_text(size=30),
+    strip.text.y = element_text(angle=0, size=30)
+  )+
+  coord_cartesian(ylim=c(0, 0.7)) + 
+  scale_y_continuous(breaks=c(0.25,0.5))+
+  xlab("\nconclusion")+
+  ylab('posterior probability\n')
+
+ggsave(filename = paste('pragmatics_EP',EP,'alt',alt,'_n5alpha2_exp1.png',sep=''),plot2, width=32, height=16)
+
+
+plot3<-ggplot(subset(models,syll%in%c('AA1','AI1','EA1','EI1') & alpha==max.alpha & base==max.base),
+              aes(x=conclusion,y=n5,fill=conclusion))+
+  geom_bar(position=position_dodge(.6), 
+           width = .6,
+           stat='identity')+
+  facet_grid(domain~syllogism)+
+  theme_blackDisplay()+
+  guides(fill=F)+
+  theme(
+    axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.x = element_text(size=30),
+    strip.text.y = element_text(angle=0, size=30)
+  )+
+  coord_cartesian(ylim=c(0, 0.7)) + 
+  scale_y_continuous(breaks=c(0.25,0.5))+
+  xlab("\nconclusion")+
+  ylab('posterior probability\n')
