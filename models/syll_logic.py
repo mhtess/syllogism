@@ -67,6 +67,19 @@ def I_eval(s,p):
 def equality_eval(s,p):
     return (s==p).all(axis=1)&s.any(axis=1)&p.any(axis=1)
 
+# Double conclusion alternatives: 
+# This in the hopes of better modeling the task: alternative set is (All, Some, None, Some..not, All and some, Some and some...not, Some...not and None)
+# Given the Set 1 semantics, the only novel eval is Some and not all. 
+
+def IO_eval(s,p):
+    return (np.array(~np.logical_or(~p,~s).all(axis=1))&np.array(~np.logical_or(s,~p).all(axis=1))&s.any(axis=1)&p.any(axis=1))
+
+def AI_eval(s,p):
+    return (np.array(np.logical_or(s,~p).all(axis=1))&np.array(~np.logical_or(~p,~s).all(axis=1))&s.any(axis=1)&p.any(axis=1))
+
+def EO_eval(s,p):
+    return (np.array(np.logical_or(~p,~s).all(axis=1))&np.array(~np.logical_or(s,~p).all(axis=1))&s.any(axis=1)&p.any(axis=1))
+
 # Relaxed universals: All and None are relaxed by the smallest amount
 # All: True if All or All-1 have it
 # None: True if 0 or 1 have it
