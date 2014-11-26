@@ -19,7 +19,7 @@ from equiv_to_end import f_e_t_e
 
 def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain, priortype,
                     serv=0, nvcstr=0, vcstr=4, vcord='CA', exp='AIEO', fig='Full', 
-                    lis='lis', EPin=1, altset=1, semantics='tight'):
+                    lis='lis', EPin=1, altset=1, semantics='tight',madworld=1):
 
     n_balls = int(n_b)
     base_rate = float(br)
@@ -30,6 +30,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     mdepth = str(int(rdepth))
     EP = int(EPin)
     altset = int(altset)
+    madworld = int(madworld)
     latlis = lis
     qud=1
 
@@ -39,11 +40,11 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     threshold = 0.5
 
     if (semantics=='tight'):
-        prefix = ('%s%s_qud%sfig%s_%sc%d%sEP%dAlt%d_n%d_base%.2f_s%dk' % 
-              (priortype,domain,qud,fig,exp,vc,vcord,EP,altset,n_balls,base_rate,n_samples))
+        prefix = ('%s%s_qud%sMW%dfig%s_%sc%d%sEP%dAlt%d_n%d_base%.2f_s%dk' % 
+              (priortype,domain,qud,madworld,fig,exp,vc,vcord,EP,altset,n_balls,base_rate,n_samples))
     else:
-        prefix = ('%s%s_qud%sfig%s_%sc%d%sEP%dAlt%dSem%s_n%d_base%.2f_s%dk' % 
-              (priortype,domain,qud,fig,exp,vc,vcord,EP,altset,semantics,n_balls,base_rate,n_samples))
+        prefix = ('%s%s_qud%sMW%dfig%s_%sc%d%sEP%dAlt%dSem%s_n%d_base%.2f_s%dk' % 
+              (priortype,domain,qud,madworld,fig,exp,vc,vcord,EP,altset,semantics,n_balls,base_rate,n_samples))
 
     high_passingdict = {'n_balls':n_b,'base_rate':br,'ndepth':ndepth,'mdepth':mdepth,\
     'rationalityQ':rationalityQ,'rationalityR':rationalityR,'serv':serv,'latlis':latlis,\
@@ -182,7 +183,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     passdict = {'qud':qud,'listener':latlis,'nvc':nvc,"vc":vc,
     "vcord":vcord,'posspremises':posspremises,'premises':premises,
     'propositions':propositions,'figdict':figdict,'fig':fig,
-    'ndepth':ndepth,'mdepth':mdepth,'n_balls':n_balls,'exp':exp,"EP":EP,"altset":altset}
+    'ndepth':ndepth,'mdepth':mdepth,'n_balls':n_balls,'exp':exp,"EP":EP,"altset":altset,"madworld":madworld}
     
 
     # preprocessing/lifting (equivalence class)
@@ -200,60 +201,147 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     if (domain=='naive'):
         sampler = syll_logic.sample_fig1
 
+    # madworld hypothesis requires 2 samplers
 
-    if (domain=='naive'):
-        fname = latlis+ '_' + prefix + '_Smean.church'
-        churchfile = macpth+'church/'+fname
-        high_passingdict['churchfile']=churchfile
-        passdict['fname']=fname
-        high_passingdict['bs']='mean'
-        
-        if not os.path.exists(churchfile):
-            print 'sampling and featurizing... br=' + str(base_rate)
-            samples = np.array([sampler(n_balls,base_rate) for _ in range(1000*n_samples)])
-            S, M, P = samples.transpose(1, 0, 2)
-            rs0 = np.array([p[1](eval(p[0][1]),eval(p[0][0])) for p in props])
-            rs1 = np.array([rw for rw in np.transpose(rs0) if sum(rw) != 0])
-            equiv_rs0, equiv_count = myunique(rs1)
-            equiv_prob = [float(ec)/len(rs1) for ec in equiv_count]
-            passdict['equiv_rs0']=equiv_rs0
-            passdict['equiv_prob']=equiv_prob
-        
-        syllrows, nz_final = f_e_t_e(high_passingdict,passdict)
-
-    else:
-
+    if (madworld==1): 
         if (serv==0):
             priorpath = ('/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/')
         else:
             priorpath = ('/home/mht/projectsyll/EXPDATA/03syllogism_prior_psychjs/')
 
-        if (priortype=='bootstrap'):
-            expname = 'prior-exp-mturk_all_n71'
-            priorfile = priorpath + expname +'.csv'
-            phead = pd.read_csv(priorfile,dtype='string',index_col=0)
-            pr_dom = phead[phead['domain']==domain].reset_index(drop=True) # get priors for this domain
-            pr_dist = pr_dom.iloc[:,1:9].astype(float) # remove other columns
-            #pr_norm = pr_dist.div(pr_dist.sum(axis=1), axis=0)
-            #pr_norm = pr_norm.replace(0,0.00001) # replace 0s with epsilons
+        expname = 'prior-exp-mturk_means_n71'
+        if (priortype=='tfbt'):
+            expname = 'prior-exp-mturk_collapsed_means_n71'
 
-            # bootstrap 1000 times
-            for bs in range(bs_samples):
-                fname = latlis+ '_' + prefix + '_bs' +str(bs) +'.church'
+        priorfile = priorpath + expname +'.csv'
+        sampler_abstract = syll_logic.sample_fig1
+        sampler_rl = syll_logic.sample_joint
+        fname = latlis+ '_' + prefix + '_Smean.church'
+        churchfile = macpth+'church/'+fname
+        high_passingdict['churchfile']=churchfile
+        passdict['fname']=fname
+        high_passingdict['bs']='mean'
+
+        if not os.path.exists(churchfile):
+            print 'sampling and featurizing...abstract world br= ' + str(base_rate)
+            samples_ab = np.array([sampler_abstract(n_balls,base_rate) for _ in range(1000*n_samples)])
+            S, M, P = samples_ab.transpose(1, 0, 2)
+            rs0 = np.array([p[1](eval(p[0][1]),eval(p[0][0])) for p in props])
+            rs1 = np.array([rw for rw in np.transpose(rs0) if sum(rw) != 0])
+            equiv_rs0_ab, equiv_count_ab = myunique(rs1)
+            equiv_prob_ab = [float(ec)/len(rs1) for ec in equiv_count_ab]
+            passdict['equiv_rs0_ab']=equiv_rs0_ab
+            passdict['equiv_prob_ab']=equiv_prob_ab
+
+
+            print 'sampling and featurizing... real world ' + str(n_balls) + ' ' + domain + 's' + ' ' + priortype
+            phead = pd.read_csv(priorfile,dtype='string',index_col=0)
+            features = phead.columns.values[2::]
+            domain_priors = phead[((phead.domain == domain) & (phead.condition == priortype))][features]
+            
+            priorVector = np.array(domain_priors,dtype=float)[0]
+            samples = np.array([sampler_rl(priorVector,features,n_balls) 
+                                for _ in range(1000*n_samples)])
+            S, M, P = samples.transpose(1, 0, 2)
+            rs0 = np.array([p[1](eval(p[0][1]),eval(p[0][0])) for p in props])
+            rs1 = np.array([rw for rw in np.transpose(rs0) if sum(rw) != 0])
+
+            equiv_rs0_rl, equiv_count_rl = myunique(rs1)
+            equiv_prob_rl = [float(ec)/len(rs1) for ec in equiv_count_rl]
+            passdict['equiv_rs0_rl']=equiv_rs0_rl
+            passdict['equiv_prob_rl']=equiv_prob_rl
+
+        syllrows, nz_final = f_e_t_e(high_passingdict,passdict)
+
+    else: # NO madworld hypothesis
+
+        if (domain=='naive'): # Abstract priors
+            fname = latlis+ '_' + prefix + '_Smean.church'
+            churchfile = macpth+'church/'+fname
+            high_passingdict['churchfile']=churchfile
+            passdict['fname']=fname
+            high_passingdict['bs']='mean'
+            
+            if not os.path.exists(churchfile):
+                print 'sampling and featurizing... br=' + str(base_rate)
+                samples = np.array([sampler(n_balls,base_rate) for _ in range(1000*n_samples)])
+                S, M, P = samples.transpose(1, 0, 2)
+                rs0 = np.array([p[1](eval(p[0][1]),eval(p[0][0])) for p in props])
+                rs1 = np.array([rw for rw in np.transpose(rs0) if sum(rw) != 0])
+                equiv_rs0, equiv_count = myunique(rs1)
+                equiv_prob = [float(ec)/len(rs1) for ec in equiv_count]
+                passdict['equiv_rs0']=equiv_rs0
+                passdict['equiv_prob']=equiv_prob
+            
+            syllrows, nz_final = f_e_t_e(high_passingdict,passdict)
+
+        else: # Empirical priors
+
+            if (serv==0):
+                priorpath = ('/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/')
+            else:
+                priorpath = ('/home/mht/projectsyll/EXPDATA/03syllogism_prior_psychjs/')
+
+            if (priortype=='bootstrap'): # bootstrap priors
+                expname = 'prior-exp-mturk_all_n71'
+                priorfile = priorpath + expname +'.csv'
+                phead = pd.read_csv(priorfile,dtype='string',index_col=0)
+                pr_dom = phead[phead['domain']==domain].reset_index(drop=True) # get priors for this domain
+                pr_dist = pr_dom.iloc[:,1:9].astype(float) # remove other columns
+                #pr_norm = pr_dist.div(pr_dist.sum(axis=1), axis=0)
+                #pr_norm = pr_norm.replace(0,0.00001) # replace 0s with epsilons
+
+                # bootstrap 1000 times
+                for bs in range(bs_samples):
+                    fname = latlis+ '_' + prefix + '_bs' +str(bs) +'.church'
+                    churchfile = macpth+'church/'+fname
+                    high_passingdict['churchfile']=churchfile
+                    passdict['fname']=fname
+                    high_passingdict['bs']=str(bs)
+                    if not os.path.exists(churchfile):
+                        print 'sampling and featurizing ' + str(n_balls) + ' ' + domain + ' bssamp ' + str(bs)
+                        smp_wr = np.array([np.random.randint(0,pr_dist.shape[0]) for _ in range(pr_dist.shape[0])])
+                        smp_pr = pr_dist.iloc[smp_wr]
+                        norm_pr = smp_pr.div(smp_pr.sum(axis=1),axis=0)
+                        mean_pr = norm_pr.mean(axis=0)
+                        priorVector = np.array(mean_pr)
+                        features = [priordict[m] for m in mean_pr.index.values]
+                        samples = np.array([sampler(priorVector,features,n_balls) 
+                                        for _ in range(1000*n_samples)])
+                        S, M, P = samples.transpose(1, 0, 2)
+                        rs0 = np.array([p[1](eval(p[0][1]),eval(p[0][0])) for p in props])
+                        rs1 = np.array([rw for rw in np.transpose(rs0) if sum(rw) != 0])
+                        equiv_rs0, equiv_count = myunique(rs1)
+                        equiv_prob = [float(ec)/len(rs1) for ec in equiv_count]
+                        passdict['equiv_rs0']=equiv_rs0
+                        passdict['equiv_prob']=equiv_prob
+
+                    syllrows, nz_final = f_e_t_e(high_passingdict,passdict)
+
+            else: # just using mean priors
+
+                high_passingdict['bs']='mean'
+                fname = latlis+ '_' + prefix + '_Smean.church'
                 churchfile = macpth+'church/'+fname
                 high_passingdict['churchfile']=churchfile
                 passdict['fname']=fname
-                high_passingdict['bs']=str(bs)
+                expname = 'prior-exp-mturk_means_n71'
+                if (priortype=='tfbt'):
+                    expname = 'prior-exp-mturk_collapsed_means_n71'
+                #expname = 'prior-exp-mturk_means_CAswitch_n71'
+                #expname = 'prior-exp-mturk_means_samenode_n71'
+                priorfile = priorpath + expname +'.csv'
+
+                print 'sampling and featurizing ' + str(n_balls) + ' ' + domain + 's' + ' ' + priortype
+                phead = pd.read_csv(priorfile,dtype='string',index_col=0)
+                features = phead.columns.values[2::]
+                domain_priors = phead[((phead.domain == domain) & (phead.condition == priortype))][features]
+                
                 if not os.path.exists(churchfile):
-                    print 'sampling and featurizing ' + str(n_balls) + ' ' + domain + ' bssamp ' + str(bs)
-                    smp_wr = np.array([np.random.randint(0,pr_dist.shape[0]) for _ in range(pr_dist.shape[0])])
-                    smp_pr = pr_dist.iloc[smp_wr]
-                    norm_pr = smp_pr.div(smp_pr.sum(axis=1),axis=0)
-                    mean_pr = norm_pr.mean(axis=0)
-                    priorVector = np.array(mean_pr)
-                    features = [priordict[m] for m in mean_pr.index.values]
+
+                    priorVector = np.array(domain_priors,dtype=float)[0]
                     samples = np.array([sampler(priorVector,features,n_balls) 
-                                    for _ in range(1000*n_samples)])
+                                        for _ in range(1000*n_samples)])
                     S, M, P = samples.transpose(1, 0, 2)
                     rs0 = np.array([p[1](eval(p[0][1]),eval(p[0][0])) for p in props])
                     rs1 = np.array([rw for rw in np.transpose(rs0) if sum(rw) != 0])
@@ -263,39 +351,5 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
                     passdict['equiv_prob']=equiv_prob
 
                 syllrows, nz_final = f_e_t_e(high_passingdict,passdict)
-
-        else:
-
-            high_passingdict['bs']='mean'
-            fname = latlis+ '_' + prefix + '_Smean.church'
-            churchfile = macpth+'church/'+fname
-            high_passingdict['churchfile']=churchfile
-            passdict['fname']=fname
-            expname = 'prior-exp-mturk_means_n71'
-            if (priortype=='tfbt'):
-                expname = 'prior-exp-mturk_collapsed_means_n71'
-            #expname = 'prior-exp-mturk_means_CAswitch_n71'
-            #expname = 'prior-exp-mturk_means_samenode_n71'
-            priorfile = priorpath + expname +'.csv'
-
-            print 'sampling and featurizing ' + str(n_balls) + ' ' + domain + 's' + ' ' + priortype
-            phead = pd.read_csv(priorfile,dtype='string',index_col=0)
-            features = phead.columns.values[2::]
-            domain_priors = phead[((phead.domain == domain) & (phead.condition == priortype))][features]
-            
-            if not os.path.exists(churchfile):
-
-                priorVector = np.array(domain_priors,dtype=float)[0]
-                samples = np.array([sampler(priorVector,features,n_balls) 
-                                    for _ in range(1000*n_samples)])
-                S, M, P = samples.transpose(1, 0, 2)
-                rs0 = np.array([p[1](eval(p[0][1]),eval(p[0][0])) for p in props])
-                rs1 = np.array([rw for rw in np.transpose(rs0) if sum(rw) != 0])
-                equiv_rs0, equiv_count = myunique(rs1)
-                equiv_prob = [float(ec)/len(rs1) for ec in equiv_count]
-                passdict['equiv_rs0']=equiv_rs0
-                passdict['equiv_prob']=equiv_prob
-
-            syllrows, nz_final = f_e_t_e(high_passingdict,passdict)
 
     return syllrows, nz_final
