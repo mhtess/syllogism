@@ -11,8 +11,8 @@ n = sys.argv[2]
 #extra parameters, set to their defaults so no reason to pass\
 nvc, vc, vcord, exp, fig, lis, EPin = 0, 4,'CA','AIEO', 'Full', 'lis', 1
 
-allpriors = ['lightbulb','cracker','strawberry','knife'] 
-#allpriors = ['naive']
+#allpriors = ['lightbulb','cracker','strawberry','knife'] 
+allpriors = ['naive']
 
 number_of_objects = [n]
 
@@ -20,13 +20,17 @@ list_of_alphas = [1]
 #list_of_alphas = arange(1,6,0.5)
 
 #base_rates = arange(0.05,1,0.1)
-base_rates = [0]
+#base_rates = [0]
+base_rates = [0.3]
 
 pt = 'tfbt'
-depth = 1
+depth = 0
 
-exispresupp = 0
-alternatives = 6
+exispresupp = 1
+alternatives = 1
+semntics = 'tight'
+madwrld = 0
+ievals = 1
 
 if (srv=='0'):
 	os.chdir("/Users/mht/Documents/research/syllogism/models")
@@ -43,4 +47,4 @@ for n_obj in number_of_objects:
                 syllorder, model_data = syllogism_model(n_b=n_obj,br=baserate,qdepth=depth,rdepth=0,\
                                                         rationalityQ=alpha,rationalityR=1,\
                                                         domain=prior,priortype=pt, serv=srv, \
-							EPin=exispresupp, altset=alternatives)
+							EPin=exispresupp, altset=alternatives, semantics=semntics, madworld=madwrld,indevals=ievals)
