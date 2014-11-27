@@ -9,7 +9,9 @@ def write_church(pd):
 
     # to make church model more readable
     sylldict = {"pm":"A-B","mp":"B-A","ms":"B-C","sm":"C-B","ps":"A-C","sp":"C-A","A":"all.",\
-                "E":"none.","I":"some.","O":"not-all.","N":"there-is-no.","Q":"is.","P":"A","M":"B","S":"C"}
+                "E":"none.","I":"some.","O":"not-all.","N":"there-is-no.","Q":"is.",\
+                "AI":"all+some.","IO":"some+not-all.","EO":"none+not-all.",\
+                "P":"A","M":"B","S":"C"}
 
     fid = open(pd['fname'],'w')
     # <rawcell>
@@ -183,6 +185,7 @@ def write_church(pd):
     #                fid.write('%s%s%s' % ('(equal? feature ',term*("'f"+str(k)),') '))
     #        fid.write('))')            
     fid.write(')))\n\n')
+
     #### write mapping from situations to sentences
     fid.write('%s\n\t' % '(define true-conclusions (lambda (situation)')
     fid.write("%s" % "(case situation")
@@ -305,9 +308,10 @@ def write_church(pd):
             fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'most.C-A 'few.C-A 'some.C-A 'none.C-A 'mu)))")
         if ((pd['nvc']==0) & (pd['vc']==4)):
             fid.write('%s\n' % "(define (conclusion-prior) (uniform-draw (list 'most.C-A 'few.C-A 'some.C-A 'none.C-A)))")
+    
     fid.write('\n(define (raise-to-power dist alph)\n')
     fid.write('\t(list (first dist) (map (lambda (x) (pow x alph)) (second dist))))\n\n')
-    # <codecell>
+
     if (pd['vc']==8):
         fid.write("(define is-conclusion? (lambda (x) (> (list-index (list 'C-A 'A-C) (second (regexp-split x '.))) -1)))\n\n")
     else:

@@ -25,6 +25,8 @@ def f_e_t_e(high_passingdict,passing_dict):
     figdict = passing_dict['figdict']
     n_b = high_passingdict['n_balls']
     br = high_passingdict['base_rate']
+    altset = high_passingdict['altset']
+    indevals = passing_dict['indevals']
 
     if not os.path.exists(churchfile):
         write_church(passing_dict)
@@ -41,24 +43,22 @@ def f_e_t_e(high_passingdict,passing_dict):
         head = 'all.A-C,most.A-C,few.A-C,not-all.A-C,all.C-A,most.C-A,few.C-A,not-all.C-A,mu,undefined'
     if (exp=='MFIE'):
         head = 'most.A-C,few.A-C,some.A-C,none.A-C,most.C-A,few.C-A,some.C-A,none.C-A,mu,undefined'
-    final_out = np.zeros((64,10))
+    if (indevals==1):
+        head = 'all.A-C,none.A-C,some.A-C,not-all.A-C,all.C-A,none.C-A,some.C-A,not-all.C-A,all+some.C-A,some+not-all.C-A,none+not-all.C-A,mu,undefined'
 
     rname = (latlis+'_N' + ndepth + '_M' + mdepth +'_' + prefix + '_aq' + 
                 str(rationalityQ) + '_ar' + str(rationalityR) + '_bs'+bs+ '.results')
 
     run_church(churchfile,rationalityQ,rationalityR,ndepth,mdepth,serv,rname,destination)
+    final_out = parse_church(rname,destination,exp,indevals)
 
-
-    final_out = parse_church(rname,destination,exp)
     nz_final = final_out[np.sum(final_out, axis=1)!=0]
-
     aprefix = '%s_alphQ%s_alphR%s' % (prefix,rationalityQ,rationalityR)
     afname = latlis+'_N' + ndepth + '_M' + mdepth +'_' + aprefix + '_bs'+bs+'.csv'
-
     syllrows = [decode_premises(p,figdict) for p in premises]
     rows = np.array(syllrows, dtype='|S20')[:, np.newaxis]
 
-    # POSTERIOR MODEL (Reasoning, could be literal or pragmatic)
+    # SAVE POSTERIOR MODEL (Reasoning, could be literal or pragmatic)
     with open(afname, 'w') as f:
         np.savetxt(f, np.hstack((rows, nz_final)), delimiter=', ', fmt='%s',
             header='syll,'+head)
@@ -75,7 +75,7 @@ def f_e_t_e(high_passingdict,passing_dict):
             run_church(churchfile,0,0,ndepth,mdepth,serv,rname,destination)
 
 
-            final = parse_church(rname,destination,exp)
+            final = parse_church(rname,destination,exp,indevals)
             nz_finp = final[np.sum(final, axis=1)!=0]
 
             aprefix = 'CLonly_%s' % (prefix)
@@ -85,23 +85,22 @@ def f_e_t_e(high_passingdict,passing_dict):
                     header='syll,'+head)
 
     # write syllogism order to file as well, just in case
-
     fname = ('syllattice_%squd%sfig%s_premiseorder.csv' % (exp,passing_dict['qud'],passing_dict['fig']))
     if not os.path.exists((destination+'csv/'+fname)):
         fid = open(fname,'w')
         for s,p in zip(syllrows,premises):
             fid.write('%s,%s%s%s %s%s%s%s\n' % 
-                (s, "(list '",p[2],p[1],"'",p[3],p[0],")"))
+                (s, "(list '",p[3],p[1],"'",p[2],p[0],")"))
         fid.close()
 
     if not os.path.exists((destination+'results/')):
         os.mkdir((destination+'results/'))
     if not os.path.exists((destination+'csv/')):
         os.mkdir((destination+'csv/'))
-    for data in glob.glob((destination+'*n'+str(n_b)+'_base'+str(br)+'*results')):
+    for data in glob.glob((destination+'*Alt'+str(altset)+'*_n'+str(n_b)+'_base'+str(br)+'*results')):
         shutil.copy(data,(destination+'results/'))
         os.remove(data)
-    for data in glob.glob((destination+'*n'+str(n_b)+'*.csv')):
+    for data in glob.glob((destination+'*Alt'+str(altset)+'*_n'+str(n_b)+'*.csv')):
         shutil.copy(data,(destination+'csv/'))
         os.remove(data)
     return syllrows, nz_final

@@ -19,7 +19,7 @@ from equiv_to_end import f_e_t_e
 
 def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain, priortype,
                     serv=0, nvcstr=0, vcstr=4, vcord='CA', exp='AIEO', fig='Full', 
-                    lis='lis', EPin=1, altset=1, semantics='tight',madworld=1):
+                    lis='lis', EPin=1, altset=1, semantics='tight',madworld=1, indevals=0):
 
     n_balls = int(n_b)
     base_rate = float(br)
@@ -31,6 +31,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     EP = int(EPin)
     altset = int(altset)
     madworld = int(madworld)
+    indevals = int(indevals)
     latlis = lis
     qud=1
 
@@ -40,11 +41,11 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     threshold = 0.5
 
     if (semantics=='tight'):
-        prefix = ('%s%s_qud%sMW%dfig%s_%sc%d%sEP%dAlt%d_n%d_base%.2f_s%dk' % 
-              (priortype,domain,qud,madworld,fig,exp,vc,vcord,EP,altset,n_balls,base_rate,n_samples))
+        prefix = ('%s%s_qud%sMW%dfig%s_%sc%d%sEP%dAlt%dIndevals%s_n%d_base%.2f_s%dk' % 
+              (priortype,domain,qud,madworld,fig,exp,vc,vcord,EP,altset,indevals,n_balls,base_rate,n_samples))
     else:
-        prefix = ('%s%s_qud%sMW%dfig%s_%sc%d%sEP%dAlt%dSem%s_n%d_base%.2f_s%dk' % 
-              (priortype,domain,qud,madworld,fig,exp,vc,vcord,EP,altset,semantics,n_balls,base_rate,n_samples))
+        prefix = ('%s%s_qud%sMW%dfig%s_%sc%d%sEP%dAlt%dSem%sIndevals%s_n%d_base%.2f_s%dk' % 
+              (priortype,domain,qud,madworld,fig,exp,vc,vcord,EP,altset,semantics,indevals,n_balls,base_rate,n_samples))
 
     high_passingdict = {'n_balls':n_b,'base_rate':br,'ndepth':ndepth,'mdepth':mdepth,\
     'rationalityQ':rationalityQ,'rationalityR':rationalityR,'serv':serv,'latlis':latlis,\
@@ -100,6 +101,7 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     Relations = [syll_logic.A_eval,syll_logic.E_eval,
                 syll_logic.I_eval,syll_logic.O_eval]
 
+
     if (semantics=='loose'):
         Relations = [syll_logic.A_eval_slack,syll_logic.E_eval_slack,
                     syll_logic.I_eval,syll_logic.O_eval]
@@ -144,11 +146,19 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
             prelations.append('Q')
         propsorig = list(itertools.product(termpairs,Relations))
         if (nvc==1): propsorig.append((('S','P'),syll_logic.NVC))
+        if (indevals==1): 
+            propsorig.append((('S','P'),syll_logic.AI_eval))
+            propsorig.append((('S','P'),syll_logic.IO_eval))
+            propsorig.append((('S','P'),syll_logic.EO_eval))
       #  propsqud = list(it.product(qud,Relations))
       #  propsalt = list(it.product(termpairsalt,Relations))
     props = propsorig#+propsalt
     propositions = list(itertools.product(termpairs,prelations))
     if (nvc==1): propositions.append((('S','P'),'NVC'))
+    if (indevals==1): 
+        propositions.append((('S','P'),'AI'))
+        propositions.append((('S','P'),'IO'))
+        propositions.append((('S','P'),'EO'))
     alements = ['mp','pm']
     blements = ['sm','ms']
     if (fig=='1'): 
@@ -183,7 +193,8 @@ def syllogism_model(n_b, br, qdepth, rdepth, rationalityQ, rationalityR, domain,
     passdict = {'qud':qud,'listener':latlis,'nvc':nvc,"vc":vc,
     "vcord":vcord,'posspremises':posspremises,'premises':premises,
     'propositions':propositions,'figdict':figdict,'fig':fig,
-    'ndepth':ndepth,'mdepth':mdepth,'n_balls':n_balls,'exp':exp,"EP":EP,"altset":altset,"madworld":madworld}
+    'ndepth':ndepth,'mdepth':mdepth,'n_balls':n_balls,'exp':exp,
+    "EP":EP,"altset":altset,"madworld":madworld,'indevals':indevals}
     
 
     # preprocessing/lifting (equivalence class)
