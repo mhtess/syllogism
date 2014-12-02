@@ -43,6 +43,8 @@ ggplot(df, aes(x=(rt/1000)))+
   xlab('time (sec)')+
   ylab('number of items')
 
+#df<-subset(df,rt<500000)
+
 ggplot(df, aes(x=(rt/1000),fill=condition))+
   geom_histogram(binwidth=3)+
   theme_bw()+
@@ -64,6 +66,8 @@ ggplot(melt(df[3:11]), aes(x=value,fill=condition))+
   ggtitle('raw slider values')+
   xlab('slider value, binsize = 10')+
   ylab('number of responses')
+
+
 property_labels <- c('Q_XYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ','Q_XnYnZ','Q_nXYnZ','Q_nXnYZ','Q_nXnYnZ')
 
 df$sum<-rowSums(df[,property_labels])
@@ -84,8 +88,6 @@ the frequency distribution appears exponential while the plausibility distributi
 
 ### Raw sum distributions
 ```{r}
-
-
 ggplot(melt(df[c('condition','sum')]), aes(x=value,fill=condition))+
   geom_histogram(binwidth=10)+
   facet_wrap(~condition)+
@@ -102,10 +104,19 @@ Frequency doesn't show this. Instead, we get a great number which sum to approxi
 **mini-hypothesis: the sum=100 responses occur when max response is near 100, i.e. when the 8-state is {100, 0, 0, 0, 0, 0, 0, 0}.** We're going to plot the max response vs. the sum of responses, for each item.
 
 ```{r}
+
+
 ggplot(df[c('condition','sum','max')],aes(x=sum,y=max,color=condition))+
   geom_point(alpha=0.8,position=position_jitter(10))+
   facet_wrap(~condition)+
   theme_bw()
+
+ggplot(subset(df,sum<120),aes(x=max))+
+  geom_histogram(binwidth=2)+
+  facet_wrap(~condition)+
+  theme_bw()+
+  ggtitle('distribution of max slide val for sum(slider) < 120')
+
 ```
 
 This plot must reside above the y=x line. The only thing I take away from this is that there are many points in the top left corner for the frequency judgments, supporting the mini-hypothesis above.
@@ -117,6 +128,23 @@ df_norm = ddply(df, .(domain, condition), function(x) {
   means = x[,c('Q_XYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ','Q_XnYnZ','Q_nXYnZ','Q_nXnYZ','Q_nXnYnZ')]
   means / rowSums(means)
 })
+
+df_norm$max<-apply(df_norm[,property_labels],1,max)
+
+ggplot(df_norm,aes(x=max,fill=condition))+
+  geom_histogram(binwidth=0.02,aes(y=..count../sum(..count..)))+
+  facet_wrap(~condition)+
+  theme_black()+
+  xlab("\nMaximum (normalized) slider value")+
+  ylab("Proportion of responses\n")+
+  #ggtitle('distribution of max slide val for normalized values')+
+  theme(strip.text= element_text(size=30),
+     #   plot.title= element_text(size=),
+        axis.title=element_text(size=32),
+        axis.text=element_text(size=25))+
+  guides(fill=FALSE)#guide_legend(title=NULL))
+
+df_norm<- df_norm[,-11]
 
 ggplot(melt(df_norm), aes(x=value,fill=condition))+
   geom_histogram(binwidth=0.1)+
@@ -143,6 +171,11 @@ This note holds for n's = 35. Frequency is mostly strictly decreasing, while pla
 ### 8-state multinomial elicitation
 
 ```{r, fig.width=16, fig.height=8}
+
+#df_norm$max<-apply(df_norm[,property_labels],1,max)
+#df_norm<-subset(df_norm,max<0.95)
+#df_norm<- df_norm[,-11]
+
 ci_bs <- agr.ci(melt(df_norm))
 ci_bs$domain<-factor(ci_bs$domain,
                      levels=c('lightbulb','tomatoplant','strawberry',
@@ -152,6 +185,14 @@ ci_bs$variable<-factor(ci_bs$variable,
                                 'Q_nXnYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ',
                                 'Q_XYZ'))
 
+mean_cast <-dcast(ci_bs[,1:4], value.var='value',...~condition)
+with(mean_cast,cor(frequency,plausibility))
+
+ggplot(mean_cast,aes(x=frequency,y=plausibility,color=domain))+
+geom_point(size=4)+
+  theme_bw()+
+  xlim(0,0.4)+
+  ylim(0,0.4)
 
 ggplot(ci_bs, aes(x=variable, y=value, fill=condition)) + 
   geom_bar(position=position_dodge(.6), stat='identity')+
@@ -197,7 +238,83 @@ ggplot(df_nmelt, aes(x=variable, y=value, colour=condition, fill=condition))+
 ```
 
 -----
+Literal models using frequency and plausibility.
 
+```{r}
+# Load model predictions, for different parameter (n_object) values
+model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_'
+
+syllogisms = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1')
+
+if (exists('models')){remove(models)}
+EP = 1
+n_obj=6
+  model.domains = data.frame()
+domains<-c("cracker","knife","lightbulb","strawberry")
+conditions<-c("plausibility","frequency")
+
+for (cond in conditions){
+for (d in domains){
+    model.all<-read.csv(paste(model.dir,cond,'/00/csv/lis_N0_M0_',cond,
+                              d,'_qud1figFull_AIEOc4CAEP',EP,'_n',n_obj,
+                              '_base0.00_s100k_alphQ1_alphR1.csv',sep=''))[c(1,6:9)]
+    #model.sub<-model.all[model.all$X..syll%in%syllogisms,]
+    model.sub<-model.all
+    model.sub$domain <- d
+    model.sub$cond<- cond
+    model.m<-melt(model.sub,
+                  id.vars=c('X..syll','domain','cond'))
+    model.domains<-rbind(model.domains, model.m)
+  }
+}
+mod.cast<-dcast(model.domains, value.var='value',...~cond)
+with(mod.cast,cor(frequency,plausibility))
+```
+
+-----
+Pragmatics models using frequency and plausibility.
+
+```{r}
+# Load model predictions, for different parameter (n_object) values
+model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_'
+
+syllogisms = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1')
+
+if (exists('models')){remove(models)}
+EP = 1
+n_obj= 6
+alpha = 3
+  model.domains = data.frame()
+domains<-c("cracker","knife","lightbulb","strawberry")
+conditions<-c("plausibility","frequency")
+
+for (cond in conditions){
+for (d in domains){
+    model.all<-read.csv(paste(model.dir,cond,'/10/csv/lis_N1_M0_',cond,
+                              d,'_qud1figFull_AIEOc4CAEP',EP,'_n',n_obj,
+                              '_base0.00_s100k_alphQ',alpha,'_alphR1.csv',sep=''))[c(1,6:9)]
+    #model.sub<-model.all[model.all$X..syll%in%syllogisms,]
+    model.sub<-model.all
+    model.sub$domain <- d
+    model.sub$cond<- cond
+    model.m<-melt(model.sub,
+                  id.vars=c('X..syll','domain','cond'))
+    model.domains<-rbind(model.domains, model.m)
+  }
+}
+mod.cast<-dcast(model.domains, value.var='value',...~cond)
+with(mod.cast,cor(frequency,plausibility))
+
+ggplot(data=subset(model.domains,X..syll%in%syllogisms), aes(x=variable,y=value,fill=cond))+
+  geom_bar(stat='identity',position=position_dodge())+
+  theme_black()+
+  facet_grid(domain~X..syll)
+```
+
+
+
+
+----
 OED stuff
 
 ```{r, kl plots,fig.width=10,fig.height=6,echo=TRUE}
@@ -231,6 +348,13 @@ ggplot(data=oed.res,aes(x=x,y=kl,fill=valid))+
   geom_bar(stat='identity')+
   facet_wrap(~prior,scale='free_x')+
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
+
+ggplot(data=subset(oed.res,prior='frequenc'),aes(x=x,y=kl,fill=valid))+
+  geom_bar(stat='identity')+
+  theme_bw()+
+  xlab("syllogism (experiment)")+
+  ylab("expected KL")+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
 ```
 
 Good to see that these basically look the same.
@@ -249,27 +373,49 @@ toonec<-c("AE4","AA1","EA1","AE2","EA2")
 
 oed.ccee<-subset(oed.res, !(syll%in%toonec) & prior=='plausibi')
 
-top16<-oed.ccee[order(-oed.ccee$kl)[seq(1,16,4)],]
+top16<-oed.ccee[order(-oed.ccee$kl)[seq(1,16,1)],]
+topchoice<-top16[seq(1,16,4),]
+topchoice<-top16[c(1,2,3,5,10,12,13),]
 fpath<-'/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/'
 m.df<-read.csv(paste(fpath,'3modeldata_oed_plausibility_depth0iidArgStr_emprArgStr_emprCLonly.csv',sep=''))[-1]
 
-m.df<-subset(m.df,X..syll%in%top16$syll)
+m.df<-subset(m.df,X..syll%in%topchoice$syll)
 mm.df<-melt(m.df,id.vars=c('model','X..syll'))
 mm.df$response<-as.character(mm.df$variable)
 
 mm.df$domain<-str_split_fixed(mm.df$response, "[.]", 2)[,1]
 mm.df$conclusion<-str_split_fixed(mm.df$response, "[.]", 2)[,2]
 
-ggplot(data=subset(mm.df,substrRight(as.character(variable),3)%in%c("Isp","Osp")),aes(x=domain,y=value))+
-  geom_bar(aes(alpha=conclusion,fill=model),stat='identity',position='dodge')+
-  facet_wrap(~X..syll)+
+ggplot(data=subset(mm.df,substrRight(as.character(variable),3)%in%c("Isp","Osp")),aes(x=conclusion,y=value))+
+  geom_bar(aes(fill=model),stat='identity',position='dodge')+
+  facet_grid(domain~X..syll)+
 scale_alpha_manual(values=c(1,0.5))+
   #scale_x_discrete(labels=c("some C are A","some C are not A"))+
   theme_bw()+
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
+
+
+
+
 ```
 
+```{r}
 
+a<-subset(mm.df,(model%in%c('argstr_empr','clonly_empr') & (dom=='cracker')))
+
+
+
+ggplot(data=subset(a,X..syll%in%c('AA1','II1')),aes(x=conclusion,y=value))+
+  geom_bar(aes(fill=model),stat='identity',position='dodge')+
+  facet_wrap(~X..syll)+
+scale_alpha_manual(values=c(1,0.5))+
+  ylab('predicted response')+
+  scale_x_discrete(labels=c("All C are A","No C are A","some C are A","some C are not A"))+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
+
+
+```
 
 
 
