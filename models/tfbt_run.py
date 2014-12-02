@@ -2,7 +2,6 @@
 import os
 import sys
 from syll_model import syllogism_model
-import syllmodel_given_data as tfbt
 from numpy import arange
 
 srv = sys.argv[1]
