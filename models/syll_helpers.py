@@ -10,6 +10,6 @@ def grouped(iterable, n):
     return itertools.izip(*[iter(iterable)]*n)
 
 def decode_premises(premise,figdict):
-    mood = premise[2]+premise[3]
+    mood = premise[3]+premise[2]
     figure = figdict[premise[1]+premise[0]]
     return mood+str(figure)

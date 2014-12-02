@@ -85,7 +85,7 @@ def f_e_t_e(high_passingdict,passing_dict):
                     header='syll,'+head)
 
     # write syllogism order to file as well, just in case
-    fname = ('syllattice_%squd%sfig%s_premiseorder.csv' % (exp,passing_dict['qud'],passing_dict['fig']))
+    fname = ('syllattice_%squd%sfig%sindeval%s_premiseorder.csv' % (exp,passing_dict['qud'],passing_dict['fig'],indevals))
     if not os.path.exists((destination+'csv/'+fname)):
         fid = open(fname,'w')
         for s,p in zip(syllrows,premises):
