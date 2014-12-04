@@ -96,6 +96,12 @@
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
 \begin{document} \title{Syllogistic reasoning as communication}
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+
 \author{Michael Henry Tessler, Noah D. Goodman} \renewcommand{\today}{manuscript draft} \maketitle
 
 
@@ -138,11 +144,17 @@ Most syllogisms are invalid: there is no relation between A \& C which is true i
 
 \subsection{Sketch of paper}
 
-In this paper, we aim to explain human reasoning performance on the syllogistic task by formalizing a number of intuitions. The first is that human reasoning is best characterized as reasoning under \emph{uncertainty}, and that this in turn is best described by the tools of probability theory. We formalize probabilistic syllogistic reasoning with a model that reasons over abstract \emph{situations}, consisting of objects with properties, which are in turn sampled stochastically. These abstract situations bear some resemblance to mental models on syllogisms \cite{JL1983}. We begin by comparing this model to two meta-analysis data sets and show an overall strong correspondence to the data.
+In this paper, we consider human reasoning performance on the syllogistic task as Bayesian inference. We formalize probabilistic syllogistic reasoning with a model that reasons over abstract \emph{situations}---consisting of objects with properties---which are sampled stochastically. These abstract situations bear some resemblance to mental models applied to syllogisms \cite{JL1983}. Since our approach is fundamentally Bayesian, however, the prior distribution must be taken seriously. It has been known for some time that the content of syllogisms affect reasoning \cite{Wilkins28} but never before has a model been able to accommodate background knowledge without positing additional processing steps and/or some assumed categorical distinction between believable and unbelievable statements. Background knowledge fits naturally within the Bayesian model framework, as it simply describes an empirical prior distribution over situations. We test the influence of the prior distribution over situations (i.e. background knowledge) on conclusions drawn in 4 syllogisms where our model predicts differences. The model predicts subtle graded effects of background knowledge and the experiment confirms these predictions. 
 
-The model we present is a Bayesian model and that means the prior distribution must be taken seriously. It's known that the content of syllogisms affect reasoning \cite{Wilkins28} but never before has a model been able to accommodate background knowledge without positing additional processing steps and/or some assumed categorical distinction between believable and unbelievable statements. Background knowledge fits naturally within the Bayesian model framework, as it simply describes an alternative prior distribution over situations. We test the influence of the prior distribution over situations (i.e. background knowledge) on conclusions drawn in a number of syllogisms where our model predicts differences. The model predicts subtle graded effects of background knowledge and the experiment confirms these predictions. 
+We attempt to scale up the Bayesian syllogism model with a generic prior to account for a number of data sets in the literature (Chater \& Oaksford Meta-analysis, Khemlani \& Johnson-Laird meta-analysis, Rips, ...). The overall correspondence to these data is strong, suggesting the gradedness in human reasoning can be considered as probabilistic inference. The Bayesian model fails, however, to account for a robust qualitative phenomenon in syllogistic reasoning: a robust preference for one conclusion in syllogisms with two logically valid conclusions. 
 
-In addition to the rich quantitative data that characterize the syllogistic reasoning task, a number of important qualitative phenomena have been observed. These cannot be understood by the semantics of the language used in syllogistic reasoning tasks alone. We go beyond natural language semantics, and consider the pragmatics of language understanding, the idea that people derive the meaning of words by a social reasoning process between agents. We formalize this intuition using recent advances in the field of probabilistic pragmatics. In this framework, the reasoner imagines the premises of the syllogism to come from an informative agent (``the experimenter''). This bears some similarity to previous approaches that examine the role of scalar implicature in syllogistic reasoning. Importantly, our model makes use of the implicit Question Under Discussion (QUD) in the syllogistic task, i.e. ``what is the relationship between the conclusion terms?'' and leads to interesting qualitative phenomena that differ from what one would expect from scalar implicature alone. In Experiment 2, we investigate a subset of syllogisms expected to have strong pragmatic effects. We show the pragmatic reasoning model provides the best fit to Experiment 2 data. We also show that the pragmatics model fits the Meta-analysis and Experiment 1 data even better than the original models.
+This phenomenon cannot be understood by the semantics of language alone. We go beyond natural language semantics, and use recent developments in the field of probabilistic pragmatics to attempt to consider pragmatic effects in the syllogistic reasoning task. We extend the classic RSA model to the syllogistic reasoning task, and replicate the qualitative finding that standalone scalar implicature (i.e. that the quantifier ``some'' may in fact imply ``not all'') does not explain syllogistic reasoning tasks. 
+
+If we consider syllogistic reasoning as a sort of conversation, however, then we must decide what is at stake in the conversation, or what is the QUD. We replace the standard RSA QUD (``what is the state of the world'?') with a syllogistic QUD (``what is the relationship between the conclusion terms''?) and demonstrate how this leads to different pragmatic inferences than standalone scalar implicature. Importantly, this breaks the tie between equally valid conclusions. We show how the pragmatics QUD model provides an overall better fit to the large published data sets.
+
+We go on to ask how background knowledge interacts with pragmatic inference. We found that the pragmatics model makes the intriguingly strong prediction of an asymmetry reversal for certain syllogisms with certain background knowledge. We considered an alternative pragmatics model which includes a ``which world?'' random-variable, and hence does inference over both the conclusion as well as the domain under discussion. This model predicts no reversal of the asymmetry under very strong background knowledge (because in essence, when the premises are thought to be extremely unlikely a priori, the reasoner thinks the experimenter is thinking of a different situation than what the typical definition would imply). We tested the predictions of these two alternative models in a second experimenter and found that the model that does simultaneous inference over which world and which conclusion both captures the qualitative phenomena as well as provides a better quantitative fit to the data.
+
+
 
 Finally, our model is based on a truth-functional semantics and as such, it is able to accommodate any quantified sentence with a truth-functional meaning. We extend the model by looking at 2 syllogistic reasoning data sets that use the quantifiers \emph{most} and \emph{few}. 
 
@@ -479,9 +491,34 @@ All Bs are Cs
 
 This is one of the easiest syllogisms insofar as most people draw a correct valid conclusion \cite{Khemlani2012}. The valid conclusion they draw is \emph{All As are Cs}. There is another valid conclusion however, namely \emph{Some As are Cs}. Most respondents do not seem to recognize this as a valid alternative. If people were following the standard logical meaning of the quantifiers, we would expect subjects to draw each valid conclusion about 50\% of the time. Subjects do not do express this ambivalence, however.  They greatly prefer the \emph{All} conclusion. This is apparent even when the two complete arguments are presented separately in the Evaluation task \cite{Rips1994}. 
 
-\subsection{Pragmatics in syllogistic reasoning}
+\section{Pragmatics in syllogistic reasoning}
 
-It's been suggested that the reason for this asymmetry among equally valid conclusions is a result of a scalar implicature \red{cite somebody}. Scalar implicature is the phenomenon where a relatively weak utterance is thought to imply the negation of a stronger alternative. The most well studied of these scales is the quantifier scale, which is thought to none, some, and all. 
+It's been suggested that the reason for this asymmetry among equally valid conclusions is a result of a scalar implicature \red{cite somebody}. Scalar implicature is the phenomenon where a relatively weak utterance is thought to imply the negation of a stronger alternative. The most well studied of these scales is the quantifier scale, which is thought to consist of none, some, and all, in increasing order. 
+
+
+\subsection{Semantics and presuppositions}
+
+In the model presented so far, we have assumed all properties are instantiated at least once in every situation, what linguists and philosophers call \emph{existential import}. We will call this semantics where everything has existential import as ``plentify world semantics''. This idea is that quantifier sentences cannot be vacuously true (e.g. \emph{All As are Bs} cannot be true if there are no \emph{As}). 
+
+There are other reasonable assumptions about the semantics of the quantifier sentences that are worth considering. A somewhat more permissive set of definitions would consider that the universal quantifiers \emph{none} and \emph{all} could be vacuously true \red{cite Aristotle}. We might call this the ``smart aleck semantics'', following in the steps of \red{Guerts, presupposition paper reference}. Under this semantics, the particular quantifier \emph{some} would still include the existential claim that ``there exists at least one''. 
+
+In between the ``smart aleck semantics'' and the ``plentify world semantics'' is one in which you take Aristotle's point of view (the SAS view) but claim that the definite determiner phrase ``of the'' grants existential import to the set in question (i.e. ``All blickets are red'' doesn't necessarily imply that there are any blickets at all but ``All of the blickets are red'' means that there are some blickets [and hence, also red things]). We will call this view the ``definite determined semantics'' or DDS. This in turn means that the subject term of each syllogistic sentence has existential import. This semantics will still allow empty terms for the quantifiers ``none'' and ``some...not''.
+
+We leave for future work a more fine-grained test of the psychological reality of these alternative semantics in the syllogistic reasoning task. Instead we briefly demonstrate that at the literal level, all semantics given roughly similar results, though at the pragmatic SAS and DDS provide somewhat counterintuitive and implausible results. 
+
+\red{OED on these different models? probably just to show some examples}
+
+\subsection{Alternatives and pragmatic inference}
+
+It's known that the salience of different alternatives of what a speaker could have greatly impacts the quality and strength of a pragmatic inference. In the pragmatics syllogism model, we considered the abstract alternative space of all possible other syllogistic premises \red{(or, the 15 syllogistic premises of the same figure)} as the space of things the experimenter could have produced. Though this is consistent with the generative model of many syllogism experiments (syllogisms sampled uniformly from the space of all possible syllogisms), there are other reasonable ways of specifying the alternative set. 
+
+1. Single-edit distance on quantifier
+
+2. Single-edit distance of quantifier / term -ordering
+
+3. Syllogisms of the same figure
+
+4. All possible syllogisms
 
 
 \section{Formal semantics and generalized quantifiers}
