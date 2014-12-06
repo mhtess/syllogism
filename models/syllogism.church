@@ -1,0 +1,88 @@
+(define quantifiers (list 'all 'some 'none 'not-all))
+(define sentence-forms (list 'A-B 'B-A 'B-C 'C-B 'A-C 'C-A))
+
+(define syllogistic-sentences 
+  (flatten
+    (map (lambda (y) 
+        (map (lambda (x) 
+          (string-append x '. y)) 
+        sentence-forms))
+    quantifiers)))
+
+(define unpack-sentence (lambda (sentence)
+  (let ([sentence-fragments (string-split sentence '.)])
+    (first sentence-fragments))))
+
+
+(define all-true (lambda (lst) (apply and lst)))
+(define some-true (lambda (lst) (apply or lst)))
+
+; assume the situations constructed have at least one object with each of the properties
+(define existential-import (lambda (A B objects) 
+                             (and (some-true (map A objects)) (some-true (map B objects)))))
+
+(define all (lambda (A B)
+              (if (existential-import A B objects)
+                  (all-true (map (lambda (x) (if (A x) (B x) true)) 
+                                 objects))
+                  false)))
+
+(define some (lambda (A B)
+               (if (existential-import A B objects)
+                   (some-true (map (lambda (x) (if (A x) (B x) false)) 
+                                   objects))
+                   false)))
+
+(define none (lambda (A B)
+               (if (existential-import A B objects)
+                   (all-true (map (lambda (x) (if (A x) (not (B x)) true)) 
+                                  objects))
+                   false)))
+
+(define not-all (lambda (A B)
+                 (if (existential-import A B objects)
+                     (some-true (map (lambda (x) (if (A x) (not (B x)) false)) 
+                                     objects))
+                     false)))
+
+
+(define (raise-to-power dist alph)
+  (list (first dist) (map (lambda (x) (pow x alph)) (second dist))))
+
+
+; pass strings, which then call functions of the same name
+(define (meaning word)
+  (case word
+        (('all) all)
+        (('some) some)
+        (('not-all) not-all)
+        (('none) none)
+        (('A) A)
+        (('B) B)
+        (('C) C)))
+
+; the reasoner has uninformative prior beliefs about what the conclusion should be
+(define (conclusion-prior) (uniform-draw (list 'all 'some 'not-all 'none)))
+; rhe reasoner has uninformative prior beliefs about what arguments the experimenter could give
+(define (premise-prior) (uniform-draw (list 'all 'some 'not-all 'none)))
+
+; parameter 1: the reasoner's prior beliefs about the rarity of properties
+(define br 0.25)
+; parameter 2: number of objects in the situation the reasoner imagines
+(define objects (list 'o1 'o2 'o3))
+
+
+(define equivalent-worlds
+  (mem
+   (lambda ()
+     (enumeration-query
+      ; properties map objects to truth-values i.e. whether or not the object has the property
+      ; together with the list of objects, these represent situations over which reasoning occurs
+      (define A (mem (lambda (x) (flip br))))
+      (define B (mem (lambda (x) (flip br))))
+      (define C (mem (lambda (x) (flip br))))
+
+
+
+      ))))
+
