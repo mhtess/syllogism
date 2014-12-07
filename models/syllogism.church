@@ -16,8 +16,6 @@
   (let ([sentence-fragments (string-split sentence '.)])
     (flatten (list (string-split (first sentence-fragments) '-) (second sentence-fragments))))))
 
-
-
 (define all-true (lambda (lst) (apply and lst)))
 (define some-true (lambda (lst) (apply or lst)))
 
@@ -63,6 +61,30 @@
         (('not-all) not-all)
         (('none) none)))
 
+(define (forms fig)
+  (case fig
+        ((1) (list 'B-A 'C-B))
+        ((2) (list 'A-B 'C-B))
+        ((3) (list 'B-A 'B-C))
+        ((4) (list 'A-B 'B-C))))
+
+(define is-premise1? (lambda (sentence figure) 
+  (equal? (first (regexp-split sentence '.)) (first (forms figure)))))
+
+(define is-premise2? (lambda (sentence figure) 
+  (equal? (first (regexp-split sentence '.)) (second (forms figure)))))
+
+(define premise-1s (lambda (figure)
+  (filter 
+    (lambda (sent) (is-premise1? sent figure))
+    syllogistic-sentences)))
+
+(define premise-2s (lambda (figure)
+  (filter 
+    (lambda (sent) (is-premise2? sent figure))
+    syllogistic-sentences)))
+
+
 ; the reasoner has uninformative prior beliefs about what the conclusion should be
 (define (conclusion-prior) (uniform-draw (list 'all 'some 'not-all 'none)))
 ; rhe reasoner has uninformative prior beliefs about what arguments the experimenter could give
@@ -93,8 +115,7 @@
 
 
      ;true
-     (plentiful-worlds A B C objects)
-        ))))
+     (plentiful-worlds A B C objects)))))
 
 
 ; parameter 2: number of objects in the situation the reasoner imagines
@@ -111,6 +132,28 @@
 
 (define is-conclusion? (lambda (x) (and (equal? (first (regexp-split x '.)) 'C-A))))
 
+(define alpha 3)
+
+(define reasoner1
+  (mem (lambda  (premises figure)
+    (enumeration-query
+       (define state (apply multinomial equivalent-worlds))
+       (define true-sentences (state->sentences state))
+       (define conclusion (uniform-draw (filter is-conclusion? true-sentences)))
+
+       conclusion
+
+       (equal? premises (apply multinomial (experimenter1 conclusion figure)))))))
+
+(define experimenter1
+  (mem (lambda (conclusion figure)
+     (enumeration-query
+      (define premises (list (uniform-draw (premise-1s figure)) (uniform-draw (premise-2s figure))))
+      
+      premises
+      
+      (equal? conclusion (apply multinomial (raise-to-power (reasoner0 premises) alpha)))))))
+
 (define reasoner0
    (mem 
     (lambda  (premises)
@@ -125,5 +168,6 @@
           (is-element? (first premises) true-sentences)
           (is-element? (second premises) true-sentences))))))
 
-(reasoner0 (list 'B-A.all 'C-B.all))
-
+;(reasoner0 (list 'B-A.all 'C-B.all))
+;(experimenter1 'C-A.all 1)
+(reasoner1 (list 'B-A.all 'C-B.all) 1)
