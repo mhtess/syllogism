@@ -1,6 +1,9 @@
 (define quantifiers (list 'all 'some 'none 'not-all))
 (define sentence-forms (list 'A-B 'B-A 'B-C 'C-B 'A-C 'C-A))
 
+(define is-element? (lambda (el lst)
+  (>= (position lst el) 0)))
+
 (define syllogistic-sentences 
   (flatten
    (map (lambda (y) 
@@ -10,8 +13,10 @@
         quantifiers)))
 
 (define unpack-sentence (lambda (sentence)
-                          (let ([sentence-fragments (string-split sentence '.)])
-                            (flatten (list (string-split (first sentence-fragments) '-) (second sentence-fragments))))))
+  (let ([sentence-fragments (string-split sentence '.)])
+    (flatten (list (string-split (first sentence-fragments) '-) (second sentence-fragments))))))
+
+
 
 (define all-true (lambda (lst) (apply and lst)))
 (define some-true (lambda (lst) (apply or lst)))
@@ -20,25 +25,28 @@
 (define existential-import (lambda (A B objects) 
                              (and (some-true (map A objects)) (some-true (map B objects)))))
 
-(define all (lambda (A B)
+(define plentiful-worlds (lambda (A B C objects)
+        (and (some-true (map A objects)) (some-true (map B objects)) (some-true (map C objects)))))
+
+(define all (lambda (A B objects)
               (if (existential-import A B objects)
                   (all-true (map (lambda (x) (if (A x) (B x) true)) 
                                  objects))
                   false)))
 
-(define some (lambda (A B)
+(define some (lambda (A B objects)
                (if (existential-import A B objects)
                    (some-true (map (lambda (x) (if (A x) (B x) false)) 
                                    objects))
                    false)))
 
-(define none (lambda (A B)
+(define none (lambda (A B objects)
                (if (existential-import A B objects)
                    (all-true (map (lambda (x) (if (A x) (not (B x)) true)) 
                                   objects))
                    false)))
 
-(define not-all (lambda (A B)
+(define not-all (lambda (A B objects)
                   (if (existential-import A B objects)
                       (some-true (map (lambda (x) (if (A x) (not (B x)) false)) 
                                       objects))
@@ -62,13 +70,10 @@
 
 ; parameter 1: the reasoner's prior beliefs about the rarity of properties
 (define br 0.25)
-; parameter 2: number of objects in the situation the reasoner imagines
-(define objects (list 'o1 'o2 'o3 'o4 'o5 'o6))
 
-
-(define equivalent-worlds
+(define equivalent-transform
   (mem
-   (lambda ()
+   (lambda (objects)
      (enumeration-query
       ; properties map objects to truth-values i.e. whether or not the object has the property
       ; together with the list of objects, these represent situations over which reasoning occurs
@@ -83,10 +88,42 @@
       
       (map 
         (lambda (sentence) (let ([s (unpack-sentence sentence)]) 
-          ((meaning (third s)) (property (first s)) (property (second s))))) 
+          ((meaning (third s)) (property (first s)) (property (second s)) objects))) 
         syllogistic-sentences)
 
-      true
-      ))))
 
-(length (first (equivalent-worlds)))
+     ;true
+     (plentiful-worlds A B C objects)
+        ))))
+
+
+; parameter 2: number of objects in the situation the reasoner imagines
+(define objs (list 'o1 'o2 'o3 'o4))
+
+(define equivalent-worlds (equivalent-transform objs))
+
+(define state->sentences
+  (lambda (situation) 
+    (filter 
+      (lambda (x) (list-ref situation (position syllogistic-sentences x)))
+      syllogistic-sentences)))
+
+
+(define is-conclusion? (lambda (x) (and (equal? (first (regexp-split x '.)) 'C-A))))
+
+(define reasoner0
+   (mem 
+    (lambda  (premises)
+      (enumeration-query
+       (define state (apply multinomial equivalent-worlds))
+       (define true-sentences (state->sentences state))
+       (define conclusion (uniform-draw (filter is-conclusion? true-sentences)))
+
+       conclusion
+      
+       (and 
+          (is-element? (first premises) true-sentences)
+          (is-element? (second premises) true-sentences))))))
+
+(reasoner0 (list 'B-A.all 'C-B.all))
+
