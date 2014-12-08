@@ -134,25 +134,51 @@
 
 (define alpha 3)
 
+(define (marginalize interpretation)
+  (list
+    (list 'C-A.all 'C-A.some 'C-A.none 'C-A.not-all)
+    (list
+     (sum (map (lambda (y) (second y)) (filter (lambda (x) (first (first x)))
+                                               (zip (first interpretation) (second interpretation)))))
+     (sum (map (lambda (y) (second y)) (filter (lambda (x) (second (first x)))
+                                               (zip (first interpretation) (second interpretation)))))
+     (sum (map (lambda (y) (second y)) (filter (lambda (x) (third (first x)))
+                                               (zip (first interpretation) (second interpretation)))))
+     (sum (map (lambda (y) (second y)) (filter (lambda (x) (fourth (first x)))
+                                               (zip (first interpretation) (second interpretation))))))))
+
 (define reasoner1
   (mem (lambda  (premises figure)
     (enumeration-query
        (define state (apply multinomial equivalent-worlds))
-       (define true-sentences (state->sentences state))
-       (define conclusion (uniform-draw (filter is-conclusion? true-sentences)))
+       (define true-conclusions (filter is-conclusion? (state->sentences state)))
+       (define conclusion (uniform-draw true-conclusions))
+       (define which-conclusions (list 
+            (is-element? 'C-A.all true-conclusions)
+            (is-element? 'C-A.some true-conclusions)
+            (is-element? 'C-A.none true-conclusions)
+            (is-element? 'C-A.not-all true-conclusions)))
 
        conclusion
+       ;true-conclusions
+       ;which-conclusions
 
-       (equal? premises (apply multinomial (experimenter1 conclusion figure)))))))
+       (equal? premises (apply multinomial (experimenter1 conclusion figure)))
+       ;(equal? premises (apply multinomial (experimenter1 true-conclusions figure)))
+       ;(equal? premises (apply multinomial (experimenter1 which-conclusions figure)))
+       ))))
 
 (define experimenter1
-  (mem (lambda (conclusion figure)
+  (mem (lambda (QUDval figure)
      (enumeration-query
       (define premises (list (uniform-draw (premise-1s figure)) (uniform-draw (premise-2s figure))))
       
       premises
       
-      (equal? conclusion (apply multinomial (raise-to-power (reasoner0 premises) alpha)))))))
+      (equal? 
+        QUDval 
+        ;(apply multinomial (raise-to-power (marginalize (reasoner0 premises)) alpha)))))))
+        (apply multinomial (raise-to-power (reasoner0 premises) alpha)))))))
 
 (define reasoner0
    (mem 
@@ -161,9 +187,16 @@
        (define state (apply multinomial equivalent-worlds))
        (define true-sentences (state->sentences state))
        (define conclusion (uniform-draw (filter is-conclusion? true-sentences)))
+       (define which-conclusions (list 
+            (is-element? 'C-A.all true-sentences)
+            (is-element? 'C-A.some true-sentences)
+            (is-element? 'C-A.none true-sentences)
+            (is-element? 'C-A.not-all true-sentences)))
 
        conclusion
-      
+;       (filter is-conclusion? true-sentences)
+;        which-conclusions
+
        (and 
           (is-element? (first premises) true-sentences)
           (is-element? (second premises) true-sentences))))))
