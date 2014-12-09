@@ -1,8 +1,14 @@
-(define quantifiers (list 'all 'some 'none 'not-all))
-(define sentence-forms (list 'A-B 'B-A 'B-C 'C-B 'A-C 'C-A))
+(define all-true (lambda (lst) (apply and lst)))
+(define some-true (lambda (lst) (apply or lst)))
 
 (define is-element? (lambda (el lst)
   (>= (position lst el) 0)))
+
+(define (raise-to-power dist alph)
+  (list (first dist) (map (lambda (x) (pow x alph)) (second dist))))
+
+(define quantifiers (list 'all 'some 'none 'not-all))
+(define sentence-forms (list 'A-B 'B-A 'B-C 'C-B 'A-C 'C-A))
 
 (define syllogistic-sentences 
   (flatten
@@ -11,69 +17,6 @@
                  (string-append x '. y)) 
                sentence-forms))
         quantifiers)))
-
-(define unpack-sentence (lambda (sentence)
-  (let ([sentence-fragments (string-split sentence '.)])
-    (flatten (list (string-split (first sentence-fragments) '-) (second sentence-fragments))))))
-
-(define all-true (lambda (lst) (apply and lst)))
-(define some-true (lambda (lst) (apply or lst)))
-
-(define has-property? (lambda (x i) (list-ref (ABC x) (position property-order i))))
-
-
-; assume the situations constructed have at least one object with each of the properties
-(define existential-import (lambda (A B objects) 
-                             (and (some-true (map A objects)) (some-true (map B objects)))))
-
-(define existential-import-m (lambda (ABC objects term1 term2)
-                             (and (some-true (map (lambda (x) (has-property? x term1)) objects))
-                                  (some-true (map (lambda (x) (has-property? x term2)) objects)))))
-
-(define plentiful-worlds (lambda (A B C objects)
-        (and (some-true (map A objects)) (some-true (map B objects)) (some-true (map C objects)))))
-
-(define all (lambda (A B objects)
-              (if (existential-import A B objects)
-                  (all-true (map (lambda (x) (if (A x) (B x) true)) 
-                                 objects))
-                  false)))
-
-(define some (lambda (A B objects)
-               (if (existential-import A B objects)
-                   (some-true (map (lambda (x) (if (A x) (B x) false)) 
-                                   objects))
-                   false)))
-
-(define none (lambda (A B objects)
-               (if (existential-import A B objects)
-                   (all-true (map (lambda (x) (if (A x) (not (B x)) true)) 
-                                  objects))
-                   false)))
-
-(define not-all (lambda (A B objects)
-                  (if (existential-import A B objects)
-                      (some-true (map (lambda (x) (if (A x) (not (B x)) false)) 
-                                      objects))
-                      false)))
-
-(define all-m (lambda (ABC objects term1 term2)
-              (if (existential-import-m ABC objects term1 term2)
-                  (all-true (map (lambda (x) (if (has-property? x term1) (has-property? x term2) true)) 
-                                 objects))
-                  false)))
-
-
-(define (raise-to-power dist alph)
-  (list (first dist) (map (lambda (x) (pow x alph)) (second dist))))
-
-; pass strings, which then call functions of the same name
-(define (meaning word)
-  (case word
-        (('all) all)
-        (('some) some)
-        (('not-all) not-all)
-        (('none) none)))
 
 (define (forms fig)
   (case fig
@@ -88,6 +31,8 @@
 (define is-premise2? (lambda (sentence figure) 
   (equal? (first (regexp-split sentence '.)) (second (forms figure)))))
 
+(define is-conclusion? (lambda (x) (and (equal? (first (regexp-split x '.)) 'C-A))))
+
 (define premise-1s (lambda (figure)
   (filter 
     (lambda (sent) (is-premise1? sent figure))
@@ -98,11 +43,94 @@
     (lambda (sent) (is-premise2? sent figure))
     syllogistic-sentences)))
 
+;; takes a string like 'A-B.all and returns (list 'A 'B 'all)
+(define unpack-sentence (lambda (sentence)
+  (let ([sentence-fragments (string-split sentence '.)])
+    (flatten (list (string-split (first sentence-fragments) '-) (second sentence-fragments))))))
 
-; the reasoner has uninformative prior beliefs about what the conclusion should be
-(define (conclusion-prior) (uniform-draw (list 'all 'some 'not-all 'none)))
-; rhe reasoner has uninformative prior beliefs about what arguments the experimenter could give
-(define (premise-prior) (uniform-draw (list 'all 'some 'not-all 'none)))
+
+(define has-property? (lambda (x i) (list-ref (ABC x) (position property-order i))))
+
+
+; assume the situations constructed have at least one object with each of the properties
+; (define existential-import (lambda (A B objects) 
+;                              (and (some-true (map A objects)) (some-true (map B objects)))))
+
+(define existential-import-m (lambda (ABC objects term1 term2)
+                             (and (some-true (map (lambda (x) (has-property? x term1)) objects))
+                                  (some-true (map (lambda (x) (has-property? x term2)) objects)))))
+
+; (define plentiful-worlds (lambda (A B C objects)
+;         (and (some-true (map A objects)) (some-true (map B objects)) (some-true (map C objects)))))
+
+(define plentiful-worlds-m (lambda (ABC objects)
+                             (and (some-true (map (lambda (x) (has-property? x 'A)) objects))
+                                  (some-true (map (lambda (x) (has-property? x 'B)) objects))
+                                  (some-true (map (lambda (x) (has-property? x 'C)) objects)))))
+
+; (define all (lambda (A B objects)
+;               (if (existential-import A B objects)
+;                   (all-true (map (lambda (x) (if (A x) (B x) true)) 
+;                                  objects))
+;                   false)))
+
+; (define some (lambda (A B objects)
+;                (if (existential-import A B objects)
+;                    (some-true (map (lambda (x) (if (A x) (B x) false)) 
+;                                    objects))
+;                    false)))
+
+; (define none (lambda (A B objects)
+;                (if (existential-import A B objects)
+;                    (all-true (map (lambda (x) (if (A x) (not (B x)) true)) 
+;                                   objects))
+;                    false)))
+
+; (define not-all (lambda (A B objects)
+;                   (if (existential-import A B objects)
+;                       (some-true (map (lambda (x) (if (A x) (not (B x)) false)) 
+;                                       objects))
+;                       false)))
+
+(define all-m (lambda (ABC objects property1 property2)
+  (if (existential-import-m ABC objects property1 property2)
+      (all-true (map 
+        (lambda (x) (if (has-property? x property1) (has-property? x property2) true))
+                     objects))
+      false)))
+
+(define some-m (lambda (ABC objects property1 property2)
+  (if (existential-import-m ABC objects property1 property2)
+      (some-true (map 
+        (lambda (x) (if (has-property? x property1) (has-property? x property2) false))
+                     objects))
+      false)))
+
+(define none-m (lambda (ABC objects property1 property2)
+  (if (existential-import-m ABC objects property1 property2)
+      (all-true (map 
+        (lambda (x) (if (has-property? x property1) (not (has-property? x property2)) true))
+                     objects))
+      false)))
+
+(define not-all-m (lambda (ABC objects property1 property2)
+  (if (existential-import-m ABC objects property1 property2)
+      (some-true (map 
+        (lambda (x) (if (has-property? x property1) (not (has-property? x property2)) false))
+                     objects))
+      false)))
+
+
+
+
+; pass strings, which then call functions of the same name
+(define (meaning word)
+  (case word
+        (('all) all)
+        (('some) some)
+        (('not-all) not-all)
+        (('none) none)))
+
 
 ; parameter 1: the reasoner's prior beliefs about the rarity of properties
 (define br 0.25)
@@ -185,7 +213,6 @@
       syllogistic-sentences)))
 
 
-(define is-conclusion? (lambda (x) (and (equal? (first (regexp-split x '.)) 'C-A))))
 
 (define alpha 3)
 
