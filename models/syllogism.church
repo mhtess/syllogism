@@ -9,6 +9,7 @@
 
 (define quantifiers (list 'all 'some 'none 'not-all))
 (define sentence-forms (list 'A-B 'B-A 'B-C 'C-B 'A-C 'C-A))
+(define property-order (list 'A 'B 'C))
 
 (define syllogistic-sentences 
   (flatten
@@ -49,7 +50,7 @@
     (flatten (list (string-split (first sentence-fragments) '-) (second sentence-fragments))))))
 
 
-(define has-property? (lambda (x i) (list-ref (ABC x) (position property-order i))))
+(define has-property? (lambda (x i ABC) (list-ref (ABC x) (position property-order i))))
 
 
 ; assume the situations constructed have at least one object with each of the properties
@@ -57,16 +58,16 @@
 ;                              (and (some-true (map A objects)) (some-true (map B objects)))))
 
 (define existential-import-m (lambda (ABC objects term1 term2)
-                             (and (some-true (map (lambda (x) (has-property? x term1)) objects))
-                                  (some-true (map (lambda (x) (has-property? x term2)) objects)))))
+                             (and (some-true (map (lambda (x) (has-property? x term1 ABC)) objects))
+                                  (some-true (map (lambda (x) (has-property? x term2 ABC)) objects)))))
 
 ; (define plentiful-worlds (lambda (A B C objects)
 ;         (and (some-true (map A objects)) (some-true (map B objects)) (some-true (map C objects)))))
 
 (define plentiful-worlds-m (lambda (ABC objects)
-                             (and (some-true (map (lambda (x) (has-property? x 'A)) objects))
-                                  (some-true (map (lambda (x) (has-property? x 'B)) objects))
-                                  (some-true (map (lambda (x) (has-property? x 'C)) objects)))))
+                             (and (some-true (map (lambda (x) (has-property? x 'A ABC)) objects))
+                                  (some-true (map (lambda (x) (has-property? x 'B ABC)) objects))
+                                  (some-true (map (lambda (x) (has-property? x 'C ABC)) objects)))))
 
 ; (define all (lambda (A B objects)
 ;               (if (existential-import A B objects)
@@ -95,28 +96,28 @@
 (define all-m (lambda (ABC objects property1 property2)
   (if (existential-import-m ABC objects property1 property2)
       (all-true (map 
-        (lambda (x) (if (has-property? x property1) (has-property? x property2) true))
+        (lambda (x) (if (has-property? x property1 ABC) (has-property? x property2 ABC) true))
                      objects))
       false)))
 
 (define some-m (lambda (ABC objects property1 property2)
   (if (existential-import-m ABC objects property1 property2)
       (some-true (map 
-        (lambda (x) (if (has-property? x property1) (has-property? x property2) false))
+        (lambda (x) (if (has-property? x property1 ABC) (has-property? x property2 ABC) false))
                      objects))
       false)))
 
 (define none-m (lambda (ABC objects property1 property2)
   (if (existential-import-m ABC objects property1 property2)
       (all-true (map 
-        (lambda (x) (if (has-property? x property1) (not (has-property? x property2)) true))
+        (lambda (x) (if (has-property? x property1 ABC) (not (has-property? x property2 ABC)) true))
                      objects))
       false)))
 
 (define not-all-m (lambda (ABC objects property1 property2)
   (if (existential-import-m ABC objects property1 property2)
       (some-true (map 
-        (lambda (x) (if (has-property? x property1) (not (has-property? x property2)) false))
+        (lambda (x) (if (has-property? x property1 ABC) (not (has-property? x property2 ABC)) false))
                      objects))
       false)))
 
@@ -124,41 +125,50 @@
 
 
 ; pass strings, which then call functions of the same name
+
+; (define (meaning word)
+;   (case word
+;         (('all) all)
+;         (('some) some)
+;         (('not-all) not-all)
+;         (('none) none)))
+
 (define (meaning word)
   (case word
-        (('all) all)
-        (('some) some)
-        (('not-all) not-all)
-        (('none) none)))
+        (('all) all-m)
+        (('some) some-m)
+        (('not-all) not-all-m)
+        (('none) none-m)))
+
 
 
 ; parameter 1: the reasoner's prior beliefs about the rarity of properties
 (define br 0.25)
 
-(define equivalent-transform
-  (mem
-   (lambda (objects)
-     (enumeration-query
-      ; properties map objects to truth-values i.e. whether or not the object has the property
-      ; together with the list of objects, these represent situations over which reasoning occurs
-      (define A (mem (lambda (x) (flip br))))
-      (define B (mem (lambda (x) (flip br))))
-      (define C (mem (lambda (x) (flip br))))
-      (define (property p)
-        (case p
-              (('A) A)
-              (('B) B)
-              (('C) C)))
+; (define equivalent-transform
+;   (mem
+;    (lambda (objects)
+;      (enumeration-query
+;       ; properties map objects to truth-values i.e. whether or not the object has the property
+;       ; together with the list of objects, these represent situations over which reasoning occurs
+;       (define A (mem (lambda (x) (flip br))))
+;       (define B (mem (lambda (x) (flip br))))
+;       (define C (mem (lambda (x) (flip br))))
+;       (define (property p)
+;         (case p
+;               (('A) A)
+;               (('B) B)
+;               (('C) C)))
       
-      (map 
-        (lambda (sentence) 
-          (let ([s (unpack-sentence sentence)]) 
-          ((meaning (third s)) (property (first s)) (property (second s)) objects))) 
-        syllogistic-sentences)
+;       (map 
+;         (lambda (sentence) 
+;           (let ([s (unpack-sentence sentence)]) 
+;           ((meaning (third s)) (property (first s)) (property (second s)) objects))) 
+;         syllogistic-sentences)
 
 
-     ;true
-     (plentiful-worlds A B C objects)))))
+;      ;true
+;      (plentiful-worlds A B C objects)))))
 
 
 (define binom->multinom
@@ -175,36 +185,29 @@
 
 (define background-prior (binom->multinom 0.25))
 
-(define equivalent-multinom-transform
+(define equivalent-transform-m
   (mem
    (lambda (objects)
      (enumeration-query
       (define ABC (mem (lambda (x) (apply multinomial background-prior))))
-
-
-      (define (property p)
-        (case p
-              (('A) A)
-              (('B) B)
-              (('C) C)))
       
       (map 
         (lambda (sentence) 
           (let ([s (unpack-sentence sentence)]) 
-          ((meaning (third s)) (property (first s)) (property (second s)) objects))) 
+          ((meaning (third s)) ABC objects (first s) (second s)))) 
         syllogistic-sentences)
 
 
      ;true
-     (plentiful-worlds A B C objects)))))
+     (plentiful-worlds-m ABC objects)))))
 
 
 
 
 ; parameter 2: number of objects in the situation the reasoner imagines
-(define objs (list 'o1 'o2 'o3 'o4))
+(define objs (list 'o1 'o2 'o3))
 
-(define equivalent-worlds (equivalent-transform objs))
+(define equivalent-worlds (equivalent-transform-m objs))
 
 (define state->sentences
   (lambda (situation) 
@@ -286,3 +289,4 @@
 ;(reasoner0 (list 'B-A.all 'C-B.all))
 ;(experimenter1 'C-A.all 1)
 (reasoner1 (list 'B-A.all 'C-B.all) 1)
+
