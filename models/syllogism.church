@@ -249,11 +249,11 @@
 
 
 ; parameter 2: number of objects in the situation the reasoner imagines
-(define objs (list 'o1 'o2 'o3))
+(define objs (list 'o1 'o2 'o3 'o4 'o5))
 
 ;(define equivalent-worlds (equivalent-transform-m objs (binom->multinom 0.25)))
 (define state-prior-prior 
-  (repeat 3 (lambda () (hyper-equivalent-transform-m lightbulb-hyperparams))))
+  (repeat 100 (lambda () (hyper-equivalent-transform-m lightbulb-hyperparams))))
 
 
 (define state->sentences
@@ -341,7 +341,7 @@
 
 (define results (map (lambda (x) (list x (reasoner1 (second x) (first x)))) all-premises))
 
-(write-csv results 'syllmodel_lightbulb_hyperprior3_n3_alpha3.csv)
+(write-csv results 'syllmodel_lightbulb_hyperprior100_n5_alpha3.csv)
 
 ;(reasoner0 (list 'B-A.all 'C-B.all))
 ;(experimenter1 'C-A.all 1)
