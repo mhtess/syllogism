@@ -1,0 +1,31 @@
+(define domain argstring)
+
+(define vector-distance
+  (lambda (v1 v2)
+    (sum (map (lambda (lst) (abs (- (first lst) (second lst)))) (zip v1 v2)))))
+
+
+(define alldata (read-csv 'prior-exp-mturk_all_n71_normed.csv))
+(define domain-data (filter (lambda (x) (equal? (second x) domain)) alldata))
+(define domain-priors (map (lambda (x) (rest (rest (rest (rest x))))) domain-data))
+
+(define samples
+  (mh-query 
+   1000
+   100
+   (define a (exponential 1))
+   (define b (dirichlet '(1 1 1 1 1 1 1 1)))
+   (define theta (dirichlet (map (lambda (x) (* a x)) b)))
+   (define distance-to-data
+     (map 
+      (lambda (x) (vector-distance (map string->number x) theta)) 
+      domain-priors))
+
+   (list a b)
+
+   (factor (- 0 (sum distance-to-data)))))
+
+
+(define output-file-name (string-append 'post_alpha-beta_mh1000_100_ domain '.csv))
+(write-csv samples output-file-name)
+(display 'complete)
