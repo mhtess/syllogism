@@ -1,6 +1,10 @@
-(define domain argstring)
+(define args (regexp_split argstring ","))
 
-(define vector-distance
+(define domain (first args))
+(define mh_samples (second args))
+(define mh_burnin (third args))
+
+(define L1distance
   (lambda (v1 v2)
     (sum (map (lambda (lst) (abs (- (first lst) (second lst)))) (zip v1 v2)))))
 
@@ -11,21 +15,26 @@
 
 (define samples
   (mh-query 
-   1000
-   100
+   
+   ;mh_samples
+   ;mh_burnin
+   (string->number mh_samples)
+   (string->number mh_burnin)
+
    (define a (exponential 1))
    (define b (dirichlet '(1 1 1 1 1 1 1 1)))
    (define theta (dirichlet (map (lambda (x) (* a x)) b)))
    (define distance-to-data
      (map 
-      (lambda (x) (vector-distance (map string->number x) theta)) 
+      (lambda (x) (L1distance (map string->number x) theta)) 
       domain-priors))
 
    (list a b)
 
-   (factor (- 0 (sum distance-to-data)))))
+   (factor (- 0 (* 3 (sum distance-to-data))))))
 
 
-(define output-file-name (string-append 'post_alpha-beta_mh1000_100_ domain '.csv))
+(define output-file-name (string-append 'post_alpha-beta_mh mh_samples '_ mh_burnin '_f3_ domain '.csv))
 (write-csv samples output-file-name)
-(display 'complete)
+(define complete? 'complete)
+complete?
