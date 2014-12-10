@@ -44,6 +44,19 @@
     (lambda (sent) (is-premise2? sent figure))
     syllogistic-sentences)))
 
+(define sp 
+  (map (lambda (x)
+         (let ([lst
+                (map (lambda (y) 
+                       (map (lambda (z)
+                              (list x (list y z)))
+                            (premise-2s x)))
+                     (premise-1s x))])
+           (append (first lst) (second lst) (third lst) (fourth lst))))
+       '(1 2 3 4)))
+
+(define all-premises (append (first sp) (second sp) (third sp) (fourth sp)))
+
 ;; takes a string like 'A-B.all and returns (list 'A 'B 'all)
 (define unpack-sentence (lambda (sentence)
   (let ([sentence-fragments (string-split sentence '.)])
@@ -183,13 +196,16 @@
 
           true))))
 
-(define background-prior (binom->multinom 0.25))
+(define multinomial-properties 
+  '((#f #f #f) (#f #f #t) (#f #t #f) (#f #t #t) 
+    (#t #f #f) (#t #f #t) (#t #t #f) (#t #t #t)))
 
 (define equivalent-transform-m
   (mem
-   (lambda (objects)
+   (lambda (objects background-prior)
      (enumeration-query
-      (define ABC (mem (lambda (x) (apply multinomial background-prior))))
+;      (define ABC (mem (lambda (x) (apply multinomial background-prior))))
+      (define ABC (mem (lambda (x) (multinomial multinomial-properties background-prior))))
       
       (map 
         (lambda (sentence) 
@@ -201,13 +217,44 @@
      ;true
      (plentiful-worlds-m ABC objects)))))
 
+(define lightbulb-beta '(0.16239389 0.09753311 0.02406771 0.05193817 
+  0.11577700 0.12365418 0.12412901 0.16787938))
+(define lightbulb-alpha 3)
+(define lightbulb-hyperparams (map (lambda (x) (* lightbulb-alpha x)) lightbulb-beta))
+;; posterior median for 
+
+; alpha 3
+;
+;       111 0.16787938
+; 2      110 0.12412901
+; 3      101 0.12365418
+; 4      011 0.05193817
+; 5      100 0.11577700
+; 6      010 0.02406771
+; 7      001 0.09753311
+; 8      000 0.16239389
+
+
+(define hyper-equivalent-transform-m
+  (lambda (hyperpiors)
+   (rejection-query
+
+    (define background-prior (dirichlet hyperpiors))
+
+    (equivalent-transform-m objs background-prior)
+
+    true
+     )))
 
 
 
 ; parameter 2: number of objects in the situation the reasoner imagines
 (define objs (list 'o1 'o2 'o3))
 
-(define equivalent-worlds (equivalent-transform-m objs))
+;(define equivalent-worlds (equivalent-transform-m objs (binom->multinom 0.25)))
+(define state-prior-prior 
+  (repeat 3 (lambda () (hyper-equivalent-transform-m lightbulb-hyperparams))))
+
 
 (define state->sentences
   (lambda (situation) 
@@ -235,6 +282,7 @@
 (define reasoner1
   (mem (lambda  (premises figure)
     (enumeration-query
+       (define equivalent-worlds (uniform-draw state-prior-prior))
        (define state (apply multinomial equivalent-worlds))
        (define true-conclusions (filter is-conclusion? (state->sentences state)))
        (define conclusion (uniform-draw true-conclusions))
@@ -248,13 +296,15 @@
        ;true-conclusions
        ;which-conclusions
 
-       (equal? premises (apply multinomial (experimenter1 conclusion figure)))
+       (equal? premises (apply multinomial (experimenter1 conclusion figure equivalent-worlds)))
+       ;(equal? premises (apply multinomial (experimenter1 conclusion figure)))
        ;(equal? premises (apply multinomial (experimenter1 true-conclusions figure)))
        ;(equal? premises (apply multinomial (experimenter1 which-conclusions figure)))
        ))))
 
 (define experimenter1
-  (mem (lambda (QUDval figure)
+  (mem (lambda (QUDval figure equivalent-worlds)
+;  (mem (lambda (QUDval figure)   
      (enumeration-query
       (define premises (list (uniform-draw (premise-1s figure)) (uniform-draw (premise-2s figure))))
       
@@ -263,12 +313,14 @@
       (equal? 
         QUDval 
         ;(apply multinomial (raise-to-power (marginalize (reasoner0 premises)) alpha)))))))
-        (apply multinomial (raise-to-power (reasoner0 premises) alpha)))))))
+        (apply multinomial (raise-to-power (reasoner0 premises equivalent-worlds) alpha)))))))
 
 (define reasoner0
    (mem 
-    (lambda  (premises)
+    (lambda  (premises equivalent-worlds)
+;    (lambda  (premises)
       (enumeration-query
+;       (define equivalent-worlds (uniform-draw state-prior-prior))
        (define state (apply multinomial equivalent-worlds))
        (define true-sentences (state->sentences state))
        (define conclusion (uniform-draw (filter is-conclusion? true-sentences)))
@@ -286,7 +338,12 @@
           (is-element? (first premises) true-sentences)
           (is-element? (second premises) true-sentences))))))
 
+
+(define results (map (lambda (x) (list x (reasoner1 (second x) (first x)))) all-premises))
+
+(write-csv results 'syllmodel_lightbulb_hyperprior3_n3_alpha3.csv)
+
 ;(reasoner0 (list 'B-A.all 'C-B.all))
 ;(experimenter1 'C-A.all 1)
-(reasoner1 (list 'B-A.all 'C-B.all) 1)
-
+;(reasoner1 (list 'B-A.all 'C-B.all) 1)
+;(hyper-equivalent-transform-m objs)
