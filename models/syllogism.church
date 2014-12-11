@@ -65,6 +65,25 @@
 
 (define has-property? (lambda (x i ABC) (list-ref (ABC x) (position property-order i))))
 
+(define state->sentences
+  (lambda (situation) 
+    (filter 
+      (lambda (x) (list-ref situation (position syllogistic-sentences x)))
+      syllogistic-sentences)))
+
+(define (marginalize interpretation)
+  (list
+    (list 'C-A.all 'C-A.some 'C-A.none 'C-A.not-all)
+    (list
+     (sum (map (lambda (y) (second y)) (filter (lambda (x) (first (first x)))
+                                               (zip (first interpretation) (second interpretation)))))
+     (sum (map (lambda (y) (second y)) (filter (lambda (x) (second (first x)))
+                                               (zip (first interpretation) (second interpretation)))))
+     (sum (map (lambda (y) (second y)) (filter (lambda (x) (third (first x)))
+                                               (zip (first interpretation) (second interpretation)))))
+     (sum (map (lambda (y) (second y)) (filter (lambda (x) (fourth (first x)))
+                                               (zip (first interpretation) (second interpretation))))))))
+
 
 ; assume the situations constructed have at least one object with each of the properties
 ; (define existential-import (lambda (A B objects) 
@@ -155,12 +174,9 @@
 
 
 
-; parameter 1: the reasoner's prior beliefs about the rarity of properties
-(define br 0.25)
-
 ; (define equivalent-transform
 ;   (mem
-;    (lambda (objects)
+;    (lambda (objects br)
 ;      (enumeration-query
 ;       ; properties map objects to truth-values i.e. whether or not the object has the property
 ;       ; together with the list of objects, these represent situations over which reasoning occurs
@@ -217,15 +233,12 @@
      ;true
      (plentiful-worlds-m ABC objects)))))
 
-(define lightbulb-beta '(0.16239389 0.09753311 0.02406771 0.05193817 
-  0.11577700 0.12365418 0.12412901 0.16787938))
-(define lightbulb-alpha 3)
-(define lightbulb-hyperparams (map (lambda (x) (* lightbulb-alpha x)) lightbulb-beta))
-;; posterior median for 
+
+;; posterior median for lightbulbs
 
 ; alpha 3
 ;
-;       111 0.16787938
+; 1      111 0.16787938
 ; 2      110 0.12412901
 ; 3      101 0.12365418
 ; 4      011 0.05193817
@@ -235,49 +248,24 @@
 ; 8      000 0.16239389
 
 
-(define hyper-equivalent-transform-m
-  (lambda (hyperpiors)
-   (rejection-query
-
-    (define background-prior (dirichlet hyperpiors))
-
-    (equivalent-transform-m objs background-prior)
-
-    true
-     )))
 
 
+(define hyper-equivalent-transform-m 
+  (lambda (objects hyperpiors) (equivalent-transform-m objects (dirichlet hyperpiors))))
 
-; parameter 2: number of objects in the situation the reasoner imagines
+; cognitive model parameters
 (define objs (list 'o1 'o2 'o3 'o4 'o5))
+(define alpha 3)
+
+(define lightbulb-beta '(0.16239389 0.09753311 0.02406771 0.05193817 
+                         0.11577700 0.12365418 0.12412901 0.16787938))
+(define lightbulb-alpha 3)
+(define lightbulb-hyperparams (map (lambda (x) (* lightbulb-alpha x)) lightbulb-beta))
 
 ;(define equivalent-worlds (equivalent-transform-m objs (binom->multinom 0.25)))
 (define state-prior-prior 
-  (repeat 100 (lambda () (hyper-equivalent-transform-m lightbulb-hyperparams))))
+  (repeat 100 (lambda () (hyper-equivalent-transform-m objs lightbulb-hyperparams))))
 
-
-(define state->sentences
-  (lambda (situation) 
-    (filter 
-      (lambda (x) (list-ref situation (position syllogistic-sentences x)))
-      syllogistic-sentences)))
-
-
-
-(define alpha 3)
-
-(define (marginalize interpretation)
-  (list
-    (list 'C-A.all 'C-A.some 'C-A.none 'C-A.not-all)
-    (list
-     (sum (map (lambda (y) (second y)) (filter (lambda (x) (first (first x)))
-                                               (zip (first interpretation) (second interpretation)))))
-     (sum (map (lambda (y) (second y)) (filter (lambda (x) (second (first x)))
-                                               (zip (first interpretation) (second interpretation)))))
-     (sum (map (lambda (y) (second y)) (filter (lambda (x) (third (first x)))
-                                               (zip (first interpretation) (second interpretation)))))
-     (sum (map (lambda (y) (second y)) (filter (lambda (x) (fourth (first x)))
-                                               (zip (first interpretation) (second interpretation))))))))
 
 (define reasoner1
   (mem (lambda  (premises figure)
