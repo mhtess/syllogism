@@ -9,20 +9,8 @@ output: html_document
 
 
 ```{r dataload, echo=FALSE}
-library(reshape2)
-library(ggplot2)
-library(plyr)
-
 library(R2jags)
 library(gridExtra)
-
-library(bootstrap)
-
-theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
-ci.low <- function(x,na.rm=T) {
-  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
-ci.high <- function(x,na.rm=T) {
-  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
 
 agr.ci.collapsed <- function(x){
   agr = aggregate(value ~ domain + syll + variable + experiment, data=x, FUN=mean)
@@ -39,6 +27,9 @@ exp_domains = c('_ crackers that have lots of flavor are soggy',
                 '_ knives that cut well are sharp',
                 '_ lightbulbs that are hot are on',
                 '_ strawberries that are warm are in the freezer')
+resp_labels<-c("Q_A","Q_E","Q_I","Q_O")
+conclusion_labels<- c('all','none','some','some...not')
+domains<- c('cracker', 'knife', 'lightbulb', 'strawberry')
 
 # Load data from 2 experiments
 fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_reasoning/'
@@ -53,11 +44,9 @@ df2$experiment <- factor(2)
 
 exp1sylls<-levels(df$syll)
 exp2sylls<-levels(df2$syll)
-resp_labels<-c("Q_A","Q_E","Q_I","Q_O")
-domains<- c('cracker', 'knife', 'lightbulb', 'strawberry')
 
 
-
+# remove extreme RTs
 df<-subset(df,rt<mean(df$rt)+2*sqrt(var(df$rt)))
 df2<-subset(df2,rt<mean(df2$rt)+2*sqrt(var(df2$rt)))
 
@@ -80,6 +69,8 @@ df.norm = ddply(df.c, .(domain,condition,syll,experiment),
   function(x) {resp = x[,resp_labels]
   resp / rowSums(resp)})
 
+df.unnorm = ddply(df.c, .(domain,condition,syll,experiment), 
+  function(x) {x[,resp_labels]})
 
 
 
@@ -89,43 +80,69 @@ df.norm = ddply(df.c, .(domain,condition,syll,experiment),
 
 
 
-# 0. Frequentist easy stuff
+# 0. Frequentist stuff
 
-## Experiment 1
-
-### $H_3$ = empirical prior (literal)
+## $H_3$ = empirical prior (literal)
 
 ```{r h3exp1,echo=FALSE}
 
-EP = 0
+EP = 1
+alt = 1
+indevals = 1
+mw = 0
 
-collapsed.bs <- subset(agr.ci.collapsed(melt(df.norm)),experiment==1)
-collapsed.bs$conclusion = factor(collapsed.bs$variable, labels=c('all.C.A','none.C.A','some.C.A','not.all.C.A'))
-collapsed.bs$domain = factor(collapsed.bs$domain, labels=domains)
+#collapsed.bs <- subset(agr.ci.collapsed(melt(df.norm)),experiment==1)
+#collapsed.bs$conclusion = factor(collapsed.bs$variable, labels=c('all.C.A','none.C.A','some.C.A','not.all.C.A'))
+#collapsed.bs$domain = factor(collapsed.bs$domain, labels=domains)
+if (indevals==1){
+  collapsed.bs <- agr.ci.collapsed(melt(df.unnorm))
+  } else {
+  collapsed.bs <- agr.ci.collapsed(melt(df.norm))
+}
+
+
+collapsed.bs$conclusion <- factor(collapsed.bs$variable, labels=conclusion_labels)
+collapsed.bs$domain <- factor(collapsed.bs$domain, labels=domains)
 
 
 # Load model predictions, for different parameter (n_object) values
 model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
 syllogisms = c('AO2', 'EA3', 'IE1', 'OA1')
+syllogisms = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1')
+
 n_obj = 4
 corrs = c()
 if (exists('models')){remove(models)}
 
-total_objs = seq(3,9,2)
+total_objs = seq(3,11,1)
 for (n_obj in total_objs){
   model.domains = data.frame()
   for (d in domains){
-    model.all<-read.csv(paste(model.dir,d,'/00/csv/lis_N0_M0_tfbt',
-                   d,'_qud1figFull_AIEOc4CAEP',EP,'_n',n_obj,
-                   '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
+    if (indevals==1){
+      model.tmp<-read.csv(paste(model.dir,'/00/csv/lis_N0_M0_tfbt',
+                   d,'_qud1MW',mw,'figFull_AIEOc4CAEP',EP,'Alt',alt,'Indevals',indevals,'_n',n_obj,
+                   '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:12)]
+      
+      model.all <- with(model.tmp, data.frame(X..syll,
+                                              all = all.C.A + all.some.C.A,
+                                              none = none.C.A + none.not.all.C.A,
+                                              some = some.C.A + all.some.C.A + some.not.all.C.A,
+                                              some...not = not.all.C.A + none.not.all.C.A + some.not.all.C.A
+                                              ))
+    } else{
+      model.all<-read.csv(paste(model.dir,'/00/csv/lis_N0_M0_tfbt',
+                                d,'_qud1figFull_AIEOc4CAEP',EP,'_n',n_obj,
+                                '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
+    }
     model.sub<-model.all[model.all$X..syll%in%syllogisms,]
     model.sub$domain <- d
-    model.m<-melt(model.sub,
-                  id.vars=c('X..syll','domain'))
+    model.m<-melt(model.sub, id.vars=c('X..syll','domain'))
     model.domains<-rbind(model.domains, model.m)
   }
+  
   #rename for merging
   names(model.domains)<-c('syll','domain','conclusion',paste('n',n_obj,sep=''))
+  
   if (exists('models')){
     models = merge(models,model.domains)
   } else {
@@ -133,10 +150,11 @@ for (n_obj in total_objs){
   }
 }
 
+
+
 models$syll <- factor(models$syll)
 models$domain <- factor(models$domain)
-
-cncl_labels = levels(models$conclusion)
+models$conclusion = factor(models$conclusion, labels = conclusion_labels)
 
 m.models<-melt(models, id.vars=c('syll','domain','conclusion'))
 
@@ -148,17 +166,75 @@ names(model.fits)<-c('n','correlation')
 model.fits$n<-as.integer(substring(model.fits$n,2,3))
 max.loc<-which.max(model.fits$correlation)
 
-ggplot(model.fits, aes(x=n,y=factor(1)))+
-  geom_tile(aes(fill = correlation), colour = "white") + 
-  geom_tile(data=model.fits[max.loc,], aes(x=n,y=1, fill=correlation),
-            size=2,colour='black')+
-  geom_text(aes(x=n,y=1, label=round(correlation,2)),size=5,colour='black')+
-  scale_fill_gradient(low = "white", high = "steelblue",limits=c(0.6,0.85))+
-  theme_bw()+
-  scale_x_continuous(breaks=3:11)+
-  scale_y_discrete()
+ggplot(model.fits, aes(x=n,y=correlation))+
+  geom_bar(stat='identity')+#,fill='white')+
+  geom_text(aes(x=n,y=0.3, label=round(correlation,2)),size=5)+
+  scale_x_continuous(breaks=seq(3,11,1))+
+  coord_cartesian(ylim=c(0,1)) + 
+  scale_y_continuous(breaks=c(0,0.5,1))+
+  xlab('\n n_objects')+
+  ylab('correlation\n')
 
 ```
+
+### faceted grids of model predictions
+
+```{r}
+models$syllogism <- factor(models$syll, levels = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1'),
+                           labels=c("Some of the As are not Bs\n All of the Cs are Bs",
+                                    "All of the Bs are As\n None of Bs are Cs",
+                                    "None of the As are Bs\n Some of the Bs are Cs",
+                                    "All of the As are Bs\n Some of the Bs are not Cs",
+                                    "All of the As are Bs\n All of the Bs are Cs",
+                                    "Some of the As are Bs\n All of the Bs are Cs",
+                                    "All of the As are Bs\n None of the Bs are Cs",
+                                    "Some of the As are Bs\n None of the Bs are Cs"
+                           ))
+                                    
+models$domain <- factor(models$domain, labels = exp_domains)
+models$conclusion<-factor(models$conclusion, labels = c('all','none','some','some...not'))
+
+# Faceted grids of model predictions (Syll X Domain)
+
+ggplot(subset(models,syll%in%c('AO2', 'EA3', 'IE1', 'OA1')),
+              aes(x=conclusion,y=n7,fill=conclusion))+
+  geom_bar(position=position_dodge(.6), 
+               width = .6,
+              stat='identity')+
+  facet_grid(domain~syllogism)+
+  guides(fill=F)+
+  theme(
+    axis.text.x=element_text(angle=90,hjust=1,vjust=.5),
+    strip.text.x = element_text(),
+    strip.text.y = element_text(angle=0)
+  )+
+  coord_cartesian(ylim=c(0, 0.7)) + 
+  scale_y_continuous(breaks=c(0.25,0.5))+
+  xlab("\nconclusion")+
+  ylab('posterior probability\n')
+
+#ggsave(filename = paste('literal_EP',EP,'_n7_exp1.png',sep=''),plot1, width=32, height=16)
+
+
+ggplot(subset(models,syll%in%c('AA1','AI1','EA1','EI1')),
+              aes(x=conclusion,y=n7,fill=conclusion))+
+  geom_bar(position=position_dodge(.6), 
+           width = .6,
+           stat='identity')+
+  facet_grid(domain~syllogism)+
+  guides(fill=F)+
+  theme(
+    axis.text.x=element_text(angle=90,hjust=1,vjust=.5),
+    strip.text.x = element_text(),
+    strip.text.y = element_text(angle=0)
+  )+
+  coord_cartesian(ylim=c(0, 0.7)) + 
+  scale_y_continuous(breaks=c(0.25,0.5))+
+  xlab("\nconclusion")+
+  ylab('posterior probability\n')
+
+```
+
 
 ### $H_{4}$ = empirical prior with pragmatics
 
@@ -224,7 +300,6 @@ ggplot(model.fits, aes(x=n,y=alpha))+
   geom_text(data=model.fits[max.loc,], aes(x=n,y=alpha, label=round(correlation,2)),
             size=5,colour='black')+
   scale_fill_gradient(low = "white", high = "steelblue",limits=c(0.6,0.85))+
-  theme_bw()+
   scale_x_continuous(breaks=3:11)
 
 ```
@@ -457,29 +532,53 @@ if (experiment=='Both'){
   syllogisms = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1')
   target.buttons = c('radio','radio.2')}
 
-corrs = c()
+EP = 1
+alt = 1
+indevals = 1
+mw = 0
+
+# Load model predictions, for different parameter (n_object) values
+model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/LATTICE_4_tfbt/'
+
 if (exists('models')){remove(models)}
 
-
-for (n_obj in 3:11){
+total_objs = seq(3,11,1)
+for (n_obj in total_objs){
   model.domains = data.frame()
   for (d in domains){
-    model.all<-read.csv(paste(model.dir,'/00/csv/lis_N0_M0_tfbt',
-                   d,'_qud1figFull_AIEOc4CAEP1_n',n_obj,
-                   '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
+    if (indevals==1){
+      model.tmp<-read.csv(paste(model.dir,'/00/csv/lis_N0_M0_tfbt',
+                   d,'_qud1MW',mw,'figFull_AIEOc4CAEP',EP,'Alt',alt,'Indevals',indevals,'_n',n_obj,
+                   '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:12)]
+      
+      model.all <- with(model.tmp, data.frame(X..syll,
+                                              all = all.C.A + all.some.C.A,
+                                              none = none.C.A + none.not.all.C.A,
+                                              some = some.C.A + all.some.C.A + some.not.all.C.A,
+                                              some...not = not.all.C.A + none.not.all.C.A + some.not.all.C.A
+                                              ))
+    } else{
+      model.all<-read.csv(paste(model.dir,'/00/csv/lis_N0_M0_tfbt',
+                                d,'_qud1figFull_AIEOc4CAEP',EP,'_n',n_obj,
+                                '_base0.00_s100k_alphQ1_alphR1_bsmean.csv',sep=''))[c(1,6:9)]
+    }
     model.sub<-model.all[model.all$X..syll%in%syllogisms,]
     model.sub$domain <- d
-    model.m<-melt(model.sub,id.vars=c('X..syll','domain'))
+    model.m<-melt(model.sub, id.vars=c('X..syll','domain'))
     model.domains<-rbind(model.domains, model.m)
   }
+  
   #rename for merging
   names(model.domains)<-c('syll','domain','conclusion',paste('n',n_obj,sep=''))
+  
   if (exists('models')){
     models = merge(models,model.domains)
   } else {
     models = model.domains
   }
 }
+
+
 
 models$syll <- factor(models$syll)
 models$domain <- factor(models$domain)
@@ -534,7 +633,7 @@ model.array<-abind(
             a = syll.data$syll
             blank = array(NA,c(tot.syll,tot.resp))
             j = match(levels(data.obs$syll),a)
-            blank = syll.data[j,c('all.C.A','none.C.A','some.C.A','not.all.C.A')]
+            blank = syll.data[j,c('all','none','some','some...not')]
             b = array(blank)
             return(b)
           }, 
@@ -634,9 +733,9 @@ cat('model{
 
 emprior <- 1
 depth <- 0
-prior_on_objects <- rep(1/tot.obj,tot.obj) # uniform prior on objects
+prior_on_objects <- rep(1/tot.n,tot.n) # uniform prior on objects
 d<- data.array
-churchmod <- model.array
+churchmod <-model.array
 #sapply(model.preds[1,cncl_labels], estBetaParams, var=0.01)
 # 
 # data <- list("tot.subj", "tot.syll", "tot.resp",
@@ -661,17 +760,26 @@ data <- list("tot.subj", "tot.syll", "tot.resp","tot.dom",
 #initial values for guessing
 x.init = array(round(runif(tot.subj*tot.syll*tot.resp*tot.dom)),
                  c(tot.syll,tot.resp,tot.dom,tot.subj))
+x.init2 = array(round(runif(tot.subj*tot.syll*tot.resp*tot.dom)),
+                 c(tot.syll,tot.resp,tot.dom,tot.subj))
 
 postz = which(churchmod==0,arr.ind=TRUE)
 for (pz in 1:length(postz[,1])){
   x.init[postz[pz,c('dim1')],postz[pz,c('dim2')],postz[pz,c('dim3')],]=1
 }
 
-x.init2 = array(round(runif(tot.subj*tot.syll*tot.resp*tot.dom)),
-                 c(tot.syll,tot.resp,tot.dom,tot.subj))
 for (pz in 1:length(postz[,1])){
   x.init2[postz[pz,c('dim1')],postz[pz,c('dim2')],postz[pz,c('dim3')],]=1
 }
+
+# postz = which(churchmod==1,arr.ind=TRUE)
+# for (pz in 1:length(postz[,1])){
+#   x.init[postz[pz,c('dim1')],postz[pz,c('dim2')],postz[pz,c('dim3')],]=0
+# }
+# 
+# for (pz in 1:length(postz[,1])){
+#   x.init2[postz[pz,c('dim1')],postz[pz,c('dim2')],postz[pz,c('dim3')],]=0
+# }
 
 myinits <-  list(
   list(phi = 0.5, 
@@ -700,7 +808,7 @@ parameters <- c("n","phi")
 
 samples <- jags(data, inits=myinits, parameters,
    			 model.file =f, n.chains=2, n.iter=1000, 
-         n.burnin=100, n.thin=1, DIC=T)
+         n.burnin=10, n.thin=1, DIC=T)
 
 
 df <-data.frame(n=samples$BUGSoutput$sims.list$n,
@@ -711,8 +819,8 @@ df <-data.frame(n=samples$BUGSoutput$sims.list$n,
 setwd("~/Documents/research/syllogism/presentations/labmtg-111914")
 
 plot1<-ggplot(df, aes(x=2+n))+
-  geom_histogram(fill='white')+
-  theme_blackDisplay()+
+  geom_histogram()+
+  theme_solarized()+
   scale_x_continuous(breaks=seq(3,11))+
   guides(fill=F)+
   xlab("\n n_objects")
@@ -721,9 +829,9 @@ ggsave(filename = paste('literalEP',EP,'_posteriorN_exp',experiment,'.png',sep='
 
 
 
-plot2<-ggplot(df, aes(x=phi))+
+ggplot(df, aes(x=phi))+
   geom_density(fill='white')+
-  theme_blackDisplay()+
+  theme_solarized()+
   xlab("\n phi")+
     guides(fill=F)+
     coord_cartesian(xlim=c(0, 1)) + 
@@ -1070,3 +1178,256 @@ ggsave(filename = paste('literalEP',EP,'_posteriorPhi_exp2_facetDomain.png',sep=
 
 
 ```
+
+
+
+# TFBT on Prior elicitation data
+
+We generalize the "world bound" bayesian model (reasoning over background knowledge) to allow variability in background knowledge. This may be particularly important for beilef bias studies, where syllogistic premises (or conclusions) are often taken to contradict background knowledge (e.g. "Some robins are not birds""). This allows for the possibility that subjects reinterpret the premimse to be more consistent background knowledge (e.g. "Some batman sidekicks are not birds"). By putting a distribution over background knowledge, premises and knowledge are mutually constraining.
+
+Previously, we have taken the mean noramlized endorsements as the parameters to the multinomial distribution from which states are sampled. Now, we will say that for each syllogism, a multinomial is sampled from a dirichlet distribution. The parameters of that dirichlet will be similar to the mean noramlized endorsement that we used previously. Sampling from this dirichlet will give the model flexibility to adjust the prior over states when the syllogistic premises are discordant with "the normal meaning of words" (which we might take the parameters of the dirichlet --- something like the mean normalized endorsements --- to represent). 
+
+So our goal with this bayesian analysis of the prior elicitation data is to infer the hyperparameters of the dirichlet. The dirichlet can be parameterized by a multinomial distribution and a concentration parameter. The multinomial distribution will be something like the mean normalized endorsements, that we used in the simpler version of the "world bound" bayesian. The concentration parameter will be something like the consistency or agreement of subjects' endorsements; the higher the concentration parameter, the more likely the sampled multinomial will similar to the mean normalized distribution.
+
+
+```{r model2A}
+library(abind)
+
+fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/'
+
+df<-read.csv((paste(fpath,'prior-exp-mturk_all_n71.csv',sep="")))[c(1:12,16)]
+df$condition<-factor(df$condition,labels=c('plausibility','frequency'))
+
+df_norm = ddply(df, .(domain, condition,subj), function(x) {
+  means = x[,c('Q_XYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ','Q_XnYnZ','Q_nXYnZ','Q_nXnYZ','Q_nXnYnZ')]
+  means / rowSums(means)
+})
+#write.csv(x=df_norm, file='prior-exp-mturk_all_n71_normed.csv')
+
+# data.obs<-df_norm
+data.obs<-melt(df_norm, id.vars =c("domain","condition","subj"))
+
+setwd("/Users/mht/Documents/research/syllogism/analysis/")
+
+
+
+tot.subj <- length(levels(data.obs$subj))
+tot.dom <- length(levels(data.obs$domain)) #number of syllogisms
+tot.cond <- length(levels(data.obs$condition)) # number of conditions
+tot.resp <- length(levels(data.obs$variable)) # number of responses
+
+# # organize data,  domain X response X subj [i,j,k]
+
+data.array <- xtabs(value~.,subset(data.obs, condition=='frequency' & domain=='tomatoplant')[,c("variable","subj","value")])
+
+cat('model{
+alpha ~ dexp(1)
+beta ~ ddirch(ones)
+for (k in tot.subj){
+xi[,k] ~ ddirch(alpha*beta)
+}
+}', file={f<-tempfile()})
+
+# cat('model{
+# for (k in tot.subj){
+#   xi[,k] ~ ddirch(alphas[])
+#   for(j in 1:tot.resp){
+#     alphas[j] ~ dunif(0,20)
+#   }
+# }
+# }', file={f<-tempfile()})
+
+
+xi<- data.array
+ones <- rep(1,tot.resp)
+data <- list("tot.subj","xi","ones") # to be passed on to JAGS
+myinits <-  list(list(alpha = 1, beta=ones))
+# parameters to be monitored:  
+parameters <- c("alpha","beta")
+
+samples <- jags(data, inits=myinits, parameters,
+     		 model.file =f, n.chains=1, n.iter=100000, 
+         n.burnin=10, n.thin=100, DIC=T)
+
+
+df <-data.frame(alpha= samples$BUGSoutput$sims.list$alpha,
+                beta= samples$BUGSoutput$sims.list$beta)
+
+ggplot(melt(df[,c(2:9)]), aes(x=value,fill=variable))+
+  geom_histogram()+
+  facet_wrap(~variable,nrow=2)+
+  guides(fill=F)
+
+ggplot(df,aes(x=alpha))+
+  geom_histogram()
+
+posterior.means<-ddply(melt(df[,c(2:9)]),.(variable),function(x)(median(x$value)))
+
+
+
+posterior.means$normalized <- posterior.means$V1/sum(posterior.means$V1)
+ggplot(posterior.means, aes(x=variable,y=normalized))+
+  geom_bar(stat='identity')
+
+
+
+
+posterior.means<-ddply(melt(df),.(variable),function(x)(mean(x$value)))
+posterior.means$normalized <- posterior.means$V1/sum(posterior.means$V1)
+ggplot(posterior.means, aes(x=variable,y=normalized))+
+  geom_bar(stat='identity')
+
+
+
+
+
+
+
+
+# data.array<- abind(Map(
+#   function(x){
+#   sb = subset(data.obs,subj==x)
+#   a = sb$domain
+#   blank = array(NA,c(tot.dom,tot.resp))
+#   if (nrow(sb)!=0){
+#   j = match(levels(data.obs$domain),a)
+#   blank = sb[j,c('Q_XYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ','Q_XnYnZ','Q_nXYnZ','Q_nXnYZ','Q_nXnYnZ')]
+#   }
+#   return(blank)
+#   },
+#   levels(data.obs$subj)),along=3)
+
+
+# cat('model{
+# for (k in tot.subj){
+#   for(j in 1:tot.resp) {
+#     xi_raw[j,k] ~ dgamma(alpha[j], 1)
+#   }
+# #  for(j in 1:tot.resp) {
+# #    xi[j,k] <- xi_raw[j,k] / sum(xi_raw[,k])
+# #  }
+#   ## Some prior for alpha ...
+#   for(j in 1:tot.resp){
+#     alpha[j] ~ dunif(0,20)
+#   }
+# }
+# }', file={f<-tempfile()})
+#    
+
+
+
+ggsave(filename = paste('literalEP',EP,'_posteriorN_exp',experiment,'.png',sep=''),plot1, width=16, height=12)
+
+
+
+ggplot(df, aes(x=phi))+
+  geom_density(fill='white')+
+  theme_solarized()+
+  xlab("\n phi")+
+    guides(fill=F)+
+    coord_cartesian(xlim=c(0, 1)) + 
+  scale_x_continuous(breaks=c(0.25,0.5,0.75))
+
+ggsave(filename = paste('literalEP',EP,'_posteriorPhi_exp',experiment,'retest.png',sep=''),plot2, width=16, height=12)
+
+
+# df.m=melt(df[,2:9])
+# df.m$syll<-factor(df.m$variable,labels=levels(data.obs$syll))
+
+# df.m$syllogism <- factor(df.m$syll, levels = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1'),
+#                            labels=c("Some of the As are not Bs\n All of the Cs are Bs",
+#                                     "All of the Bs are As\n None of Bs are Cs",
+#                                     "None of the As are Bs\n Some of the Bs are Cs",
+#                                     "All of the As are Bs\n Some of the Bs are not Cs",
+#                                     "All of the As are Bs\n All of the Bs are Cs",
+#                                     "Some of the As are Bs\n All of the Bs are Cs",
+#                                     "All of the As are Bs\n None of the Bs are Cs",
+#                                     "Some of the As are Bs\n None of the Bs are Cs"
+#                            ))
+# 
+# plot1<-ggplot(df.m, aes(x=value,fill=syllogism))+
+#   geom_histogram()+
+#   theme_blackDisplay()+
+#   facet_wrap(~syllogism,nrow=2)+
+#     coord_cartesian(xlim=c(0, 1)) + 
+#   scale_x_continuous(breaks=c(0.5))+
+#   guides(fill=F)+
+#   xlab("\n phi")
+# 
+# ggsave(filename = paste('literalEP',EP,'_posteriorPhi_exp',experiment,'_facetSyll.png',sep=''),plot1, width=24, height=18)
+# 
+
+# plot2<-ggplot(df, aes(x=2+n))+
+#   geom_histogram(fill='white')+
+#   theme_blackDisplay()+
+#   scale_x_continuous(breaks=seq(3,11))+
+#   guides(fill=F)+
+#   xlab("\n n_objects")
+# 
+# ggsave(filename = paste('literalEP',EP,'_posteriorN_exp',experiment,'_facetSyll.png',sep=''),plot2, width=16, height=12)
+
+
+
+
+
+
+
+# more complex; not complete
+
+# cat('model{
+#   # cogntive model predictions, mu known, lambda maybe known
+#   lambda[j,k] ~ dgamma(0.001,0.001)
+#   sigma[j,k] <- 1/sqrt(lambda[j,k])
+#   alpha[j,k] <- (((1 - mu[j,k]) / (sigma[j,k]^2)) - (1 / mu[j,k])) * mu[j,k] ^ 2
+#   beta[j,k] <- alpha[j,k] * (1 / mu[j,k] - 1)
+#   phi[j,k] ~ dbeta(alpha[j,k],beta[j,k])
+# 
+# 
+#   # Each response Belongs To One Of Two Latent Groups (reasoning or guessing)
+#     x[i,j] ~ dbern(psi)
+#   # Guesses
+#   psi <- 0.5
+#   # base rate of guessing, for a particular syllogism
+#   psi[j] ~ dbeta(1,1)
+#   
+#   # Rate Of Success -- posterior of model
+#   
+#   # Data are Bernoulli With Rate Given either cogmod or guess
+#     theta[i,j,k] <- equals(x[i,j],0)*phi[j,k]+equals(x[i,j],1)*0.5
+#     d[i,j,k] ~ dbern(theta[i,j,k])
+# 
+# }', file={f<-tempfile()})
+
+```
+
+```{r}
+library(polspline)
+church.post<-read.csv('post_alpha-beta_mh1000_100_f3_lightbulb.csv',header=F)
+names(church.post)<-c("alpha",names(df_norm)[4:11])
+
+plabels1<- c("Q_nXnYnZ","Q_XnYnZ",'Q_nXYnZ','Q_nXnYZ',"Q_XYnZ","Q_XnYZ","Q_nXYZ","Q_XYZ")
+plabels2<- c("000","100","010","001",'110','101','011','111')
+
+post.m<-melt(church.post[,c(2:9)])
+
+post.meds<-ddply(post.m,.(variable),summarise,
+  med = median(value),
+  mn = mean(value))
+
+
+post.meds$variable<-factor(post.meds$variable, 
+                           levels=plabels1, labels=plabels2)
+post.m$variable<-factor(post.m$variable, levels=plabels1, labels=plabels2)
+
+ggplot(data=post.m,aes(x=value,fill=variable))+
+  geom_density(alpha=0.8)+
+  geom_vline(aes(xintercept=med), data=post.meds) +
+  facet_wrap(~variable,nrow=1)+
+  guides(fill=F)
+
+
+
+ggplot(data=church.post,aes(x=alpha))+
+  geom_density(alpha=0.8)
+```
+
