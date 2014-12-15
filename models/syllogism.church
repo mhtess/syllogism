@@ -84,6 +84,39 @@
      (sum (map (lambda (y) (second y)) (filter (lambda (x) (fourth (first x)))
                                                (zip (first interpretation) (second interpretation))))))))
 
+(define (get-indices needle haystack)
+  (define (loop rest-of-haystack index)
+    (if (null? rest-of-haystack) '()
+      (let ((rest-of-indices (loop (rest rest-of-haystack) (+ index 1))))
+        (if (equal? (first rest-of-haystack) needle)
+          (pair index rest-of-indices)
+          rest-of-indices))))
+  (loop haystack 1))
+
+(define (list-map lst)
+  (if (all (map null? (map rest lst))) 
+      lst
+      (list (map first lst) (list-map (map rest lst)))))
+
+(define (marginalize output)
+  (let ([states (first output)])
+    (map (lambda (sub-output) 
+           (let* ([probs (second output)]
+                  [unique-states (unique sub-output)]
+                  [unique-state-indices 
+                   (map 
+                    (lambda (x) (list x (get-indices x sub-output))) 
+                    unique-states)])
+
+             (list (map first unique-state-indices)
+                   (map 
+                    (lambda (y) (sum (map 
+                                      (lambda (x) (list-elt probs x)) 
+                                      (second y)))) 
+                    unique-state-indices))))
+         (list-map states))))
+
+
 
 ; assume the situations constructed have at least one object with each of the properties
 ; (define existential-import (lambda (A B objects) 
@@ -172,6 +205,17 @@
         (('not-all) not-all-m)
         (('none) none-m)))
 
+(define binom->multinom
+  (mem
+    (lambda (br)
+      (enumeration-query
+        (define A (mem (lambda (x) (flip br))))
+          (define B (mem (lambda (x) (flip br))))
+          (define C (mem (lambda (x) (flip br))))
+
+          (list (A 'x) (B 'x) (C 'x))
+
+          true))))
 
 
 ; (define equivalent-transform
@@ -200,17 +244,7 @@
 ;      (plentiful-worlds A B C objects)))))
 
 
-(define binom->multinom
-  (mem
-    (lambda (br)
-      (enumeration-query
-        (define A (mem (lambda (x) (flip br))))
-          (define B (mem (lambda (x) (flip br))))
-          (define C (mem (lambda (x) (flip br))))
 
-          (list (A 'x) (B 'x) (C 'x))
-
-          true))))
 
 (define multinomial-properties 
   '((#f #f #f) (#f #f #t) (#f #t #f) (#f #t #t) 
@@ -222,13 +256,12 @@
      (enumeration-query
 ;      (define ABC (mem (lambda (x) (apply multinomial background-prior))))
       (define ABC (mem (lambda (x) (multinomial multinomial-properties background-prior))))
-      
-      (map 
-        (lambda (sentence) 
-          (let ([s (unpack-sentence sentence)]) 
-          ((meaning (third s)) ABC objects (first s) (second s)))) 
-        syllogistic-sentences)
-
+        
+        (map 
+          (lambda (sentence) 
+            (let ([s (unpack-sentence sentence)])
+            ((meaning (third s)) ABC objects (first s) (second s))))
+          syllogistic-sentences)
 
      ;true
      (plentiful-worlds-m ABC objects)))))
@@ -247,40 +280,60 @@
 ; 7      001 0.09753311
 ; 8      000 0.16239389
 
-
-
-
-(define hyper-equivalent-transform-m 
-  (lambda (objects hyperpiors) (equivalent-transform-m objects (dirichlet hyperpiors))))
-
 ; cognitive model parameters
-(define objs (list 'o1 'o2 'o3 'o4 'o5))
+(define objs (list 'o1 'o2 'o3 'o4))
 (define alpha 3)
 
 (define lightbulb-beta '(0.16239389 0.09753311 0.02406771 0.05193817 
                          0.11577700 0.12365418 0.12412901 0.16787938))
+
+
+
 (define lightbulb-alpha 3)
 (define lightbulb-hyperparams (map (lambda (x) (* lightbulb-alpha x)) lightbulb-beta))
 
+
+(define lightbulb-means '(0.225972233 0.08556292 0.033416427 0.031271622
+                          0.085948385 0.115978747 0.110020792 0.311828874))
+
 ;(define equivalent-worlds (equivalent-transform-m objs (binom->multinom 0.25)))
+;(define hyper-equivalent-transform-m 
+;  (lambda (objects hyperpiors) (equivalent-transform-m objects (dirichlet hyperpiors))))
+
+; (define hyper-equivalent-transform-m 
+;   (lambda (objects hyperpiors) 
+;     (let ([bp (dirichlet hyperpiors)])
+;       (equivalent-transform-m objects bp))))
+
+(define hyper-equivalent-transform-m 
+  (lambda (objects hyperpiors) 
+    (let ([bp (dirichlet hyperpiors)])
+      (list (equivalent-transform-m objects bp) bp))))
+
 (define state-prior-prior 
-  (repeat 100 (lambda () (hyper-equivalent-transform-m objs lightbulb-hyperparams))))
+  (repeat 3 (lambda () (hyper-equivalent-transform-m objs lightbulb-hyperparams))))
 
 
 (define reasoner1
   (mem (lambda  (premises figure)
     (enumeration-query
-       (define equivalent-worlds (uniform-draw state-prior-prior))
-       (define state (apply multinomial equivalent-worlds))
-       (define true-conclusions (filter is-conclusion? (state->sentences state)))
-       (define conclusion (uniform-draw true-conclusions))
-       (define which-conclusions (list 
-            (is-element? 'C-A.all true-conclusions)
-            (is-element? 'C-A.some true-conclusions)
-            (is-element? 'C-A.none true-conclusions)
-            (is-element? 'C-A.not-all true-conclusions)))
+       (define equivalent-worlds-w-tags (uniform-draw state-prior-prior))
 
-       conclusion
+       (define equivalent-worlds (first equivalent-worlds-w-tags))
+       ;(define equivalent-worlds (uniform-draw state-prior-prior))
+       ;(define equivalent-worlds (equivalent-transform-m objs lightbulb-hyperparams))
+       ;(define equivalent-worlds (equivalent-transform-m objs lightbulb-means))
+
+       (define state (apply multinomial equivalent-worlds))
+       
+       (define true-conclusions (filter is-conclusion? (state->sentences state)))
+       (define which-conclusions (list (is-element? 'C-A.all true-conclusions)
+                                        (is-element? 'C-A.some true-conclusions)
+                                        (is-element? 'C-A.none true-conclusions)
+                                        (is-element? 'C-A.not-all true-conclusions)))
+       (define conclusion (uniform-draw true-conclusions))
+
+       (list conclusion (second equivalent-worlds-w-tags))
        ;true-conclusions
        ;which-conclusions
 
@@ -327,11 +380,13 @@
           (is-element? (second premises) true-sentences))))))
 
 
-(define results (map (lambda (x) (list x (reasoner1 (second x) (first x)))) all-premises))
+;(second (hyper-equivalent-transform-m objs lightbulb-beta))
 
-(write-csv results 'syllmodel_lightbulb_hyperprior100_n5_alpha3.csv)
+;(define results (map (lambda (x) (list x (reasoner1 (second x) (first x)))) all-premises))
+
+;(write-csv results 'syllmodel_lightbulb_hyperprior100_n5_alpha3.csv)
 
 ;(reasoner0 (list 'B-A.all 'C-B.all))
 ;(experimenter1 'C-A.all 1)
-;(reasoner1 (list 'B-A.all 'C-B.all) 1)
+(reasoner1 (list 'B-A.none 'C-B.all) 1)
 ;(hyper-equivalent-transform-m objs)
