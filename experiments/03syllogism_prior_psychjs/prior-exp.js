@@ -595,9 +595,9 @@ var finished_block =
 
 var experiment_blocks = [];
 
-experiment_blocks.push(consent_block);
-// // //experiment_blocks.push(welcome_block);
-experiment_blocks.push(instructions_block);
+// experiment_blocks.push(consent_block);
+// // // //experiment_blocks.push(welcome_block);
+// experiment_blocks.push(instructions_block);
 experiment_blocks.push(test_block);
 experiment_blocks.push(debrief_block);
 experiment_blocks.push(questionnaire_block);

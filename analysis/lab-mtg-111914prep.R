@@ -551,16 +551,17 @@ model.fits$n<-as.integer(substring(model.fits$n,2,3))
 
 max.loc<-which.max(model.fits$correlation)
 
-plot5<-ggplot(model.fits, aes(x=base,y=alpha))+
+plot5<-
+  ggplot(model.fits, aes(x=base,y=alpha))+
   geom_tile(aes(fill = correlation), colour = "white") + 
   geom_tile(data=model.fits[max.loc,], aes(x=base,y=alpha, fill=correlation),
             size=1,colour='black')+
   geom_text(data=model.fits[max.loc,], aes(x=base,y=alpha, label=round(correlation,2)),
             size=4,colour='black')+
-  scale_fill_gradient(low = "green", high = "yellow")+
+  scale_fill_gradient(low = "red", high = "yellow")+
 #  theme_blackDisplay()+
   #scale_x_continuous(breaks=seq(3,11,2))+
-  theme_bw()+
+  theme_solarized()+
   facet_wrap(~n)+
   xlab("\n base")+
   ylab("alpha\n")
@@ -579,20 +580,20 @@ maxcorr.stuff$experiment<-factor(maxcorr.stuff$experiment,labels=c('experiment 1
 corrs <- data.frame(correlations=c(with(subset(maxcorr.stuff,experiment=='experiment 1'), cor(value.x,value.y)),
                                    with(subset(maxcorr.stuff,experiment=='experiment 2'), cor(value.x,value.y))
 ))
-corrs$xpos<- 0.1
-corrs$ypos<- 0.55
+corrs$xpos<- 0.75
+corrs$ypos<- 15
 corrs$experiment <- c('experiment 1','experiment 2')
 
 
-plot4<-ggplot(maxcorr.stuff,aes(x=value.x,y=value.y,colour=conclusion))+
+ggplot(maxcorr.stuff,aes(x=value.x,y=value.y,colour=conclusion))+
   geom_point(size=4)+
-  geom_text(data=corrs,aes(x=xpos,y=ypos, label=paste('r =',round(correlations,2))),size=10,colour='white')+
-  geom_abline(intercept=0,slope=1,colour='grey50')+
+  geom_text(data=corrs,aes(x=xpos,y=ypos, label=paste('r =',round(correlations,2))),size=10,colour='black')+
+  geom_abline(intercept=0,slope=100,colour='grey50')+
   facet_wrap(~experiment)+
-  theme_blackDisplay()+
-  coord_fixed(ratio=1,xlim = c(-0.02,0.7), ylim = c(-0.02,0.7))+
-  scale_y_continuous(breaks=c(0.25,0.5))+
-  scale_x_continuous(breaks=c(0.25,0.5))+
+  theme_solarized()+
+  coord_fixed(ratio = 0.01,xlim = c(-0.02,1), ylim = c(-2,100))+
+  scale_y_continuous(breaks=c(25,50,75))+
+  scale_x_continuous(breaks=c(0.25,0.5,0.75))+
   xlab('\n model posterior')+
   ylab('human endorsement\n')+
   #scale_colour_di(guide = guide_legend()) +
@@ -624,15 +625,15 @@ plot2<-ggplot(subset(models,syll%in%c('AO2', 'EA3', 'IE1', 'OA1') & alpha==max.a
            width = .6,
            stat='identity')+
   facet_grid(domain~syllogism)+
-  theme_blackDisplay()+
+  theme_solarized()+
   guides(fill=F)+
   theme(
-    axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
-    strip.text.x = element_text(size=30),
-    strip.text.y = element_text(angle=0, size=30)
+    axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='black'),
+    strip.text.x = element_text(colour='black'),
+    strip.text.y = element_text(angle=0,colour='black')
   )+
-  coord_cartesian(ylim=c(0, 0.7)) + 
-  scale_y_continuous(breaks=c(0.25,0.5))+
+  coord_cartesian(ylim=c(0,1)) + 
+  scale_y_continuous(breaks=c(.25,.50,.75))+
   xlab("\nconclusion")+
   ylab('posterior probability\n')
 
@@ -645,14 +646,14 @@ plot3<-ggplot(subset(models,syll%in%c('AA1','AI1','EA1','EI1') & alpha==max.alph
            width = .6,
            stat='identity')+
   facet_grid(domain~syllogism)+
-  theme_blackDisplay()+
+  theme_solarized()+
   guides(fill=F)+
   theme(
-    axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
-    strip.text.x = element_text(size=30),
-    strip.text.y = element_text(angle=0, size=30)
+    axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='black'),
+    strip.text.x = element_text(colour='black'),
+    strip.text.y = element_text(angle=0,colour='black')
   )+
-  coord_cartesian(ylim=c(0, 0.7)) + 
-  scale_y_continuous(breaks=c(0.25,0.5))+
+  coord_cartesian(ylim=c(0, 1)) + 
+  scale_y_continuous(breaks=c(0.25,0.5,0.75))+
   xlab("\nconclusion")+
   ylab('posterior probability\n')

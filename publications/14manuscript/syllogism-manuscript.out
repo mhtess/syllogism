@@ -1,17 +1,47 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
-\BOOKMARK [1][-]{section.2}{The variety of syllogistic reasoning tasks}{}% 2
-\BOOKMARK [1][-]{section.3}{The argument strength of a syllogism}{}% 3
-\BOOKMARK [2][-]{subsection.3.1}{Not all invalid syllogisms are weak arguments}{section.3}% 4
-\BOOKMARK [1][-]{section.4}{The influence of background knowledge}{}% 5
-\BOOKMARK [2][-]{subsection.4.1}{Extant theories}{section.4}% 6
-\BOOKMARK [3][-]{subsubsection.4.1.1}{Some old qualitative theories}{subsection.4.1}% 7
-\BOOKMARK [3][-]{subsubsection.4.1.2}{Recent quantitative theories}{subsection.4.1}% 8
-\BOOKMARK [2][-]{subsection.4.2}{Belief and argument strength}{section.4}% 9
-\BOOKMARK [3][-]{subsubsection.4.2.1}{Implications for previous studies}{subsection.4.2}% 10
-\BOOKMARK [2][-]{subsection.4.3}{The probabilistic approach / the way forward}{section.4}% 11
-\BOOKMARK [2][-]{subsection.4.4}{Experiment 2}{section.4}% 12
-\BOOKMARK [3][-]{subsubsection.4.4.1}{Method}{subsection.4.4}% 13
-\BOOKMARK [1][-]{section.5}{Formal semantics and generalized quantifiers}{}% 14
-\BOOKMARK [1][-]{section.6}{Pragmatics in syllogistic reasoning}{}% 15
-\BOOKMARK [2][-]{subsection.6.1}{Can nothing ever actually follow?}{section.6}% 16
-\BOOKMARK [1][-]{subsection.6.1}{References}{}% 17
+\BOOKMARK [2][-]{subsection.1.1}{Sketch of paper}{section.1}% 2
+\BOOKMARK [1][-]{section.2}{The variety of syllogistic reasoning tasks}{}% 3
+\BOOKMARK [2][-]{subsection.2.1}{The syllogistic space}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.2}{Forced choice task}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.3}{Production task}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.4}{Evaluation task}{section.2}% 7
+\BOOKMARK [1][-]{section.3}{The argument strength of a syllogism}{}% 8
+\BOOKMARK [2][-]{subsection.3.1}{Probabilistic model}{section.3}% 9
+\BOOKMARK [1][-]{section.4}{Correspondence to existing data sets}{}% 10
+\BOOKMARK [2][-]{subsection.4.1}{Results}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.2}{Discussion}{section.4}% 12
+\BOOKMARK [1][-]{section.5}{The influence of background knowledge}{}% 13
+\BOOKMARK [2][-]{subsection.5.1}{Extant theories}{section.5}% 14
+\BOOKMARK [3][-]{subsubsection.5.1.1}{Some old qualitative theories}{subsection.5.1}% 15
+\BOOKMARK [3][-]{subsubsection.5.1.2}{Recent quantitative theories}{subsection.5.1}% 16
+\BOOKMARK [2][-]{subsection.5.2}{Belief and argument strength}{section.5}% 17
+\BOOKMARK [3][-]{subsubsection.5.2.1}{Implications for previous studies}{subsection.5.2}% 18
+\BOOKMARK [2][-]{subsection.5.3}{The current approach}{section.5}% 19
+\BOOKMARK [1][-]{section.6}{Experiment 1}{}% 20
+\BOOKMARK [2][-]{subsection.6.1}{Hypothesis space}{section.6}% 21
+\BOOKMARK [2][-]{subsection.6.2}{Experiment 1a \204 Prior elicitation}{section.6}% 22
+\BOOKMARK [3][-]{subsubsection.6.2.1}{Participants}{subsection.6.2}% 23
+\BOOKMARK [3][-]{subsubsection.6.2.2}{Design}{subsection.6.2}% 24
+\BOOKMARK [3][-]{subsubsection.6.2.3}{Procedure \046 Materials}{subsection.6.2}% 25
+\BOOKMARK [3][-]{subsubsection.6.2.4}{Data analysis}{subsection.6.2}% 26
+\BOOKMARK [3][-]{subsubsection.6.2.5}{Syllogism selection simulations}{subsection.6.2}% 27
+\BOOKMARK [2][-]{subsection.6.3}{Experiment 1b \204 Syllogistic reasoning}{section.6}% 28
+\BOOKMARK [3][-]{subsubsection.6.3.1}{Participants}{subsection.6.3}% 29
+\BOOKMARK [3][-]{subsubsection.6.3.2}{Design}{subsection.6.3}% 30
+\BOOKMARK [3][-]{subsubsection.6.3.3}{Procedures \046 Materials}{subsection.6.3}% 31
+\BOOKMARK [3][-]{subsubsection.6.3.4}{Analysis}{subsection.6.3}% 32
+\BOOKMARK [3][-]{subsubsection.6.3.5}{Model fits}{subsection.6.3}% 33
+\BOOKMARK [3][-]{subsubsection.6.3.6}{Bayesian model comparison}{subsection.6.3}% 34
+\BOOKMARK [2][-]{subsection.6.4}{Discussion}{section.6}% 35
+\BOOKMARK [1][-]{section.7}{Experiment 2}{}% 36
+\BOOKMARK [1][-]{section.8}{Pragmatics in syllogistic reasoning}{}% 37
+\BOOKMARK [2][-]{subsection.8.1}{Semantics and presuppositions}{section.8}% 38
+\BOOKMARK [2][-]{subsection.8.2}{Alternatives and pragmatic inference}{section.8}% 39
+\BOOKMARK [1][-]{section.9}{Formal semantics and generalized quantifiers}{}% 40
+\BOOKMARK [1][-]{section.10}{General discussion}{}% 41
+\BOOKMARK [2][-]{subsection.10.1}{Can nothing ever actually follow?}{section.10}% 42
+\BOOKMARK [2][-]{subsection.10.2}{On the meaning of deduction and epistemic modals}{section.10}% 43
+\BOOKMARK [2][-]{subsection.10.3}{The prior distribution over conclusions}{section.10}% 44
+\BOOKMARK [2][-]{subsection.10.4}{Not all invalid syllogisms are weak arguments}{section.10}% 45
+\BOOKMARK [2][-]{subsection.10.5}{The informational content of a syllogism}{section.10}% 46
+\BOOKMARK [1][-]{subsection.10.5}{References}{}% 47

@@ -1,4 +1,3 @@
-*.csv
 *.pyc
 publications/14manuscript/inconsolata/
 *.aux
@@ -6,8 +5,21 @@ publications/14manuscript/inconsolata/
 *.blg
 *.log
 *.out
+*.tiff
+*.plist
 *.synctex.gz
+*.tsv
+*.question
+*.success
+*.config
+*.properties
 _cleanup
 _oldpcRSCRIPTS
 *church
 *results
+models/modeldata/
+models/ripsdata/
+models/_models/
+experiments/.gitbackup/
+experiments/00syllogism/commonJS/
+data

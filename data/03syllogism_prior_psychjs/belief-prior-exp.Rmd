@@ -5,14 +5,6 @@ date: "September 8, 2014"
 output: html_document
 ---
 ```{r setup, echo=FALSE}
-library(plyr)
-library(bootstrap)
-theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
-ci.low <- function(x,na.rm=T) {
-  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
-ci.high <- function(x,na.rm=T) {
-  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
-
 agr.ci <- function(x){
   agr = aggregate(value ~ domain + condition + variable, data=x, FUN=mean)
   agr$CILow = aggregate(value ~ domain + condition + variable, data=x, FUN=ci.low)$value
@@ -27,10 +19,6 @@ This report looks at the data elicited from 03syllogism-prior-exp. We asked peop
 Let's start with the RT distribution. This is the time to complete the 8-state multinomial elicitation. 
 
 ```{r}
-library(ggplot2)
-library(reshape2)
-
-
 fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/'
 
 df<-read.csv((paste(fpath,'prior-exp-mturk_all_n71.csv',sep="")))[c(1:12,16)]
@@ -304,6 +292,7 @@ for (d in domains){
 }
 mod.cast<-dcast(model.domains, value.var='value',...~cond)
 with(mod.cast,cor(frequency,plausibility))
+with(subset(mod.cast,X..syll%in%syllogisms),cor(frequency,plausibility))
 
 ggplot(data=subset(model.domains,X..syll%in%syllogisms), aes(x=variable,y=value,fill=cond))+
   geom_bar(stat='identity',position=position_dodge())+

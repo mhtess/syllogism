@@ -1402,7 +1402,11 @@ ggsave(filename = paste('literalEP',EP,'_posteriorPhi_exp',experiment,'retest.pn
 
 ```{r}
 library(polspline)
-church.post<-read.csv('post_alpha-beta_mh1000_100_f3_lightbulb.csv',header=F)
+setwd("~/Documents/research/syllogism/analysis")
+
+domain='lightbulb'
+church.post<-read.csv('post_alpha-beta_mh1000_100_f1_lightbulb.csv',header=F)
+#church.post<-read.csv(paste('post_alpha-beta_mh10000_100_f3_',domain,'.csv',sep=''),header=F)
 names(church.post)<-c("alpha",names(df_norm)[4:11])
 
 plabels1<- c("Q_nXnYnZ","Q_XnYnZ",'Q_nXYnZ','Q_nXnYZ',"Q_XYnZ","Q_XnYZ","Q_nXYZ","Q_XYZ")
@@ -1419,15 +1423,34 @@ post.meds$variable<-factor(post.meds$variable,
                            levels=plabels1, labels=plabels2)
 post.m$variable<-factor(post.m$variable, levels=plabels1, labels=plabels2)
 
-ggplot(data=post.m,aes(x=value,fill=variable))+
+a<-ggplot(data=post.m,aes(x=value,fill=variable))+
   geom_density(alpha=0.8)+
   geom_vline(aes(xintercept=med), data=post.meds) +
   facet_wrap(~variable,nrow=1)+
   guides(fill=F)
 
+ggsave(a,file=paste('posterior_beta_',domain,'_mh1000_100_f1.png',sep=''), width=18, height=4)
+
+b<-ggplot(data=church.post,aes(x=alpha))+
+  geom_density(alpha=0.7,fill='white')
+
+ggsave(b,file=paste('posterior_alpha_',domain,'_mh1000_100_f1.png',sep=''),width=5, height=5)
 
 
-ggplot(data=church.post,aes(x=alpha))+
-  geom_density(alpha=0.8)
+
 ```
 
+
+Using posterior medians for the lightbulb domain properties + alpha as dirichlet parameters, I sample 100 multinomials to serve as a hyperprior over state-priors for the syllogism model. The syllmodel then has uncertainty about what the world is like, and takes this into account when analyzing syllogisms.
+
+Here are the results from the lightbulb domain, for n_objects =5, alpha =3.
+
+```{r}
+setwd("~/Documents/research/syllogism/models/modeldata/priors_on_priors")
+
+lb<-read.csv('syllmodel_lightbulb_hyperprior100_n5_alpha3.csv', header=F)
+
+
+
+
+```

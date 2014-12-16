@@ -1,17 +1,18 @@
 ---
 title: "syll-manuscript"
 author: "mht"
-date: "August 13, 2014"
+date: "August 22, 2014"
 output: html_document
 ---
 
-###Section **not all invalid syllogisms are weak arguments**
+###Not all invalid syllogisms are weak arguments
 
-Distribution of argument strength.
+Distribution of argument strength for i.i.d. priors with base_rate=0.25, n_objects=6. 64 syllogisms with 4 conclusions each. You can see the inherent symmetry between the conclusions in this graph (+/- sampling noise and histogram binning).  
 
-```{r, echo=FALSE, hello}
+```{r, distribution of arg strength,fig.width=9,echo=FALSE}
 library(ggplot2)
 library(reshape2)
+library(plyr)
 
 fpath = '/Users/mht/Documents/research/syllogism/models/modeldata/'
 fig = 'Full'
@@ -31,16 +32,17 @@ dm$argstrength <- dm$argstrength*2
 
 
 
-ggplot(dm, aes(x = argstrength,fill=conclusion,alpha=0.6)) + 
-  geom_histogram(binwidth=.025)+
+ggplot(dm, aes(x = argstrength,fill=conclusion)) + 
+  geom_histogram(binwidth=.05)+
   #geom_density()+
   ggtitle("argument strength of 64 syllogisms with C-A conclusions")+
   xlab("argument strength")+
   ylab("density of syllogisms")+
+  scale_fill_discrete(labels=c("all C are A", "no C are A", "some C are A","some C are not A"))+
   theme_bw()+
-  theme(plot.title=element_text(size=20),
-        axis.title.x = element_text(size=18),
-        axis.title.y = element_text(size=18),
+  theme(plot.title=element_text(size=16),
+        axis.title.x = element_text(size=14),
+        axis.title.y = element_text(size=14),
         axis.text.x = element_text(size=12),
         axis.text.y = element_text(size=12),
         legend.text = element_text(size=14),
@@ -49,5 +51,195 @@ ggplot(dm, aes(x = argstrength,fill=conclusion,alpha=0.6)) +
 
 ```
 
+Here is the same plot but just showing the 2 unique conclusions (symmetry removed).
+Note: the color correspondence has changed.
 
-Section **
+```{r, argstr of 2,fig.width=9,echo=FALSE}
+ggplot(subset(dm,conclusion%in%c("Isp","Osp")), aes(x = argstrength,fill=conclusion)) + 
+  geom_histogram(binwidth=.05)+
+  #geom_density()+
+  ggtitle("argument strength of 64 syllogisms with C-A conclusions")+
+  xlab("argument strength")+
+  ylab("density of syllogisms")+
+  scale_fill_discrete(labels=c("some C are A","some C are not A"))+
+  theme_bw()+
+  theme(plot.title=element_text(size=16),
+        axis.title.x = element_text(size=14),
+        axis.title.y = element_text(size=14),
+        axis.text.x = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        legend.text = element_text(size=14),
+        legend.title = element_text(size=14))
+```
+
+All there is to take away is there exists a distribution of argument strength. (Though this distribution depends on the prior. I'm using here i.i.d. prior with a rarity base-rate and a mental models "principle of parismony"ish model size).
+
+### Experiment 2: Prior elicitation  / syllogism selection
+
+I ran an OED type analysis using 12 different prior setups. The 12 results from crossing *causal structure*, *connection quality*, and *conclusion terms*. Concretely,  {Common Cause, Common Effect} x {2 Enabling connections, 2 Preventing connections, mixed} x {Cause-Effect conclusion, cause-cause/effect-effect conclusion}.
+
+Facet is by prior setup. CC_EE_ec means Common Cause, Enabling Enabling connections, and effect-cause conclusion. MC stands for Multiple Cause, which is the Common Effect structure except that I didn't know the proper name.
+
+
+```{r, oed exp 2,fig.width=10,fig.height=6,echo=FALSE}
+fpath<-'/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/OED/00/'
+oeds<-list.files(fpath,pattern='oed.*\\.txt')
+
+oed.res = data.frame(syll=rep(NA,0),prior=rep(NA,0),
+                        kl=rep(NA,0),valid=rep(NA,0),
+                        stringsAsFactors=FALSE)
+
+valid.ca <- read.table('/Users/mht/Documents/research/syllogism/models/metadata/allvalidmoodsCA.txt',header=TRUE)
+
+for (o in oeds){
+  df.tm <- read.table(paste(fpath,o,sep=''),col.names=c('syll','kl'))
+  df.tm$valid<-df.tm$syll%in%valid.ca$syll
+  df.tm$prior<-substr(o,5,12)
+  df.tm$syll<- factor(df.tm$syll,levels=df.tm$syll[order(df.tm$kl)])
+  oed.res<-rbind(oed.res,df.tm)
+}
+
+
+oed.res$syll = as.character(oed.res$syll)
+oed.res$n = as.numeric(factor(oed.res$prior))
+
+oed.res = ddply(oed.res, .(syll,valid,prior), transform,
+                x=paste(c(rep(' ',n-1), syll), collapse=''))
+
+#oed.res$x<-mapply(function(syll, n) 
+#  {paste(c(rep(" ",n-1),syll), collapse="")}, 
+#  oed.res$syll, oed.res$n)
+
+oed.res$x = factor(oed.res$x, levels=oed.res[order(-oed.res$kl), 'x'])
+
+ggplot(data=oed.res,aes(x=x,y=kl,fill=valid))+
+  geom_bar(stat='identity')+
+  facet_wrap(~prior,scale='free_x')+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
+```
+
+It looks like the common cause structure is strictly better than the common effect structure (CC > MC). However, we should keep in mind that the causal strength was somewhat arbitrary and differed across the two setups. To keep with the priors that we have, we'll just explore the common cause structure because it seems promising. It looks like the 2 x Enabling connections model produces the best testing ground. It also seems that the conclusion relating the effect with the cause produces the best items.
+
+To look at this a little more closely, let's examine the top 50 common cause syllogisms to see from what domains they come. I've removed the syllogisms that have 2 necessary (valid) conclusions, as these definitely won't be useful for disambiguating the 2 reasoning models (though they might still have high expected KL).
+
+```{r, oed common cause,fig.width=9,echo=FALSE}
+toonec<-c("AE4","AA1","EA1","AE2","EA2")
+
+oed.cci<-subset(oed.res,!(syll%in%toonec) & substr(prior,1,2)=='CC')
+
+ggplot(data=oed.cci[order(-oed.cci$kl)[1:50],],aes(x=x,y=kl,fill=prior,alpha=valid))+
+    geom_bar(stat='identity')+
+    scale_alpha_manual(values=c(0.5,1))+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
+```
+
+The lighter opacity bars are syllogisms with no valid conclusion (mostly the pink bars). It's somewhat surprising that most of the most informative syllogisms for disambiguating the 3 models are valids. It's potentially surprising because the 2 of the models definitely make the same prediction for one of the conclusions. But still, syllogisms with a valid conclusion might still be good at *qualitatively* disambiguating the two models of reasoning (naive priors vs. belief priors), if the models differ on their endorsement of the invalid conclusion. [Note: I'm now in the mindset of analyzing these models in terms of 2 conclusions instead of 4, because of the symmetry.]
+
+Again, we see that the most informative items come from the Enabling Relationships (EE) domain. 
+
+Though, the AI1, AI3, and AA3 sylls might be good to look at for the green bars and the dark blue bars. Those models differ in the quality of the causal connection (green is one Enabling cause and one Preventative cause; dark blue is 2 preventative causes). The fact that those syllogisms are highly informative for both of those priors might be interesting to explore. 
+
+Here is a table of the top 50 syllogisms. If the number is greater than 1, that means multiple priors find this syllogism informative.
+```{r, echo=FALSE}
+table(oed.cci[order(-oed.cci$kl)[1:50],]$syll)
+```
+
+Let's look at the top 16 syllogisms for the Common Cause, Enabling Enabling priors, using a conclusion relating an effect with a cause (the red bars from the previous plot). 
+
+For ease of reading, I'm plotting just 2 of the 4 conclusions because the symmetry is uninformative. I'm plotting the conclusions *Some C are A* and *Some C are not A*. The others, *All* and *None* can be generating by taking 1 - *Some not* and 1 - *Some*, respectively.
+
+```{r, fig.width=9,echo=FALSE}
+#oed.res,!valid & 
+oed.ccee<-subset(oed.res, !(syll%in%toonec) & prior=='CC_EE_ec')
+
+top16<-oed.ccee[order(-oed.ccee$kl)[1:16],]
+fpath<-'/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/OED/00/'
+m.df<-read.csv(paste(fpath,'../../alldata_oed_CC_EE_ec_iidArgStr_causalArgStr_causalCLonly.csv',sep=''))[2:7]
+
+m.df<-subset(m.df,X..syll%in%top16$syll)
+mm.df<-melt(m.df,id.vars=c('model','X..syll'))
+
+ggplot(data=subset(mm.df,variable%in%c("Isp","Osp")),aes(x=variable,y=value,fill=model))+
+  geom_bar(stat='identity',position='dodge')+
+  facet_wrap(~X..syll)+
+  scale_x_discrete(labels=c("some C are A","some C are not A"))+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
+```
+
+The red model is our favorite model (reasoning over priors). In all these cases, the red model never makes a unique, particular response prediction. For some of these items, however, the red model makes a unique pattern of response prediction e.g. in AO2 (top left). For the **Some C are A** response, the red model matches the blue model, but for the **Some C are not A** response, the red model matches the green model. Thus, if we observed both of these responses, we could infer that the red model is the best model.
+
+Now what does this item, e.g., actually look like?
+
+This is a Common Cause model with enabling connections, so e.g. *getting drunk in the nighttime**, and *having a headache the next morning* and *waking up with your shoes on*. The conclusion for this model relates the cause with one of the effects (and since causal strengths were chosen to be symmetric, it doesn't matter which effect). Thus, the AO2 item reads (in naturalistic language):
+
+There was a big party last night and some people got wasted. Now everyone is waking up, some people have headaches, some people are waking up with their shoes on.
+
+* Everyone who was drunk last night has a headache now
+
+* Some of the people who woke up with their shoes on this morning don't have headaches
+
+* Were some of the people who woke up with shoes on drunk last night?
+
+Here, if you do the reasoning, you would conclude (somewhat surprisingly) that some people with their shoes on were NOT drunk last night [this is a valid conclusion-- Some C are not A]. The prior, however, is sufficiently strong for shoe-wearers being drunk (and the argument is sufficiently weak) that some shoe-wearers being drunk is still a viable option [some C are A]. This is what the red model says. The blue model samples only from the prior, and thinks it's unlikely that the shoe-wearers weren't drunk. The green model reasons over abstract domains and thinks it's unlikely that any of the shoe-wearers were actually drunk: e.g.
+
+* All blickets are tomas
+
+* Some zifs aren't tomas
+
+* Are some zifs blickets?
+
+Perhaps less likely than the causal example?
+
+
+Let's look at another example, this time EI1:
+
+* None of the people with headaches right now were drunk last night
+
+* Some people who woke up with their shoes on have headaches
+
+* Were some of the people who woke up with shoes on drunk last night?
+
+Possibly still plausible? 
+
+
+### Belief with pragmatics, a quick sketch
+
+We believe people's reasoning judgments reflect not only the argument strength of the words in the argument but some enriched meaning of the words, derived from the supposed selection of the argument from a space of alternative arguments. Different pragmatics models can be written down which use different alternatives. For now, I'll just consider a model that considers as alternatives syllogisms of the same logical form (essentially, there are alternative quantifiers for each premise, but the structure of the premise remains the same). 
+
+What we want to know for purposes of experiment design is: do the qualtitative differences between the 3 models' predictions that we observed above change as a result of the pragmatic enrichment of the argument?
+
+What we hope to see is a 4x4 plot that looks qualitatively similar to that above. That is, we want there to be some syllogisms that can qualitatively disambiguate the 3 models by having pairs of responses differ (qualitatively) across the models. Cross your fingers.
+
+```{r, fig.width=9,echo=FALSE}
+#oed.res,!valid & 
+#oed.ccee<-subset(oed.res, !(syll%in%toonec) & prior=='CC_EE_ec')
+#top16<-oed.ccee[order(-oed.ccee$kl)[1:16],]
+
+ppath<-'/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/OED/10/'
+mp.df<-read.csv(paste(ppath,'../../alldata_oed_CC_EE_ec_depth1iidArgStr_causalArgStr_causalCLonly.csv',sep=''))[2:7]
+
+mp.df<-subset(mp.df,X..syll%in%top16$syll)
+mmp.df<-melt(mp.df,id.vars=c('model','X..syll'))
+
+ggplot(data=subset(mmp.df,variable%in%c("Isp","Osp")),aes(x=variable,y=value,fill=model))+
+  geom_bar(stat='identity',position='dodge')+
+  facet_wrap(~X..syll)+
+  scale_x_discrete(labels=c("some C are A","some C are not A"))+
+  theme_bw()+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
+
+```
+
+The answer is sort of yes and no. Consider AO2, for example. We see strong endorsement of the *Some* conclusion and the *Some not* conclusion, but now it's clear that the *Some not* conclusion (which is valid) is higher than the *Some* conclusion. It was also the case with the literal argument strength model but it was a smaller difference that was easy to *unsee*. The qualitative pattern of *Some not* > *Some* is the same for the i.i.d. argument strength. But at the same time, it's not as just that: *Some* really has considerable support. This plot sort of shows arg-strength causal model for what is really is: a blend of prior knowledge and reasoning. 
+
+I'd say overall the qualitative effects remain. For many of the items: AO2, EA3, EA4, the EI series, and OA3, we see the argument strength over domain knowledge---in a way---being pushed by logic for some conclusions and being pushed by the prior for others. But it's not as simple as beliefs vs logic. The beliefs are apparent in the conclusions only because the logic of the argument lets them through.
+
+### Conclusions, or some random thoughts
+
+The OED by Prior plot shows that all of the domain / causal-structure setups exhibit an exponential-like distribution over the syllogistic space for expected information gain. This is consistent with Daniel Ly's explorations of OED in other domains. DLy warns against directly comparing across graphs, as I naively did above. In discussions with him today (Friday, 8/22), he and I reasoned that probably the most pragmatic course of action is to write down materials for 6 domains, that follow the causal structure / quality of relationships that I've outlined here (i.e. 1 set of materials per causal structure). Once these priors are gathered, we run the OED to see if we produce the now classic exponential plots like those shown above. Then we examine the top ranking items like I've shown in this last 4x4 plot and search for ones that show the qualitative dissociations between the model, as I've done above here.
+
+This procedeure can be done independently for the 6 domains. The "experiment" (in the OED sense) is then considered a syllogism with a particular materials. 
+
+This can also be done jointly for the 6 domains. Conceptually, the "experiment" then is a syllogism with 6 different materials. What we would find might be similar to what we briefly looked at in the table I printed above: syllogisms that consistently disambiguate the 3 models, across different materials. The arg-str i.i.d. model would make the same predictions across the materials (since the same abstract argument would be present), the conclusion-only causal model would make different predictions across the materials but without regard to the logic, and the arg-strength causal model would do a bit of both. Of course, our actual model comparison is across all the syllogisms that we select. DLy and I briefly talked about a sort of combinatoric OED (what best subset of syllogisms to run?), but we jointly feared the combinatorics and let it rest.

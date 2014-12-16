@@ -34,6 +34,26 @@
    (factor (- 0 (* 3 (sum distance-to-data))))))
 
 
+
+(define dummy
+     (map 
+      (lambda (x) (condition (equal? (map string->number x) 
+                                     (dirichlet (map (lambda (x) (* a x)) b)))))
+      domain-priors))
+
+
+;;dirichlet-score returns log-prob of val given params.
+(define dummy
+     (map 
+      (lambda (x) (factor (dirichlet-score 
+        (map string->number x) 
+        (map (lambda (x) (* a x)) b))))
+      domain-priors))
+
+
+
+
+
 (define output-file-name (string-append 'post_alpha-beta_mh mh_samples '_ mh_burnin '_f3_ domain '.csv))
 (write-csv samples output-file-name)
 (define complete? 'complete)

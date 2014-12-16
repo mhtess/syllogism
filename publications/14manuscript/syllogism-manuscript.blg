@@ -11,45 +11,55 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
 Database file #1: belief.bib
+Warning--I didn't find a database entry for "Wilkins28"
+Warning--I didn't find a database entry for "Haviland1974"
+Warning--I didn't find a database entry for "Church1936"
+Warning--I didn't find a database entry for "Chater1999"
+Warning--I didn't find a database entry for "Rips1994"
 apacite.bst [2012/02/25 v6.01 APA bibliography style]
-You've used 11 entries,
+ptr=1, stack=
+
+---the literal stack isn't empty for entry JL1983
+while executing---line 5227 of file apacite.bst
+You've used 20 entries,
             6735 wiz_defined-function locations,
-            1330 strings with 14909 characters,
-and the built_in function-call counts, 23558 in all, are:
-= -- 3002
-> -- 195
-< -- 1080
-+ -- 1349
-- -- 22
-* -- 1488
-:= -- 4201
-add.period$ -- 44
-call.type$ -- 11
-change.case$ -- 195
+            1401 strings with 16427 characters,
+and the built_in function-call counts, 39730 in all, are:
+= -- 5120
+> -- 329
+< -- 1698
++ -- 2050
+- -- 40
+* -- 2413
+:= -- 6828
+add.period$ -- 85
+call.type$ -- 20
+change.case$ -- 347
 chr.to.int$ -- 0
-cite$ -- 22
-duplicate$ -- 712
-empty$ -- 877
-format.name$ -- 343
-if$ -- 4434
+cite$ -- 40
+duplicate$ -- 1197
+empty$ -- 1576
+format.name$ -- 566
+if$ -- 7684
 int.to.chr$ -- 0
-int.to.str$ -- 22
+int.to.str$ -- 40
 missing$ -- 0
-newline$ -- 302
-num.names$ -- 90
-pop$ -- 377
+newline$ -- 522
+num.names$ -- 166
+pop$ -- 659
 preamble$ -- 1
-purify$ -- 52
+purify$ -- 87
 quote$ -- 0
-skip$ -- 1406
+skip$ -- 2611
 stack$ -- 0
-substring$ -- 1533
-swap$ -- 365
-text.length$ -- 30
+substring$ -- 2363
+swap$ -- 632
+text.length$ -- 55
 text.prefix$ -- 0
 top$ -- 1
-type$ -- 880
+type$ -- 1728
 warning$ -- 0
-while$ -- 136
+while$ -- 219
 width$ -- 0
-write$ -- 388
+write$ -- 653
+(There was 1 error message)

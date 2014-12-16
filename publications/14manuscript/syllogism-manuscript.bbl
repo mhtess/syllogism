@@ -34,6 +34,31 @@ Dube, C.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
+Eco%
+}{%
+Eco%
+}{%
+{\protect \APACyear {1983}}%
+}]{%
+Eco1983}
+\APACinsertmetastar {%
+Eco1983}%
+\begin{APACrefauthors}%
+Eco, U.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1983}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {The Sign of Three: Dupin, Holmes, Peirce} {The sign of
+  three: Dupin, holmes, peirce}.{\BBCQ}
+\newblock
+\BIn{} U.~Eco\ \BBA {} T\BPBI A.~Sebeok\ (\BEDS), (\BPG~198-220).
+\newblock
+\APACaddressPublisher{Bloomington}{Indiana University Press}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
 J\BPBI S.~Evans%
 , Handley%
 \BCBL {}\ \BBA {} Harper%
@@ -71,7 +96,7 @@ Evans, J\BPBI S.%
 J\BPBI S\BPBI B\BPBI T.~Evans%
 , Handley%
 , Harper%
-\BCBL {}\ \BBA {} Johnson-laird%
+\BCBL {}\ \BBA {} Johnson-Laird%
 }{%
 J\BPBI S\BPBI B\BPBI T.~Evans%
 \ \protect \BOthers {.}}{%
@@ -84,7 +109,7 @@ Evans1999}%
 Evans, J\BPBI S\BPBI B\BPBI T.%
 , Handley, S\BPBI J.%
 , Harper, C\BPBI N\BPBI J.%
-\BCBL {}\ \BBA {} Johnson-laird, P\BPBI N.%
+\BCBL {}\ \BBA {} Johnson-Laird, P\BPBI N.%
 \end{APACrefauthors}%
 \unskip\
 \newblock
@@ -127,10 +152,61 @@ Evans, J\BPBI S\BPBI B\BPBI T.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
-Johnson-Laird%
+Goodman%
+, Mansinghka%
+, Roy%
+, Bonawitz%
+\BCBL {}\ \BBA {} Tenenbaum%
+}{%
+Goodman%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2008}}%
+}]{%
+Goodman2008}
+\APACinsertmetastar {%
+Goodman2008}%
+\begin{APACrefauthors}%
+Goodman, N\BPBI D.%
+, Mansinghka, V\BPBI K.%
+, Roy, D\BPBI M.%
+, Bonawitz, K.%
+\BCBL {}\ \BBA {} Tenenbaum, J\BPBI B.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2008}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Church : a language for generative models}} {{Church :
+  a language for generative models}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Uncertainty in Artificial Intelligence}{}{}{}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+P.~Johnson-Laird%
+}{%
+P.~Johnson-Laird%
+}{%
+{\protect \APACyear {1983}}%
+}]{%
+JL1983}
+\APACinsertmetastar {%
+JL1983}%
+\begin{APACrefauthors}%
+Johnson-Laird, P.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{1983}.
+\newblock
+\APACaddressPublisher{Cambridge, MA}{Harvard University Press}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+P\BPBI N.~Johnson-Laird%
 \ \BBA {} Byrne%
 }{%
-Johnson-Laird%
+P\BPBI N.~Johnson-Laird%
 \ \BBA {} Byrne%
 }{%
 {\protect \APACyear {1991}}%
@@ -149,6 +225,58 @@ Johnson-Laird, P\BPBI N.%
 \APACrefbtitle {{Deduction}} {{Deduction}}\ (L.~Erlbaum, \BED{}).
 \newblock
 \APACaddressPublisher{UK}{Hove}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+P\BPBI N.~Johnson-Laird%
+\ \BBA {} Steedman%
+}{%
+P\BPBI N.~Johnson-Laird%
+\ \BBA {} Steedman%
+}{%
+{\protect \APACyear {1978}}%
+}]{%
+JL1978}
+\APACinsertmetastar {%
+JL1978}%
+\begin{APACrefauthors}%
+Johnson-Laird, P\BPBI N.%
+\BCBT {}\ \BBA {} Steedman, M.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1978}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{The Psychology of Syllogisms}} {{The Psychology of
+  Syllogisms}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Cognitive psychology}{10}{}{64--99}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Khemlani%
+\ \BBA {} Johnson-Laird%
+}{%
+Khemlani%
+\ \BBA {} Johnson-Laird%
+}{%
+{\protect \APACyear {2012}}%
+}]{%
+Khemlani2012}
+\APACinsertmetastar {%
+Khemlani2012}%
+\begin{APACrefauthors}%
+Khemlani, S.%
+\BCBT {}\ \BBA {} Johnson-Laird, P\BPBI N.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2012}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{Theories of the syllogism: A meta-analysis.}}
+  {{Theories of the syllogism: A meta-analysis.}}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Psychological bulletin}{138}{3}{427--57}.
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
@@ -182,6 +310,61 @@ Klauer, K\BPBI C.%
   \end{APACrefURL}
 \newblock
 \begin{APACrefDOI} \doi{10.1037//0033-295X.107.4.852} \end{APACrefDOI}
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Lagerlund%
+}{%
+Lagerlund%
+}{%
+{\protect \APACyear {2012}}%
+}]{%
+sep-medieval-syllogism}
+\APACinsertmetastar {%
+sep-medieval-syllogism}%
+\begin{APACrefauthors}%
+Lagerlund, H.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2012}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Medieval Theories of the Syllogism} {Medieval theories
+  of the syllogism}.{\BBCQ}
+\newblock
+\BIn{} E\BPBI N.~Zalta\ (\BED), \APACrefbtitle {The Stanford Encyclopedia of
+  Philosophy} {The stanford encyclopedia of philosophy}\ (\PrintOrdinal{Winter
+  2012}\ \BEd).
+\newblock
+\APAChowpublished
+  {\url{http://plato.stanford.edu/archives/win2012/entries/medieval-syllogism/}}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Lassiter%
+\ \BBA {} Goodman%
+}{%
+Lassiter%
+\ \BBA {} Goodman%
+}{%
+{\protect \APACyear {2013}}%
+}]{%
+Lassiter2013}
+\APACinsertmetastar {%
+Lassiter2013}%
+\begin{APACrefauthors}%
+Lassiter, D.%
+\BCBT {}\ \BBA {} Goodman, N\BPBI D.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2013}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{How many kinds of reasoning? Inference, probability,
+  and natural language semantics}} {{How many kinds of reasoning? Inference,
+  probability, and natural language semantics}}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Cognitive science}{}{}{}.
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
@@ -285,6 +468,33 @@ Oaksford%
 Oaksford%
 \ \BBA {} Chater%
 }{%
+{\protect \APACyear {1994}}%
+}]{%
+Oaksford1994}
+\APACinsertmetastar {%
+Oaksford1994}%
+\begin{APACrefauthors}%
+Oaksford, M.%
+\BCBT {}\ \BBA {} Chater, N.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1994}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {{A rational analysis of the selection task as optimal
+  data selection.}} {{A rational analysis of the selection task as optimal data
+  selection.}}{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Psychological Review}{101}{4}{608--631}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Oaksford%
+\ \BBA {} Chater%
+}{%
+Oaksford%
+\ \BBA {} Chater%
+}{%
 {\protect \APACyear {2007}}%
 }]{%
 Oaksford2007}
@@ -303,6 +513,30 @@ Oaksford, M.%
   reasoning}}.
 \newblock
 \APACaddressPublisher{Oxford}{Oxford University Press}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+St\"{o}rring%
+}{%
+St\"{o}rring%
+}{%
+{\protect \APACyear {1908}}%
+}]{%
+Storring1908}
+\APACinsertmetastar {%
+Storring1908}%
+\begin{APACrefauthors}%
+St\"{o}rring, G.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{1908}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Experimentelle Untersuchungen uber einfache
+  Schlussprozesse} {Experimentelle untersuchungen uber einfache
+  schlussprozesse}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{{Arch. f. d. ges. Psychol}}{}{}{1-127}.
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%

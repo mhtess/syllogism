@@ -102,7 +102,7 @@ Goodman, N\BPBI D.%
 \end{APACrefauthors}%
 \unskip\
 \newblock
-\APACrefYearMonthDay{2013}{{\APACmonth{01}}}{}.
+\APACrefYearMonthDay{2013}{}{}.
 \newblock
 {\BBOQ}\APACrefatitle {{Knowledge and implicature: modeling language
   understanding as social cognition.}} {{Knowledge and implicature: modeling
@@ -151,7 +151,7 @@ Khemlani, S.%
 \end{APACrefauthors}%
 \unskip\
 \newblock
-\APACrefYearMonthDay{2012}{{\APACmonth{05}}}{}.
+\APACrefYearMonthDay{2012}{}{}.
 \newblock
 {\BBOQ}\APACrefatitle {{Theories of the syllogism: A meta-analysis.}}
   {{Theories of the syllogism: A meta-analysis.}}{\BBCQ}
@@ -209,29 +209,6 @@ Oaksford, M.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
-Rips%
-}{%
-Rips%
-}{%
-{\protect \APACyear {1994}}%
-}]{%
-rips1994}
-\APACinsertmetastar {%
-rips1994}%
-\begin{APACrefauthors}%
-Rips, L\BPBI J.%
-\end{APACrefauthors}%
-\unskip\
-\newblock
-\APACrefYear{1994}.
-\newblock
-\APACrefbtitle {The psychology of proof: Deductive reasoning in human thinking}
-  {The psychology of proof: Deductive reasoning in human thinking}.
-\newblock
-\APACaddressPublisher{Cambridge, MA}{MIT Press}.
-\PrintBackRefs{\CurrentBib}
-
-\bibitem [\protect \citeauthoryear {%
 C.~Roberts%
 }{%
 C.~Roberts%
@@ -269,11 +246,11 @@ Roberts2001}%
 \begin{APACrefauthors}%
 Roberts, M\BPBI J.%
 , Newstead, S\BPBI E.%
-\BCBL {}\ \BBA {} Griggs, R\BPBI a.%
+\BCBL {}\ \BBA {} Griggs, R\BPBI A.%
 \end{APACrefauthors}%
 \unskip\
 \newblock
-\APACrefYearMonthDay{2001}{{\APACmonth{05}}}{}.
+\APACrefYearMonthDay{2001}{}{}.
 \newblock
 {\BBOQ}\APACrefatitle {{Quantifier interpretation and syllogistic reasoning}}
   {{Quantifier interpretation and syllogistic reasoning}}.{\BBCQ}

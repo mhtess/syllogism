@@ -280,14 +280,9 @@
 ; 7      001 0.09753311
 ; 8      000 0.16239389
 
-; cognitive model parameters
-(define objs (list 'o1 'o2 'o3 'o4))
-(define alpha 3)
 
 (define lightbulb-beta '(0.16239389 0.09753311 0.02406771 0.05193817 
                          0.11577700 0.12365418 0.12412901 0.16787938))
-
-
 
 (define lightbulb-alpha 3)
 (define lightbulb-hyperparams (map (lambda (x) (* lightbulb-alpha x)) lightbulb-beta))
@@ -310,18 +305,21 @@
     (let ([bp (dirichlet hyperpiors)])
       (list (equivalent-transform-m objects bp) bp))))
 
-(define state-prior-prior 
-  (repeat 3 (lambda () (hyper-equivalent-transform-m objs lightbulb-hyperparams))))
+; (define state-prior-prior 
+;   (repeat 3 (lambda () (hyper-equivalent-transform-m objs lightbulb-hyperparams))))
 
+; cognitive model parameters
+(define objs (list 'o1 'o2 'o3 'o4 'o5))
+(define alpha 3)
 
 (define reasoner1
   (mem (lambda  (premises figure)
     (enumeration-query
-       (define equivalent-worlds-w-tags (uniform-draw state-prior-prior))
+       ;(define equivalent-worlds-w-tags (uniform-draw state-prior-prior))
 
-       (define equivalent-worlds (first equivalent-worlds-w-tags))
+       ;(define equivalent-worlds (first equivalent-worlds-w-tags))
        ;(define equivalent-worlds (uniform-draw state-prior-prior))
-       ;(define equivalent-worlds (equivalent-transform-m objs lightbulb-hyperparams))
+       (define equivalent-worlds (equivalent-transform-m objs lightbulb-hyperparams))
        ;(define equivalent-worlds (equivalent-transform-m objs lightbulb-means))
 
        (define state (apply multinomial equivalent-worlds))
@@ -333,14 +331,15 @@
                                         (is-element? 'C-A.not-all true-conclusions)))
        (define conclusion (uniform-draw true-conclusions))
 
-       (list conclusion (second equivalent-worlds-w-tags))
+       ;(list conclusion (second equivalent-worlds-w-tags))
+       conclusion
        ;true-conclusions
        ;which-conclusions
 
-       (equal? premises (apply multinomial (experimenter1 conclusion figure equivalent-worlds)))
-       ;(equal? premises (apply multinomial (experimenter1 conclusion figure)))
-       ;(equal? premises (apply multinomial (experimenter1 true-conclusions figure)))
-       ;(equal? premises (apply multinomial (experimenter1 which-conclusions figure)))
+       (equal? premises (apply multinomial (raise-to-power (experimenter1 conclusion figure equivalent-worlds) alpha)))
+       ;(equal? premises (apply multinomial (raise-to-power (experimenter1 conclusion figure) alpha)))
+       ;(equal? premises (apply multinomial (raise-to-power (experimenter1 true-conclusions figure) alpha)))
+       ;(equal? premises (apply multinomial (raise-to-power (experimenter1 which-conclusions figure) alpha)))
        ))))
 
 (define experimenter1
@@ -353,8 +352,8 @@
       
       (equal? 
         QUDval 
-        ;(apply multinomial (raise-to-power (marginalize (reasoner0 premises)) alpha)))))))
-        (apply multinomial (raise-to-power (reasoner0 premises equivalent-worlds) alpha)))))))
+        ;(apply multinomial (marginalize (reasoner0 premises)) ))))))
+        (apply multinomial (reasoner0 premises equivalent-worlds)))))))
 
 (define reasoner0
    (mem 
