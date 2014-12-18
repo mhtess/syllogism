@@ -1,3 +1,6 @@
+(load '/Users/mht/Documents/research/tools/church-helpers/dirichlet-score.js)
+(define alldata (read-csv 'prior-exp-mturk_all_n71_normed_smoothed.csv))
+
 (define args (regexp_split argstring ","))
 
 (define domain (first args))
@@ -9,7 +12,6 @@
     (sum (map (lambda (lst) (abs (- (first lst) (second lst)))) (zip v1 v2)))))
 
 
-(define alldata (read-csv 'prior-exp-mturk_all_n71_normed.csv))
 (define domain-data (filter (lambda (x) (equal? (second x) domain)) alldata))
 (define domain-priors (map (lambda (x) (rest (rest (rest (rest x))))) domain-data))
 
@@ -23,38 +25,44 @@
 
    (define a (exponential 1))
    (define b (dirichlet '(1 1 1 1 1 1 1 1)))
-   (define theta (dirichlet (map (lambda (x) (* a x)) b)))
-   (define distance-to-data
-     (map 
-      (lambda (x) (L1distance (map string->number x) theta)) 
-      domain-priors))
+   
+   (define dummy
+         (map 
+          (lambda (x) (factor (dirichletScore 
+            (map (lambda (x) (* a x)) b)
+            (map string->number x))))
+          domain-priors))
+
+   ; (define distance-to-data
+   ;   (map 
+   ;    (lambda (x) (L1distance (map string->number x)  (map (lambda (x) (* a x)) b))) 
+   ;    domain-priors))
 
    (list a b)
 
-   (factor (- 0 (* 3 (sum distance-to-data))))))
+   ; (factor (- 0 (* 3 (sum distance-to-data))))
+   true
+   ))
 
-
-
-(define dummy
-     (map 
-      (lambda (x) (condition (equal? (map string->number x) 
-                                     (dirichlet (map (lambda (x) (* a x)) b)))))
-      domain-priors))
-
-
-;;dirichlet-score returns log-prob of val given params.
-(define dummy
-     (map 
-      (lambda (x) (factor (dirichlet-score 
-        (map string->number x) 
-        (map (lambda (x) (* a x)) b))))
-      domain-priors))
-
-
-
-
-
-(define output-file-name (string-append 'post_alpha-beta_mh mh_samples '_ mh_burnin '_f3_ domain '.csv))
+(define output-file-name (string-append 'post_alpha-beta_mh mh_samples '_ mh_burnin '_fScore_ domain '.csv))
 (write-csv samples output-file-name)
 (define complete? 'complete)
 complete?
+
+
+; (define dummy
+;      (map 
+;       (lambda (x) (condition (equal? (map string->number x) 
+;                                      (dirichlet (map (lambda (x) (* a x)) b)))))
+;       domain-priors))
+
+
+; ;;dirichlet-score returns log-prob of val given params.
+; (define dummy
+;      (map 
+;       (lambda (x) (factor (dirichlet-score 
+;         (map string->number x) 
+;         (map (lambda (x) (* a x)) b))))
+;       domain-priors))
+
+

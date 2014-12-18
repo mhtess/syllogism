@@ -1,8 +1,7 @@
 // to run
 // webppl tfbt_priorElicitation.wppl --require ~/webppl/simpleCSV
-
-var allData = simpleCSV.readCSV('prior-exp-mturk_all_n71_normed.csv')
-var domain = 'tomatoplant'
+var allData = simpleCSV.readCSV('prior-exp-mturk_all_n71_normed_smoothed.csv')
+var domain = 'lightbulb'
 var domainData = filter(function(lst){lst[1]==domain},allData.data)
 
 
@@ -14,18 +13,19 @@ var domainPriors =
     domainData)
 
 var model = function() {
-	var a = exponential(1);
-	var b = dirichlet([1,1,1,1,1,1,1,1])
+	//var a = exponential(1);
+	var a = 2;
+	var b = dirichlet([1,1,1,1,1,1,1,1]);
 	var c = map(function(x){a*x},b);
+	//console.log(c)
 	map(function(observedValue){
 		erpFactor(dirichletERP, c, observedValue)
 	},
 	domainPriors)
-
 	return [a].concat(b)
 }
 
-var results=MH(model, 100)
+var results=MH(model, 100000)
 
 var posterior = map(
   function(value){
@@ -35,4 +35,4 @@ var posterior = map(
 
 posterior.unshift(['alpha','d1','d2','d3','d4','d5','d6','d7','d8','prob']);
 
-simpleCSV.writeCSV(posterior, 'posterior1000a.csv');
+simpleCSV.writeCSV(posterior, domain+'posterior100000_alpha2.csv');
