@@ -1,3 +1,11 @@
+(define args
+  (map string->number (regexp_split argstring ",")))
+; cognitive model parameters
+
+(define n_objects (first args))
+(define alpha (second args))
+(define objs (repeat n_objects gensym))
+
 (define all-true (lambda (lst) (apply and lst)))
 (define some-true (lambda (lst) (apply or lst)))
 
@@ -10,6 +18,9 @@
 (define quantifiers (list 'all 'some 'none 'not-all))
 (define sentence-forms (list 'A-B 'B-A 'B-C 'C-B 'A-C 'C-A))
 (define property-order (list 'A 'B 'C))
+
+(define output-order (list 'C-A.all 'C-A.none 'C-A.some 'C-A.not-all))
+
 
 (define syllogistic-sentences 
   (flatten
@@ -25,6 +36,13 @@
         ((2) (list 'A-B 'C-B))
         ((3) (list 'B-A 'B-C))
         ((4) (list 'A-B 'B-C))))
+
+(define (scholastic-dictionary quantifier)
+  (case quantifier
+    (('all) 'A)
+    (('none) 'E)
+    (('some) 'I)
+    (('not-all) 'O)))
 
 (define is-premise1? (lambda (sentence figure) 
   (equal? (first (regexp-split sentence '.)) (first (forms figure)))))
@@ -116,6 +134,20 @@
                     unique-state-indices))))
          (list-map states))))
 
+
+(define (make-results results)
+  (map 
+   (lambda (x) (let ([where-x (position (first results) x)])
+                 (if (>= where-x 0)
+                     (list-ref (second results) where-x)
+                     0)))
+   output-order))
+
+(define (sylly-codes full-premises)
+  (let* ([prems (second full-premises)]
+         [figure (number->string (first full-premises))]
+         [code-list (map (lambda (prem) (scholastic-dictionary (second (string-split prem '.)))) prems)])
+    (string-append (first code-list) (second code-list) figure)))
 
 
 ; assume the situations constructed have at least one object with each of the properties
@@ -308,9 +340,7 @@
 ; (define state-prior-prior 
 ;   (repeat 3 (lambda () (hyper-equivalent-transform-m objs lightbulb-hyperparams))))
 
-; cognitive model parameters
-(define objs (list 'o1 'o2 'o3 'o4 'o5))
-(define alpha 3)
+
 
 (define reasoner1
   (mem (lambda  (premises figure)
@@ -381,11 +411,17 @@
 
 ;(second (hyper-equivalent-transform-m objs lightbulb-beta))
 
-;(define results (map (lambda (x) (list x (reasoner1 (second x) (first x)))) all-premises))
+(define results (map 
+  (lambda (x) 
+    (flatten (list 
+      (sylly-codes x) 
+      (make-results (reasoner1 (second x) (first x))))))
+  all-premises))
 
-;(write-csv results 'syllmodel_lightbulb_hyperprior100_n5_alpha3.csv)
+(write-csv results 'syllmodel_lightbulb_testOutput_n3_alpha3.csv)
 
 ;(reasoner0 (list 'B-A.all 'C-B.all))
 ;(experimenter1 'C-A.all 1)
-(reasoner1 (list 'B-A.none 'C-B.all) 1)
-;(hyper-equivalent-transform-m objs)
+; (flatten (list (sylly-codes (first all-premises)) 
+;   (make-results (reasoner1 (second (first all-premises)) (first (first all-premises))))))
+
