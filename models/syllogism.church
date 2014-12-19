@@ -4,9 +4,6 @@
 ;; pop3 - dirichlet; betas from tFBT p.e. but exponential over alpha
 ;; jsp (just some priors) - (multinomial (tFBT-p.e. betas)) [like pop2 but minus crazy-world?]
 
-
-
-
 (define args
   (regexp_split argstring ","))
 ; cognitive model parameters
@@ -296,9 +293,12 @@
 
 (define equivalent-transform-m
   (mem
-   (lambda (objects background-prior)
+   (lambda (objects multinomial-properties background-prior)
      (enumeration-query
-;      (define ABC (mem (lambda (x) (apply multinomial background-prior))))
+
+    ;(define background-prior (list multinomial-properties full-prior))
+    ;      (define ABC (mem (lambda (x) (apply multinomial background-prior))))
+
       (define ABC (mem (lambda (x) (multinomial multinomial-properties background-prior))))
         
         (map 
@@ -308,7 +308,8 @@
           syllogistic-sentences)
 
      ;true
-     (plentiful-worlds-m ABC objects)))))
+     (plentiful-worlds-m ABC objects)
+     ))))
 
 
 ;; if using i.i.d. prior (and hence, using binom->multinom), use the following ordering
@@ -320,14 +321,14 @@
 (define multinomial-properties (map numstates->boolstates (cdr (cdr (second domain-priors)))))
 
 ;; fourth row is expected value from posterior
-(define domain-beta (cdr (cdr (fourth domain-priors))))
-(define domain-alpha (first (cdr (fourth domain-priors))))
+(define domain-beta (map string->number (cdr (cdr (fourth domain-priors)))))
+(define domain-alpha (string->number (first (cdr (fourth domain-priors)))))
 
 (define domain-hyperparams (map (lambda (x) (* domain-alpha x)) domain-beta))
 
+
 ; (define lightbulb-means '(0.225972233 0.08556292 0.033416427 0.031271622
 ;                           0.085948385 0.115978747 0.110020792 0.311828874))
-
 
 
 ;(define equivalent-worlds (equivalent-transform-m objs (binom->multinom 0.25)))
@@ -339,10 +340,10 @@
 ;     (let ([bp (dirichlet hyperpiors)])
 ;       (equivalent-transform-m objects bp))))
 
-(define hyper-equivalent-transform-m 
-  (lambda (objects hyperpiors) 
-    (let ([bp (dirichlet hyperpiors)])
-      (list (equivalent-transform-m objects bp) bp))))
+; (define hyper-equivalent-transform-m 
+;   (lambda (objects hyperpiors) 
+;     (let ([bp (dirichlet hyperpiors)])
+;       (list (equivalent-transform-m objects bp) bp))))
 
 ; (define state-prior-prior 
 ;   (repeat 3 (lambda () (hyper-equivalent-transform-m objs lightbulb-hyperparams))))
@@ -356,7 +357,7 @@
 
        ;(define equivalent-worlds (first equivalent-worlds-w-tags))
        ;(define equivalent-worlds (uniform-draw state-prior-prior))
-       (define equivalent-worlds (equivalent-transform-m objs lightbulb-hyperparams))
+       (define equivalent-worlds (equivalent-transform-m objs multinomial-properties domain-beta))
        ;(define equivalent-worlds (equivalent-transform-m objs lightbulb-means))
 
        (define state (apply multinomial equivalent-worlds))
@@ -423,6 +424,8 @@
       (make-results (reasoner1 (second x) (first x))))))
   all-premises))
 
-(write-csv results (string-append 'syllmodel_ domain '_n n_obj-string '_alpha alpha-str '.csv))
+
+(define output-path '/Users/mht/Documents/research/syllogism/models/modeldata/priors_on_priors/')
+(write-csv results (string-append output-path 'syllmodel_ domain '_n n_obj-string '_alpha alpha-str '.csv))
 
 
