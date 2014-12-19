@@ -1,10 +1,29 @@
+;;; priors on priors four ways
+;; pop1 - dirichlet; alpha & beta from tFBT on prior elicitation
+;; pop2 - crazy-world? (multinomial (tFBT-p.e. betas) (dirichlet '(1 1 1 ...)))
+;; pop3 - dirichlet; betas from tFBT p.e. but exponential over alpha
+;; jsp (just some priors) - (multinomial (tFBT-p.e. betas)) [like pop2 but minus crazy-world?]
+
+
+
+
 (define args
-  (map string->number (regexp_split argstring ",")))
+  (regexp_split argstring ","))
 ; cognitive model parameters
 
-(define n_objects (first args))
-(define alpha (second args))
-(define objs (repeat n_objects gensym))
+(define n_obj-string (first args))
+(define alpha-str (second args))
+(define domain (third args))
+
+(define alpha (string->number alpha-str))
+(define objs (repeat (string->number n_obj-string) gensym))
+
+;;; read in empirical prior data
+(define prior-path '/Users/mht/Documents/research/syllogism/analysis/)
+(define domain-priors (read-csv (string-append prior-path 'max_posterior_priors domain '_mh1000k.csv)))
+
+(define numstates->boolstates (lambda (lst)
+  (map number->boolean (map string->number (string-split lst "")))))
 
 (define all-true (lambda (lst) (apply and lst)))
 (define some-true (lambda (lst) (apply or lst)))
@@ -219,8 +238,6 @@
       false)))
 
 
-
-
 ; pass strings, which then call functions of the same name
 
 ; (define (meaning word)
@@ -249,7 +266,6 @@
 
           true))))
 
-
 ; (define equivalent-transform
 ;   (mem
 ;    (lambda (objects br)
@@ -276,11 +292,7 @@
 ;      (plentiful-worlds A B C objects)))))
 
 
-
-
-(define multinomial-properties 
-  '((#f #f #f) (#f #f #t) (#f #t #f) (#f #t #t) 
-    (#t #f #f) (#t #f #t) (#t #t #f) (#t #t #t)))
+;; note to MH: I could speed this up by incorporating "plentiful worlds" into sampling
 
 (define equivalent-transform-m
   (mem
@@ -299,29 +311,24 @@
      (plentiful-worlds-m ABC objects)))))
 
 
-;; posterior median for lightbulbs
+;; if using i.i.d. prior (and hence, using binom->multinom), use the following ordering
+; (define multinomial-properties 
+;   '((#f #f #f) (#f #f #t) (#f #t #f) (#f #t #t) 
+;     (#t #f #f) (#t #f #t) (#t #t #f) (#t #t #t)))
 
-; alpha 3
-;
-; 1      111 0.16787938
-; 2      110 0.12412901
-; 3      101 0.12365418
-; 4      011 0.05193817
-; 5      100 0.11577700
-; 6      010 0.02406771
-; 7      001 0.09753311
-; 8      000 0.16239389
+;; otherwise, read it off the empirical prior csv (columns 3-end)
+(define multinomial-properties (map numstates->boolstates (cdr (cdr (second domain-priors)))))
 
+;; fourth row is expected value from posterior
+(define domain-beta (cdr (cdr (fourth domain-priors))))
+(define domain-alpha (first (cdr (fourth domain-priors))))
 
-(define lightbulb-beta '(0.16239389 0.09753311 0.02406771 0.05193817 
-                         0.11577700 0.12365418 0.12412901 0.16787938))
+(define domain-hyperparams (map (lambda (x) (* domain-alpha x)) domain-beta))
 
-(define lightbulb-alpha 3)
-(define lightbulb-hyperparams (map (lambda (x) (* lightbulb-alpha x)) lightbulb-beta))
+; (define lightbulb-means '(0.225972233 0.08556292 0.033416427 0.031271622
+;                           0.085948385 0.115978747 0.110020792 0.311828874))
 
 
-(define lightbulb-means '(0.225972233 0.08556292 0.033416427 0.031271622
-                          0.085948385 0.115978747 0.110020792 0.311828874))
 
 ;(define equivalent-worlds (equivalent-transform-m objs (binom->multinom 0.25)))
 ;(define hyper-equivalent-transform-m 
@@ -409,8 +416,6 @@
           (is-element? (second premises) true-sentences))))))
 
 
-;(second (hyper-equivalent-transform-m objs lightbulb-beta))
-
 (define results (map 
   (lambda (x) 
     (flatten (list 
@@ -418,10 +423,6 @@
       (make-results (reasoner1 (second x) (first x))))))
   all-premises))
 
-(write-csv results 'syllmodel_lightbulb_testOutput_n3_alpha3.csv)
+(write-csv results (string-append 'syllmodel_ domain '_n n_obj-string '_alpha alpha-str '.csv))
 
-;(reasoner0 (list 'B-A.all 'C-B.all))
-;(experimenter1 'C-A.all 1)
-; (flatten (list (sylly-codes (first all-premises)) 
-;   (make-results (reasoner1 (second (first all-premises)) (first (first all-premises))))))
 
