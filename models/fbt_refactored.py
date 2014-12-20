@@ -1,5 +1,6 @@
 
 import subprocess
+import sys
 from numpy import arange
 
 model = sys.argv[1]
