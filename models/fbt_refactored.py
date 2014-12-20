@@ -20,4 +20,4 @@ for n_obj in number_of_objects:
         for alpha in list_of_alphas:
         	arguments = n_obj + ',' + str(alpha) + ',' + domain
         	print(model + arguments)
-        	subprocess.call(['time church', '-a' ,arguments, churchfile])
+        	subprocess.call(['time', 'church', '-a' ,arguments, churchfile])
