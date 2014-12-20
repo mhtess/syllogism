@@ -348,7 +348,7 @@
     (let* ([domain-alpha (exponential 1)]
           [domain-hyperparams (map (lambda (x) (* domain-alpha x)) domain-beta)])
 
-    (hyper-equivalent-transform-m objs domain-hyperparams))))
+    (hyper-equivalent-transform-m objs domain-hyperparams)))))
 
 (define reasoner1
   (mem (lambda  (premises figure)
