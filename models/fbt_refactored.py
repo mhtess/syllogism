@@ -1,5 +1,6 @@
 
 import subprocess
+import sys
 from numpy import arange
 
 model = sys.argv[1]
@@ -19,4 +20,4 @@ for n_obj in number_of_objects:
         for alpha in list_of_alphas:
         	arguments = n_obj + ',' + str(alpha) + ',' + domain
         	print(model + arguments)
-        	subprocess.call(['church', '-a' ,arguments, churchfile])
+        	subprocess.call(['time church', '-a' ,arguments, churchfile])
