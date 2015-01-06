@@ -1400,6 +1400,10 @@ ggsave(filename = paste('literalEP',EP,'_posteriorPhi_exp',experiment,'retest.pn
 
 ```
 
+## TFBT on prior elicitation
+
+
+
 ```{r}
 library(polspline)
 setwd("~/Documents/research/syllogism/analysis")
@@ -1435,11 +1439,114 @@ b<-ggplot(data=church.post,aes(x=alpha))+
   geom_density(alpha=0.7,fill='white')
 
 ggsave(b,file=paste('posterior_alpha_',domain,'_mh1000_100_f1.png',sep=''),width=5, height=5)
+)
 
+```
+
+
+### Done better, faster
+
+```{r}
+setwd("~/Documents/research/syllogism/analysis")
+domain='lightbulb'
+mhsamples='100k'
+drift = '100000'
+wp1<-read.csv(paste(domain,'posterior',mhsamples,'_drift',drift,'.csv',sep=''),header=T)
+# wp1$alpha<-factor(round(wp1$alpha,3))
+# wp1$d1<-factor(round(wp1$d1,3))
+# wp1$d2<-factor(round(wp1$d2,3))
+# wp1$d3<-factor(round(wp1$d3,3))
+# wp1$d4<-factor(round(wp1$d4,3))
+# wp1$d5<-factor(round(wp1$d5,3))
+# wp1$d6<-factor(round(wp1$d6,3))
+# wp1$d7<-factor(round(wp1$d7,3))
+# wp1$d8<-factor(round(wp1$d8,3))
+wp1$alpha<-factor(wp1$alpha)
+wp1$d1<-factor(wp1$d1)
+wp1$d2<-factor(wp1$d2)
+wp1$d3<-factor(wp1$d3)
+wp1$d4<-factor(wp1$d4)
+wp1$d5<-factor(wp1$d5)
+wp1$d6<-factor(wp1$d6)
+wp1$d7<-factor(wp1$d7)
+wp1$d8<-factor(wp1$d8)
+
+a<-ddply(wp1, .(alpha), summarise, prob=sum(prob), variable='alpha')
+names(a)[1] = 'value'
+d1 = ddply(wp1, .(d1), summarise, prob=sum(prob), variable ='d1')
+d2 = ddply(wp1, .(d2), summarise, prob=sum(prob), variable ='d2')
+d3 = ddply(wp1, .(d3), summarise, prob=sum(prob), variable ='d3')
+d4 = ddply(wp1, .(d4), summarise, prob=sum(prob), variable ='d4')
+d5 = ddply(wp1, .(d5), summarise, prob=sum(prob), variable ='d5')
+d6 = ddply(wp1, .(d6), summarise, prob=sum(prob), variable ='d6')
+d7 = ddply(wp1, .(d7), summarise, prob=sum(prob), variable ='d7')
+d8 = ddply(wp1, .(d8), summarise, prob=sum(prob), variable ='d8')
+names(d1)[1] = 'value'
+names(d2)[1] = 'value'
+names(d3)[1] = 'value'
+names(d4)[1] = 'value'
+names(d5)[1] = 'value'
+names(d6)[1] = 'value'
+names(d7)[1] = 'value'
+names(d8)[1] = 'value'
+wp.marg<-rbind(a,d1,d2,d3,d4,d5,d6,d7,d8)
+wp.marg$value<-to.n(wp.marg$value)
+plevels<- c('alpha','d8','d5','d6','d7','d2','d3','d4','d1')
+plabels<- c('alpha',"000","100","010","001",'110','101','011','111')
+
+wp.marg$variable<-factor(wp.marg$variable, levels=plevels,labels=plabels)
+
+wp.maxmarg<- ddply(wp.marg, .(variable), summarise, 
+                   max.val= value[which.max(prob)],
+                   expect = sum(value*prob),
+                   max.prob = max(prob))
+
+ggplot(subset(wp.marg,variable=='alpha'),aes(x=value,y=prob))+
+  geom_bar(stat='identity',color='white')+
+#  facet_wrap(~variable,nrow=1)+
+  guides(fill=F)
+
+plt<-ggplot(subset(wp.marg,variable!='alpha'),aes(x=value,y=prob,fill=variable,color=variable))+
+  geom_bar(stat='identity')+
+  facet_wrap(~variable,nrow=1)+
+  guides(fill=F,color=F)
+
+
+ggsave(plt,file=paste('posterior_betas_mh100k_drift',drift,'.png',sep=''),width=20,height=4)
+# write.csv(x=t(wp.maxmarg), 
+#           file=paste('max_posterior_priors', domain,'_mh',mhsamples,
+#                      '.csv',sep=''))
+
+# 
+# 
+# 
+# wp.hist<-data.frame(value = unlist(sapply(1:nrow(wp.marg), function(i) {rep(wp.marg$value[i], round(wp.marg$prob[i]*10000))})),
+# variable = unlist(sapply(1:nrow(wp.marg), function(i) {rep(as.character(wp.marg$variable[i]), round(wp.marg$prob[i]*10000))})))
+# 
+# 
+# wp.hist$variable<-factor(wp.hist$variable, levels=plevels,labels=plabels)
+# 
+# 
+# # ggplot(subset(wp.hist,variable=='alpha'),aes(x=value))+
+# #   geom_histogram()
+# # 
+# ggplot(subset(wp.hist,variable!='alpha'),aes(x=value,group=variable,fill=variable))+
+#   geom_histogram()+
+#   facet_wrap(~variable,nrow=1)+
+#   guides(fill=F)
+
+
+
+
+
+# ggplot(subset(wp.marg,variable=='alpha'),aes(x=value,y=prob))+
+#   geom_bar(stat='identity')
 
 
 ```
 
+
+# Model with priors on priors
 
 Using posterior medians for the lightbulb domain properties + alpha as dirichlet parameters, I sample 100 multinomials to serve as a hyperprior over state-priors for the syllogism model. The syllmodel then has uncertainty about what the world is like, and takes this into account when analyzing syllogisms.
 
@@ -1447,10 +1554,75 @@ Here are the results from the lightbulb domain, for n_objects =5, alpha =3.
 
 ```{r}
 setwd("~/Documents/research/syllogism/models/modeldata/priors_on_priors")
-
 lb<-read.csv('syllmodel_lightbulb_hyperprior100_n5_alpha3.csv', header=F)
+```
+
+### Priors-on-priors (POP) models
+
++ 1 -- dirichlet prior around posterior median dirichlet parameters (both alpha and betas, inferred from empirical prior data)
++ 2 -- `(dirichlet '(1 1 ... 1))` + `(multinomial empirical-prior-posterior-medians)`
++ 3 -- 1 but with a distribution over alpha ("How much do I trust this empirical prior?")
+
+```{r pop.models}
+
+model.dir<-'/Users/mht/Documents/research/syllogism/models/modeldata/priors_on_priors/'
+syllogisms = c('AO2', 'EA3', 'IE1', 'OA1','AA1','AI1','EA1','EI1')
+domains = c("cracker",'lightbulb','knife','strawberry')
+if (exists('models')){remove(models)}
+
+total_objs = seq(3,5,1)
+total_alphas = seq(1.0,5.5,0.5)
+options(digits=2)
+for (n_obj in total_objs){
+  model.domains = data.frame()
+  for (alpha in total_alphas){
+  for (d in domains){
+    model.all<-read.csv(paste(model.dir,'syllmodel_',d,'_n',n_obj,'_alpha',sprintf('%.1f',alpha),'pop1_dirsamp100.csv',sep=''),
+                        header=F,col.names=c("syll","all","none","some","notall"))
+                              
+    model.sub<-model.all[model.all$syll%in%syllogisms,]
+    model.sub$domain <- d
+    model.sub$alpha <- alpha
+    model.m<-melt(model.sub,id.vars=c('syll','domain','alpha'))
+    model.domains<-rbind(model.domains, model.m)
+  }
+}
+  #rename for merging
+  names(model.domains)<-c('syll','domain','alpha','conclusion',paste('n',n_obj,sep=''))
+  if (exists('models')){
+    models = merge(models,model.domains)
+  } else {
+    models = model.domains
+}
+}
+
+models$syll <- factor(models$syll)
+models$domain <- factor(models$domain)
+models$conclusion <- factor(models$conclusion)
+models$alpha <- factor(models$alpha)
+
+m.models<-melt(models, id.vars=c('syll','domain','conclusion','alpha'))
+
+```
+
+
+Still need to load experimental data.
+```{r}
+all.stuff<-merge(m.models,
+                 collapsed.bs[c('domain','syll','value','conclusion')], 
+                 by=c('syll','domain','conclusion'))
+
+model.fits<-ddply(all.stuff, .(variable,alpha), summarise, cor(value.x, value.y))
+
+names(model.fits)<-c('n','alpha','correlation')
+
+model.fits$n<-as.integer(substring(model.fits$n,2,3))
+
+max.loc<-which.max(model.fits$correlation)
 
 
 
 
 ```
+
+
