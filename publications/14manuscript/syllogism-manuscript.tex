@@ -95,7 +95,7 @@
 
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
-\begin{document} \title{Syllogistic reasoning as communication}
+\begin{document} \title{The form of logic is conversation}
 \newpage
 \tableofcontents
 \newpage
@@ -113,16 +113,21 @@
 
 \HRule
 
+The syllogism is regarded as the first formal system of logic. Syllogism means roughly \emph{form of logic} 
+
+
 Imagine you're discussing the 2014 World Cup with your friend. Your friend remarks: 
 
-\begin{quote} ``\emph{All} of the teams that made it to the semifinals were expected to advance And did you notice that \emph{some} of the teams expected to advance had favorable referees? 
+\begin{quote} ``\emph{All} of the teams that made it to the semifinals were expected to advance. But also, did you notice that \emph{some} of the teams expected to advance had favorable referees? 
 \end{quote}
 
-At this point, you might be wiling to conclude that probably some of the teams that made it to semifinals had favorable referees. The argument seems reasonable, but it isn't valid in the deductive sense. Why does it seem reasonable? 
+You may conclude that probably some of the semifinalists had favorable referees previously (and probably because they were expected to advance). The argument seems reasonable, and yet it isn't valid in the deductive sense. Why does it seem reasonable? 
 
 \section{Introduction}
 
-Your friends argument sounds like a syllogism: a two sentence argument that uses quantifiers (e.g. \emph{all}, \emph{some}) to relate terms or properties (e.g. \emph{semifinalists}, \emph{teams expected to advance}). To examine its constituent parts, the syllogism can be represented without the content (Table \ref{tab:wc-ex}, left) and without the relations between terms (i.e. just as a logical form; Table \ref{tab:wc-ex}, right). 
+Your friends argument sounds like a syllogism: a formal logical argument that uses quantifiers (e.g. \emph{all}, \emph{some}) to relate two properties (e.g. being a \emph{semifinalist} and having \emph{favorable referees}) via a middle property (e.g. being \emph{expected to advance}). 
+
+For ease of representation, the syllogism can be represented without the content (Table \ref{tab:wc-ex}, left) and without the relations between terms (i.e. just as a logical form; Table \ref{tab:wc-ex}, right). 
 
 The syllogism is considered the first formal system of reasoning, developed by Aristotle in the 4th century BC. Syllogistic reasoning has been replaced by more modern formalisms (e.g. the predicate calculus), yet persists in the experiments of cognitive psychologists. Syllogisms are an intriguing testing ground for human reasoning because they (a) are a formal system of logic and (b) use natural language in their construction. The former ensures there is a normatively correct solution (i.e. the syllogism is either logically valid or it is not), while the fact that they use natural language allows people without explicit training in formal logic to analyze these arguments.
 
@@ -140,28 +145,25 @@ The syllogism is considered the first formal system of reasoning, developed by A
 \label{tab:wc-ex}
 \end{table}
 
-Most syllogisms are invalid: there is no relation between A \& C which is true in every situation in which the premises are true. Often in these cases, however, people are perfectly comfortable drawing some conclusion. A recent meta-analysis of syllogistic reasoning performance showed that over the population, the proper production of \emph{no valid conclusion} responses for invalid arguments ranged from 76\% to 12\%. For valid arguments, the accuracy of producing valid conclusions ranged from 90\% to 1\% \cite{Khemlani2012}: people do not seem to find drawing deductively valid conclusions particularly natural. 
+It is a fact that most syllogistic arguments are invalid: there is no relation between A \& C which can be deduced with absolute certainty (meaning, there is no relation between A \& C that \emph{is true in every situation in which the premises are true}). When people are presented with these arguments, however, they are very often comfortable drawing some conclusion. A recent meta-analysis of syllogistic reasoning performance showed that over the population, the appropriate production of a \emph{no valid conclusion} response to an invalid syllogism ranged from 76\% to 12\%. For valid arguments, the accuracy of producing appropriate, valid conclusions ranged from 90\% to 1\% \cite{Khemlani2012}: drawing deductively valid conclusions doesn't come naturally to people.
 
 \subsection{Sketch of paper}
 
-In this paper, we consider human reasoning performance on the syllogistic task as Bayesian inference. We formalize probabilistic syllogistic reasoning with a model that reasons over abstract \emph{situations}---consisting of objects with properties---which are sampled stochastically. These abstract situations bear some resemblance to mental models applied to syllogisms \cite{JL1983}. Since our approach is fundamentally Bayesian, however, the prior distribution must be taken seriously. It has been known for some time that the content of syllogisms affect reasoning \cite{Wilkins28} but never before has a model been able to accommodate background knowledge without positing additional processing steps and/or some assumed categorical distinction between believable and unbelievable statements. Background knowledge fits naturally within the Bayesian model framework, as it simply describes an empirical prior distribution over situations. We test the influence of the prior distribution over situations (i.e. background knowledge) on conclusions drawn in 4 syllogisms where our model predicts differences. The model predicts subtle graded effects of background knowledge and the experiment confirms these predictions. 
+In this paper, we consider human reasoning performance on the syllogistic reasoning task as Bayesian inference. We formalize a probabilistic model of syllogistic reasoning that reasons over abstract \emph{situations}, consisting of objects with properties. These abstract situations are similar in sprit to mental models applied to syllogisms \cite{JL1983}. The model is generative and thus makes forward predictions about the distribution of responses for each syllogism. In addition, our approach is fundamentally Bayesian and the prior distribution has a serious interpretation. It has been known for some time that the content of syllogisms affect reasoning \cite{Wilkins28} but never before has a model been able to accommodate background knowledge without positing additional processing steps and/or some assumed categorical distinction between believable and unbelievable statements. Background knowledge fits naturally within the Bayesian model framework, as it simply describes an empirical prior distribution over situations. We test the influence of the prior distribution over situations (i.e. background knowledge) on conclusions drawn in 4 syllogisms where our model predicts differences. The model predicts subtle graded effects of background knowledge and the experiment confirms these predictions. 
 
-We attempt to scale up the Bayesian syllogism model with a generic prior to account for a number of data sets in the literature (Chater \& Oaksford Meta-analysis, Khemlani \& Johnson-Laird meta-analysis, Rips, ...). The overall correspondence to these data is strong, suggesting the gradedness in human reasoning can be considered as probabilistic inference. The Bayesian model fails, however, to account for a robust qualitative phenomenon in syllogistic reasoning: a robust preference for one conclusion in syllogisms with two logically valid conclusions. 
+We further scale the Bayesian syllogism model using a generic prior to account for a number of data sets in the literature (Chater \& Oaksford Meta-analysis, Khemlani \& Johnson-Laird meta-analysis, Rips, ...). The overall correspondence to these data is strong, suggesting the gradedness in human reasoning can be considered as probabilistic inference. The Bayesian model fails, however, to account for a robust qualitative phenomenon in syllogistic reasoning: a strong preference for a single conclusion in syllogisms with two logically valid conclusions. 
 
-This phenomenon cannot be understood by the semantics of language alone. We go beyond natural language semantics, and use recent developments in the field of probabilistic pragmatics to attempt to consider pragmatic effects in the syllogistic reasoning task. We extend the classic RSA model to the syllogistic reasoning task, and replicate the qualitative finding that standalone scalar implicature (i.e. that the quantifier ``some'' may in fact imply ``not all'') does not explain syllogistic reasoning tasks. 
+This phenomenon cannot be understood by the semantics of language alone. We go beyond natural language semantics, and use recent developments in the field of probabilistic pragmatics to consider pragmatic effects in the syllogistic reasoning task. We extend the Rational Speech-Acts (RSA) framework \cite{Frank2012, Goodman2013} to the syllogistic reasoning task. Standard RSA is insufficient, however. The model replicates the finding that standalone scalar implicature (i.e. that the quantifier ``some'' may in fact imply ``not all'') does not explain syllogistic reasoning tasks. 
 
-If we consider syllogistic reasoning as a sort of conversation, however, then we must decide what is at stake in the conversation, or what is the QUD. We replace the standard RSA QUD (``what is the state of the world'?') with a syllogistic QUD (``what is the relationship between the conclusion terms''?) and demonstrate how this leads to different pragmatic inferences than standalone scalar implicature. Importantly, this breaks the tie between equally valid conclusions. We show how the pragmatics QUD model provides an overall better fit to the large published data sets.
+If we consider syllogistic reasoning as a sort of conversation, however, then we must decide what is at stake in the conversation. In other words, what is the \emph{Question Under Discussion}, or the QUD. We replace the standard RSA QUD (``what is the world like?'') with a syllogistic QUD (``what is the relationship between the conclusion terms''?). This leads to different pragmatic inferences than standalone scalar implicature. Importantly, this breaks the symmetry between equally valid conclusions. We show how the pragmatics QUD model provides an overall better fit to the large published data sets.
 
-We go on to ask how background knowledge interacts with pragmatic inference. We found that the pragmatics model makes the intriguingly strong prediction of an asymmetry reversal for certain syllogisms with certain background knowledge. We considered an alternative pragmatics model which includes a ``which world?'' random-variable, and hence does inference over both the conclusion as well as the domain under discussion. This model predicts no reversal of the asymmetry under very strong background knowledge (because in essence, when the premises are thought to be extremely unlikely a priori, the reasoner thinks the experimenter is thinking of a different situation than what the typical definition would imply). We tested the predictions of these two alternative models in a second experimenter and found that the model that does simultaneous inference over which world and which conclusion both captures the qualitative phenomena as well as provides a better quantitative fit to the data.
+We go on to ask how background knowledge interacts with pragmatic inference. We found that the pragmatics model makes the intriguingly strong prediction of an asymmetry reversal for certain syllogisms with certain background knowledge. Experiment 2 results did not confirm this prediction. We consider the possibility that reasoners rethink what is in common ground when faced with particularly odd premises. We formalize this in an alternative pragmatics model that reasons over both the conclusion implied by the argument and \emph{what is assumed to be in common ground}. 
 
-
+This model predicts no reversal of the asymmetry under very strong background knowledge (because in essence, when the premises are thought to be extremely unlikely a priori, the reasoner thinks the experimenter is thinking of a different situation than what the typical definition would imply). We tested the predictions of these two alternative models in a second experimenter and found that the model that does simultaneous inference over which world and which conclusion both captures the qualitative phenomena as well as provides a better quantitative fit to the data.
 
 Finally, our model is based on a truth-functional semantics and as such, it is able to accommodate any quantified sentence with a truth-functional meaning. We extend the model by looking at 2 syllogistic reasoning data sets that use the quantifiers \emph{most} and \emph{few}. 
 
 This is not the first model to report high correlations between the model predictions and the observed data. We analyze the adequacy of our models with respect to each other as well as to a dominant computational model from the literature: the Probability Heuristics Model. We do this by drawing upon the tools of Bayesian Data Analysis. Bayesian model comparison takes into account not only the fit of a model to the data set but also what other data sets the model could have fit, utilizing Bayes' Occam's Razor, the notion that ``a model that explains everything, explains nothing''. We explore the implications of the Bayesian Data Analysis.
-
-We conclude by discussing limitations of our approach and directions for future investigation.
-
 
 \section{The variety of syllogistic reasoning tasks}
 \label{sec:tasks}
