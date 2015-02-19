@@ -1,0 +1,66 @@
+// syllogism.wppl
+
+// webppl syllogism.wppl --require-js ./simpleCSV 
+
+
+// var statePrior = function() {
+//   var prevalence = randomInteger(11) // random integer between 0 - 10, 
+//   return prevalence
+// }
+
+// var thetaPrior = function() {
+//   var threshold = randomInteger(10)
+//   return threshold
+// }
+
+// var utterancePrior = function() {
+//   var utterances = ["generic is true",
+//                     "generic is false"]
+//  // var utterances = ["generic is true",
+//   //                  "mu"]                    
+//   var i = randomInteger(utterances.length)
+//   return utterances[i]
+// }
+
+// var meaning = function(utt,state, theta) {
+//   return utt=="generic is true"? state>theta :
+//          utt=="generic is false"? state<=theta :
+//          true
+// }
+
+var reasoner0 = cache(function(premises, equivalentWorlds) {
+  Enumerate(function(){
+    var state = sample(equivalentWorlds)
+    var trueSentences = stateToSentence(state)
+    var conclusion = sample(filter(isConclusion, trueSentences))
+
+    var premisesTrue = (indexOf(premises[0], trueSentences)!=undefined &
+    					indexOf(premises[1], trueSentences)!=undefined)
+
+    factor(premisesTrue?0:-Infinity)
+    return conclusion
+  })
+})
+
+var experimenter1 = cache(function(QUDval, figure, equivalentWorlds) {
+  Enumerate(function(){
+    var premises = [sample(premise1(figure), sample(premise2(figure))]
+    var R0 = reasoner0(premises, equivalentWorlds)
+    factor(R0.score([],QUDval))
+    return premises
+  })
+})
+
+var reasoner1 = function(premises, figure) {
+  Enumerate(function(){
+  	var equivalentWorlds = equivalentTransform(objects, properties, ...)
+  	var state = sample(equivalentWorlds)
+
+    var trueSentences = stateToSentence(state)
+    var conclusion = sample(filter(isConclusion, trueSentences))
+
+    var E1 = experimenter1(conclusion, figure, equivalentWorlds)
+    factor(E1.score([],utterance))
+    return conclusion
+  })
+}
