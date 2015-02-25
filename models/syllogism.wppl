@@ -18,6 +18,8 @@ var gensym = function(){
 
 // var domainPriors = simpleCSV.readCSV(dfile).data;
 
+var n_objects = 4
+var objects = repeat(n_objects, gensym)
 
 // creating the syllogistic space
 
@@ -36,8 +38,8 @@ var conclusionOrder = [ [["C","A"],"all"],
                         [["C","A"],"some"],
                         [["C","A"],"not all"]];
 
-var syllogisticSentences = map(function(x)
-  {return map(function(y){return [y,x]} ,sentenceForms)}, quantifiers)
+var syllogisticSentences = _.flatten(map(function(x)
+  {return map(function(y){return [y,x]} ,sentenceForms)}, quantifiers),true)
 
 var premiseForms = {"1":[["B","A"],["C","B"]],
               "2":[["A","B"],["C","B"]],
@@ -57,7 +59,7 @@ var syllogisticPremisesNested = map(function(x)
         {return [[y,q1],[x,q2]]},
         quantifiers)},
       quantifiers)},
-    sentenceForms.slice(0,2))}, 
+    sentenceForms.slice(0,2))},
   sentenceForms.slice(2,4))
 
 var syllogisticPremises = _.flatten(
@@ -71,44 +73,102 @@ var syllogisticPremises = _.flatten(
 //   return filter()
 // }
 
+var hasProperty = function(obj, term, properties)
+  {return properties(obj)[propertyOrder.indexOf(term)]}
+
+var plentifulWorlds = function(propertiesOfObjects){
+  var fOR = function(v1,v2){
+    return map2(function(e1,e2){return e1 || e2}, v1, v2)
+  }
+  return reduce(function(e1,e2){return e1 && e2}, 1, (reduce(fOR,[0,0,0],propertiesOfObjects)))
+}
+
+var allSentence = function(properties, objects, termOne, termTwo){
+  return sum(map(function(obj)
+  {return hasProperty(obj, termOne, properties) ? hasProperty(obj, termTwo, properties): true}, 
+   objects)) == n_objects
+}
+
+var someSentence = function(properties, objects, termOne, termTwo){
+  return sum(map(function(obj)
+  {return hasProperty(obj, termOne, properties) ? hasProperty(obj, termTwo, properties): false}, 
+   objects)) > 0
+}
+
+var notallSentence = function(properties, objects, termOne, termTwo){
+  return sum(map(function(obj)
+  {return hasProperty(obj, termOne, properties) ? hasProperty(obj, termTwo, properties): false}, 
+   objects)) != objects.length
+}
+var noneSentence = function(properties, objects, termOne, termTwo){
+  return sum(map(function(obj)
+  {return hasProperty(obj, termOne, properties) ? hasProperty(obj, termTwo, properties): true}, 
+   objects)) == 0
+}
+
 
 // equivalence class transformation
 
-var equivalentTransform = function(objects, multinomialProperties, backgroundPrior){
+
+
+var equivalentTransform = function(objects){
+
+  var backgroundPrior = [0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125]
+  var getProperties = cache(function(obj) {
+      var p = propertyTuples[discrete(backgroundPrior)]
+      return p
+    })
+
   Enumerate(function(){
 
-    var backgroundPrior = [1,1,1,1,1,1,1,1]
+    var properties = map(getProperties,objects)
+    console.log(properties)
+    // var meaning = function(quantifier) {
+    //   return quantifier=="all"? allSentence :
+    //          quantifier=="some"? someSentence :
+    //          quantifier=="none"? noneSentence :
+    //          quantifier=="not all"? notallSentence : 
+    //          true
+    // }
 
-    var propertiesPrior = cache(function(obj) {
-        var properties = propertyTuples[discrete(backgroundPrior)]
-        return properties
-      })
+   var nonEmptyWorld = plentifulWorlds(properties)
+  
+   factor(nonEmptyWorld?0:-Infinity)
 
-    var meaning = function(quantifier,properties, objects, termOne, termTwo) {
-      return quantifier=="all"? state>theta :
-             quantifier=="some"? state<=theta :
-             quantifier=="none"? :
-             quantifier=="not all"? 
-             true
-    }
-
-
-    var ABC = propertiesPrior()
-    var nonEmptyWorld = plentifulWorlds(ABC, objects)
-    factor(nonEmptyWorld?0:-Infinity)
     return map(function(sentence)
-      {return meaning(sentence[1],sentence[0][0],sentence[0][1])}, syllogisticSentences)
+      {return meaning(sentence[1])(properties,
+                                    objects,
+                                    sentence[0][0],
+                                    sentence[0][1])}, 
+      syllogisticSentences)
+  //  return properties
+    //map(properties,objects) + meaning(syllogisticSentences[0][1])(properties,objects,'A','B')
+
   })
 }
 
-var backgroundPrior = [1,1,1,1,1,1,1,1]
+equivalentTransform(objects).support().length
 
-var propertiesPrior = function() {
-    var properties = propertyTuples[discrete(backgroundPrior)]
-    return properties
-  }
+//var x = syllogisticSentences[0]
+//x[1] + x[0][0] + x[0][1]
+//syllogisticSentences.length
 
-repeat(5,gensym)
+//     var backgroundPrior = [1,1,1,1,1,1,1,1]
+
+//     var properties = cache(function(obj) {
+//         var p = propertyTuples[discrete(backgroundPrior)]
+//         return p
+//       })
+
+// var x= map(properties,objects)
+
+// x[0]+ '\n'+ 
+// x[1]+ '\n'+
+// x[2]+ '\n'+
+// x[3]+ '\n'+
+// notallSentence(properties,objects,'A','B')
+
+//objects
 
 // var thetaPrior = function() {
 //   var threshold = randomInteger(10)
