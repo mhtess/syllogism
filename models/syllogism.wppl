@@ -10,6 +10,16 @@ var gensym = function(){
   return "g" + globalStore.gensymCounter
 }
 
+var mapObject = function(fn, obj){  
+  return _.object(
+    map(
+      function(kv){
+        return [kv[0], fn(kv[0], kv[1])]
+      }, 
+      _.pairs(obj))
+  );
+}
+
 
 // load experimental data
 
@@ -73,71 +83,93 @@ var syllogisticPremises = _.flatten(
 //   return filter()
 // }
 
-var hasProperty = function(obj, term, properties)
-  {return properties(obj)[propertyOrder.indexOf(term)]}
+// var hasProperty = function(obj, term, properties)
+//   {return properties(obj)[propertyOrder.indexOf(term)]}
 
-var plentifulWorlds = function(propertiesOfObjects){
+// var hasProperty = function(propObject,obj, term)
+//   {return propObject[obj][propertyOrder.indexOf(term)]}
+
+var hasProperty = function(props,term)
+  {return props[propertyOrder.indexOf(term)]}
+
+
+
+var plentifulWorlds = function(propObject){
+  var pO = map(second,_.pairs(propObject)) // function designed for list of lists
   var fOR = function(v1,v2){
     return map2(function(e1,e2){return e1 || e2}, v1, v2)
   }
-  return reduce(function(e1,e2){return e1 && e2}, 1, (reduce(fOR,[0,0,0],propertiesOfObjects)))
+  return reduce(function(e1,e2){return e1 && e2}, 1, (reduce(fOR,[0,0,0],pO)))
 }
 
-var allSentence = function(properties, objects, termOne, termTwo){
-  return sum(map(function(obj)
-  {return hasProperty(obj, termOne, properties) ? hasProperty(obj, termTwo, properties): true}, 
-   objects)) == n_objects
+var allOverObjectVals = function(fn, obj)
+  {return all(function(kv){return fn(kv[1])}, _.pairs(obj))}
+
+var anyOverObjectVals = function(fn, obj)
+  {return any(function(kv){return fn(kv[1])}, _.pairs(obj))}
+
+var allSentence = function(propObject, termOne, termTwo){
+  return allOverObjectVals(function(val){return hasProperty(val,termOne)? hasProperty(val,termTwo) : 1},
+    propObject)
 }
 
-var someSentence = function(properties, objects, termOne, termTwo){
-  return sum(map(function(obj)
-  {return hasProperty(obj, termOne, properties) ? hasProperty(obj, termTwo, properties): false}, 
-   objects)) > 0
+var someSentence = function(propObject, termOne, termTwo){
+  return anyOverObjectVals(function(val){return hasProperty(val,termOne)? hasProperty(val,termTwo) : 0},
+    propObject)
 }
 
-var notallSentence = function(properties, objects, termOne, termTwo){
-  return sum(map(function(obj)
-  {return hasProperty(obj, termOne, properties) ? hasProperty(obj, termTwo, properties): false}, 
-   objects)) != objects.length
+var notallSentence = function(propObject, termOne, termTwo){
+  return 1 - allSentence(propObject,termOne,termTwo)
 }
-var noneSentence = function(properties, objects, termOne, termTwo){
-  return sum(map(function(obj)
-  {return hasProperty(obj, termOne, properties) ? hasProperty(obj, termTwo, properties): true}, 
-   objects)) == 0
+
+var noneSentence = function(propObject, termOne, termTwo){
+  return 1 - someSentence(propObject,termOne,termTwo)
 }
+
+
+// var propertiesOfObjects = { "x": [ 1, 1, 0 ], "y": [ 1, 0, 0 ], 
+//                             "z": [ 1, 1, 0 ], "q": [ 1, 1, 0 ] }
+
+//map(second,_.pairs(propertiesOfObjects))
+// plentifulWorlds(propertiesOfObjects)
+
+// propertiesOfObjects['g1']+'\n'+
+// propertiesOfObjects['g2']+'\n'+
+// propertiesOfObjects['g3']+'\n'+
+// propertiesOfObjects['g4']+'\n'+
+// allSentence(propertiesOfObjects,'A','B')+
+// someSentence(propertiesOfObjects,'A','B')
 
 
 // equivalence class transformation
 
 
-
 var equivalentTransform = function(objects){
 
-  var backgroundPrior = [0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125]
-  var getProperties = cache(function(obj) {
+  var backgroundPrior = [1,1,1,1,1,1,1,1]
+  var getProperties = function(obj) {
       var p = propertyTuples[discrete(backgroundPrior)]
       return p
-    })
+    }
 
   Enumerate(function(){
 
-    var properties = map(getProperties,objects)
-    console.log(properties)
-    // var meaning = function(quantifier) {
-    //   return quantifier=="all"? allSentence :
-    //          quantifier=="some"? someSentence :
-    //          quantifier=="none"? noneSentence :
-    //          quantifier=="not all"? notallSentence : 
-    //          true
-    // }
+    var propertiesOfObjects = _.object(_.zip(objects,map(getProperties,objects)))
 
-   var nonEmptyWorld = plentifulWorlds(properties)
+    var meaning = function(quantifier) {
+      return quantifier=="all"? allSentence :
+             quantifier=="some"? someSentence :
+             quantifier=="none"? noneSentence :
+             quantifier=="not all"? notallSentence : 
+             true
+    }
+
+  var nonEmptyWorld = plentifulWorlds(propertiesOfObjects)
   
-   factor(nonEmptyWorld?0:-Infinity)
+  factor(nonEmptyWorld?0:-Infinity)
 
     return map(function(sentence)
-      {return meaning(sentence[1])(properties,
-                                    objects,
+      {return meaning(sentence[1])(propertiesOfObjects,
                                     sentence[0][0],
                                     sentence[0][1])}, 
       syllogisticSentences)
@@ -147,7 +179,8 @@ var equivalentTransform = function(objects){
   })
 }
 
-equivalentTransform(objects).support().length
+equivalentTransform(objects)
+
 
 //var x = syllogisticSentences[0]
 //x[1] + x[0][0] + x[0][1]
