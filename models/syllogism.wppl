@@ -20,6 +20,10 @@ var mapObject = function(fn, obj){
   );
 }
 
+var uniformDraw = function(x){
+  return x[randomInteger(x.length)]
+}
+
 
 // load experimental data
 
@@ -28,7 +32,7 @@ var mapObject = function(fn, obj){
 
 // var domainPriors = simpleCSV.readCSV(dfile).data;
 
-var n_objects = 4
+var n_objects = 3
 var objects = repeat(n_objects, gensym)
 
 // creating the syllogistic space
@@ -62,6 +66,22 @@ var isPremise = function(sentence,figure,premiseNo){
   return sentence[0] == premiseForms[figure][premiseNo-1]
 }
 
+var isConclusion = function(x){
+  return (x[0][0]=='A' || x[0][0]=='C') && (x[0][1]=='A' || x[0][1]=='C')
+}
+
+var stateToSentence = function(state){
+  return filter(function(x){return state[syllogisticSentences.indexOf(x)]
+  }, syllogisticSentences)
+}
+
+var flattenSentences = function(sentences){
+  return map(function(sentence){
+    return [sentence[0][0], sentence[0][1], sentence[1]].join()
+  },sentences)
+}
+
+
 var syllogisticPremisesNested = map(function(x)
   {return map(function(y)
     {return map(function(q1)
@@ -79,9 +99,8 @@ var syllogisticPremises = _.flatten(
     true),
   true)
 
-// var stateToSentence = function(state){
-//   return filter()
-// }
+
+
 
 // var hasProperty = function(obj, term, properties)
 //   {return properties(obj)[propertyOrder.indexOf(term)]}
@@ -164,22 +183,71 @@ var equivalentTransform = function(objects){
              true
     }
 
-  var nonEmptyWorld = plentifulWorlds(propertiesOfObjects)
-  
-  factor(nonEmptyWorld?0:-Infinity)
+    var nonEmptyWorld = plentifulWorlds(propertiesOfObjects) 
+    factor(nonEmptyWorld?0:-Infinity)
 
     return map(function(sentence)
       {return meaning(sentence[1])(propertiesOfObjects,
                                     sentence[0][0],
                                     sentence[0][1])}, 
       syllogisticSentences)
-  //  return properties
-    //map(properties,objects) + meaning(syllogisticSentences[0][1])(properties,objects,'A','B')
-
   })
 }
 
-equivalentTransform(objects)
+var equivalentWorlds = equivalentTransform(objects)
+
+sample(equivalentWorlds)
+
+
+var flattenSentences = function(sentences){
+    return map(function(sentence){
+      return [sentence[0][0], sentence[0][1], sentence[1]].join()
+    },sentences)
+  }
+
+var reasoner0 = cache(function(premises, equivalentWorlds) {
+  Enumerate(function(){
+    var state = sample(equivalentWorlds)
+    var trueSentences = stateToSentence(state)
+        // this could probably be optimized
+    var flattenedSentences = flattenSentences(trueSentences) 
+
+    var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
+                        flattenedSentences.indexOf(premises[1].join())!=-1
+
+    var conclusion = uniformDraw(filter(isConclusion, trueSentences))
+
+    factor(premisesTrue?0:-Infinity)
+    return conclusion
+  })
+})
+
+reasoner0([[['B','A'],'not all'],
+           [['B','C'],'all']], equivalentWorlds)
+
+// var experimenter1 = cache(function(QUDval, figure, equivalentWorlds) {
+//   Enumerate(function(){
+//     var premises = [sample(premise1(figure), sample(premise2(figure))]
+//     var R0 = reasoner0(premises, equivalentWorlds)
+//     factor(R0.score([],QUDval))
+//     return premises
+//   })
+// })
+
+// var reasoner1 = function(premises, figure) {
+//   Enumerate(function(){
+//    var equivalentWorlds = equivalentTransform(objects, properties, ...)
+//    var state = sample(equivalentWorlds)
+
+//     var trueSentences = stateToSentence(state)
+//     var conclusion = sample(filter(isConclusion, trueSentences))
+
+//     var E1 = experimenter1(conclusion, figure, equivalentWorlds)
+//     factor(E1.score([],utterance))
+//     return conclusion
+//   })
+// }
+
 
 
 //var x = syllogisticSentences[0]
@@ -221,41 +289,4 @@ equivalentTransform(objects)
 //   return utt=="generic is true"? state>theta :
 //          utt=="generic is false"? state<=theta :
 //          true
-// }
-
-// var reasoner0 = cache(function(premises, equivalentWorlds) {
-//   Enumerate(function(){
-//     var state = sample(equivalentWorlds)
-//     var trueSentences = stateToSentence(state)
-//     var conclusion = sample(filter(isConclusion, trueSentences))
-
-//     var premisesTrue = (indexOf(premises[0], trueSentences)!=undefined &
-//     					indexOf(premises[1], trueSentences)!=undefined)
-
-//     factor(premisesTrue?0:-Infinity)
-//     return conclusion
-//   })
-// })
-
-// var experimenter1 = cache(function(QUDval, figure, equivalentWorlds) {
-//   Enumerate(function(){
-//     var premises = [sample(premise1(figure), sample(premise2(figure))]
-//     var R0 = reasoner0(premises, equivalentWorlds)
-//     factor(R0.score([],QUDval))
-//     return premises
-//   })
-// })
-
-// var reasoner1 = function(premises, figure) {
-//   Enumerate(function(){
-//   	var equivalentWorlds = equivalentTransform(objects, properties, ...)
-//   	var state = sample(equivalentWorlds)
-
-//     var trueSentences = stateToSentence(state)
-//     var conclusion = sample(filter(isConclusion, trueSentences))
-
-//     var E1 = experimenter1(conclusion, figure, equivalentWorlds)
-//     factor(E1.score([],utterance))
-//     return conclusion
-//   })
 // }
