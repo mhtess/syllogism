@@ -56,9 +56,9 @@ var syllogisticSentences = _.flatten(map(function(x)
   {return map(function(y){return [y,x]} ,sentenceForms)}, quantifiers),true)
 
 var premiseForms = {"1":[["B","A"],["C","B"]],
-              "2":[["A","B"],["C","B"]],
-              "3":[["B","A"],["B","C"]],
-              "4":[["A","B"],["B","C"]]}
+                  "2":[["A","B"],["C","B"]],
+                  "3":[["B","A"],["B","C"]],
+                  "4":[["A","B"],["B","C"]]}
 
 var scholasticDict = {"all":"A","none":"E","some":"I","not all":"O"}
 
@@ -67,8 +67,10 @@ var isPremise = function(sentence,figure,premiseNo){
 }
 
 var isConclusion = function(x){
-  return (x[0][0]=='A' || x[0][0]=='C') && (x[0][1]=='A' || x[0][1]=='C')
+//  return (x[0][0]=='A' || x[0][0]=='C') && (x[0][1]=='A' || x[0][1]=='C')
+  return (x[0][0]=='A') && (x[0][1]=='C')
 }
+
 
 var stateToSentence = function(state){
   return filter(function(x){return state[syllogisticSentences.indexOf(x)]
@@ -98,6 +100,12 @@ var syllogisticPremises = _.flatten(
       true),
     true),
   true)
+
+
+var premiseDictionary = {"1": _.flatten(_.flatten(syllogisticPremisesNested,true)[3],true),
+                          "2": _.flatten(_.flatten(syllogisticPremisesNested,true)[2],true),
+                          "3": _.flatten(_.flatten(syllogisticPremisesNested,true)[1],true),
+                          "4": _.flatten(_.flatten(syllogisticPremisesNested,true)[0],true)}
 
 
 
@@ -146,26 +154,21 @@ var noneSentence = function(propObject, termOne, termTwo){
 }
 
 
-// var propertiesOfObjects = { "x": [ 1, 1, 0 ], "y": [ 1, 0, 0 ], 
-//                             "z": [ 1, 1, 0 ], "q": [ 1, 1, 0 ] }
-
-//map(second,_.pairs(propertiesOfObjects))
-// plentifulWorlds(propertiesOfObjects)
-
-// propertiesOfObjects['g1']+'\n'+
-// propertiesOfObjects['g2']+'\n'+
-// propertiesOfObjects['g3']+'\n'+
-// propertiesOfObjects['g4']+'\n'+
-// allSentence(propertiesOfObjects,'A','B')+
-// someSentence(propertiesOfObjects,'A','B')
-
 
 // equivalence class transformation
 
 
-var equivalentTransform = function(objects){
+var multinomialProbabilities = function(br){
+  return [Math.pow(1-br,3),Math.pow(1-br,2)*br,Math.pow(1-br,2)*br,Math.pow(br,2)*(1-br),
+          Math.pow(1-br,2)*br,Math.pow(br,2)*(1-br),Math.pow(br,2)*(1-br),Math.pow(br,3)]
+}
 
-  var backgroundPrior = [1,1,1,1,1,1,1,1]
+var equivalentTransform = cache(function(objects){
+
+//  var backgroundPrior = [1,1,1,1,1,1,1,1]
+  var backgroundPrior = multinomialProbabilities(0.25)
+
+
   var getProperties = function(obj) {
       var p = propertyTuples[discrete(backgroundPrior)]
       return p
@@ -192,11 +195,7 @@ var equivalentTransform = function(objects){
                                     sentence[0][1])}, 
       syllogisticSentences)
   })
-}
-
-var equivalentWorlds = equivalentTransform(objects)
-
-sample(equivalentWorlds)
+})
 
 
 var flattenSentences = function(sentences){
@@ -222,33 +221,41 @@ var reasoner0 = cache(function(premises, equivalentWorlds) {
   })
 })
 
-reasoner0([[['B','A'],'not all'],
-           [['B','C'],'all']], equivalentWorlds)
+var experimenter1 = cache(function(QUDval, figure, equivalentWorlds) {
+  Enumerate(function(){
+    var premises = uniformDraw(premiseDictionary[figure])
+    var R0 = reasoner0(premises, equivalentWorlds)
+    factor(R0.score([],QUDval))
+    return premises
+  })
+})
 
-// var experimenter1 = cache(function(QUDval, figure, equivalentWorlds) {
-//   Enumerate(function(){
-//     var premises = [sample(premise1(figure), sample(premise2(figure))]
-//     var R0 = reasoner0(premises, equivalentWorlds)
-//     factor(R0.score([],QUDval))
-//     return premises
-//   })
-// })
+var reasoner1 = function(premises) {
+  Enumerate(function(){
+    var figure = _.invert(premiseForms)[premises[0][0]+','+premises[1][0]]
+    var equivalentWorlds = equivalentTransform(objects)
+    var state = sample(equivalentWorlds)
+    var trueSentences = stateToSentence(state)
 
-// var reasoner1 = function(premises, figure) {
-//   Enumerate(function(){
-//    var equivalentWorlds = equivalentTransform(objects, properties, ...)
-//    var state = sample(equivalentWorlds)
+    var conclusion = uniformDraw(filter(isConclusion, trueSentences))
+    var E1 = experimenter1(conclusion, figure, equivalentWorlds)
+    factor(E1.score([],premises))
+    return conclusion
+  })
+}
 
-//     var trueSentences = stateToSentence(state)
-//     var conclusion = sample(filter(isConclusion, trueSentences))
+var results = map(reasoner1,syllogisticPremises)
+results
 
-//     var E1 = experimenter1(conclusion, figure, equivalentWorlds)
-//     factor(E1.score([],utterance))
-//     return conclusion
-//   })
-// }
+//var results = reasoner1(syllogisticPremises[0])
+
+//var results = reasoner1(syllogisticPremises[0])
 
 
+//map(function(x){return [x.support(), x.score()]}, results)
+
+// reasoner1([[['A','B'],'all'],
+//             [['B','C'],'all']])
 
 //var x = syllogisticSentences[0]
 //x[1] + x[0][0] + x[0][1]
