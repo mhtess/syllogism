@@ -25,12 +25,36 @@ var uniformDraw = function(x){
 }
 
 
-// load experimental data
+// load prior data
 
-// var dfilepath = "/Users/mht/Documents/research/syllogism/analysis/";
-// var dfile = dfilepath + "max_posterior_priors" + domain + "_mh1000k.csv";
+var dfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
+var dfile = dfilepath + "prior-exp-mturk_collapsed_means_n71.csv";
 
-// var domainPriors = simpleCSV.readCSV(dfile).data;
+var domainPriors = simpleCSV.readCSV(dfile).data;
+
+var propertyTuples = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
+                      [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+
+var csvPropTup = domainPriors[0].slice(3) // property (tuple) labels e.g. 011
+
+// order csv data to match what's in propertyTuples
+var orderPropertyTuples = function(values){
+  return map(function(x){
+    return simpleCSV.wpParseFloat(values[csvPropTup.indexOf(x.join(""))])
+  }, propertyTuples)
+}
+
+// create assoc. array out of domainName and ordered probabilities
+var priorClean = _.object(map(function(x){
+  return [x[1],orderPropertyTuples(x.slice(3))]
+},domainPriors.slice(1)))
+
+var domains = ['cracker','knife','strawberry','lightbulb']
+
+///
+
+
+/// model parameter: number of objects
 
 var n_objects = 3
 var objects = repeat(n_objects, gensym)
@@ -44,8 +68,6 @@ var sentenceForms = [ ["A","B"],["B","A"],
 
 var propertyOrder = ["A","B","C"];
 
-var propertyTuples = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
-                      [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
 
 var conclusionOrder = [ [["C","A"],"all"],
                         [["C","A"],"none"],
@@ -109,12 +131,7 @@ var premiseDictionary = {"1": _.flatten(_.flatten(syllogisticPremisesNested,true
 
 
 
-
-// var hasProperty = function(obj, term, properties)
-//   {return properties(obj)[propertyOrder.indexOf(term)]}
-
-// var hasProperty = function(propObject,obj, term)
-//   {return propObject[obj][propertyOrder.indexOf(term)]}
+// quantifier logic and helpers
 
 var hasProperty = function(props,term)
   {return props[propertyOrder.indexOf(term)]}
@@ -163,10 +180,10 @@ var multinomialProbabilities = function(br){
           Math.pow(1-br,2)*br,Math.pow(br,2)*(1-br),Math.pow(br,2)*(1-br),Math.pow(br,3)]
 }
 
-var equivalentTransform = cache(function(objects){
+var equivalentTransform = cache(function(objects, backgroundPrior){
 
 //  var backgroundPrior = [1,1,1,1,1,1,1,1]
-  var backgroundPrior = multinomialProbabilities(0.25)
+//  var backgroundPrior = multinomialProbabilities(0.25)
 
 
   var getProperties = function(obj) {
@@ -230,22 +247,41 @@ var experimenter1 = cache(function(QUDval, figure, equivalentWorlds) {
   })
 })
 
-var reasoner1 = function(premises) {
+var reasoner1 = function(premises, domain, alpha) {
   Enumerate(function(){
+    // simple prep stuff
     var figure = _.invert(premiseForms)[premises[0][0]+','+premises[1][0]]
-    var equivalentWorlds = equivalentTransform(objects)
-    var state = sample(equivalentWorlds)
-    var trueSentences = stateToSentence(state)
+    var backgroundPrior = priorClean[domain]
 
+    // sampling of worlds
+    var backoffPrior = [1,1,1,1,1,1,1,1]
+    var wonkyworld = flip(0.5)
+
+    var equivalentWorlds = wonkyworld?
+                            equivalentTransform(objects, backoffPrior):
+                            equivalentTransform(objects,backgroundPrior)
+
+    var state = sample(equivalentWorlds)
+
+    // mapping from worlds to sentences, conclusions
+    var trueSentences = stateToSentence(state)
     var conclusion = uniformDraw(filter(isConclusion, trueSentences))
+
+    // recursive reasoning
     var E1 = experimenter1(conclusion, figure, equivalentWorlds)
-    factor(E1.score([],premises))
+    factor(alpha*E1.score([],premises))
     return conclusion
   })
 }
 
-var results = map(reasoner1,syllogisticPremises)
-results
+//var results = map(reasoner1,syllogisticPremises)
+//results
+var alpha = 2
+reasoner1(syllogisticPremises[0], 'cracker', alpha)
+
+//discrete[backgroundPrior]
+//var equivalentWorlds = equivalentTransform(objects, backgroundPrior)
+//equivalentWorlds
 
 //var results = reasoner1(syllogisticPremises[0])
 
