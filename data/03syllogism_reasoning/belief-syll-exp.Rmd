@@ -40,6 +40,10 @@ agr.ci.collapsed <- function(x){
   return(agr)
 }
 
+map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
+
+
+
 exp_domains = c('_ crackers that have lots of flavor are soggy',
                 '_ knives that cut well are sharp',
                 '_ lightbulbs that are hot are on',
@@ -66,7 +70,6 @@ exp1sylls<-levels(df$syll)
 exp2sylls<-levels(df2$syll)
 resp_labels<-c("Q_A","Q_E","Q_I","Q_O")
 
-map_radio_to_continuous <- function(rad,cts){50+(2*rad-1)*(cts/2)}
 
 
 #for (i in 1:length(df2$subj)){
@@ -130,7 +133,48 @@ ggplot(df.c, aes(x=(rt/1000),fill=condition))+
   ylab('proportion of items')
 ```
 
-# 2. Slider value distributions
+# 2a. Joint or marginals?
+
+How much information is there in the joint distributions of the subjects, relative to the marginal distributions? Another way of saying this is "how important is subject ID"? One way to (crudely) look at this is to take the split half correlation with permuting subject ID and compare it with the split half correlation without permuting.
+
+```{r joint.or.marginal}
+head(df.c)
+str(df.c)
+
+d.tidy<-df.c %>% 
+  select(subj,Q_A,Q_E,Q_I,Q_O,condition,syll,domain, experiment) %>%
+  filter(condition%in%c("radio","radio.2"),experiment=='1') %>%
+  mutate(subj = factor(subj),
+         experiment = factor(experiment),
+         syll = factor(syll),
+         condition = factor(condition))
+
+subjects <- levels(d.tidy$subj)
+n.subj<-length(subjects)
+
+
+## NOTE: NEED TO SAMPLE WITHIN EACH CONDITION
+half1<-sample(subjects, n.subj/2)
+half2<-subjects[!(subjects%in%half1)]
+
+# pair up subjects, by just following the random order in which half1 was sampled
+id<-match(d.tidy$subj,half1)
+id2<-match(d.tidy$subj,half2)
+id[is.na(id)] = id2[!is.na(id2)]
+
+d.tidy$id<-factor(id)
+
+d.tidy.split <- d.tidy %>%
+  mutate(half = 1*subj%in%half1) %>%
+  gather(conclusion,response,Q_A,Q_E,Q_I,Q_O) %>%
+  group_by(conclusion,syll, domain) %>%
+  spread(half,response)
+
+
+
+```
+
+# 2b. Slider value distributions
 
 n _ slider for experiment 1 (sans outliers): `r length(subset(df,condition=='slide')$subj)/4`
 
