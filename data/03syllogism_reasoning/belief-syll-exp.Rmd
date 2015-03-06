@@ -141,6 +141,12 @@ How much information is there in the joint distributions of the subjects, relati
 head(df.c)
 str(df.c)
 
+prophet <- function(reliability, length) {
+  prophecy <- length * reliability / (1 + (length - 1)*reliability)
+  return (prophecy)
+}
+
+
 d.tidy<-df.c %>% 
   select(subj,Q_A,Q_E,Q_I,Q_O,condition,syll,domain, experiment) %>%
   filter(condition%in%c("radio","radio.2"),experiment=='1') %>%
@@ -149,8 +155,53 @@ d.tidy<-df.c %>%
          syll = factor(syll),
          condition = factor(condition))
 
-subjects <- levels(d.tidy$subj)
-n.subj<-length(subjects)
+
+d.z<-d.tidy %>% 
+  gather(conclusion, value, starts_with("Q_")) %>%
+  group_by(subj) %>%
+  mutate(val_z= (value-mean(value))/sqrt(var(value))) %>%
+  ungroup() %>%
+  select(-value) %>%
+  spread(conclusion,val_z)
+  
+
+#subjects <- levels(d.tidy$subj)
+#n.subj<-length(subjects)
+
+cor.array=array()
+prophet.array=array()
+for (i in 1:1000){
+  
+d.resamp<-d.z %>%
+  group_by(syll,domain) %>%
+  sample_frac(size=1, replace=F) %>%
+  mutate(count = cumsum(to.n(experiment))) %>%
+  mutate(half = ifelse(count < (length(experiment)/2), 'half1','half2')) %>%
+  gather(conclusion, value,Q_A,Q_E,Q_I,Q_O) %>%
+  group_by(syll,domain,half, conclusion) %>%
+  summarise(mn = mean(value))%>%
+  spread(half,mn)
+  
+
+  cor.array[i] = with(d.resamp,cor(half1,half2,use="pairwise.complete.obs"))
+  prophet.array[i]= prophet(cor.array[i], 2)
+}
+
+
+qplot(cor.array)
+qplot(prophet.array)
+
+
+
+%>%
+  rename(half1 = 'TRUE', half2='FALSE')
+
+
+%>%
+  mutate(samp = 1)
+
+table(test$syll,test$domain)
+table(d.tidy$syll,d.tidy$domain)
 
 
 ## NOTE: NEED TO SAMPLE WITHIN EACH CONDITION
