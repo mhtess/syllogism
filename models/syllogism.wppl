@@ -1,6 +1,6 @@
 // syllogism.wppl
 
-// webppl syllogism.wppl --require-js ./simpleCSV 
+// webppl syllogism.wppl --require-js ./utils_wppl 
 
 
 // mht's gensym
@@ -30,7 +30,7 @@ var uniformDraw = function(x){
 var dfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
 var dfile = dfilepath + "prior-exp-mturk_collapsed_means_n71.csv";
 
-var domainPriors = simpleCSV.readCSV(dfile).data;
+var domainPriors = utils_wppl.readCSV(dfile).data;
 
 var propertyTuples = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
                       [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
@@ -40,7 +40,7 @@ var csvPropTup = domainPriors[0].slice(3) // property (tuple) labels e.g. 011
 // order csv data to match what's in propertyTuples
 var orderPropertyTuples = function(values){
   return map(function(x){
-    return simpleCSV.wpParseFloat(values[csvPropTup.indexOf(x.join(""))])
+    return utils_wppl.wpParseFloat(values[csvPropTup.indexOf(x.join(""))])
   }, propertyTuples)
 }
 
@@ -58,7 +58,7 @@ var domainsSingular = ['cracker','knife','strawberry','lightbulb']
 var drfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_reasoning/";
 var drfile = drfilepath + "syllbelief-exp-mturk_all_n250.csv";
 
-var csvInput = simpleCSV.readCSV(drfile).data;
+var csvInput = utils_wppl.readCSV(drfile).data;
 
 
 var conditionCol = csvInput[0].indexOf("condition")
@@ -422,9 +422,9 @@ var alpha = 2
 //pruneERP(equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
 
 var results = reasoner1(syllogisticPremises[48], 'cracker', alpha)
-var posterior = simpleCSV.marginalsFromFullList(results, conclusionOrder, conclusionListOrder)
+var posterior = utils_wppl.marginalsFromFullList(results, conclusionOrder, conclusionListOrder)
 
-
+posterior
 //var results = reasoner0(syllogisticPremises[0], equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
 
 
