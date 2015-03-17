@@ -286,6 +286,20 @@ var equivalentTransform = cache(function(objects, backgroundPrior){
   })
 })
 
+var pruneERP = cache(function(myERP){
+  var scr = map(function(lst)
+                 {var y = myERP.score([],lst);
+                  return y},
+                 myERP.support())
+  
+  var prnScr=filter(function(lst){return lst[0] > -Infinity}, _.zip(scr,myERP.support()))
+  var ps = map(first,prnScr)
+  var vs = map(second,prnScr)
+  return Enumerate(function(){return vs[discrete(ps)]});
+})
+
+
+/// helpers for sentences
 
 var flattenSentences = function(sentences){
     return map(function(sentence){
@@ -365,13 +379,13 @@ var reasoner1 = function(premises, domain, alpha) {
     var wonkyworld = true // only use backoffPrior
 
     var equivalentWorlds = wonkyworld?
-                            equivalentTransform(objects, backoffPrior):
-                            equivalentTransform(objects,backgroundPrior)
+                            pruneERP(equivalentTransform(objects, backoffPrior)):
+                            pruneERP(equivalentTransform(objects,backgroundPrior))
 
     var state = sample(equivalentWorlds)
 
-    console.log((state[5]==1 && state[17] ==1))
-    console.log(equivalentWorlds.score([],state))
+//    console.log((state[5]==1 && state[17] ==1))
+//    console.log(equivalentWorlds.score([],state))
 
     // mapping from worlds to sentences, conclusions
     var trueSentences = stateToSentence(state)
@@ -398,28 +412,14 @@ var reasoner1 = function(premises, domain, alpha) {
 //var results = map(reasoner1,syllogisticPremises)
 //results
 var alpha = 2
-//reasoner1(syllogisticPremises[0], 'cracker', alpha)
+
+//pruneERP(equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
+
+reasoner1(syllogisticPremises[0], 'cracker', alpha)
 
 //experimenter1([0,2,4], 4, equivalentTransform(objects,[1,1,1,1,1,1,1,1]))//.score([],syllogisticPremises[0])
 
-var xform = equivalentTransform(objects,[1,1,1,1,1,1,1,1])
 
-
-var scr = map(function(lst)
-   {var y = xform.score([],lst) 
-    return y},
-   xform.support())
-
-
-var prnScr=filter(function(lst){return lst[0] > -Infinity}, _.zip(scr,xform.support()))
-
-var makeERP = function(ps, vs){
- return Enumerate(function(){return vs[discrete(ps)]});
-}
-
-var y = makeERP(map(first,prnScr),map(second,prnScr))
-
-sample(y)
 //_.unzip(prnScr)
 //_.zip(scr,xform.support())
 // var conclusionListOrder = [ [["C","A"],"all"],
