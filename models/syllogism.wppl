@@ -88,11 +88,17 @@ var mapObject2 = function(fn, obj){
   );
 }
 
+var mapObject2 = function(fn, obj){  
+  return  map(function(x){return fn(x[1])}, _.pairs(obj))
+}
+
+
 var rowToObject = function(row){
   return mapObject2(function(index){return row[index]}, radioIndices)
 }
 
-// organize by domain and syllogism , and then within each subject, organized into an object from conclusions --> binary
+// organize by domain and syllogism , 
+// and then within each subject, organized into an object from conclusions --> binary
 // structuredData[domainName][syllName]
 
 var structuredData = _.object(map(function(domain){
@@ -142,6 +148,15 @@ var conclusionListOrder = [ [["C","A"],"all"],
                           [[["C","A"],"none"],[["C","A"],"not all"]]];
 
 
+var binarizedConclusionSet = ['1000',
+                              '0100',
+                              '0010',
+                              '0001',
+                              '1010',
+                              '0011',
+                              '0101'];
+
+
 var syllogisticSentences = _.flatten(map(function(x)
   {return map(function(y){return [y,x]} ,sentenceForms)}, quantifiers),true)
 
@@ -151,6 +166,22 @@ var premiseForms = {"1":[["B","A"],["C","B"]],
                   "4":[["A","B"],["B","C"]]}
 
 var scholasticDict = {"all":"A","none":"E","some":"I","not all":"O"}
+
+var premisesToScholasticCode = function(premises){
+  var figure = _.invert(premiseForms)[premises[0][0]+','+premises[1][0]]
+  var code = map(function(x){return scholasticDict[x[1]]}, premises).join('')
+  return code+figure
+}
+
+
+var scholasticCodeToPremises = function(code){
+  var invertedDict = _.invert(scholasticDict)
+  var p = premiseForms[code[2]]
+  var premise1 = [p[0], invertedDict[code[0]]]
+  var premise2 = [p[1], invertedDict[code[1]]]
+  return [premise1, premise2]
+}
+
 
 var isPremise = function(sentence,figure,premiseNo){
   return sentence[0] == premiseForms[figure][premiseNo-1]
@@ -307,11 +338,11 @@ var flattenSentences = function(sentences){
     },sentences)
   }
 
-var binarizeConclusionSet = function(trueConcl){
-  return map(function(conclusion){
-    return (flattenSentences(trueConcl).indexOf(conclusion) > -1) ? 1 : 0
-  }, flattenSentences(conclusionOrder)).join('')
-}
+// var binarizeConclusionSet = function(trueConcl){
+//   return map(function(conclusion){
+//     return (flattenSentences(trueConcl).indexOf(conclusion) > -1) ? 1 : 0
+//   }, flattenSentences(conclusionOrder)).join('')
+// }
 
 
 // this considers "multiple conclusions" explicitly
@@ -320,6 +351,7 @@ var trueLists = function(trueConcls){
                     flattenSentences(trueConcls)), 
                  flattenSentences(conclusionListOrder).indexOf(flattenSentences(trueConcls).join())])
 }
+
 
 // this considers "multiple conclusions" implicitly
 // var trueLists = function(trueConcls){
@@ -345,7 +377,7 @@ var reasoner0 = cache(function(premises, equivalentWorlds) {
 
     var listConclusions = trueLists(trueConclusions)
   
-    var whichConclusions = uniformDraw(listConclusions)
+    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
 //    var conclusion = uniformDraw(trueConclusions)
 //    console.log(trueConclusions)
     factor(premisesTrue?0:-Infinity)
@@ -395,7 +427,7 @@ var reasoner1 = function(premises, domain, alpha) {
     var trueConclusions = filter(isConclusion, trueSentences)
     var listConclusions = trueLists(trueConclusions)
 
-    var whichConclusions = uniformDraw(listConclusions)
+    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
    // var conclusion = uniformDraw(trueConclusions)
 
     // recursive reasoning
@@ -413,30 +445,64 @@ var reasoner1 = function(premises, domain, alpha) {
 }
 
 
+var guessing = function(){
+  Enumerate(function(){
+    var guess = uniformDraw(['0000','1000','0100','0010','0001',
+                                  '1100','1010','1001','0110','0101','0011',
+                                  '1110','1101','0111','1111'])
+    return guess
+  })
+}
 
+var fullBayesianTreatment = function() {
+  var alpha = sample(uniformERP,[0,5]);
+  var phi = sample(uniformERP,[0,1]);
+
+  var syll = 'AO2'
+  var domain = 'cracker'
+  var domainSylldata =  structuredData[domainSingularPlural[domain]][syll]
+  var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha)
+
+  
+  return map(function(data){return [data, cognitiveModel.score([], data.join('')) ] }, 
+    domainSylldata)
+} 
+
+//MH(fullBayesianTreatment,10)
+
+guessing()
 
 //var results = map(reasoner1,syllogisticPremises)
+// var posterior = utils_wppl.marginalsFromFullList(results, conclusionOrder, conclusionListOrder)
+
+
+// map(function(x){return [binarizedConclusionSet[x], results.score([],x)]},
+//   results.support())
+
+
+//results.score([],structuredData[domainSingularPlural[domainsSingular[1]]]["AO2"][0].join(''))
+
+
+//scholasticCode(syllogisticPremises[48])
+//var x = 'AA1'
+
+
+// var results = reasoner1(scholasticCodeToPremises(x), 'cracker', 2)
+// results
+
+// syllogisms
+
+//premiseForms[x[2]][0]
+
+//binarizedConclusionSet[1]
+// map(function{data}(factor(reasoner1.score([], data)),
+//   alldata)
+
+
 //results
-var alpha = 2
 
-//pruneERP(equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
-
-var results = reasoner1(syllogisticPremises[48], 'cracker', alpha)
-var posterior = utils_wppl.marginalsFromFullList(results, conclusionOrder, conclusionListOrder)
-
-posterior
 //var results = reasoner0(syllogisticPremises[0], equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
 
-
-//var posterior = simpleCSV.unrollConclusionList(results,conclusionListOrder)
-//posterior
-//simpleCSV.normalize(posterior)
-//results
-//conclusionOrder
-//results
-//unrollConclusionList(results)
-
-//conclusionObject
 
 //experimenter1([0,2,4], 4, equivalentTransform(objects,[1,1,1,1,1,1,1,1]))//.score([],syllogisticPremises[0])
 
