@@ -313,16 +313,19 @@ var binarizeConclusionSet = function(trueConcl){
   }, flattenSentences(conclusionOrder)).join('')
 }
 
+
+// this considers "multiple conclusions" explicitly
 var trueLists = function(trueConcls){
-//  return map(function(y){return flattenSentences(conclusionListOrder)[y]},
-      _.flatten([map(function(x){
-                        return flattenSentences(conclusionListOrder).indexOf(x)
-                      }, flattenSentences(trueConcls)), 
-                      flattenSentences(conclusionListOrder).indexOf(flattenSentences(trueConcls).join())])
-      //)
+      _.flatten([map(function(x){return flattenSentences(conclusionListOrder).indexOf(x)}, 
+                    flattenSentences(trueConcls)), 
+                 flattenSentences(conclusionListOrder).indexOf(flattenSentences(trueConcls).join())])
 }
 
-
+// this considers "multiple conclusions" implicitly
+// var trueLists = function(trueConcls){
+//       map(function(x){return flattenSentences(conclusionListOrder).indexOf(x)}, 
+//                     flattenSentences(trueConcls))
+// }
 
 var reasoner0 = cache(function(premises, equivalentWorlds) {
   Enumerate(function(){
@@ -343,11 +346,11 @@ var reasoner0 = cache(function(premises, equivalentWorlds) {
     var listConclusions = trueLists(trueConclusions)
   
     var whichConclusions = uniformDraw(listConclusions)
-    var conclusion = uniformDraw(trueConclusions)
+//    var conclusion = uniformDraw(trueConclusions)
 //    console.log(trueConclusions)
     factor(premisesTrue?0:-Infinity)
 //    return conclusion // what is the conclusion?
-    return listConclusions // which conclusions are true?
+    return whichConclusions // which conclusions are true?
   })
 })
 
@@ -392,12 +395,12 @@ var reasoner1 = function(premises, domain, alpha) {
     var trueConclusions = filter(isConclusion, trueSentences)
     var listConclusions = trueLists(trueConclusions)
 
-   // var whichConclusions = uniformDraw(listConclusions)
-    var conclusion = uniformDraw(trueConclusions)
+    var whichConclusions = uniformDraw(listConclusions)
+   // var conclusion = uniformDraw(trueConclusions)
 
     // recursive reasoning
  //   console.log(trueConclusions)
-    var E1 = experimenter1(listConclusions, figure, equivalentWorlds)
+    var E1 = experimenter1(whichConclusions, figure, equivalentWorlds)
     //    console.log(E1.score([],premises))
 
   //  console.log(E1.support())
@@ -405,9 +408,12 @@ var reasoner1 = function(premises, domain, alpha) {
  //   console.log(E1.score([],premises))
     factor(alpha*E1.score([],premises))
   //  return conclusion // what is the conclusion?
-   return listConclusions // which conclusions are true?
+   return whichConclusions // which conclusions are true?
   })
 }
+
+
+
 
 //var results = map(reasoner1,syllogisticPremises)
 //results
@@ -415,7 +421,22 @@ var alpha = 2
 
 //pruneERP(equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
 
-reasoner1(syllogisticPremises[0], 'cracker', alpha)
+var results = reasoner1(syllogisticPremises[48], 'cracker', alpha)
+var posterior = simpleCSV.marginalsFromFullList(results, conclusionOrder, conclusionListOrder)
+
+
+//var results = reasoner0(syllogisticPremises[0], equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
+
+
+//var posterior = simpleCSV.unrollConclusionList(results,conclusionListOrder)
+//posterior
+//simpleCSV.normalize(posterior)
+//results
+//conclusionOrder
+//results
+//unrollConclusionList(results)
+
+//conclusionObject
 
 //experimenter1([0,2,4], 4, equivalentTransform(objects,[1,1,1,1,1,1,1,1]))//.score([],syllogisticPremises[0])
 
