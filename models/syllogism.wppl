@@ -49,7 +49,7 @@ var priorClean = _.object(map(function(x){
   return [x[1],orderPropertyTuples(x.slice(3))]
 },domainPriors.slice(1)))
 
-var domains = ['cracker','knife','strawberry','lightbulb']
+var domainsSingular = ['cracker','knife','strawberry','lightbulb']
 
 ///
 
@@ -70,17 +70,13 @@ var radioIndices = {"all": csvInput[0].indexOf("radio_A"),
                     "some": csvInput[0].indexOf("radio_I"),
                     "not all": csvInput[0].indexOf("radio_O")}
 
-
-
 var radioData = filter(function(row){
             return row[conditionCol]=='radio'
             }, csvInput)
 
 
 var domains = _.uniq(map(function(row){return row[domainCol]}, radioData))
-
 var syllogisms = _.uniq(map(function(row){return row[syllCol]}, radioData))
-
 
 var mapObject2 = function(fn, obj){  
   return _.object(
@@ -92,14 +88,12 @@ var mapObject2 = function(fn, obj){
   );
 }
 
-
 var rowToObject = function(row){
   return mapObject2(function(index){return row[index]}, radioIndices)
 }
 
 // organize by domain and syllogism , and then within each subject, organized into an object from conclusions --> binary
 // structuredData[domainName][syllName]
-
 
 var structuredData = _.object(map(function(domain){
               return [domain, _.object(map(function(syll){
@@ -110,7 +104,14 @@ var structuredData = _.object(map(function(domain){
               }, syllogisms))]
             }, domains))
 
+////
 
+var domainSingularPlural = {
+  "cracker":"crackers",
+  "lightbulb":"lightbulbs",
+  "strawberry":"strawberries",
+  "knife":"knives"
+}
 
 /// model parameter: number of objects
 
@@ -132,6 +133,15 @@ var conclusionOrder = [ [["C","A"],"all"],
                         [["C","A"],"some"],
                         [["C","A"],"not all"]];
 
+var conclusionListOrder = [ [["C","A"],"all"],
+                          [["C","A"],"none"],
+                          [["C","A"],"some"],
+                          [["C","A"],"not all"],
+                          [[["C","A"],"all"],[["C","A"],"some"]],
+                          [[["C","A"],"some"],[["C","A"],"not all"]],
+                          [[["C","A"],"none"],[["C","A"],"not all"]]];
+
+
 var syllogisticSentences = _.flatten(map(function(x)
   {return map(function(y){return [y,x]} ,sentenceForms)}, quantifiers),true)
 
@@ -148,7 +158,8 @@ var isPremise = function(sentence,figure,premiseNo){
 
 var isConclusion = function(x){
 //  return (x[0][0]=='A' || x[0][0]=='C') && (x[0][1]=='A' || x[0][1]=='C')
-  return (x[0][0]=='A') && (x[0][1]=='C')
+//  return (x[0][0]=='A') && (x[0][1]=='C')
+  return (x[0][0]=='C') && (x[0][1]=='A')
 }
 
 
@@ -228,6 +239,9 @@ var noneSentence = function(propObject, termOne, termTwo){
   return 1 - someSentence(propObject,termOne,termTwo)
 }
 
+var mu = function(propObject, termOne, termTwo){
+  return 1
+}
 
 
 // equivalence class transformation
@@ -285,6 +299,15 @@ var binarizeConclusionSet = function(trueConcl){
   }, flattenSentences(conclusionOrder)).join('')
 }
 
+var trueLists = function(trueConcls){
+//  return map(function(y){return flattenSentences(conclusionListOrder)[y]},
+      _.flatten([map(function(x){
+                        return flattenSentences(conclusionListOrder).indexOf(x)
+                      }, flattenSentences(trueConcls)), 
+                      flattenSentences(conclusionListOrder).indexOf(flattenSentences(trueConcls).join())])
+      //)
+}
+
 
 
 var reasoner0 = cache(function(premises, equivalentWorlds) {
@@ -297,19 +320,33 @@ var reasoner0 = cache(function(premises, equivalentWorlds) {
     var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
                         flattenedSentences.indexOf(premises[1].join())!=-1
 
-    var trueConclusions = filter(isConclusion, trueSentences)
-    var conclusion = uniformDraw(trueConclusions)
+    // var premisesTrue = premises=='mu' ? true:
+    //                     flattenedSentences.indexOf(premises[0].join())!=-1 &&
+    //                     flattenedSentences.indexOf(premises[1].join())!=-1
 
+    var trueConclusions = filter(isConclusion, trueSentences)
+
+    var listConclusions = trueLists(trueConclusions)
+  
+    var whichConclusions = uniformDraw(listConclusions)
+    var conclusion = uniformDraw(trueConclusions)
+//    console.log(trueConclusions)
     factor(premisesTrue?0:-Infinity)
-    return conclusion // what is the conclusion?
-//    return trueConclusions // which conclusions are true?
+//    return conclusion // what is the conclusion?
+    return listConclusions // which conclusions are true?
   })
 })
 
 var experimenter1 = cache(function(QUDval, figure, equivalentWorlds) {
   Enumerate(function(){
     var premises = uniformDraw(premiseDictionary[figure])
+    // var availablePremises = premiseDictionary[figure]
+    // availablePremises.push('mu')
+    // var premises = uniformDraw(availablePremises)
+
     var R0 = reasoner0(premises, equivalentWorlds)
+ //   console.log(premises)
+//    console.log(R0.score([],QUDval))
     factor(R0.score([],QUDval))
     return premises
   })
@@ -333,16 +370,28 @@ var reasoner1 = function(premises, domain, alpha) {
 
     var state = sample(equivalentWorlds)
 
+    console.log((state[5]==1 && state[17] ==1))
+    console.log(equivalentWorlds.score([],state))
+
     // mapping from worlds to sentences, conclusions
     var trueSentences = stateToSentence(state)
     var trueConclusions = filter(isConclusion, trueSentences)
+    var listConclusions = trueLists(trueConclusions)
+
+   // var whichConclusions = uniformDraw(listConclusions)
     var conclusion = uniformDraw(trueConclusions)
 
     // recursive reasoning
-    var E1 = experimenter1(conclusion, figure, equivalentWorlds)
+ //   console.log(trueConclusions)
+    var E1 = experimenter1(listConclusions, figure, equivalentWorlds)
+    //    console.log(E1.score([],premises))
+
+  //  console.log(E1.support())
+ //   console.log(premises)
+ //   console.log(E1.score([],premises))
     factor(alpha*E1.score([],premises))
-    return conclusion // what is the conclusion?
-//    return trueConclusions // which conclusions are true?
+  //  return conclusion // what is the conclusion?
+   return listConclusions // which conclusions are true?
   })
 }
 
@@ -351,61 +400,46 @@ var reasoner1 = function(premises, domain, alpha) {
 var alpha = 2
 //reasoner1(syllogisticPremises[0], 'cracker', alpha)
 
+//experimenter1([0,2,4], 4, equivalentTransform(objects,[1,1,1,1,1,1,1,1]))//.score([],syllogisticPremises[0])
+
+var xform = equivalentTransform(objects,[1,1,1,1,1,1,1,1])
 
 
-//reasoner0(syllogisticPremises[5], equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
-//experimenter1('A,C,all,A,C,some',1,equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
-//discrete[backgroundPrior]
-//var equivalentWorlds = equivalentTransform(objects, backgroundPrior)
-//equivalentWorlds
-
-//var results = reasoner1(syllogisticPremises[0])
-
-//var results = reasoner1(syllogisticPremises[0])
+var scr = map(function(lst)
+   {var y = xform.score([],lst) 
+    return y},
+   xform.support())
 
 
-//map(function(x){return [x.support(), x.score()]}, results)
+var prnScr=filter(function(lst){return lst[0] > -Infinity}, _.zip(scr,xform.support()))
 
-// reasoner1([[['A','B'],'all'],
-//             [['B','C'],'all']])
+var makeERP = function(ps, vs){
+ return Enumerate(function(){return vs[discrete(ps)]});
+}
 
-//var x = syllogisticSentences[0]
-//x[1] + x[0][0] + x[0][1]
-//syllogisticSentences.length
+var y = makeERP(map(first,prnScr),map(second,prnScr))
 
-//     var backgroundPrior = [1,1,1,1,1,1,1,1]
+sample(y)
+//_.unzip(prnScr)
+//_.zip(scr,xform.support())
+// var conclusionListOrder = [ [["C","A"],"all"],
+//                           [["C","A"],"none"],
+//                           [["C","A"],"some"],
+//                           [["C","A"],"not all"],
+//                           [[["C","A"],"all"],[["C","A"],"some"]],
+//                           [[["C","A"],"some"],[["C","A"],"not all"]],
+//                           [[["C","A"],"none"],[["C","A"],"not all"]]];
 
-//     var properties = cache(function(obj) {
-//         var p = propertyTuples[discrete(backgroundPrior)]
-//         return p
-//       })
+//reasoner0(syllogisticPremises[1], equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
 
-// var x= map(properties,objects)
+// var state = sample(equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
+// var trueSentences = stateToSentence(state)
+//     // this could probably be optimized
+// var flattenedSentences = flattenSentences(trueSentences) 
 
-// x[0]+ '\n'+ 
-// x[1]+ '\n'+
-// x[2]+ '\n'+
-// x[3]+ '\n'+
-// notallSentence(properties,objects,'A','B')
 
-//objects
+// premiseDictionary[1].push('hi')
+// premiseDictionary[1]
 
-// var thetaPrior = function() {
-//   var threshold = randomInteger(10)
-//   return threshold
-// }
-
-// var utterancePrior = function() {
-//   var utterances = ["generic is true",
-//                     "generic is false"]
-//  // var utterances = ["generic is true",
-//   //                  "mu"]                    
-//   var i = randomInteger(utterances.length)
-//   return utterances[i]
-// }
-
-// var meaning = function(utt,state, theta) {
-//   return utt=="generic is true"? state>theta :
-//          utt=="generic is false"? state<=theta :
-//          true
-// }
+//syllogisticPremises[0]
+//syllogisticPremises[0].join()
