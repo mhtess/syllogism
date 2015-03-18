@@ -133,7 +133,7 @@ ggplot(df.c, aes(x=(rt/1000),fill=condition))+
   ylab('proportion of items')
 ```
 
-# 2a. Joint or marginals?
+# 2a. Joint or marginals? / Splift-half & prophecy
 
 How much information is there in the joint distributions of the subjects, relative to the marginal distributions? Another way of saying this is "how important is subject ID"? One way to (crudely) look at this is to take the split half correlation with permuting subject ID and compare it with the split half correlation without permuting.
 
@@ -190,38 +190,6 @@ d.resamp<-d.z %>%
 
 qplot(cor.array)
 qplot(prophet.array)
-
-
-
-%>%
-  rename(half1 = 'TRUE', half2='FALSE')
-
-
-%>%
-  mutate(samp = 1)
-
-table(test$syll,test$domain)
-table(d.tidy$syll,d.tidy$domain)
-
-
-## NOTE: NEED TO SAMPLE WITHIN EACH CONDITION
-half1<-sample(subjects, n.subj/2)
-half2<-subjects[!(subjects%in%half1)]
-
-# pair up subjects, by just following the random order in which half1 was sampled
-id<-match(d.tidy$subj,half1)
-id2<-match(d.tidy$subj,half2)
-id[is.na(id)] = id2[!is.na(id2)]
-
-d.tidy$id<-factor(id)
-
-d.tidy.split <- d.tidy %>%
-  mutate(half = 1*subj%in%half1) %>%
-  gather(conclusion,response,Q_A,Q_E,Q_I,Q_O) %>%
-  group_by(conclusion,syll, domain) %>%
-  spread(half,response)
-
-
 
 ```
 
@@ -779,129 +747,61 @@ ggplot(subset(ci_bs_col,experiment==2),
     strip.text.y = element_text(size=13,angle=0))
 ```
 
-# Fin 
-
-Write collapsed means to csv
-
-collapsed_wide<-dcast(col_bs[,c("domain","syll","conclusion","value")], value.var='value',...~conclusion)
-write.csv(collapsed_wide,file='syllogism/data/03syllogism_reasoning/syllbelief-exp-means_collapsed_sansOutliers.csv')
+# Bayesian analysis of Prior elicitation data
 
 
-exp_domains = c('lightbulb','strawberry','cracker','knife')
+```{r fbt.priors}
+d<-read.csv('lightbulbposterior_test.csv')
 
-fpath<-'/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/'
-m.df<-read.csv(paste(fpath,'3modeldata_oed_plausibility_depth0iidArgStr_emprArgStr_emprCLonly.csv',sep=''))[-1]
-prag.df<-read.csv(paste(fpath,'prgmtcOED_oed_frequency_depth1_alpha5iidArgStr_emprArgStr_emprCLonly.csv',sep=''))[-1]
-prag.df<-subset(prag.df,model=='prgmtc_empr')
+d.tidy<-d %>% 
+  gather(parameter, value, -prob) %>%
+  group_by(parameter, value) %>%
+  summarise(marginal = sum(prob))
 
-m.df<-subset(m.df,X..syll%in%levels(ci_bs$syll))
-prag.df<-subset(prag.df,X..syll%in%levels(ci_bs$syll))
+ggplot(data=filter(d.tidy,parameter=='alpha'), aes(x=value,y=marginal))+
+  geom_bar(stat='identity', width=0.1)
 
-m.df<-rbind(m.df,prag.df)
+ggplot(data=filter(d.tidy,parameter!='alpha'), aes(x=value,y=marginal))+
+  geom_bar(stat='identity', width=0.005)+
+  facet_wrap(~parameter, scales='free')
 
-
-mm.df<-melt(m.df,id.vars=c('model','X..syll'))
-mm.df$response<-as.character(mm.df$variable)
-mm.df$domain<-str_split_fixed(mm.df$response, "[.]", 2)[,1]
-mm.df$conclusion<-str_split_fixed(mm.df$response, "[.]", 2)[,2]
-mm.df<-subset(mm.df,domain%in%exp_domains)
-mm.df$domain<-factor(mm.df$domain,levels = exp_domains)
-
-
-ggplot(data=mm.df,aes(x=conclusion,y=value))+
-  geom_bar(aes(fill=model),stat='identity',position='dodge')+
-  facet_grid(domain~X..syll)+
-  scale_alpha_manual(values=c(1,0.5))+
-  #scale_x_discrete(labels=c("some C are A","some C are not A"))+
-  theme_bw()+
-  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'))
-
-
-### model data correlations
-
-
-flds<-c('syll','value','domain','conclusion')
-
-d1.df<-subset(ci_bs,condition=='slide')[,flds]
-names(d1.df)[2]<-'value.slide'
-d2.df<-subset(ci_bs,condition=='radio')[,flds]
-names(d2.df)[2]<-'value.radio'
-
-m1.df<-subset(mm.df,model=='argstr_iid')
-m2.df<-subset(mm.df,model=='argstr_empr')
-m3.df<-subset(mm.df,model=='clonly_empr')
-m4.df<-subset(mm.df,model=='prgmtc_empr')
-
-m1.df$conclusion<-factor(m1.df$conclusion,labels=quantifiers)
-m2.df$conclusion<-factor(m2.df$conclusion,labels=quantifiers)
-m3.df$conclusion<-factor(m3.df$conclusion,labels=quantifiers)
-m4.df$conclusion<-factor(m4.df$conclusion,labels=quantifiers)
-
-names(m1.df)[2]<-'syll'
-names(m2.df)[2]<-'syll'
-names(m3.df)[2]<-'syll'
-names(m4.df)[2]<-'syll'
-
-m1.df<-m1.df[,flds]
-m2.df<-m2.df[,flds]
-m3.df<-m3.df[,flds]
-m4.df<-m4.df[,flds]
-
-names(m1.df)[2]<-'value.argstr_iid'
-names(m2.df)[2]<-'value.argstr_empr'
-names(m3.df)[2]<-'value.clonly_empr'
-names(m4.df)[2]<-'value.prgmtc_empr'
-
-mega.df<-join_all(list(d1.df,d2.df,m1.df,m2.df,m3.df,m4.df),by=c('domain','syll','conclusion'))
-cor(mega.df[,c("value.slide",'value.radio','value.argstr_iid','value.argstr_empr','value.clonly_empr','value.prgmtc_empr')])
-
-#mega.df<-join_all(list(d1.df,d2.df,m1.df,m2.df,m3.df),by=c('domain','syll','conclusion'))
-#cor(mega.df[,c("value.slide",'value.radio','value.argstr_iid','value.argstr_empr','value.clonly_empr')])
+```
 
 
 
+# Full Bayesian Treatment using WPPL
 
-### pairwise ggplots
+## Model and data analysis parameters
 
-makePairs <- function(data) 
-{
-  grid <- expand.grid(x = 1:ncol(data), y = 1:ncol(data))
-  grid <- subset(grid, x != y)
-  all <- do.call("rbind", lapply(1:nrow(grid), function(i) {
-    xcol <- grid[i, "x"]
-    ycol <- grid[i, "y"]
-    data.frame(xvar = names(data)[ycol], yvar = names(data)[xcol], 
-               x = data[, xcol], y = data[, ycol], data)
-  }))
-  all$xvar <- factor(all$xvar, levels = names(data))
-  all$yvar <- factor(all$yvar, levels = names(data))
-  densities <- do.call("rbind", lapply(1:ncol(data), function(i) {
-    data.frame(xvar = names(data)[i], yvar = names(data)[i], x = data[, i])
-  }))
-  list(all=all, densities=densities)
-}
- 
-# expand iris data frame for pairs plot
-gg1 = makePairs(mega.df[,c("value.slide",'value.radio','value.argstr_iid','value.argstr_empr','value.clonly_empr')])
- 
-# new data frame mega iris
-mega_gg1 = data.frame(gg1$all, colorvar=rep(mega.df$conclusion, length=nrow(gg1$all)))
- 
-# pairs plot
-ggplot(mega_gg1, aes_string(x = "x", y = "y")) + 
-  facet_grid(xvar ~ yvar, scales = "free") + 
-  geom_point(aes(colour=colorvar), na.rm = TRUE, alpha=0.8,size=3) + 
-  stat_density(aes(x = x, y = ..scaled.. * diff(range(x)) + min(x)), 
-               data = gg1$densities, position = "identity", 
-               colour = "grey20", geom = "line")+
-  theme_bw()+
-  theme(strip.text = element_text(size = 20, angle = 0))
+```{r}
+d<-read.csv('../models/FBT/n4Marginal_posteriorD_wPrior_test_1000.csv')
+
+params<-d %>%
+  select(phi, alpha, prob) %>%
+  gather(param, val, -prob) %>%
+  group_by(param,val) %>%
+  summarise(marginal = sum(prob))
+
+ggplot(params, aes(x=val, y= marginal))+
+  geom_histogram(stat='identity',position=position_dodge())+
+  facet_wrap(~param, scales='free')
 
 
+```
 
-### reasoning with priors vs. data
+## Posterior predictive
+```{r}
 
-ggplot(mega.df, aes(x=value.argstr_empr, y=value.radio, color=conclusion))+
-  geom_point(size=5)+
-  theme_bw()
+predict<-d %>% 
+  select(-phi,-alpha) %>%
+  gather(item, val, -prob) %>%
+  separate(item, into=c("syllog","domain","conclusion"), sep="_") %>%
+  group_by(syllog, domain, conclusion) %>%
+  summarise(expval = sum(prob*val))
 
+predict$conclusion<-factor(predict$conclusion, levels = c('all','none','some','not.all'))
+ggplot(predict, aes(x=conclusion, y= expval, fill=conclusion))+
+  geom_bar(stat='identity')+
+  facet_grid(domain~syllog)
+
+```
