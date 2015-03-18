@@ -63,14 +63,24 @@ function parsePriorData(priorDM){
 	  })
 	}
 
-
-
 	// create assoc. array out of domainName and ordered probabilities
 	var priorClean = _.object(_.map(domainPriors,function(x){
 	  return [x[1],orderPropertyTuples(x.slice(3))]
 	}))
 
 	return priorClean
+}
+
+// read and concat exp. 1 and 2 data
+
+function readReasoningData(){
+	var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
+	var drfile1 = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
+	var drfile2 = drfilepath + "04syllogism_reasoning/syllbelief-exp2-mturk.csv";
+
+	var csvInput1 = readCSV(drfile1).data;
+	var csvInput2 = readCSV(drfile2).data;
+	return csvInput1.concat(csvInput2)
 }
 
 
@@ -139,6 +149,7 @@ module.exports = {
   wpParseFloat: wpParseFloat,
   sequence: sequence,
   parsePriorData: parsePriorData,
+  readReasoningData: readReasoningData,
   unrollConclusionList: unrollConclusionList,
   normalize: normalize,
   marginalsFromFullList: marginalsFromFullList};

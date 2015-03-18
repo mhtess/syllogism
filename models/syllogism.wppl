@@ -49,10 +49,10 @@ var domainsSingular = ['cracker','knife','strawberry','lightbulb']
 /// load reasoning (exp 1; or exp2) data
 
 var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
-var drfile = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
-//var drfile = drfilepath + "04syllogism_reasoning/syllbelief-exp2-mturk.csv";
+var drfile1 = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
+var drfile2 = drfilepath + "04syllogism_reasoning/syllbelief-exp2-mturk.csv";
 
-var csvInput = utils_wppl.readCSV(drfile).data;
+var csvInput = utils_wppl.readReasoningData();
 
 
 var conditionCol = csvInput[0].indexOf("condition")
@@ -68,10 +68,11 @@ var radioData = filter(function(row){
             return row[conditionCol]=='radio'
             }, csvInput)
 
-
 var domains = _.uniq(map(function(row){return row[domainCol]}, radioData))
 var syllogisms = _.uniq(map(function(row){return row[syllCol]}, radioData))
 
+
+console.log(syllogisms)
 // var mapObject2 = function(fn, obj){  
 //   return _.object(
 //     map(
