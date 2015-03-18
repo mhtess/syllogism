@@ -96,31 +96,35 @@ var syllogisms = _.uniq(map(function(row){return row[syllCol]}, radioData))
 // }
 
 // for joint, map row into string of 1s and 0s
-// var mapObject2 = function(fn, obj){  
-//   return  map(function(x){return fn(x[1])}, _.pairs(obj))
-// }
-
-// for marginal, map row into "YES" conclusions
 var mapObject2 = function(fn, obj){  
-  return  map(function(x){return fn(x[1])==1 ? x[0] : ''}, _.pairs(obj))
+  return  map(function(x){return fn(x[1])}, _.pairs(obj))
 }
 
 var rowToObject = function(row){
   return mapObject2(function(index){return row[index]}, radioIndices)
 }
 
+// for marginal, map row into "YES" conclusions
+var mapObject3 = function(fn, obj){  
+  return  map(function(x){return fn(x[1])==1 ? x[0] : ''}, _.pairs(obj))
+}
+
+var rowToConclusion = function(row){
+  return mapObject3(function(index){return row[index]}, radioIndices)
+}
+
 // organize by domain and syllogism , 
 // and then within each subject, organized into an object from conclusions --> binary
 // structuredData[domainName][syllName]
 
-// var structuredDataJoint = _.object(map(function(domain){
-//               return [domain, _.object(map(function(syll){
-//                 return [syll, map(rowToObject,filter(function(row){
-//                     return (row[domainCol]==domain && row[syllCol] == syll)
-//                   }, radioData))
-//                 ]
-//               }, syllogisms))]
-//             }, domains))
+var structuredDataJoint = _.object(map(function(domain){
+              return [domain, _.object(map(function(syll){
+                return [syll, map(rowToObject,filter(function(row){
+                    return (row[domainCol]==domain && row[syllCol] == syll)
+                  }, radioData))
+                ]
+              }, syllogisms))]
+            }, domains))
 
 
 // organize by domain and syllogism , 
@@ -132,7 +136,7 @@ var structuredDataMarginal = _.object(map(function(domain){
                 return [syll, 
                           _.filter(
                             _.flatten(
-                                map(rowToObject,
+                                map(rowToConclusion,
                                     filter(function(row){
                                       return (row[domainCol]==domain && row[syllCol] == syll)
                            }, radioData))), Boolean)
@@ -404,8 +408,8 @@ var reasoner0 = cache(function(premises, equivalentWorlds) {
 
     var listConclusions = trueLists(trueConclusions)
   
-//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
-    var whichConclusions = uniformDraw(listConclusions)
+    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+//    var whichConclusions = uniformDraw(listConclusions)
 
 //    var conclusion = uniformDraw(trueConclusions)
 //    console.log(trueConclusions)
@@ -456,8 +460,8 @@ var reasoner1 = function(premises, domain, alpha) {
     var trueConclusions = filter(isConclusion, trueSentences)
     var listConclusions = trueLists(trueConclusions)
 
-//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
-    var whichConclusions = uniformDraw(listConclusions)
+    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+//    var whichConclusions = uniformDraw(listConclusions)
    // var conclusion = uniformDraw(trueConclusions)
 
     // recursive reasoning
@@ -474,30 +478,26 @@ var reasoner1 = function(premises, domain, alpha) {
   })
 }
 
-// var cognitiveModel = reasoner1(scholasticCodeToPremises('OA1'), 'cracker', 2)
-// var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, conclusionOrder, conclusionListOrder)
 
-// var data = 'C,A,'+structuredDataMarginal["crackers"]["AO2"][0]
-// marginals[data]
-
-// var guessing = cache(function(){
-//   Enumerate(function(){
-//     var guess = uniformDraw(['0000','1000','0100','0010','0001',
-//                                   '1100','1010','1001','0110','0101','0011',
-//                                   '1110','1101','0111','1011','1111'])
-//     return guess
-//   })
-// })
 
 var guessing = cache(function(){
   Enumerate(function(){
-    var guess = uniformDraw(conclusionOrder)
-    return guess.join()
+    var guess = uniformDraw(['0000','1000','0100','0010','0001',
+                                  '1100','1010','1001','0110','0101','0011',
+                                  '1110','1101','0111','1011','1111'])
+    return guess
   })
 })
 
+// var guessing = cache(function(){
+//   Enumerate(function(){
+//     var guess = uniformDraw(conclusionOrder)
+//     return guess.join()
+//   })
+// })
 
-var syll = 'OA1'
+
+var syll = 'AO2'
 //[ 'OA1', 'IE1', 'EA3', 'AO2' ]
 
 var fullBayesianTreatment = function() {
@@ -509,21 +509,26 @@ var fullBayesianTreatment = function() {
 
   map(function(domain){
 
-    var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
-    var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha)
-    var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
-                                                    conclusionOrder, conclusionListOrder)
+    var domainSylldata =  structuredDataJoint[domainSingularPlural[domain]][syll]
+//    var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
 
-//    var predictions = flip(phi) ? guessing() : cognitiveModel
-//    var predictions = flip(phi) ? guessing() : marginals
+    var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha)
+
+    // var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
+    //                                                 conclusionOrder, conclusionListOrder)
+
 
     map(function(data){
-      var dataString = 'C,A,'+data
-      factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
-                ((1-phi)*marginals[dataString])))
- //     factor(predictions.score([], data.join('')))
-     // return [data, Math.exp(cognitiveModel.score([], data.join(''))), 
-     // Math.exp(guessing().score([], data.join('')))]
+
+      // for marginalized data
+      // var dataString = 'C,A,'+data
+      // factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+      //           ((1-phi)*marginals[dataString])))
+
+      // for joint data
+      var dataString = data.join('')
+     factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+                    ((1-phi)*Math.exp(cognitiveModel.score([],dataString)))))
 
     }, domainSylldata)
 
@@ -543,8 +548,10 @@ var posterior = map(
   results.support([]))
 
 posterior.unshift(['phi','alpha','prob']);
+
+
 utils_wppl.writeCSV(posterior, 
-  syll+'n'+n_objects+'Marginalized_posteriorD_wPrior_test_'+ nsamples+'.csv');
+  'FBT/'+syll+'n'+n_objects+'Joint_posteriorD_wPrior_test_'+ nsamples+'.csv');
 
 
 
