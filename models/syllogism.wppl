@@ -5,7 +5,7 @@
 
 /// model parameter: number of objects
 
-var n_objects = 3
+var n_objects = 4
 
 // mht's gensym
 globalStore.gensymCounter = 0
@@ -348,17 +348,17 @@ var equivalentTransform = cache(function(objects, backgroundPrior){
   })
 })
 
-var pruneERP = cache(function(myERP){
+var pruneERP = function(myERP){
   var scr = map(function(lst)
                  {var y = myERP.score([],lst);
                   return y},
                  myERP.support())
   
   var prnScr=filter(function(lst){return lst[0] > -Infinity}, _.zip(scr,myERP.support()))
-  var ps = map(first,prnScr)
+  var ps = map(function(x){return Math.exp(first(x))}, prnScr)
   var vs = map(second,prnScr)
   return Enumerate(function(){return vs[discrete(ps)]});
-})
+}
 
 
 /// helpers for sentences
@@ -400,19 +400,13 @@ var reasoner0 = cache(function(premises, equivalentWorlds) {
     var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
                         flattenedSentences.indexOf(premises[1].join())!=-1
 
-    // var premisesTrue = premises=='mu' ? true:
-    //                     flattenedSentences.indexOf(premises[0].join())!=-1 &&
-    //                     flattenedSentences.indexOf(premises[1].join())!=-1
-
     var trueConclusions = filter(isConclusion, trueSentences)
 
     var listConclusions = trueLists(trueConclusions)
-  
 //    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
     var whichConclusions = uniformDraw(listConclusions)
-
 //    var conclusion = uniformDraw(trueConclusions)
-//    console.log(trueConclusions)
+
     factor(premisesTrue?0:-Infinity)
 //    return conclusion // what is the conclusion?
     return whichConclusions // which conclusions are true?
@@ -422,13 +416,9 @@ var reasoner0 = cache(function(premises, equivalentWorlds) {
 var experimenter1 = cache(function(QUDval, figure, equivalentWorlds) {
   Enumerate(function(){
     var premises = uniformDraw(premiseDictionary[figure])
-    // var availablePremises = premiseDictionary[figure]
-    // availablePremises.push('mu')
-    // var premises = uniformDraw(availablePremises)
 
     var R0 = reasoner0(premises, equivalentWorlds)
- //   console.log(premises)
-//    console.log(R0.score([],QUDval))
+
     factor(R0.score([],QUDval))
     return premises
   })
@@ -446,32 +436,25 @@ var reasoner1 = function(premises, domain, alpha) {
 //    var wonkyworld = flip(0.5)
     var wonkyworld = false 
 
-    var equivalentWorlds = wonkyworld?
+    var equivalentWorlds = wonkyworld ?
                             pruneERP(equivalentTransform(objects, backoffPrior)):
-                            pruneERP(equivalentTransform(objects,backgroundPrior))
+                            pruneERP(equivalentTransform(objects, backgroundPrior))
 
     var state = sample(equivalentWorlds)
-
-//    console.log((state[5]==1 && state[17] ==1))
-//    console.log(equivalentWorlds.score([],state))
 
     // mapping from worlds to sentences, conclusions
     var trueSentences = stateToSentence(state)
     var trueConclusions = filter(isConclusion, trueSentences)
     var listConclusions = trueLists(trueConclusions)
 
-//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+ //   var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
     var whichConclusions = uniformDraw(listConclusions)
-   // var conclusion = uniformDraw(trueConclusions)
+ //   var conclusion = uniformDraw(trueConclusions)
 
     // recursive reasoning
- //   console.log(trueConclusions)
     var E1 = experimenter1(whichConclusions, figure, equivalentWorlds)
-    //    console.log(E1.score([],premises))
+//    var E1 = experimenter1(conclusion, figure, equivalentWorlds)
 
-  //  console.log(E1.support())
- //   console.log(premises)
- //   console.log(E1.score([],premises))
     factor(alpha*E1.score([],premises))
   //  return conclusion // what is the conclusion?
    return whichConclusions // which conclusions are true?
@@ -497,50 +480,57 @@ var guessing = cache(function(){
 })
 
 
-var syll = 'AO2'
+//var syll = 'AO2'
 //[ 'OA1', 'IE1', 'EA3', 'AO2' ]
 
 var fullBayesianTreatment = function() {
 
-  var alpha = uniformDraw(utils_wppl.sequence(0.1,5,1))
-  var phi = uniformDraw(utils_wppl.sequence(0,1, 0.1))
+  var alpha = uniformDraw(utils_wppl.sequence(0.1,5,0.5))
+  var phi = uniformDraw(utils_wppl.sequence(0,1,0.05))
   // var alpha = sample(uniformERP,[0,5]);
   // var phi = sample(uniformERP,[0,1]);
 
-  var posteriorPredictive = map(function(domain){
+  var posteriorPredictive = 
+    map(function(syll){return _.flatten(
 
-    var domainSylldata =  structuredDataJoint[domainSingularPlural[domain]][syll]
-//    var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
+      map(function(domain){
 
-    var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha)
+    //    var domainSylldata =  structuredDataJoint[domainSingularPlural[domain]][syll]
+        var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
 
-    var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
-                                                    conclusionOrder, 
-                                                    conclusionListOrder)
+        var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha)
+        //console.log(cognitiveModel.support())
+        var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
+                                                        conclusionOrder, 
+                                                        conclusionListOrder)
 
-    map(function(data){
+        map(function(data){
 
-      // for marginalized data
-      var dataString = 'C,A,'+data
-      factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
-                ((1-phi)*marginals[dataString])))
+          // for marginalized data
+          var dataString = 'C,A,'+data
+          factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+                    ((1-phi)*marginals[dataString])))
 
-      // for joint data
-     //  var dataString = data.join('')
-     // factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
-     //                ((1-phi)*Math.exp(cognitiveModel.score([],dataString)))))
+          // for joint data
+         //  var dataString = data.join('')
+         // factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+         //                ((1-phi)*Math.exp(cognitiveModel.score([],dataString)))))
 
-    }, domainSylldata)
+        }, domainSylldata)
 
-    return map(function(kv){return kv[1]}, _.pairs(marginals))
+        return map(function(kv){return kv[1]}, _.pairs(marginals))
 
-  }, domainsSingular)
+      }, domainsSingular)
+)
+},
+  syllogisms)
 
 
   return _.flatten([phi,alpha,posteriorPredictive])
 }
 
-var nsamples = 10
+
+var nsamples = 1000
 var results = MH(fullBayesianTreatment,nsamples)
 
 var posterior = map(
@@ -549,23 +539,27 @@ var posterior = map(
   },
   results.support([]))
 
-var header = _.flatten(map(function(d)
-  {return map(function(c){return c[1]+'_'+d}, conclusionOrder)},
-domainsSingular))
-
+var header = _.flatten(
+                map(function(s){
+                  _.flatten(map(function(d)
+                    {return map(function(c){return s+'_'+d+'_'+c[1]}, conclusionOrder)},
+                  domainsSingular))},
+                  syllogisms))
+ 
 header.unshift('phi','alpha')
 header.push('prob')
 
 posterior.unshift(header);
 
 
-
 utils_wppl.writeCSV(posterior, 
-  'FBT/testPP.csv');//+syll+'n'+n_objects+'Joint_posteriorD_wPrior_test_'+ nsamples+'.csv');
+  'FBT/n'+n_objects+'Marginal_posteriorD_wPrior_test_'+ nsamples+'.csv');
 
 
 
+// priorClean['lightbulb']
 
+//map(function(x){return priorClean[x]}, domainsSingular)
+//reasoner0(scholasticCodeToPremises('AO2'),  pruneERP(equivalentTransform(objects,priorClean['lightbulb'])))// ,2)
 
-
-
+//reasoner1(scholasticCodeToPremises("AO2"),"lightbulb",2)
