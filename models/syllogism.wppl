@@ -5,7 +5,7 @@
 
 /// model parameter: number of objects
 
-var n_objects = 4
+var n_objects = 3
 
 // mht's gensym
 globalStore.gensymCounter = 0
@@ -408,8 +408,8 @@ var reasoner0 = cache(function(premises, equivalentWorlds) {
 
     var listConclusions = trueLists(trueConclusions)
   
-    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
-//    var whichConclusions = uniformDraw(listConclusions)
+//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+    var whichConclusions = uniformDraw(listConclusions)
 
 //    var conclusion = uniformDraw(trueConclusions)
 //    console.log(trueConclusions)
@@ -460,8 +460,8 @@ var reasoner1 = function(premises, domain, alpha) {
     var trueConclusions = filter(isConclusion, trueSentences)
     var listConclusions = trueLists(trueConclusions)
 
-    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
-//    var whichConclusions = uniformDraw(listConclusions)
+//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+    var whichConclusions = uniformDraw(listConclusions)
    // var conclusion = uniformDraw(trueConclusions)
 
     // recursive reasoning
@@ -480,21 +480,21 @@ var reasoner1 = function(premises, domain, alpha) {
 
 
 
-var guessing = cache(function(){
-  Enumerate(function(){
-    var guess = uniformDraw(['0000','1000','0100','0010','0001',
-                                  '1100','1010','1001','0110','0101','0011',
-                                  '1110','1101','0111','1011','1111'])
-    return guess
-  })
-})
-
 // var guessing = cache(function(){
 //   Enumerate(function(){
-//     var guess = uniformDraw(conclusionOrder)
-//     return guess.join()
+//     var guess = uniformDraw(['0000','1000','0100','0010','0001',
+//                                   '1100','1010','1001','0110','0101','0011',
+//                                   '1110','1101','0111','1011','1111'])
+//     return guess
 //   })
 // })
+
+var guessing = cache(function(){
+  Enumerate(function(){
+    var guess = uniformDraw(conclusionOrder)
+    return guess.join()
+  })
+})
 
 
 var syll = 'AO2'
@@ -502,43 +502,45 @@ var syll = 'AO2'
 
 var fullBayesianTreatment = function() {
 
-  var alpha = uniformDraw(utils_wppl.sequence(0,5,1))
+  var alpha = uniformDraw(utils_wppl.sequence(0.1,5,1))
   var phi = uniformDraw(utils_wppl.sequence(0,1, 0.1))
   // var alpha = sample(uniformERP,[0,5]);
   // var phi = sample(uniformERP,[0,1]);
 
-  map(function(domain){
+  var posteriorPredictive = map(function(domain){
 
     var domainSylldata =  structuredDataJoint[domainSingularPlural[domain]][syll]
 //    var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
 
     var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha)
 
-    // var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
-    //                                                 conclusionOrder, conclusionListOrder)
-
+    var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
+                                                    conclusionOrder, 
+                                                    conclusionListOrder)
 
     map(function(data){
 
       // for marginalized data
-      // var dataString = 'C,A,'+data
-      // factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
-      //           ((1-phi)*marginals[dataString])))
+      var dataString = 'C,A,'+data
+      factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+                ((1-phi)*marginals[dataString])))
 
       // for joint data
-      var dataString = data.join('')
-     factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
-                    ((1-phi)*Math.exp(cognitiveModel.score([],dataString)))))
+     //  var dataString = data.join('')
+     // factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+     //                ((1-phi)*Math.exp(cognitiveModel.score([],dataString)))))
 
     }, domainSylldata)
+
+    return map(function(kv){return kv[1]}, _.pairs(marginals))
 
   }, domainsSingular)
 
 
-  return [phi, alpha]
+  return _.flatten([phi,alpha,posteriorPredictive])
 }
 
-var nsamples = 1000
+var nsamples = 10
 var results = MH(fullBayesianTreatment,nsamples)
 
 var posterior = map(
@@ -547,11 +549,19 @@ var posterior = map(
   },
   results.support([]))
 
-posterior.unshift(['phi','alpha','prob']);
+var header = _.flatten(map(function(d)
+  {return map(function(c){return c[1]+'_'+d}, conclusionOrder)},
+domainsSingular))
+
+header.unshift('phi','alpha')
+header.push('prob')
+
+posterior.unshift(header);
+
 
 
 utils_wppl.writeCSV(posterior, 
-  'FBT/'+syll+'n'+n_objects+'Joint_posteriorD_wPrior_test_'+ nsamples+'.csv');
+  'FBT/testPP.csv');//+syll+'n'+n_objects+'Joint_posteriorD_wPrior_test_'+ nsamples+'.csv');
 
 
 
