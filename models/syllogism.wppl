@@ -3,12 +3,19 @@
 // webppl syllogism.wppl --require-js ./utils_wppl 
 
 
+/// model parameter: number of objects
+
+var n_objects = 4
+
 // mht's gensym
 globalStore.gensymCounter = 0
 var gensym = function(){
   globalStore.gensymCounter = globalStore.gensymCounter+1
   return "g" + globalStore.gensymCounter
 }
+
+var objects = repeat(n_objects, gensym)
+
 
 var mapObject = function(fn, obj){  
   return _.object(
@@ -78,20 +85,25 @@ var radioData = filter(function(row){
 var domains = _.uniq(map(function(row){return row[domainCol]}, radioData))
 var syllogisms = _.uniq(map(function(row){return row[syllCol]}, radioData))
 
-var mapObject2 = function(fn, obj){  
-  return _.object(
-    map(
-      function(kv){
-        return [kv[0], fn(kv[1])]
-      }, 
-      _.pairs(obj))
-  );
-}
+// var mapObject2 = function(fn, obj){  
+//   return _.object(
+//     map(
+//       function(kv){
+//         return [kv[0], fn(kv[1])]
+//       }, 
+//       _.pairs(obj))
+//   );
+// }
 
-var mapObject2 = function(fn, obj){  
-  return  map(function(x){return fn(x[1])}, _.pairs(obj))
-}
+// for joint, map row into string of 1s and 0s
+// var mapObject2 = function(fn, obj){  
+//   return  map(function(x){return fn(x[1])}, _.pairs(obj))
+// }
 
+// for marginal, map row into "YES" conclusions
+var mapObject2 = function(fn, obj){  
+  return  map(function(x){return fn(x[1])==1 ? x[0] : ''}, _.pairs(obj))
+}
 
 var rowToObject = function(row){
   return mapObject2(function(index){return row[index]}, radioIndices)
@@ -101,12 +113,30 @@ var rowToObject = function(row){
 // and then within each subject, organized into an object from conclusions --> binary
 // structuredData[domainName][syllName]
 
-var structuredData = _.object(map(function(domain){
+// var structuredDataJoint = _.object(map(function(domain){
+//               return [domain, _.object(map(function(syll){
+//                 return [syll, map(rowToObject,filter(function(row){
+//                     return (row[domainCol]==domain && row[syllCol] == syll)
+//                   }, radioData))
+//                 ]
+//               }, syllogisms))]
+//             }, domains))
+
+
+// organize by domain and syllogism , 
+// and then within each subject, organized into an object from conclusions --> binary
+// structuredData[domainName][syllName]
+
+var structuredDataMarginal = _.object(map(function(domain){
               return [domain, _.object(map(function(syll){
-                return [syll, map(rowToObject,filter(function(row){
-                    return (row[domainCol]==domain && row[syllCol] == syll)
-                  }, radioData))
-                ]
+                return [syll, 
+                          _.filter(
+                            _.flatten(
+                                map(rowToObject,
+                                    filter(function(row){
+                                      return (row[domainCol]==domain && row[syllCol] == syll)
+                           }, radioData))), Boolean)
+                       ]
               }, syllogisms))]
             }, domains))
 
@@ -119,10 +149,7 @@ var domainSingularPlural = {
   "knife":"knives"
 }
 
-/// model parameter: number of objects
 
-var n_objects = 3
-var objects = repeat(n_objects, gensym)
 
 // creating the syllogistic space
 
@@ -377,7 +404,9 @@ var reasoner0 = cache(function(premises, equivalentWorlds) {
 
     var listConclusions = trueLists(trueConclusions)
   
-    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+    var whichConclusions = uniformDraw(listConclusions)
+
 //    var conclusion = uniformDraw(trueConclusions)
 //    console.log(trueConclusions)
     factor(premisesTrue?0:-Infinity)
@@ -411,7 +440,7 @@ var reasoner1 = function(premises, domain, alpha) {
     var backoffPrior = [1,1,1,1,1,1,1,1] // uniform
 //    var backoffPrior = multinomialProbabilities(0.25) // binomial
 //    var wonkyworld = flip(0.5)
-    var wonkyworld = true // only use backoffPrior
+    var wonkyworld = false 
 
     var equivalentWorlds = wonkyworld?
                             pruneERP(equivalentTransform(objects, backoffPrior)):
@@ -427,7 +456,8 @@ var reasoner1 = function(premises, domain, alpha) {
     var trueConclusions = filter(isConclusion, trueSentences)
     var listConclusions = trueLists(trueConclusions)
 
-    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+    var whichConclusions = uniformDraw(listConclusions)
    // var conclusion = uniformDraw(trueConclusions)
 
     // recursive reasoning
@@ -444,89 +474,81 @@ var reasoner1 = function(premises, domain, alpha) {
   })
 }
 
+// var cognitiveModel = reasoner1(scholasticCodeToPremises('OA1'), 'cracker', 2)
+// var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, conclusionOrder, conclusionListOrder)
 
-var guessing = function(){
+// var data = 'C,A,'+structuredDataMarginal["crackers"]["AO2"][0]
+// marginals[data]
+
+// var guessing = cache(function(){
+//   Enumerate(function(){
+//     var guess = uniformDraw(['0000','1000','0100','0010','0001',
+//                                   '1100','1010','1001','0110','0101','0011',
+//                                   '1110','1101','0111','1011','1111'])
+//     return guess
+//   })
+// })
+
+var guessing = cache(function(){
   Enumerate(function(){
-    var guess = uniformDraw(['0000','1000','0100','0010','0001',
-                                  '1100','1010','1001','0110','0101','0011',
-                                  '1110','1101','0111','1111'])
-    return guess
+    var guess = uniformDraw(conclusionOrder)
+    return guess.join()
   })
-}
+})
+
+
+var syll = 'OA1'
+//[ 'OA1', 'IE1', 'EA3', 'AO2' ]
 
 var fullBayesianTreatment = function() {
-  var alpha = sample(uniformERP,[0,5]);
-  var phi = sample(uniformERP,[0,1]);
 
-  var syll = 'AO2'
-  var domain = 'cracker'
-  var domainSylldata =  structuredData[domainSingularPlural[domain]][syll]
-  var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha)
+  var alpha = uniformDraw(utils_wppl.sequence(0,5,1))
+  var phi = uniformDraw(utils_wppl.sequence(0,1, 0.1))
+  // var alpha = sample(uniformERP,[0,5]);
+  // var phi = sample(uniformERP,[0,1]);
 
-  
-  return map(function(data){return [data, cognitiveModel.score([], data.join('')) ] }, 
-    domainSylldata)
-} 
+  map(function(domain){
 
-//MH(fullBayesianTreatment,10)
+    var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
+    var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha)
+    var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
+                                                    conclusionOrder, conclusionListOrder)
 
-guessing()
+//    var predictions = flip(phi) ? guessing() : cognitiveModel
+//    var predictions = flip(phi) ? guessing() : marginals
 
-//var results = map(reasoner1,syllogisticPremises)
-// var posterior = utils_wppl.marginalsFromFullList(results, conclusionOrder, conclusionListOrder)
+    map(function(data){
+      var dataString = 'C,A,'+data
+      factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+                ((1-phi)*marginals[dataString])))
+ //     factor(predictions.score([], data.join('')))
+     // return [data, Math.exp(cognitiveModel.score([], data.join(''))), 
+     // Math.exp(guessing().score([], data.join('')))]
 
+    }, domainSylldata)
 
-// map(function(x){return [binarizedConclusionSet[x], results.score([],x)]},
-//   results.support())
-
-
-//results.score([],structuredData[domainSingularPlural[domainsSingular[1]]]["AO2"][0].join(''))
-
-
-//scholasticCode(syllogisticPremises[48])
-//var x = 'AA1'
+  }, domainsSingular)
 
 
-// var results = reasoner1(scholasticCodeToPremises(x), 'cracker', 2)
-// results
+  return [phi, alpha]
+}
 
-// syllogisms
+var nsamples = 1000
+var results = MH(fullBayesianTreatment,nsamples)
 
-//premiseForms[x[2]][0]
+var posterior = map(
+  function(value){
+    value.concat(Math.exp(results.score([], value)))
+  },
+  results.support([]))
 
-//binarizedConclusionSet[1]
-// map(function{data}(factor(reasoner1.score([], data)),
-//   alldata)
-
-
-//results
-
-//var results = reasoner0(syllogisticPremises[0], equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
-
-
-//experimenter1([0,2,4], 4, equivalentTransform(objects,[1,1,1,1,1,1,1,1]))//.score([],syllogisticPremises[0])
+posterior.unshift(['phi','alpha','prob']);
+utils_wppl.writeCSV(posterior, 
+  syll+'n'+n_objects+'Marginalized_posteriorD_wPrior_test_'+ nsamples+'.csv');
 
 
-//_.unzip(prnScr)
-//_.zip(scr,xform.support())
-// var conclusionListOrder = [ [["C","A"],"all"],
-//                           [["C","A"],"none"],
-//                           [["C","A"],"some"],
-//                           [["C","A"],"not all"],
-//                           [[["C","A"],"all"],[["C","A"],"some"]],
-//                           [[["C","A"],"some"],[["C","A"],"not all"]],
-//                           [[["C","A"],"none"],[["C","A"],"not all"]]];
-
-//reasoner0(syllogisticPremises[1], equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
-
-// var state = sample(equivalentTransform(objects,[1,1,1,1,1,1,1,1]))
-// var trueSentences = stateToSentence(state)
-//     // this could probably be optimized
-// var flattenedSentences = flattenSentences(trueSentences) 
 
 
-// premiseDictionary[1].push('hi')
-// premiseDictionary[1]
 
-//syllogisticPremises[0]
-//syllogisticPremises[0].join()
+
+
