@@ -23,6 +23,57 @@ function wpParseFloat(x){
 };
 
 
+function sequence(lowEnd,highEnd, interval){
+	var list = [];
+	for (var i = lowEnd; i <= (highEnd/interval); i++) {
+	    list.push(i*interval);
+	}
+	return list
+}
+
+// parse the priors
+
+function parsePriorData(priorDM){
+	var dfile;
+	var dPriors;
+	var domainPriors;
+	var dfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
+
+	if (priorDM == 'combined') {
+	    dfile = dfilepath + "prior-exp-mturk_collapsed_means_n71.csv";
+		dPriors = readCSV(dfile).data;
+		domainPriors = dPriors.slice(1);
+	} else {
+
+	  dfile = dfilepath + "prior-exp-mturk_means_n71.csv";
+	  dPriors = readCSV(dfile).data;
+	  var conditionCol = dPriors[0].indexOf("condition")
+	  domainPriors = _.filter(dPriors,function(row){return row[conditionCol]==priorDM});
+	}
+
+	var propertyTuples = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
+                      [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+
+	var csvPropTup = dPriors[0].slice(3) // property (tuple) labels e.g. 011
+
+	// order csv data to match what's in propertyTuples
+	var orderPropertyTuples = function(values){
+	  return _.map(propertyTuples,function(x){
+	    return parseFloat(values[csvPropTup.indexOf(x.join(""))])
+	  })
+	}
+
+
+
+	// create assoc. array out of domainName and ordered probabilities
+	var priorClean = _.object(_.map(domainPriors,function(x){
+	  return [x[1],orderPropertyTuples(x.slice(3))]
+	}))
+
+	return priorClean
+}
+
+
 // this takes in lists of conclusions and computes the marginals
 function unrollConclusionList(posteriorERP, conclusionListOrder){
 	var conclusionObject = 
@@ -67,9 +118,11 @@ function marginalsFromFullList(posteriorERP, conclusionOrder ,conclusionListOrde
 		    var currVal = conclusionObject[listLabel]
 		    conclusionObject[listLabel] = currVal + Math.exp(posteriorERP.score([],s))
 		}})
+
 	return conclusionObject
 
 };
+
 
 
 function normalize(distributionObject){
@@ -84,7 +137,8 @@ module.exports = {
   readCSV: readCSV,
   writeCSV: writeCSV,
   wpParseFloat: wpParseFloat,
+  sequence: sequence,
+  parsePriorData: parsePriorData,
   unrollConclusionList: unrollConclusionList,
   normalize: normalize,
-  marginalsFromFullList: marginalsFromFullList
-};
+  marginalsFromFullList: marginalsFromFullList};
