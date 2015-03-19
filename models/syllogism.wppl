@@ -467,36 +467,139 @@ var guessing = cache(function(){
 })
 
 
-//var syll = 'AO2'
-//[ 'OA1', 'IE1', 'EA3', 'AO2' ]
+// var fullBayesianTreatment = function() {
 
-var fullBayesianTreatment = function() {
+//   var alpha = uniformDraw(utils_wppl.sequence(0.1,5,0.5))
+//   var phi = uniformDraw(utils_wppl.sequence(0,1,0.05))
+//   var wonkyprior = uniformDraw(utils_wppl.sequence(0,1,0.1))
+//   // var alpha = sample(uniformERP,[0,5]);
+//   // var phi = sample(uniformERP,[0,1]);
 
-  var alpha = uniformDraw(utils_wppl.sequence(0.1,5,0.5))
-  var phi = uniformDraw(utils_wppl.sequence(0,1,0.05))
+//   var posteriorPredictive = 
+//     map(function(syll){return _.flatten(
+
+//       map(function(domain){
+
+//     //    var domainSylldata =  structuredDataJoint[domainSingularPlural[domain]][syll]
+//         var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
+
+//         var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha, wonkyprior)
+//         var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
+//                                                         conclusionOrder, 
+//                                                         conclusionListOrder)
+
+//         map(function(data){
+
+//           // for marginalized data
+//           var dataString = 'C,A,'+data
+//           factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+//                     ((1-phi)*marginals[dataString])))
+
+//           // for joint data
+//          //  var dataString = data.join('')
+//          // factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+//          //                ((1-phi)*Math.exp(cognitiveModel.score([],dataString)))))
+
+//         }, domainSylldata)
+
+//         return map(function(kv){return kv[1]}, _.pairs(marginals))
+
+//       }, domainsSingular)
+// )
+// },
+//   syllogisms)
+
+
+//   return _.flatten([phi,alpha,wonkyprior,posteriorPredictive])
+// }
+
+
+// var nsamples = 10
+// var results = MH(fullBayesianTreatment,nsamples)
+
+// var posterior = map(
+//   function(value){
+//     value.concat(Math.exp(results.score([], value)))
+//   },
+//   results.support([]))
+
+// var header = _.flatten(
+//                 map(function(s){
+//                   _.flatten(map(function(d)
+//                     {return map(function(c){return s+'_'+d+'_'+c[1]}, conclusionOrder)},
+//                   domainsSingular))},
+//                   syllogisms))
+ 
+// header.unshift('phi','alpha','priorwonky')
+// header.push('prob')
+
+// posterior.unshift(header);
+
+
+// utils_wppl.writeCSV(posterior, 
+//   'FBT/exp12_n'+n_objects+'Marginal_posteriorD_wonky_test_'+ nsamples+'_'+priorDM+'.csv');
+
+
+
+
+// Bayesian bayesian model comparison
+var bayesianModelComparison = function() {
+
+  var wonkyHypothesis = uniformDraw(utils_wppl.sequence(0,1,0.05))
+
+  var alpha_R1 = uniformDraw(utils_wppl.sequence(0.1,5,0.5))
+  var alpha_W1 = uniformDraw(utils_wppl.sequence(0.1,5,0.5))
+
+  var phi_R1 = uniformDraw(utils_wppl.sequence(0,1,0.05))
+  var phi_W1 = uniformDraw(utils_wppl.sequence(0,1,0.05))
+
   var wonkyprior = uniformDraw(utils_wppl.sequence(0,1,0.1))
-  // var alpha = sample(uniformERP,[0,5]);
-  // var phi = sample(uniformERP,[0,1]);
 
-  var posteriorPredictive = 
-    map(function(syll){return _.flatten(
+    map(function(syll){
 
       map(function(domain){
 
     //    var domainSylldata =  structuredDataJoint[domainSingularPlural[domain]][syll]
         var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
 
-        var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha, wonkyprior)
-        var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
+        var syllogism = scholasticCodeToPremises(syll)
+
+        var W1 = reasoner1(syllogism, domain, alpha_W1, wonkyprior)
+        var R1 = reasoner1(syllogism, domain, alpha_R1, 0)
+
+        var marginals_R1 = utils_wppl.marginalsFromFullList(R1, 
                                                         conclusionOrder, 
                                                         conclusionListOrder)
+        var marginals_W1 = utils_wppl.marginalsFromFullList(W1, 
+                                                        conclusionOrder, 
+                                                        conclusionListOrder)
+
+
 
         map(function(data){
 
           // for marginalized data
           var dataString = 'C,A,'+data
-          factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
-                    ((1-phi)*marginals[dataString])))
+          factor(Math.log(
+                      
+                      (wonkyHypothesis*
+                        (
+                          (phi_W1*
+                            Math.exp(guessing().score([],dataString)))+
+                          ((1-phi_W1)*
+                            marginals_W1[dataString])
+                        ))
+                        +
+                    ((1-wonkyHypothesis)*
+                      (
+                        (phi_R1*
+                          Math.exp(guessing().score([],dataString)))+
+                        ((1-phi_R1)*
+                          marginals_R1[dataString])
+                      ))
+
+                    )
+          )
 
           // for joint data
          //  var dataString = data.join('')
@@ -505,42 +608,43 @@ var fullBayesianTreatment = function() {
 
         }, domainSylldata)
 
-        return map(function(kv){return kv[1]}, _.pairs(marginals))
-
       }, domainsSingular)
-)
-},
-  syllogisms)
 
+    },syllogisms)
 
-  return _.flatten([phi,alpha,wonkyprior,posteriorPredictive])
+return [wonkyHypothesis, alpha_R1, phi_R1, alpha_W1, phi_W1, wonkyprior]
 }
 
 
-var nsamples = 1000
-var results = MH(fullBayesianTreatment,nsamples)
-
+var nsamples = 10000
+var results = MH(bayesianModelComparison,nsamples)
+results
 var posterior = map(
   function(value){
     value.concat(Math.exp(results.score([], value)))
   },
   results.support([]))
 
-var header = _.flatten(
-                map(function(s){
-                  _.flatten(map(function(d)
-                    {return map(function(c){return s+'_'+d+'_'+c[1]}, conclusionOrder)},
-                  domainsSingular))},
-                  syllogisms))
+// var header = _.flatten(
+//                 map(function(s){
+//                   _.flatten(map(function(d)
+//                     {return map(function(c){return s+'_'+d+'_'+c[1]}, conclusionOrder)},
+//                   domainsSingular))},
+//                   syllogisms))
  
-header.unshift('phi','alpha','priorwonky')
-header.push('prob')
+// header.unshift('phi','alpha','priorwonky')
+// header.push('prob')
+
+var header = ['wonkyHypothesis', 'alpha_R1', 'phi_R1', 'alpha_W1', 'phi_W1', 'wonkyprior', 'prob']
 
 posterior.unshift(header);
 
 
 utils_wppl.writeCSV(posterior, 
-  'FBT/exp12_n'+n_objects+'Marginal_posteriorD_wonky_test_'+ nsamples+'_'+priorDM+'.csv');
+  'FBT/modelComparison_wonkyVSpragmatics_n'+n_objects+'Marginal_'+ nsamples+'_'+priorDM+'.csv');
+
+
+
 
 
 // var m = reasoner1(scholasticCodeToPremises("EA3"),"lightbulb",2)
