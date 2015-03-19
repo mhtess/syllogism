@@ -120,9 +120,9 @@ function marginalsFromFullList(posteriorERP, conclusionOrder ,conclusionListOrde
   			var listLabel1 = conclusionListOrder[s][0].join()
   			var listLabel2 = conclusionListOrder[s][1].join()
   			var currVal1 = conclusionObject[listLabel1]
-		    conclusionObject[listLabel1] = currVal1 + Math.exp(posteriorERP.score([],s))
+		    conclusionObject[listLabel1] = currVal1 + 0.5*Math.exp(posteriorERP.score([],s))
 		    var currVal2 = conclusionObject[listLabel2]
-		    conclusionObject[listLabel2] = currVal2 + Math.exp(posteriorERP.score([],s))
+		    conclusionObject[listLabel2] = currVal2 + 0.5*Math.exp(posteriorERP.score([],s))
   		} else {
   			var listLabel = conclusionOrder[s].join()
 		    var currVal = conclusionObject[listLabel]
