@@ -33,6 +33,8 @@ var uniformDraw = function(x){
 }
 
 
+
+
 // load prior data
 
 
@@ -459,19 +461,19 @@ var reasoner1 = cache(function(premises, domain, alpha, wonkyprior) {
 //   })
 // })
 
-var guessing = cache(function(){
-  Enumerate(function(){
+var guessing = 
+Enumerate(function(){
     var guess = uniformDraw(conclusionOrder)
     return guess.join()
   })
-})
 
 
 // var fullBayesianTreatment = function() {
 
 //   var alpha = uniformDraw(utils_wppl.sequence(0.1,5,0.5))
 //   var phi = uniformDraw(utils_wppl.sequence(0,1,0.05))
-//   var wonkyprior = uniformDraw(utils_wppl.sequence(0,1,0.1))
+// //  var wonkyprior = uniformDraw(utils_wppl.sequence(0,1,0.1))
+//   var wonkyprior = 0
 //   // var alpha = sample(uniformERP,[0,5]);
 //   // var phi = sample(uniformERP,[0,1]);
 
@@ -483,17 +485,32 @@ var guessing = cache(function(){
 //     //    var domainSylldata =  structuredDataJoint[domainSingularPlural[domain]][syll]
 //         var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
 
-//         var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha, wonkyprior)
-//         var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
-//                                                         conclusionOrder, 
-//                                                         conclusionListOrder)
+//          var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha, wonkyprior)
+//         // var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
+//         //                                                 conclusionOrder, 
+//         //                                                 conclusionListOrder)
+//         var makeERPfromObject = function(obj){
+//              return Enumerate(function(){return _.keys(obj)[discrete(_.values(obj))]});
+//             }
+//         var marginal = utils_wppl.marginalsFromFullList(cognitiveModel, conclusionOrder, conclusionListOrder)
+//         var cogmod = makeERPfromObject(marginal)
 
 //         map(function(data){
 
-//           // for marginalized data
+//           var withGuessing = cache(function(phi){
+//             Enumerate(function(){
+//               var isGuessing = flip(phi)
+//               var prediction = isGuessing ? sample(guessing) : sample(cogmod)
+//               return prediction
+//             })
+//           })
 //           var dataString = 'C,A,'+data
-//           factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
-//                     ((1-phi)*marginals[dataString])))
+
+//           factor(withGuessing(phi).score([],dataString))
+//           // for marginalized data
+//           // factor(Math.log(
+//           //       (phi*Math.exp(guessing().score([],dataString)))+
+//           //       ((1-phi)*marginals[dataString])))
 
 //           // for joint data
 //          //  var dataString = data.join('')
@@ -502,7 +519,12 @@ var guessing = cache(function(){
 
 //         }, domainSylldata)
 
-//         return map(function(kv){return kv[1]}, _.pairs(marginals))
+//         return map(function(value){
+//                     Math.exp(cogmod.score([], value))
+//                     },
+//                 _.keys(marginal))
+
+// //        map(function(kv){return kv[1]}, _.pairs(marginals))
 
 //       }, domainsSingular)
 // )
@@ -514,7 +536,32 @@ var guessing = cache(function(){
 // }
 
 
-// var nsamples = 10
+
+// var makeERPfromObject = function(obj){
+//      return Enumerate(function(){return _.keys(obj)[discrete(_.values(obj))]});
+//     }
+// var m = reasoner1(scholasticCodeToPremises("EA3"),"lightbulb",2,0)
+
+// makeERPfromObject(utils_wppl.marginalsFromFullList(m, conclusionOrder, conclusionListOrder))
+
+
+
+//m
+
+//guessing()
+
+
+
+
+// reasoner0(scholasticCodeToPremises('AO2'),  pruneERP(equivalentTransform(objects,priorClean['lightbulb'])))// ,2)
+
+//m
+
+
+
+
+
+// var nsamples = 1000
 // var results = MH(fullBayesianTreatment,nsamples)
 
 // var posterior = map(
@@ -537,23 +584,23 @@ var guessing = cache(function(){
 
 
 // utils_wppl.writeCSV(posterior, 
-//   'FBT/exp12_n'+n_objects+'Marginal_posteriorD_wonky_test_'+ nsamples+'_'+priorDM+'.csv');
+//   'FBT/t_exp12_n'+n_objects+'Marginal_posteriorD_wonky_test_'+ nsamples+'_'+priorDM+'.csv');
 
 
 
 
 // Bayesian bayesian model comparison
-var bayesianModelComparison = function() {
+ var bayesianModelComparison = function() {
 
   var wonkyHypothesis = uniformDraw(utils_wppl.sequence(0,1,0.05))
 
-  var alpha_R1 = uniformDraw(utils_wppl.sequence(0.1,5,0.5))
-  var alpha_W1 = uniformDraw(utils_wppl.sequence(0.1,5,0.5))
+  var alpha_R1 = uniformDraw(utils_wppl.sequence(0.5,5,0.5))
+  var alpha_W1 = uniformDraw(utils_wppl.sequence(0.5,5,0.5))
 
   var phi_R1 = uniformDraw(utils_wppl.sequence(0,1,0.05))
   var phi_W1 = uniformDraw(utils_wppl.sequence(0,1,0.05))
 
-  var wonkyprior = uniformDraw(utils_wppl.sequence(0,1,0.1))
+  var wonkyprior = uniformDraw(utils_wppl.sequence(0.1,1,0.1))
 
     map(function(syll){
 
@@ -585,7 +632,7 @@ var bayesianModelComparison = function() {
                       (wonkyHypothesis*
                         (
                           (phi_W1*
-                            Math.exp(guessing().score([],dataString)))+
+                            Math.exp(guessing.score([],dataString)))+
                           ((1-phi_W1)*
                             marginals_W1[dataString])
                         ))
@@ -593,7 +640,7 @@ var bayesianModelComparison = function() {
                     ((1-wonkyHypothesis)*
                       (
                         (phi_R1*
-                          Math.exp(guessing().score([],dataString)))+
+                          Math.exp(guessing.score([],dataString)))+
                         ((1-phi_R1)*
                           marginals_R1[dataString])
                       ))
@@ -616,6 +663,8 @@ return [wonkyHypothesis, alpha_R1, phi_R1, alpha_W1, phi_W1, wonkyprior]
 }
 
 
+
+guessing.support()
 var nsamples = 10000
 var results = MH(bayesianModelComparison,nsamples)
 results
@@ -641,21 +690,6 @@ posterior.unshift(header);
 
 
 utils_wppl.writeCSV(posterior, 
-  'FBT/modelComparison_wonkyVSpragmatics_n'+n_objects+'Marginal_'+ nsamples+'_'+priorDM+'.csv');
+  'FBT/modelComparison_restricted_wonkyVSpragmatics_n'+n_objects+'Marginal_'+ nsamples+'_'+priorDM+'.csv');
 
-
-
-
-
-// var m = reasoner1(scholasticCodeToPremises("EA3"),"lightbulb",2)
-// utils_wppl.marginalsFromFullList(m, conclusionOrder, conclusionListOrder)
-
-
-
-// priorClean['lightbulb']
-
-//map(function(x){return priorClean[x]}, domainsSingular)
-//reasoner0(scholasticCodeToPremises('AO2'),  pruneERP(equivalentTransform(objects,priorClean['lightbulb'])))// ,2)
-
-// m
 
