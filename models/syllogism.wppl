@@ -6,7 +6,7 @@
 /// model parameter: number of objects
 
 var n_objects = 4
-var priorDM = 'frequency'
+var priorDM = 'combined'
 
 // mht's gensym
 globalStore.gensymCounter = 0
@@ -72,7 +72,6 @@ var domains = _.uniq(map(function(row){return row[domainCol]}, radioData))
 var syllogisms = _.uniq(map(function(row){return row[syllCol]}, radioData))
 
 
-console.log(syllogisms)
 // var mapObject2 = function(fn, obj){  
 //   return _.object(
 //     map(
@@ -412,7 +411,7 @@ var experimenter1 = cache(function(QUDval, figure, equivalentWorlds) {
   })
 })
 
-var reasoner1 = cache(function(premises, domain, alpha) {
+var reasoner1 = cache(function(premises, domain, alpha, wonkyprior) {
   Enumerate(function(){
     // simple prep stuff
     var figure = _.invert(premiseForms)[premises[0][0]+','+premises[1][0]]
@@ -421,7 +420,7 @@ var reasoner1 = cache(function(premises, domain, alpha) {
     // sampling of worlds
 //    var backoffPrior = [1,1,1,1,1,1,1,1] // uniform
     var backoffPrior = multinomialProbabilities(0.25) // binomial
-    var wonkyworld = flip(0.5)
+    var wonkyworld = flip(wonkyprior)
 //    var wonkyworld = false 
 
     var equivalentWorlds = wonkyworld ?
@@ -475,6 +474,7 @@ var fullBayesianTreatment = function() {
 
   var alpha = uniformDraw(utils_wppl.sequence(0.1,5,0.5))
   var phi = uniformDraw(utils_wppl.sequence(0,1,0.05))
+  var wonkyprior = uniformDraw(utils_wppl.sequence(0,1,0.1))
   // var alpha = sample(uniformERP,[0,5]);
   // var phi = sample(uniformERP,[0,1]);
 
@@ -486,8 +486,7 @@ var fullBayesianTreatment = function() {
     //    var domainSylldata =  structuredDataJoint[domainSingularPlural[domain]][syll]
         var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
 
-        var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha)
-        //console.log(cognitiveModel.support())
+        var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha, wonkyprior)
         var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
                                                         conclusionOrder, 
                                                         conclusionListOrder)
@@ -514,38 +513,38 @@ var fullBayesianTreatment = function() {
   syllogisms)
 
 
-  return _.flatten([phi,alpha,posteriorPredictive])
+  return _.flatten([phi,alpha,wonkyprior,posteriorPredictive])
 }
 
 
-// var nsamples = 1000
-// var results = MH(fullBayesianTreatment,nsamples)
+var nsamples = 1000
+var results = MH(fullBayesianTreatment,nsamples)
 
-// var posterior = map(
-//   function(value){
-//     value.concat(Math.exp(results.score([], value)))
-//   },
-//   results.support([]))
+var posterior = map(
+  function(value){
+    value.concat(Math.exp(results.score([], value)))
+  },
+  results.support([]))
 
-// var header = _.flatten(
-//                 map(function(s){
-//                   _.flatten(map(function(d)
-//                     {return map(function(c){return s+'_'+d+'_'+c[1]}, conclusionOrder)},
-//                   domainsSingular))},
-//                   syllogisms))
+var header = _.flatten(
+                map(function(s){
+                  _.flatten(map(function(d)
+                    {return map(function(c){return s+'_'+d+'_'+c[1]}, conclusionOrder)},
+                  domainsSingular))},
+                  syllogisms))
  
-// header.unshift('phi','alpha')
-// header.push('prob')
+header.unshift('phi','alpha','priorwonky')
+header.push('prob')
 
-// posterior.unshift(header);
-
-
-// utils_wppl.writeCSV(posterior, 
-//   'FBT/exp1_n'+n_objects+'Marginal_posteriorD_wonky_test_'+ nsamples+'.csv');
+posterior.unshift(header);
 
 
-var m = reasoner1(scholasticCodeToPremises("EA3"),"lightbulb",2)
-utils_wppl.marginalsFromFullList(m, conclusionOrder, conclusionListOrder)
+utils_wppl.writeCSV(posterior, 
+  'FBT/exp12_n'+n_objects+'Marginal_posteriorD_wonky_test_'+ nsamples+'_'+priorDM+'.csv');
+
+
+// var m = reasoner1(scholasticCodeToPremises("EA3"),"lightbulb",2)
+// utils_wppl.marginalsFromFullList(m, conclusionOrder, conclusionListOrder)
 
 
 
