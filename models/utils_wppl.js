@@ -25,8 +25,8 @@ function wpParseFloat(x){
 
 function sequence(lowEnd,highEnd, interval){
 	var list = [];
-	for (var i = lowEnd; i <= (highEnd/interval); i++) {
-	    list.push(i*interval);
+	for (var i = 0; i <= ((highEnd-lowEnd)/interval); i++) {
+	    list.push(lowEnd+i*interval);
 	}
 	return list
 }
