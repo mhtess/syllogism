@@ -34,7 +34,7 @@
 \newcommand{\sectionref}[1]{Section \ref{#1}}
 
 
-\title{Understanding \emph{belief bias} in syllogistic reasoning as how prior knowledge is unstood}
+\title{Understanding \emph{Belief bias} in syllogistic reasoning as how prior knowledge is unstood}
 
 
 \author{{\large \bf Michael Henry Tessler} (mtessler@stanford.edu)}
@@ -48,13 +48,13 @@
 Here is the abstract
 \end{abstract}
 
-Prior knowledge about the world guides our actions, thinking, and reasoning in new situations. It can be helpful, for example, to know how fast a particular kind of animal can run, if you are also, for example, thinking about where or not it can eat you. Similarly, humans can use prior knowledge of a domain (e.g. microeconomic theory), whether it be accurate or inaccurate prior knowledge, to reason in everyday contexts  (e.g. deciding if it is a good time to buy a house). Finally, it's been argued in the language understanding community that prior knowledge influences the very meaning of words \cite{LassGood2015}. It would seem odd then that so little formal theory has gone into understanding prior knowledge in the formal reasoning tasks that have been so extensively studied in cognitive psychology. 
+Prior knowledge about the world guides our actions, thoughts, and reasoning in new situations. It can be helpful, for example, to know how fast a particular kind of animal can run, if you are also, for example, thinking about whether or not it can eat you. Similarly, humans can use prior knowledge of a domain (e.g. microeconomic theory)---whether it be accurate or inaccurate knowledge---to reason in everyday contexts  (e.g. deciding if it is a good time to buy a house). Finally, it's been argued in the language understanding community that prior knowledge influences the very meaning of words \cite{LassGood2015}. It would seem odd then that so little formal theory has gone into understanding prior knowledge in the formal reasoning tasks that have occupied so much of cognitive psychology. 
 
 \citeA{Tessler2014} proposed that syllogistic reasoning could be understood through the broader lens of language understanding. This intuition was formalized in a probabilistic model of pragmatic reasoning about syllogistic premises. To summarize the findings, they found that following the implications of Gricean principles (formalized in the Rational Speech Acts (RSA) theory of language understanding \cite{Frank2012; Goodman2013}) and specifying the Question Under Discussion (QUD) as the quantifier relationship between the conclusion terms (i.e. the QUD is the syllogistic conclusion) captured qualitative phenomena in syllogistic reasoning as well as provided a good overall fit to syllogistic reasoning meta-analysis data. Here, I explore the implications of such a model, by considering the role of prior beliefs in syllogistic reasoning.
 
 \section{Empirical work on syllogistic reasoning}
 
-Syllogistic reasoning lies at the intriguing intersection of logic and language. On the one hand, syllogisms are logical: Indeed, for about two millennia, they comprised the core of formal logic\footnote{By inventing the syllogistic argument, Aristotle incidentally invented \emph{the variable} as well. The fact that a logical form that can be instantiated by literally any content is what makes the bridge to our modern notion.}. On the other hand, syllogisms are a part of language: Aristotle's logic can be thought of as an early stab at natural language semantics, though there would be many improvements (e.g. \cite{Horn1989}). Syllogisms are an intriguing intermediate form: Abstract and consistent while approachable by any language user. And though a construal may exist that defines the space of reasoning as internally valid and complete, their reliance upon natural language makes them perfectly vulnerable to all of the uncertainty that comes with understanding natural language (for one perspective on uncertainty in language, see \cite{GoodLass2015}).
+Syllogistic reasoning lies at the intriguing intersection of logic and language. On the one hand, syllogisms are logical: Indeed, for about two millennia, they comprised the core of formal logic\footnote{By inventing the syllogistic argument, Aristotle incidentally invented \emph{the variable} as well. The fact that a logical form that can be instantiated by literally any content is what makes the bridge to our modern notion of a variable.}. On the other hand, syllogisms are a part of language: Aristotle's logic can be thought of as an early stab at natural language semantics, though there have been many improvements (e.g. \cite{Horn1989}). Syllogisms are an intriguing intermediate form: Abstract and consistent while approachable by any language user. And though as a formal reasoning tool, syllogisms are internally valid and complete, their reliance upon natural language makes them perfectly vulnerable to all of the uncertainty that comes with understanding natural language (for one perspective on uncertainty in language, see \cite{GoodLass2015}).
 
 \subsection{The syllogistic space}
 
@@ -64,7 +64,7 @@ All A are B\\
 Some B are C\\
 Therefore, some A are C
 \end{quote}
-The full space of syllogistic arguments (64 premise pairs in total) is derived by shuffling the ordering of the terms in a premise (``All A are B'' vs. ``All B are A'') and changing the quantifier (\emph{all, some, none, not all}\footnote{For distinctiveness, I will refer to the quantifiers as such. Note that in sentence-form, the last two quantifiers are typically presented as ``\emph{No} A are B" and ``\emph{Some} A are \emph{not} B", respectively.}). Most syllogisms are invalid, i.e. the relation between A \& C (i.e. the conclusion) is not true in every situation in which the premises are true. For example, the argument above is invalid (though perhaps not perfectly unreasonable). Often in these cases, participants are perfectly comfortable drawing a conclusion. A recent meta-analysis of syllogistic reasoning showed that over the population, the ``false alarm'' rate for a invalid syllogisms ranged from 24\% to 88\%. For valid arguments, the accuracy for a \emph{logically valid conclusion} ranged from 90\% to 1\% \cite{Khemlani2012}. There is something more going on than mere process-level noise from an otherwise logical computational level theory.
+The full space of syllogistic arguments (64 premise pairs in total) is derived by shuffling the ordering of the terms in a premise (``All A are B'' vs. ``All B are A'') and changing the quantifier (\emph{all, some, none, not all}\footnote{For distinctiveness, I will refer to the quantifiers as such. Note that in sentence-form, the last two quantifiers are typically presented as ``\emph{No} A are B" and ``\emph{Some} A are \emph{not} B", respectively.}). Most syllogisms are invalid, i.e. the relation between A \& C (i.e. the conclusion) is not true in every situation in which the premises are true. For example, the argument above is invalid (though perhaps not perfectly unreasonable). Often in these cases, participants are perfectly comfortable drawing a conclusion. A recent meta-analysis of syllogistic reasoning showed that over the population, the ``false alarm'' rate for a invalid syllogisms ranged from 24\% to 88\%. For valid arguments, the accuracy for a \emph{logically valid conclusion} ranged from 1\% to 90\% \cite{Khemlani2012}. There is something more going on than mere process-level noise from an otherwise logical computational level theory.
 
 \subsection{Prior knowledge in syllogistic reasoning}
 
@@ -84,7 +84,7 @@ No oranges are lemons\\
 Therefore, no apples are lemons
 \end{quote},
 
-31\% of partcipants responded that this was valid. In more finely controlled studies since, it's been consistently shown that the \emph{a priori} believability of the conclusion influences the acceptability of the conclusion. This was first characterized as an interaction between logic and belief \cite{Evans1983}. It may not be only the believability of the conclusion, however. \citeA{Cherubini1998} found the a priori believability of the premises is relevant. 
+31\% of partcipants responded that this was valid. In more targeted studies since, it's been consistently shown that the \emph{a priori} believability of the conclusion influences the acceptability of the conclusion. This was first characterized as an interaction between logic and belief \cite{Evans1983}. It may not be only the believability of the conclusion, however. \citeA{Cherubini1998} found the a priori believability of the premises is relevant. 
 
 %\citeA{Evans1983} demonstrated that the \emph{a priori} believability of the conclusion influences the acceptability of the conclusion, and that this influence was more pronounced for invalid rather than valid syllogisms. This characterization of this interplay between logic and belief has been debated \cite{Newstead1993, others}.  For example, when experimenters have included neutral materials for baseline comparisons, they find belief bias is primarily associated with \emph{rejecting unbelievable} conclusions particularly when the syllogism is invalid, leading some investigators to refer to it as ``belief debias'' \cite{Morley2004, Newstead1992}.
 
@@ -106,7 +106,7 @@ The second structural component is pragmatic (or, recursive) reasoning about the
 
 \subsection{Forward summary}
 
-In this paper, I address two questions: Does the prior distribution matter for syllogistic reasoning about real world content? Is pragmatic reasoning still necessary if the prior matches real world content? 
+In this paper, I address two questions: Does the prior distribution matter for syllogistic reasoning about real world content? Is pragmatic reasoning still necessary if the prior takes into account real world content? 
 
 The organization for the rest of the paper is as follows. First, I describe the extension to the generative model of argument strength in the TG model, which requires a specification of the prior distribution. I then collect data measuring this prior distribution of various properties co-occurring in 4 domains: frozen fruit, expired crackers, bright lightbulbs, and sharp knives. I also collect data about 8 syllogisms using each domain's content (32 items in total). I then integrate out the parameters of the computational model and compare alternative models using Bayesian data analytic techniques. I explore the predictions of the inferred ``best model'' and discuss future predictions. 
 
@@ -162,7 +162,7 @@ lightbulbs & common cause & are on & are bright & are hot  \\ \hline
 strawberries & common cause & are in the freezer & are soft & are warm  \\ \hline
 \end{tabular}
 \caption{Content domains used in experiments.}
-\label{tab:exp2dom}
+\label{tab:domains}
 \end{table}
 The most reliable way of eliciting probability judgments from subjects remains an open question. We ran the prior elicitation with two different dependent measures to examine the reliability of our materials.
 %For each causal structure, we explored relations where the 
@@ -190,7 +190,15 @@ Participants' responses were normalized within each domain so that the ratings f
 
 \subsubsection{Results}
 
-The experiment elicited unique priors for each domain (see Figure \red{X}). The data elicited with different dependent measures were highly correlated ($r_{pearson} = 0.78; r_{spearman} = 0.85$). 
+The experiment elicited unique priors for each domain (see Figure \ref{fig:priors}). The data elicited with different dependent measures were highly correlated ($r_{pearson} = 0.78; r_{spearman} = 0.85$). 
+
+\begin{figure}
+\centering
+    \includegraphics[width=\columnwidth]{priors}
+    \caption{Mean elicited priors, collapsed across frequency and plausibility dependent measure (see main text). X-axis shows presence or absence of each property, the ordering of which can be found in Table \ref{tab:domains}.}
+  \label{fig:priors}
+\end{figure}
+
 
 
 %$P(\delta_{\denote{c}(x)})$ is used because the model of argument strength isn't given a conclusion, but rather \emph{generates} a conclusion according to the prior distribution over situations. $P(\delta_{\denote{c}(x)})$ ensure that a conclusion wihich is true of the 
@@ -209,14 +217,63 @@ The experiment elicited unique priors for each domain (see Figure \red{X}). The 
 
 \section{Experiment 2: Syllogistic reasoning about real world content}
 
+In Experiment 2,  I sought to test if syllogisms using the real world content of Experiment 1 led to different conclusions.
+
+\subsubsection{Participants}
+
+I recruited 254 participants from Amazon's Mechanical Turk. All participants were required to have a 95\% approval rating for their previous work on the web service. 
+
+\subsubsection{Design}
+
+Each participant completed 4 syllogisms. Each syllogism was paired with a random domain used in Experiment 1.
+
+A total of 8 syllogisms were used, resulting in 32 unique \{syllogism, domain\} pairs.
+
+\subsubsection{Procedures \& Materials}
+
+The instructions to the experiment were:
+
+\begin{quotation}
+In this experiment, you will read four (4) randomly selected logical arguments. For each argument, you will be presented with different conclusion that might follow from the argument presented.
+\end{quotation}
+
+On each experimental slide, the participants saw the words ``Given that:'' followed by the syllogism. Below was written: ``Does it follow that:''. Below that was presented a 4 column table with each of the 4 syllogistic conclusions in a column. Below each conclusion was the dependent measure.
+
+The dependent measure was a radio button with the options ``Doesn't follow'' and ``Follows''. Below that was a vertically-oriented slider bar with endpoints labeled ``Certain'' and ``Don't know''. 
+
+\begin{quotation}
+If you think the conclusion follows from the argument, indicate so. Adjust the position of the slider bar to reflect your confidence in your response.
+\end{quotation}
+
+Participants were required to mark each conclusion before continuing on to the next page.
+
+\subsubsection{Analysis}
+
+For a first pass with data analysis, I analyzed only the radio buttons. Shown in Figure \ref{fig:syllogisms} (light bars) are the results of the experiments. There were effects of content and of syllogism on conclusions drawn, as evidence by the differences in row and columns, respectively.
+
 \section{Bayesian data analysis}
+
+I compared the predictions of the TG model using the priors elicited in Experiment 1 to the reasoning data in Experiment 2. The model has 1 parameter: the optimality parameter for the speaker. 
 
 \subsection{Model parameters}
 
 \subsection{Model comparison}
 
+To address the relevance of background knowledge in syllogistic reasoning, I performed a Bayesian model comparison between models of argument strength with and without the empirical priors. The model without the empirical priors uses a Binomial prior with a parameter $br$ representing the base rate of properties\foonote{This is exactly the model of argument strength used in \citeA{Tessler2014}). I put an uninformative Beta prior over the base rate parameter.
+
+
+To address the question of whether or not pragmatic (or, recursive) reasoning is still a necessary component of the model after accounting for background knowledge in the appropriate way, I compared the model of argument strength with the empirical prior with the model of pragmatic syllogistic reasoning with the empirical prior. 
+
 \subsection{Posterior predictives}
 
+The model of pragmatic syllogistic reasoning was the most likely model in this space of models given this data. We are now in a position to see 
+
+\begin{figure}
+\centering
+    \includegraphics[width=\columnwidth]{figures/syllogismXdomain}
+    \caption{Caption.}
+  \label{fig:syllogismXdomain}
+\end{figure}
 
 \section{Discussion}
 
