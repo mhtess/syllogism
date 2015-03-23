@@ -37,8 +37,8 @@
 \title{Understanding \emph{Belief bias} in syllogistic reasoning by integrating prior knowledge in a Bayesian model}
 
 
-\author{{\large \bf Michael Henry Tessler} (mtessler@stanford.edu)}
-\institute{Department of Psychology, Stanford University}
+%\author{{\large \bf Michael Henry Tessler} (mtessler@stanford.edu)}
+%\institute{Department of Psychology, Stanford University}
  
 \begin{document}
 \maketitle
@@ -241,11 +241,13 @@ Participants were required to mark each conclusion before continuing on to the n
 
 \subsubsection{Results}
 
-For a first pass with data analysis, I analyzed only the radio buttons. Shown in Figure \ref{fig:syllogisms} (light bars) are the results of the experiments. There were effects of content and of syllogism on conclusions drawn, as evidenced by the differences in row and columns, respectively.
+For a first pass with data analysis, I analyzed only the radio buttons. Shown in Figure \ref{fig:syllogismXdomain} (light bars) are the results of the experiments. There were effects of content and of syllogism on conclusions drawn, as evidenced by the differences in row and columns, respectively.
 
 \section{Bayesian data analysis}
 
-I compared the predictions of the TG model using the priors elicited in Experiment 1 to the reasoning data in Experiment 2. TG takes the probabilities to represent actual persons in a communicative setting, and so takes conclusions or premises to be selected from these distributions according to a Luce choice, or softmax, decision rule with a parameter that denotes the degree to which utterances are chosen optimally (Luce, 1959). This is one of the parameters of the model. The other parameter is the number of objects ($n$) parameter, which controls how large the worlds are that the reasoner reasons over. Results are highly consistent for $n \geq 4$ and I so use $n =4$ for all simulations.  
+I compared the predictions of the TG model using the priors elicited in Experiment 1 to the reasoning data in Experiment 2. TG takes the probabilities to represent actual persons in a communicative setting, and so takes conclusions or premises to be selected from these distributions according to a Luce choice, or softmax, decision rule with a parameter that denotes the degree to which utterances are chosen optimally\cite{Luce1959}. This is one of the parameters of the model. The other parameter is the number of objects ($n$) parameter, which controls how large the worlds are that the reasoner reasons over. Results are highly consistent for $n \geq 4$ and I so use $n=4$ for all simulations.  
+
+I put a uniform prior over the optimality parameter $\lambda \thicksim U(0,5)$. In addition, I use a data analytic ``guessing'' parameter $\phi \thicksim U(0,1)$ to account for response noise.
 
 \subsection{Model comparison}
 
@@ -266,20 +268,20 @@ The overall correlation between the posterior predictive and the human data was 
 \begin{figure}
 \centering
     \includegraphics[width=0.5\columnwidth]{figures/scatterplot}
-    \caption{Caption.}
+    \caption{Data vs. Model plot. The model provides a good overall fit to the 128 data points (32 syllogism, domain pairs X 4 conclusions each). The posterior predictions bottom out around 0.07. This is the work of the response noise parameter $\phi$. It's likely that different syllogisms have different amounts of response noise, however I do not model this here.}
   \label{fig:scatterplot}
 \end{figure}
 
 \begin{figure}
 \centering
     \includegraphics[width=\columnwidth]{figures/syllogismXdomain}
-    \caption{Caption.}
+    \caption{Reasoning patterns and predictions for 4 (of the 8) syllogisms in Experiment 2. Model predictions are in the darker shade. All syllogisms shown here were of the form B-A / C-B and the conclusions were of the form C-A (e.g. second column: All B are A, Some C are B). Reasoning effects can be seen by comparing columns within a row. Content effects can be seen by comparing rows within a column.}
   \label{fig:syllogismXdomain}
 \end{figure}
 
 \section{Discussion}
 
-I have demonstrated in this paper that a model of syllogistic reasoning requires the appropriate prior distribution to account for the flexibility of interpretation of a syllogistic argument with real world content. The prior distribution is not enough, however. 
+I have demonstrated in this paper that a model of syllogistic reasoning requires the appropriate prior distribution to account for the flexibility of interpretation of a syllogistic argument with real world content. The prior distribution is not enough, however. The recursive nature of communicative inference needs to be taken into account to capture the deviations from a literal semantic interpretation of the premises. 
 
 %\subsection{Wonky worlds?}
 %\section{Conclusion}
