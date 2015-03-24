@@ -7,7 +7,7 @@
 %
 %
 %
-\documentclass{llncs} %
+\documentclass{article} %
 
 \usepackage{pslatex}
 \usepackage{apacite}
@@ -93,7 +93,7 @@ The extent to which beliefs influence reasoning also seems to depend on the rela
 
 \section{Computational pragmatics in syllogistic reasoning}
 
-Gradience in syllogistic reasoning was formalized by \citeA{Tessler2014} (henceforth, TG). The computational model presented by TG is a Bayesian model, and as such, the prior has implications. The model samples possible worlds which are composed of objects with properties. The number of objects is a parameter of the model, as is the base rate of properties. In the basic model, properties are assumed to independent and identically distributed (i.i.d.). In fitting the model to the meta-analysis data by \citeA{Chater1999}, TG found $P(x) \sim 0.25$. This is qualitatively consistent with the ``rarity assumption'' --- that properties are relatively rare of objects --- first used by \citeA{Oaksford1994}.
+Gradience in syllogistic reasoning was formalized by \citeA{Tessler2014} (henceforth, TG). The computational model presented by TG is a Bayesian model, and as such, the prior is important to consider. The model samples possible worlds which are composed of objects with properties. The number of objects $n_{obj}$is a parameter of the model, as is the base rate $P(x)$ of properties. In the basic model, properties are assumed to independent and identically distributed (i.i.d.). In fitting the model to the meta-analysis data by \citeA{Chater1999}, TG found $P(x) \sim 0.25$. This is qualitatively consistent with the ``rarity assumption'' --- that properties are relatively rare of objects --- first used by \citeA{Oaksford1994}.
 
 The Bayesian model has a very natural way to account for prior beliefs in reasoning. Indeed, beliefs simply specify a different prior distribution of properties. In particular, the assumption that properties are \emph{i.i.d.} can be relaxed if we are to consider real-world content.
 
