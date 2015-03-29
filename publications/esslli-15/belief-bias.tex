@@ -8,7 +8,7 @@
 %
 %
 \documentclass{llncs} %
-% \documentclass{article}
+%\documentclass{article}
 \usepackage{pslatex}
 \usepackage{apacite}
 \usepackage{url}
@@ -34,7 +34,7 @@
 \newcommand{\sectionref}[1]{Section \ref{#1}}
 
 
-\title{Understanding \emph{Belief bias} in syllogistic reasoning by integrating prior beliefs in a Bayesian model}
+\title{Understanding \emph{Belief bias} by integrating prior beliefs in a Bayesian model of syllogistic reasoning}
 
 
 %\author{{\large \bf Michael Henry Tessler} (mtessler@stanford.edu)}
@@ -48,13 +48,13 @@
 Here is the abstract
 \end{abstract}
 
-Prior beliefs about the world guide our actions, thoughts, and reasoning in new situations. It can be helpful, for example, to know how fast a particular kind of animal can run, if you are also, for example, thinking about whether or not it can eat you. Similarly, humans can use prior beliefs in a domain (e.g. microeconomic theory)---whether they be accurate or inaccurate beliefs---to reason in everyday contexts  (e.g. deciding if it is a good time to buy a house). Finally, it has been argued in the language understanding community that prior knowledge influences the very meaning of words \cite{LassGood2015}. It would seem odd then that so little formal theory has gone into understanding prior beliefs in the formal reasoning tasks that have occupied so much of cognitive psychology (but, cf \citeA{Klauer2000, Dube2010}). 
+Prior beliefs about the world guide our actions, thoughts, and reasoning in new situations. It can be helpful, for example, to know how fast a particular kind of animal can run, if you are also, for example, thinking about whether or not that animal can eat you. Similarly, humans can use prior beliefs in a domain (e.g. microeconomic theory)---whether they be accurate or inaccurate beliefs---to reason in everyday contexts  (e.g. deciding if it is a good time to buy a house). Finally, it has been argued in the language understanding community that prior knowledge influences the very meaning of words \cite{LassGood2015}. It would seem odd then that so little formal theory has gone into understanding prior beliefs in the reasoning tasks that have occupied so much of cognitive psychology (but, cf \citeA{Klauer2000, Dube2010}). 
 
-One formal approach, with the potential to model prior beliefs in syllogistic reasoning, was proposed by \citeA{Tessler2014}, who argued that syllogistic reasoning could be understood through the broader lens of language understanding. This intuition was formalized in a probabilistic model of pragmatic reasoning about syllogistic premises. They found that following the implications of Gricean principles---formalized in the Rational Speech Act (RSA) theory of language understanding \cite{Frank2012,Goodman2013}---and specifying the Question Under Discussion \cite{Roberts2004} (QUD) as the quantifier relationship between the conclusion terms (i.e. the QUD is the syllogistic conclusion) captured qualitative phenomena in syllogistic reasoning as well as provided a good overall fit to syllogistic reasoning meta-analysis data. Here, I extend this model by integrating prior beliefs about real-world content and test it against behavioral data obtained in targeted studies of the role of prior beliefs in syllogistic reasoning.
+One formal approach, with the potential to model prior beliefs in syllogistic reasoning, was proposed by \citeA{Tessler2014}, who argued that syllogistic reasoning could be understood through the broader lens of language understanding. This intuition was formalized in a probabilistic model of pragmatic reasoning about syllogistic premises. They found that a probabilistic generative model of argument strength that reasons over situations populated by objects with properties accounted for much of the variability in conclusion endorsements for syllogisms. That work further explored syllogistic reasoning by incorporating Gricean principles---formalized in the Rational Speech Act (RSA) theory of language understanding \cite{Frank2012,Goodman2013}---and specifying the Question Under Discussion \cite{Roberts2004} (QUD) as the quantifier relationship between the conclusion terms (i.e. the QUD is the syllogistic conclusion). This component was important in capturing some qualitative phenomena in syllogistic reasoning. Here, I extend the model of argument strength by integrating prior beliefs about real-world content and test it against behavioral data obtained in targeted studies of the role of prior beliefs in syllogistic reasoning.
 
 \section{Empirical work on syllogistic reasoning}
 
-Syllogistic reasoning lies at the intriguing intersection of logic and language. On the one hand, syllogisms are logical: Indeed, for about two millennia, they comprised the core of formal logic\footnote{By inventing the syllogistic argument, Aristotle incidentally invented \emph{the variable} as well. The fact that a logical form that can be instantiated by literally any content is what makes the bridge to our modern notion of a variable.}. On the other hand, syllogisms are a part of language: Aristotle's logic can be thought of as an early stab at natural language semantics, though there have been many improvements (e.g. \citeA{Horn1989}). Syllogisms are an intriguing intermediate form: Abstract and consistent while approachable by any language user. And though as a formal reasoning tool, syllogisms are internally valid and complete, their reliance upon natural language makes them perfectly vulnerable to all of the uncertainty that comes with understanding natural language (for one perspective on uncertainty in language, see \citeA{GoodLass2015}).
+Syllogistic reasoning lies at the intriguing intersection of logic and language. On the one hand, syllogisms are logical: Indeed, for about two millennia, they comprised the core of formal logic\footnote{By inventing the syllogistic argument, Aristotle incidentally invented \emph{the variable} as well. The fact that a logical form that can be instantiated by literally any content is what makes this bridge to our modern notion of a variable.}. On the other hand, syllogisms are a part of language: Aristotle's logic can be thought of as an early stab at natural language semantics, though there have been considerable improvements since (e.g. \citeA{Horn1989}). Syllogisms are an intriguing intermediate form: Abstract and logically consistent while approachable by any language user. And though as a formal reasoning tool, syllogisms are internally valid and complete, their reliance upon natural language makes them perfectly vulnerable to all of the uncertainty that comes with understanding natural language (for one perspective on uncertainty in language, see \citeA{GoodLass2015}).
 
 \subsection{The syllogistic space}
 
@@ -84,7 +84,7 @@ No oranges are lemons\\
 Therefore, no apples are lemons
 \end{quote}
 
-In more targeted studies since, it's been consistently shown that the \emph{a priori} believability of the conclusion influences the acceptability of the conclusion. This was first characterized as an interaction between logic and belief \cite{Evans1983}. It may not be only the believability of the \emph{conclusion} that influences reasoning, however. \citeA{Cherubini1998} found the a priori believability of the \emph{premises}, too, is relevant factor in reasoning. 
+In more targeted studies since, it's been consistently shown that the \emph{a priori} believability of the conclusion influences the acceptability of the conclusion. This was first characterized as an interaction between logic and belief \cite{Evans1983}. It may not be only the believability of the \emph{conclusion} that influences reasoning, however. \citeA{Cherubini1998} found the a priori believability of the \emph{premises}, too, is relevant factor in determining what conclusions to draw from an argument. 
 
 %\citeA{Evans1983} demonstrated that the \emph{a priori} believability of the conclusion influences the acceptability of the conclusion, and that this influence was more pronounced for invalid rather than valid syllogisms. This characterization of this interplay between logic and belief has been debated \cite{Newstead1993, others}.  For example, when experimenters have included neutral materials for baseline comparisons, they find belief bias is primarily associated with \emph{rejecting unbelievable} conclusions particularly when the syllogism is invalid, leading some investigators to refer to it as ``belief debias'' \cite{Morley2004, Newstead1992}.
 
