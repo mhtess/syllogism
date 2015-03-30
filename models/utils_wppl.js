@@ -1,3 +1,4 @@
+
 var fs = require('fs');
 // var csvtojson = require('csvtojson');
 var babyparse = require('babyparse');
@@ -37,7 +38,10 @@ function parsePriorData(priorDM){
 	var dfile;
 	var dPriors;
 	var domainPriors;
-	var dfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
+//	var dfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
+	var dfilepath = "/Users/sbridgers/Documents/MHT/syllogism-project/data/03syllogism_prior_psychjs/";
+	//var dfilepath = "/home/mht/projectsyll/syllogism-project/data/03syllogism_prior_psychjs/";
+
 
 	if (priorDM == 'combined') {
 	    dfile = dfilepath + "prior-exp-mturk_collapsed_means_n71.csv";
@@ -74,7 +78,10 @@ function parsePriorData(priorDM){
 // read and concat exp. 1 and 2 data
 
 function readReasoningData(){
-	var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
+	var drfilepath = "/Users/sbridgers/Documents/MHT/syllogism-project/data/";
+//	var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
+	//var drfilepath = "/home/mht/projectsyll/syllogism-project/data/";
+
 	var drfile1 = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
 	var drfile2 = drfilepath + "04syllogism_reasoning/syllbelief-exp2-mturk.csv";
 

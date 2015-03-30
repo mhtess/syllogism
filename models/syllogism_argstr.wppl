@@ -1,6 +1,6 @@
 // syllogism.wppl
 
-// webppl syllogism.wppl --require-js ./utils_wppl 
+// webppl syllogism_argstr.wppl --require-js ./utils_wppl 
 
 
 /// model parameter: number of objects
@@ -60,9 +60,15 @@ var domainsSingular = ['cracker','knife','strawberry','lightbulb']
 
 /// load reasoning (exp 1; or exp2) data
 
-var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
+//var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
+var drfilepath = "/Users/sbridgers/Documents/MHT/syllogism-project/data/"
+//var drfilepath = "/home/mht/projectsyll/syllogism-project/data/"
+
 var drfile1 = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
 var drfile2 = drfilepath + "04syllogism_reasoning/syllbelief-exp2-mturk.csv";
+
+
+
 
 var csvInput = utils_wppl.readReasoningData();
 
@@ -998,7 +1004,7 @@ var fullBayesianTreatment = function() {
 // // reasoner0(scholasticCodeToPremises('AO2'),  pruneERP(equivalentTransform(objects,priorClean['lightbulb'])))// ,2)
 
 
-var nsamples = 100
+var nsamples = 1000
 var results = MH(fullBayesianTreatment,nsamples)
 
 var posterior = map(
@@ -1014,12 +1020,15 @@ var header = _.flatten(
                   domainsSingular))},
                   syllogisms))
 //header.unshift('phi','alpha','priorwonky','br')
- 
+
+
  var paramshead = _.flatten(map(function(key){
   return map(function(letter){return [key,letter].join('_')}, ["a","b","c"])
-} ,_.keys(baserates)))
+} , ["cracker","knife","lightbulb","strawberry"]))
 
-header.unshift(paramshead)
+map(function(h){header.unshift(h)},paramshead)
+
+
 header.unshift('phi')
 header.push('prob')
 
