@@ -313,6 +313,16 @@ var multinomialProbabilities = function(br){
           Math.pow(1-br,2)*br,Math.pow(br,2)*(1-br),Math.pow(br,2)*(1-br),Math.pow(br,3)]
 }
 
+
+//  propertyTuples = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
+//                       [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+
+var multinomialProbabilitiesFromid = function(a,b,c){
+  return [(1-a)*(1-b)*(1-c), (1-a)*(1-b)*c, (1-a)*b*(1-c), (1-a)*b*c,
+          a*(1-b)*(1-c), a*(1-b)*c, a*b*(1-c), a*b*c]
+}
+
+
 var equivalentTransform = cache(function(objects, backgroundPrior){
 
 //  var backgroundPrior = [1,1,1,1,1,1,1,1]
@@ -389,6 +399,31 @@ var trueLists = function(trueConcls){
 //                     flattenSentences(trueConcls))
 // }
 
+var reasoner0_independent = cache(function(premises, a, b, c, domain) {
+  Enumerate(function(){
+
+    var equivalentWorlds = equivalentTransform(objects, multinomialProbabilitiesFromid(a,b,c))
+
+    var state = sample(equivalentWorlds)
+    var trueSentences = stateToSentence(state)
+        // this could probably be optimized
+    var flattenedSentences = flattenSentences(trueSentences) 
+
+    var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
+                        flattenedSentences.indexOf(premises[1].join())!=-1
+
+    var trueConclusions = filter(isConclusion, trueSentences)
+
+    var listConclusions = trueLists(trueConclusions)
+//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+   var whichConclusions = uniformDraw(listConclusions)
+//    var conclusion = uniformDraw(trueConclusions)
+
+    factor(premisesTrue?0:-Infinity)
+//    return conclusion // what is the conclusion?
+    return whichConclusions // which conclusions are true?
+  })
+})
 
 
 var reasoner0_naive = cache(function(premises, br) {
@@ -416,6 +451,33 @@ var reasoner0_naive = cache(function(premises, br) {
     return whichConclusions // which conclusions are true?
   })
 })
+
+var reasoner0_iid = cache(function(premises, br, domain) {
+  Enumerate(function(){
+
+    var equivalentWorlds = equivalentTransform(objects, multinomialProbabilities(br))
+
+    var state = sample(equivalentWorlds)
+    var trueSentences = stateToSentence(state)
+        // this could probably be optimized
+    var flattenedSentences = flattenSentences(trueSentences) 
+
+    var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
+                        flattenedSentences.indexOf(premises[1].join())!=-1
+
+    var trueConclusions = filter(isConclusion, trueSentences)
+
+    var listConclusions = trueLists(trueConclusions)
+//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+   var whichConclusions = uniformDraw(listConclusions)
+//    var conclusion = uniformDraw(trueConclusions)
+
+    factor(premisesTrue?0:-Infinity)
+//    return conclusion // what is the conclusion?
+    return whichConclusions // which conclusions are true?
+  })
+})
+
 
 
 var experimenter1_naive = cache(function(QUDval, figure, br) {
@@ -687,13 +749,21 @@ var fullBayesianTreatment = function() {
   var wonkyprior = 0
 
   //var br = uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))
-   var br = 99
-  var baserates = {
-    "cracker": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-    "knife": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-    "lightbulb": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-    "strawberry":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))
-  }
+  // var br = 99
+    var baserates = {
+      "cracker": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+                  "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+                  "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
+      "knife": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+                  "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+                  "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
+      "lightbulb": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+                  "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+                  "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
+      "strawberry":{"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+                  "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+                  "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))}
+    }
 
 
   // var alpha = sample(uniformERP,[0,5]);
@@ -785,6 +855,41 @@ var fullBayesianTreatment = function() {
       })
     })
 
+  var R0withGuessing_iid = cache(function(phi, syllogism, baserates, domain){
+
+      Enumerate(function(){
+        var isGuessing = flip(phi)
+
+        var RSA = reasoner0_iid(syllogism, baserates[domain], domain)
+
+      var cleanRSA = makeERPfromObject(
+                        utils_wppl.marginalsFromFullList(
+                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+        return prediction
+      })
+    })
+
+  var R0withGuessing_independent = cache(function(phi, syllogism, baserates,domain){
+
+      Enumerate(function(){
+        var isGuessing = flip(phi)
+
+        var RSA = reasoner0_independent(syllogism, baserates[domain]["a"],
+                                              baserates[domain]["b"], 
+                                              baserates[domain]["c"], domain)
+
+      var cleanRSA = makeERPfromObject(
+                        utils_wppl.marginalsFromFullList(
+                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+        return prediction
+      })
+    })
 
 
   var posteriorPredictive = 
@@ -823,7 +928,10 @@ var fullBayesianTreatment = function() {
            //                        conclusionListOrder))
 
          //var modelWithGuessing = R1withGuessing_empirical(phi, syllogism, domain, alpha)
-          var modelWithGuessing = R0withGuessing_empirical(phi, syllogism, domain)
+          // var modelWithGuessing = R0withGuessing_empirical(phi, syllogism, domain)
+          // var modelWithGuessing = R0withGuessing_naive(phi, syllogism, br)
+          // var modelWithGuessing = R0withGuessing_iid(phi, syllogism, baserates, domain)
+          var modelWithGuessing = R0withGuessing_independent(phi, syllogism, baserates, domain)
 
          // var modelWithGuessing = argumentStrengthWithGuessing(phi, syllogism, domain, br)
 
@@ -870,7 +978,10 @@ var fullBayesianTreatment = function() {
   syllogisms)
 //  return _.flatten([phi,alpha,wonkyprior,br,posteriorPredictive])
 
-  return _.flatten([phi,alpha,posteriorPredictive])
+//  return _.flatten([phi,alpha,posteriorPredictive])
+  return _.flatten([phi,_.flatten(map(function(k){return _.values(k)},_.values(baserates))),posteriorPredictive])
+
+
 }
 
 
@@ -887,7 +998,7 @@ var fullBayesianTreatment = function() {
 // // reasoner0(scholasticCodeToPremises('AO2'),  pruneERP(equivalentTransform(objects,priorClean['lightbulb'])))// ,2)
 
 
-var nsamples = 1000
+var nsamples = 100
 var results = MH(fullBayesianTreatment,nsamples)
 
 var posterior = map(
@@ -904,7 +1015,12 @@ var header = _.flatten(
                   syllogisms))
 //header.unshift('phi','alpha','priorwonky','br')
  
-header.unshift('phi','alpha')
+ var paramshead = _.flatten(map(function(key){
+  return map(function(letter){return [key,letter].join('_')}, ["a","b","c"])
+} ,_.keys(baserates)))
+
+header.unshift(paramshead)
+header.unshift('phi')
 header.push('prob')
 
 posterior.unshift(header);
@@ -912,7 +1028,7 @@ posterior.unshift(header);
 //var filename = 'exp12_n'+n_objects+'Marginal_argstr_empirical_'+ nsamples+'a_'+priorDM+'.csv'
 //var filename = 'exp12_n'+n_objects+'Marginal_argstr_naive_'+ nsamples+'a_'+priorDM+'.csv'
 //var filename = 'exp12_n'+n_objects+'Marginal_pragmatic_naive_'+ nsamples+'a_'+priorDM+'.csv'
-var filename = 'exp12_n'+n_objects+'Marginal_r0_empirical_'+ 
+var filename = 'exp12_n'+n_objects+'Marginal_r0_independent_'+ 
                     nsamples+'a_'+priorDM+'.csv'
 
 utils_wppl.writeCSV(posterior, 'FBT/'+filename);
