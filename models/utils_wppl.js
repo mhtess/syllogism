@@ -79,7 +79,7 @@ function parsePriorData(priorDM){
 
 function readReasoningData(){
 	var drfilepath = "/Users/sbridgers/Documents/MHT/syllogism-project/data/";
-//	var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
+	//var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
 	//var drfilepath = "/home/mht/projectsyll/syllogism-project/data/";
 
 	var drfile1 = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";

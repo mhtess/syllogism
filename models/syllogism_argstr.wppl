@@ -61,11 +61,11 @@ var domainsSingular = ['cracker','knife','strawberry','lightbulb']
 /// load reasoning (exp 1; or exp2) data
 
 //var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
-var drfilepath = "/Users/sbridgers/Documents/MHT/syllogism-project/data/"
-//var drfilepath = "/home/mht/projectsyll/syllogism-project/data/"
+// var drfilepath = "/Users/sbridgers/Documents/MHT/syllogism-project/data/"
+// var drfilepath = "/home/mht/projectsyll/syllogism-project/data/"
 
-var drfile1 = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
-var drfile2 = drfilepath + "04syllogism_reasoning/syllbelief-exp2-mturk.csv";
+// var drfile1 = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
+// var drfile2 = drfilepath + "04syllogism_reasoning/syllbelief-exp2-mturk.csv";
 
 
 
@@ -754,22 +754,29 @@ var fullBayesianTreatment = function() {
 //  var wonkyprior = uniformDraw(utils_wppl.sequence(0.1,1,0.1))
   var wonkyprior = 0
 
-  //var br = uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))
+  var br = uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))
   // var br = 99
+    // var baserates = {
+    //   "cracker": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
+    //   "knife": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
+    //   "lightbulb": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
+    //   "strawberry":{"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))}
+    // }
+
     var baserates = {
-      "cracker": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-                  "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-                  "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
-      "knife": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-                  "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-                  "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
-      "lightbulb": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-                  "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-                  "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
-      "strawberry":{"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-                  "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-                  "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))}
-    }
+      "cracker": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+      "knife": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+      "lightbulb": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+      "strawberry":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))}
+
 
 
   // var alpha = sample(uniformERP,[0,5]);
@@ -934,10 +941,10 @@ var fullBayesianTreatment = function() {
            //                        conclusionListOrder))
 
          //var modelWithGuessing = R1withGuessing_empirical(phi, syllogism, domain, alpha)
-          // var modelWithGuessing = R0withGuessing_empirical(phi, syllogism, domain)
-          // var modelWithGuessing = R0withGuessing_naive(phi, syllogism, br)
-          // var modelWithGuessing = R0withGuessing_iid(phi, syllogism, baserates, domain)
-          var modelWithGuessing = R0withGuessing_independent(phi, syllogism, baserates, domain)
+         //  var modelWithGuessing = R0withGuessing_empirical(phi, syllogism, domain)
+         //  var modelWithGuessing = R0withGuessing_naive(phi, syllogism, br)
+           var modelWithGuessing = R0withGuessing_iid(phi, syllogism, baserates, domain)
+          //var modelWithGuessing = R0withGuessing_independent(phi, syllogism, baserates, domain)
 
          // var modelWithGuessing = argumentStrengthWithGuessing(phi, syllogism, domain, br)
 
@@ -984,8 +991,10 @@ var fullBayesianTreatment = function() {
   syllogisms)
 //  return _.flatten([phi,alpha,wonkyprior,br,posteriorPredictive])
 
-//  return _.flatten([phi,alpha,posteriorPredictive])
-  return _.flatten([phi,_.flatten(map(function(k){return _.values(k)},_.values(baserates))),posteriorPredictive])
+//  return _.flatten([phi,br,posteriorPredictive])
+  return _.flatten([phi,_.values(baserates),posteriorPredictive])
+
+//  return _.flatten([phi,_.flatten(map(function(k){return _.values(k)},_.values(baserates))),posteriorPredictive])
 
 
 }
@@ -1004,7 +1013,7 @@ var fullBayesianTreatment = function() {
 // // reasoner0(scholasticCodeToPremises('AO2'),  pruneERP(equivalentTransform(objects,priorClean['lightbulb'])))// ,2)
 
 
-var nsamples = 1000
+var nsamples = 10000
 var results = MH(fullBayesianTreatment,nsamples)
 
 var posterior = map(
@@ -1022,14 +1031,14 @@ var header = _.flatten(
 //header.unshift('phi','alpha','priorwonky','br')
 
 
- var paramshead = _.flatten(map(function(key){
-  return map(function(letter){return [key,letter].join('_')}, ["a","b","c"])
-} , ["cracker","knife","lightbulb","strawberry"]))
+//  var paramshead = _.flatten(map(function(key){
+//   return map(function(letter){return [key,letter].join('_')}, ["a","b","c"])
+// } , ["cracker","knife","lightbulb","strawberry"]))
 
-map(function(h){header.unshift(h)},paramshead)
+// map(function(h){header.unshift(h)},paramshead)
 
-
-header.unshift('phi')
+header.unshift('phi','br_cracker','br_knife','br_lightbulb','br_strawberry')
+//header.unshift('phi','br')
 header.push('prob')
 
 posterior.unshift(header);
@@ -1037,7 +1046,7 @@ posterior.unshift(header);
 //var filename = 'exp12_n'+n_objects+'Marginal_argstr_empirical_'+ nsamples+'a_'+priorDM+'.csv'
 //var filename = 'exp12_n'+n_objects+'Marginal_argstr_naive_'+ nsamples+'a_'+priorDM+'.csv'
 //var filename = 'exp12_n'+n_objects+'Marginal_pragmatic_naive_'+ nsamples+'a_'+priorDM+'.csv'
-var filename = 'exp12_n'+n_objects+'Marginal_r0_independent_'+ 
+var filename = 'exp12_n'+n_objects+'Marginal_r0_iid_'+ 
                     nsamples+'a_'+priorDM+'.csv'
 
 utils_wppl.writeCSV(posterior, 'FBT/'+filename);

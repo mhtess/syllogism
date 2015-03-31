@@ -15,6 +15,8 @@ library(plyr)
 library(stringr)
 library(gridExtra)
 library(bootstrap)
+library(tidyr)
+library(dplyr)
 
 theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
 ci.low <- function(x,na.rm=T) {
@@ -766,19 +768,55 @@ ggplot(data=filter(d.tidy,parameter!='alpha'), aes(x=value,y=marginal))+
 
 ```
 
+# Analysis of radio buttons alone
+
+```{r}
+fpath = '~/Documents/MHT/syllogism-project/data/03syllogism_reasoning/'
+fpath2 = '~/Documents/MHT/syllogism-project/data/04syllogism_reasoning/'
+
+df<-read.csv((paste(fpath,'syllbelief-exp-mturk_all_n250.csv',sep="")))
+df2<-read.csv((paste(fpath2,'syllbelief-exp2-mturk.csv',sep="")))
+df.c <- bind_rows(df,df2)
+
+df.tidy<- df.c %>% 
+  filter(condition=='radio') %>%
+  select(starts_with('radio'), domain, syll) %>%
+  gather(quantifier, response, starts_with('radio')) %>%
+  group_by(domain, syll, quantifier) %>%
+  summarise(prop = sum(response)/length(response),
+            sterr = sqrt(((sum(response)/length(response))*
+                    (1-(sum(response)/length(response))))/(length(response))))
+
+
+
+ggplot(df.tidy, aes(x=quantifier, y = prop, fill = quantifier))+
+  geom_bar(stat='identity', position=position_dodge())+
+  geom_errorbar(aes(ymin=prop-2*sterr, ymax = prop+2*sterr), 
+                position=position_dodge(),
+                width = 0.3, size = 0.3)+
+  facet_grid(domain~syll)
+
+```
 
 
 # Full Bayesian Treatment using WPPL
 
 ## Model and data analysis parameters
 
-```{r}
+```{r FBT.params}
+setwd('Documents/MHT//syllogism-project/models/FBT')
 #d<-read.csv('../models/FBT/n4Marginal_posteriorD_wPrior_test_1000.csv')
-d<-read.csv('exp12_n4Marginal_r0_independent_1000a_combined.csv')
-
+d<-read.csv('exp12_n4Marginal_r0_independent_10000a_combined.csv')
+d<-read.csv('exp12_n4Marginal_r0_independent_10000b_combined.csv')
+d<-read.csv('exp12_n4Marginal_r0_naive_10000b_combined.csv')
+d<-read.csv('exp12_n4Marginal_r0_iid_10000a_combined.csv')
+d<- bind_rows(d,d1)
+d<-read.csv('exp12_n4Marginal_r0_empirical_10000a_combined.csv')
 
 params<-d %>%
  # select(phi, alpha, prob) %>%
+  #select(phi, br, prob) %>%
+  select(phi, starts_with('br'), prob) %>%
   select(phi,prob) %>%
   gather(param, val, -prob) %>%
   group_by(param,val) %>%
@@ -805,18 +843,73 @@ ggplot(brs, aes(x = val, y = marginal, fill = domain))+
 ```
 
 ## Posterior predictive
-```{r}
+```{r FBT.postpred}
 
 predict<-d %>% 
-  select(-phi,-alpha) %>%
+  #select(-phi,-alpha) %>%
+  #select(-phi, -starts_with("lightbulb"), -starts_with("cracker"),
+  #       -starts_with("knife"),
+  #       -starts_with("strawberry")) %>%
+  #select(-phi, -br) %>%
+  select(-phi) %>%
+  select(-phi, -starts_with('br')) %>%
   gather(item, val, -prob) %>%
   separate(item, into=c("syllog","domain","conclusion"), sep="_") %>%
   group_by(syllog, domain, conclusion) %>%
   summarise(expval = sum(prob*val))
 
-predict$conclusion<-factor(predict$conclusion, levels = c('all','none','some','not.all'))
+predict$conclusion<-factor(predict$conclusion, 
+                           levels = c('all','none','some','not.all'))
+
 ggplot(predict, aes(x=conclusion, y= expval, fill=conclusion))+
   geom_bar(stat='identity')+
+  facet_grid(domain~syllog)
+
+```
+
+## Model / Data
+
+```{r FBT.modeldata}
+df.tidy<-df.tidy %>% rename(conclusion = quantifier, 
+                   syllog = syll) %>% ungroup()
+
+df.tidy$conclusion <- factor(df.tidy$conclusion, 
+                             labels = c('all','none','some','not.all'))
+
+
+df.norm <- df.tidy %>% 
+  group_by(domain, syllog) %>%
+  mutate(prop = prop/sum(prop))
+
+predict$domain<-factor(predict$domain, 
+                       labels = c("crackers","knives","lightbulbs","strawberries"))
+  
+dm<-left_join(df.norm, predict, by=c("syllog","domain","conclusion")) %>%
+  rename(human = prop,
+         model = expval)
+
+dm$conclusion<- factor(dm$conclusion, labels = c("all", "none", "some", "not all"))
+
+with(dm, cor(human, model))
+
+ggplot(dm, aes(x=model, y=human, color=conclusion))+
+  geom_point(size=2)+
+  theme_bw()+
+  xlim(0,0.6)+
+  ylim(0,0.6)+
+  scale_color_brewer(type='qual',palette=2)
+
+dm.tidy<- dm %>% 
+  gather(type, value, human, model)
+
+
+ggplot(dm.tidy, aes(x=conclusion, y = value, fill = conclusion, alpha = type))+
+  geom_bar(stat='identity', position=position_dodge(), color='black')+
+  theme_bw()+
+  #geom_errorbar(aes(ymin=value-2*sterr, 
+  #                  ymax = value+2*sterr), 
+  #              position=position_dodge(),
+  #              width = 0.3, size = 0.3)+
   facet_grid(domain~syllog)
 
 ```
