@@ -54,8 +54,9 @@ quantifiers = c("All of the","None of the","Some of the","Some of the...not")
 
 ```{r RTs1, echo=FALSE}
 
-fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_reasoning/'
-fpath2 = '/Users/mht/Documents/research/syllogism/data/04syllogism_reasoning/'
+#fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_reasoning/'
+fpath = '~/Documents/MHT/syllogism-project/data/03syllogism_reasoning/'
+fpath2 = '~/Documents/MHT/syllogism-project/data/04syllogism_reasoning/'
 
 
 df<-read.csv((paste(fpath,'syllbelief-exp-mturk_all_n250.csv',sep="")))
@@ -69,8 +70,6 @@ df.c <- rbind(df,df2)
 exp1sylls<-levels(df$syll)
 exp2sylls<-levels(df2$syll)
 resp_labels<-c("Q_A","Q_E","Q_I","Q_O")
-
-
 
 #for (i in 1:length(df2$subj)){
 #  if (df2[i,]$condition=='radio'){
@@ -774,10 +773,13 @@ ggplot(data=filter(d.tidy,parameter!='alpha'), aes(x=value,y=marginal))+
 ## Model and data analysis parameters
 
 ```{r}
-d<-read.csv('../models/FBT/n4Marginal_posteriorD_wPrior_test_1000.csv')
+#d<-read.csv('../models/FBT/n4Marginal_posteriorD_wPrior_test_1000.csv')
+d<-read.csv('exp12_n4Marginal_r0_independent_1000a_combined.csv')
+
 
 params<-d %>%
-  select(phi, alpha, prob) %>%
+ # select(phi, alpha, prob) %>%
+  select(phi,prob) %>%
   gather(param, val, -prob) %>%
   group_by(param,val) %>%
   summarise(marginal = sum(prob))
@@ -785,6 +787,19 @@ params<-d %>%
 ggplot(params, aes(x=val, y= marginal))+
   geom_histogram(stat='identity',position=position_dodge())+
   facet_wrap(~param, scales='free')
+
+
+brs <- d %>%
+  select(starts_with("lightbulb"), starts_with("cracker"),starts_with("knife"),
+         starts_with("strawberry"), prob) %>%
+  gather(param, val, -prob) %>%
+  separate(param, into=c("domain","property"), by="_") %>%
+  group_by(domain, property, val) %>%
+  summarise(marginal = sum(prob))
+
+ggplot(brs, aes(x = val, y = marginal, fill = domain))+
+  geom_histogram(stat='identity', position=position_dodge())+
+  facet_grid(domain ~ property)
 
 
 ```
