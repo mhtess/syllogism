@@ -833,6 +833,8 @@ ggplot(df.norm, aes(x=conclusion, y = prop, fill = conclusion))+
 ```{r FBT.params}
 setwd('Documents/MHT//syllogism-project/models/FBT')
 #d<-read.csv('../models/FBT/n4Marginal_posteriorD_wPrior_test_1000.csv')
+
+setwd('C:/Users/Henry/Documents/RESEARCH/syllogism-project/models/FBT/')
 d<-read.csv('../../models/FBT/exp12_n4Marginal_r0_independent_10000a_combined.csv')
 d<-read.csv('../../models/FBT/exp12_n4Marginal_r0_independent_10000b_combined.csv')
 d<-read.csv('../../models/FBT/exp12_n4Marginal_r0_naive_10000b_combined.csv')
@@ -877,9 +879,9 @@ predict<-d %>%
   select(-phi, -starts_with("lightbulb"), -starts_with("cracker"),
          -starts_with("knife"),
          -starts_with("strawberry")) %>%
-  #select(-phi, -br) %>%
-  #select(-phi) %>%
-  #select(-phi, -starts_with('br')) %>%
+#  select(-phi, -br) %>%
+select(-phi) %>%
+#  select(-phi, -starts_with('br')) %>%
   gather(item, val, -prob) %>%
   separate(item, into=c("syllog","domain","conclusion"), sep="_") %>%
   group_by(syllog, domain, conclusion) %>%
@@ -899,6 +901,8 @@ ggplot(predict, aes(x=conclusion, y= expval, fill=conclusion))+
 ```{r FBT.modeldata}
 predict$domain<-factor(predict$domain, 
                        labels = c("crackers","knives","lightbulbs","strawberries"))
+dm<-left_join(df.norm, predict, by=c("syllog","domain","conclusion"))
+with(dm, cor(prop, expval))
 
 empirical<-predict
 independent<-predict
@@ -933,14 +937,15 @@ dm.tidy<- dm %>%
 dm.tidy$type <- factor(dm.tidy$type, levels=c("independent","empirical", "prop"),
                        labels=c("(independent) model", "(empirical) model", "human data"))
 
-dm.sub<-filter(dm.tidy, syllog%in%c("AI1","IE1","OA1"))
-dm.sub$syllog<-factor(dm.sub$syllog, levels =c("AI1","IE1","OA1"), 
-       labels = c("all / some", "some / none", "not all / all"))
+dm.sub<-filter(dm.tidy, syllog%in%c("AI1","IE1","AA1"))
+dm.sub$syllog<-factor(dm.sub$syllog, levels =c("AI1","IE1","AA1"), 
+       labels = c("all / some", "some / none","all / all"))
 
 
 ggplot(dm.sub, 
        aes(x=conclusion, y = value, fill = conclusion, alpha = type))+
-  geom_bar(stat='identity', position=position_dodge(), color='black')+
+  geom_bar(stat='identity', 
+           position=position_dodge(), color='black')+
   theme_paper()+
   scale_alpha_manual(values=c(0.3,0.7,1))+
   theme(axis.text.x = element_blank(),
@@ -959,18 +964,21 @@ ggplot(dm.sub,
   guides(alpha = guide_legend(title = NULL))
 
 
+dm.sub$conclusion<-factor(dm.sub$conclusion, levels = c(
+  "all","some","not all","none"))
 
 ggplot(dm.sub, 
-       aes(x=type, y = value, fill = conclusion, alpha = type, group=conclusion))+
-  geom_bar(stat='identity', position=position_dodge(), color='black')+
+       aes(x=conclusion, y = value, fill = type))+
+  geom_bar(stat='identity', 
+           position=position_dodge(), color='black')+
   theme_paper()+
-  scale_alpha_manual(values=c(0.3,0.7,1))+
-  theme(axis.text.x = element_blank(),
+  #scale_alpha_manual(values=c(0.3,0.7,1))+
+  theme(#axis.text.x = element_blank(),
         strip.text.y = element_text(angle=0),
         legend.position = "bottom",
         legend.direction = 'horizontal',
         legend.box = 'horizontal')+
-  scale_fill_brewer(type='qual',palette=6)+
+#  scale_fill_brewer(type='qual',palette=2)+
   #geom_errorbar(aes(ymin=value-2*sterr, 
   #                  ymax = value+2*sterr), 
   #              position=position_dodge(),
