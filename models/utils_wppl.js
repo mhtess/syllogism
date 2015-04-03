@@ -81,6 +81,7 @@ function readReasoningData(){
 	var csvInput1 = readCSV(drfile1).data;
 	var csvInput2 = readCSV(drfile2).data;
 	return csvInput1.concat(csvInput2)
+//	return csvInput2
 }
 
 
