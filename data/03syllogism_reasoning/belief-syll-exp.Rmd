@@ -747,6 +747,7 @@ ggplot(subset(ci_bs_col,experiment==2),
     strip.text.y = element_text(size=13,angle=0))
 ```
 
+
 # Bayesian analysis of Prior elicitation data
 
 
@@ -769,12 +770,82 @@ ggplot(data=filter(d.tidy,parameter!='alpha'), aes(x=value,y=marginal))+
 
 
 
+# Experimental data: Using radio buttons only
+
+## Experiment 1, just radio buttons
+```{r exp1.radio}
+head(df)
+
+d1.tidy<- df %>%
+  filter(condition=='radio') %>%
+  select(subj, starts_with('radio'), syll, domain) %>%
+  rename(all=radio_A,
+         none = radio_E,
+         some = radio_I,
+         not.all = radio_O,
+         syllog=syll) %>%
+  gather(conclusion, response, all, none, some, not.all)
+
+bootstrap.radio <- function(x){
+  agr = aggregate(response ~ domain + conclusion + syllog, data=x, FUN=mean)
+  agr$CILow = aggregate(response ~ domain + conclusion + syllog, data=x, FUN=ci.low)$response
+  agr$CIHigh = aggregate(response ~ domain + conclusion + syllog, data=x, FUN=ci.high)$response
+  agr$YMin = agr$response - agr$CILow
+  agr$YMax = agr$response + agr$CIHigh
+  return(agr)
+}
+
+d1.btstr<-bootstrap.radio(d1.tidy)
+
+ggplot(d1.btstr, aes(x=conclusion, y = response, fill = conclusion))+
+  geom_bar(stat='identity')+
+  geom_errorbar(aes(ymin = YMin, ymax = YMax), 
+                width = 0.3)+
+  facet_grid(domain~syllog)
+
+```
+
+
+
+## Experiment 2, just radio buttons
+
+```{r exp2.radio}
+head(df2)
+
+d.tidy<- df2 %>%
+  select(subj, starts_with('radio'), syll, domain) %>%
+  rename(all=radio_A,
+         none = radio_E,
+         some = radio_I,
+         not.all = radio_O,
+         syllog=syll) %>%
+  gather(conclusion, response, all, none, some, not.all)
+
+d.btstr<-bootstrap.radio(d.tidy)
+
+ggplot(d.btstr, aes(x=conclusion, y = response, fill = conclusion))+
+  geom_bar(stat='identity')+
+  geom_errorbar(aes(ymin = YMin, ymax = YMax), 
+                width = 0.3)+
+  facet_grid(domain~syllog)
+
+```
+
+
+
+
 # Full Bayesian Treatment using WPPL
 
-## Model and data analysis parameters
-
+## Experiment 1
 ```{r}
-d<-read.csv('../models/FBT/n4Marginal_posteriorD_wPrior_test_1000.csv')
+setwd("~/Documents/research/syllogism/analysis")
+d<-read.csv('../models/FBT/exp1_n5Marginal_posteriorD_wPrior_test_100.csv')
+d<-read.csv('../models/FBT/exp1_n4Marginal_posteriorD_backoffUnif_test_100.csv')
+d<-read.csv('../models/FBT/exp1_n4Marginal_posteriorD_backoffBinom_test_100.csv')
+d<-read.csv('../models/FBT/exp1_n4Marginal_posteriorD_wonky_test_1000.csv')
+
+
+
 
 params<-d %>%
   select(phi, alpha, prob) %>%
@@ -789,7 +860,7 @@ ggplot(params, aes(x=val, y= marginal))+
 
 ```
 
-## Posterior predictive
+### Posterior predictive
 ```{r}
 
 predict<-d %>% 
@@ -800,8 +871,216 @@ predict<-d %>%
   summarise(expval = sum(prob*val))
 
 predict$conclusion<-factor(predict$conclusion, levels = c('all','none','some','not.all'))
+predict$syllog<-factor(predict$syllog)
+predict$domain<-factor(predict$domain, labels = c("crackers","knives","lightbulbs","strawberries"))
+
+md<-left_join(d1.btstr, predict, by=c("syllog","domain","conclusion"))
+md.tidy<- md %>%
+  gather(type, value, response, expval)
+
+md.tidy$type<-factor(md.tidy$type, levels=c("response","expval"), labels=c("data","model"))
+
+
+
+
+
 ggplot(predict, aes(x=conclusion, y= expval, fill=conclusion))+
   geom_bar(stat='identity')+
   facet_grid(domain~syllog)
+
+
+
+with(md, cor(response, expval))
+
+ggplot(data=md, aes(x=expval, y = response, color=conclusion))+
+  geom_point()
+
+ggplot(data=md, aes(x=expval, y = response, color=syllog))+
+  geom_point()
+
+ggplot(data=md, aes(x=expval, y = response, color=domain))+
+  geom_point()
+
+ggplot(md.tidy, aes(x=conclusion, y= value, fill=type))+
+  geom_bar(stat='identity', position=position_dodge())+
+    #geom_errorbar(aes(ymin = YMin, ymax = YMax), 
+     #           width = 0.3, position=position_dodge())+
+  facet_grid(domain~syllog)
+
+
+```
+
+
+
+
+
+## Experiment 2
+
+### Model and data analysis parameters
+
+```{r}
+setwd("~/Documents/research/syllogism/analysis")
+d<-read.csv('../models/FBT/exp2_n4Marginal_posteriorD_wPrior_test_1000.csv')
+d<-read.csv('../models/FBT/exp2_n4Marginal_posteriorD_backoffUnif_test_100.csv')
+d<-read.csv('../models/FBT/exp2_n4Marginal_posteriorD_backoffBinom_test_100.csv')
+
+
+
+params<-d %>%
+  select(phi, alpha, prob) %>%
+  gather(param, val, -prob) %>%
+  group_by(param,val) %>%
+  summarise(marginal = sum(prob))
+
+ggplot(params, aes(x=val, y= marginal))+
+  geom_histogram(stat='identity',position=position_dodge())+
+  facet_wrap(~param, scales='free')
+
+
+```
+
+### Posterior predictive
+```{r}
+
+predict<-d %>% 
+  select(-phi,-alpha) %>%
+  gather(item, val, -prob) %>%
+  separate(item, into=c("syllog","domain","conclusion"), sep="_") %>%
+  group_by(syllog, domain, conclusion) %>%
+  summarise(expval = sum(prob*val))
+
+predict$conclusion<-factor(predict$conclusion, levels = c('all','none','some','not.all'))
+predict$syllog<-factor(predict$syllog)
+predict$domain<-factor(predict$domain, labels = c("crackers","knives","lightbulbs","strawberries"))
+md<-left_join(d.btstr, predict, by=c("syllog","domain","conclusion"))
+md.tidy<- md %>%
+  gather(type, value, response, expval)
+
+md.tidy$type<-factor(md.tidy$type, levels=c("response","expval"), labels=c("data","model"))
+
+
+
+ggplot(predict, aes(x=conclusion, y= expval, fill=conclusion))+
+  geom_bar(stat='identity')+
+  facet_grid(domain~syllog)
+
+
+
+
+
+with(md, cor(response, expval))
+
+ggplot(data=md, aes(x=expval, y = response, color=conclusion))+
+  geom_point()
+
+
+ggplot(md.tidy, aes(x=conclusion, y= value, fill=type))+
+  geom_bar(stat='identity', position=position_dodge())+
+    #geom_errorbar(aes(ymin = YMin, ymax = YMax), 
+     #           width = 0.3, position=position_dodge())+
+  facet_grid(domain~syllog)
+
+```
+
+
+
+## Both experiments
+
+### Model and data analysis parameters
+
+```{r fbt.exp1.exp2.params}
+setwd("~/Documents/research/syllogism/analysis")
+d<-read.csv('../models/FBT//exp12_n4Marginal_wonky_1000a_combined.csv')
+
+
+
+params<-d %>%
+  select(phi, alpha, priorwonky,prob) %>%
+  #select(phi, alpha,prob) %>%
+  gather(param, val, -prob) %>%
+  group_by(param,val) %>%
+  summarise(marginal = sum(prob))
+
+ggplot(params, aes(x=val, y= marginal))+
+  geom_histogram(stat='identity',position=position_dodge())+
+  facet_wrap(~param, scales='free')
+
+
+```
+
+### Posterior predictive
+```{r}
+
+predict<-d %>% 
+  #select(-phi,-alpha) %>%
+  select(-phi,-alpha, -priorwonky) %>%
+  gather(item, val, -prob) %>%
+  separate(item, into=c("syllog","domain","conclusion"), sep="_") %>%
+  group_by(syllog, domain, conclusion) %>%
+  summarise(expval = sum(prob*val))
+
+predict$conclusion<-factor(predict$conclusion, 
+                           levels = c('all','none','some','not.all'))
+predict$syllog<-factor(predict$syllog)
+predict$domain<-factor(predict$domain, 
+                       labels = c("crackers","knives","lightbulbs","strawberries"))
+
+
+
+d12.btstr<-bind_rows(d.btstr,d1.btstr)
+d12.btstr$syllog<-factor(d12.btstr$syllog)
+
+## normalize so responses add to 1
+dbt.norm<-d12.btstr %>%
+  group_by(domain, syllog) %>%
+  mutate(response = response/sum(response))
+
+
+
+md<-left_join(dbt.norm, predict, by=c("syllog","domain","conclusion"))
+md.tidy<- md %>%
+  gather(type, value, response, expval)
+
+md.tidy$type<-factor(md.tidy$type, levels=c("response","expval"), labels=c("data","model"))
+
+
+
+with(md, cor(response, expval))
+
+ggplot(data=md, aes(x=expval, y = response, color=conclusion))+
+  geom_point()+
+  xlim(0,0.7)+
+  ylim(0,0.7)
+
+
+ggplot(md.tidy, aes(x=conclusion, y= value, fill=type))+
+  geom_bar(stat='identity', position=position_dodge())+
+  facet_grid(domain~syllog)
+
+```
+
+
+# Bayesian model comparison: Wonky RSA vs. Regular RSA
+
+### Model and data analysis parameters
+
+```{r fbt.exp1.exp2.params}
+setwd("~/Documents/research/syllogism/analysis")
+#d<-read.csv('../models/FBT/modelComparison_wRSAvsrRSA_n4_10000c_combined.csv')
+
+d<-read.csv('../models/FBT/modelComparison_allPrems_wRSAvsrRSA_n4_10000b_combined.csv')
+
+#ggplot(d, aes(x= wonkyHypothesis, y = wonkyprior))+geom_point()
+
+params<-d %>%
+  #select(phi, alpha, priorwonky,prob) %>%
+  gather(param, val, -prob) %>%
+  group_by(param,val) %>%
+  summarise(marginal = sum(prob))
+
+ggplot(params, aes(x=val, y= marginal))+
+  geom_histogram(stat='identity',position=position_dodge())+
+  facet_wrap(~param, scales='free')
+
 
 ```
