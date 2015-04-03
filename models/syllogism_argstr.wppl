@@ -1,0 +1,1276 @@
+// syllogism.wppl
+
+// webppl syllogism_argstr.wppl --require-js ./utils_wppl 
+
+
+/// model parameter: number of objects
+
+var n_objects = 4
+var priorDM = 'combined'
+
+// mht's gensym
+globalStore.gensymCounter = 0
+var gensym = function(){
+  globalStore.gensymCounter = globalStore.gensymCounter+1
+  return "g" + globalStore.gensymCounter
+}
+
+var objects = repeat(n_objects, gensym)
+
+
+var mapObject = function(fn, obj){  
+  return _.object(
+    map(
+      function(kv){
+        return [kv[0], fn(kv[0], kv[1])]
+      }, 
+      _.pairs(obj))
+  );
+}
+
+var uniformDraw = function(x){
+  return x[randomInteger(x.length)]
+}
+
+var makeERPfromObject = function(obj){
+     return Enumerate(function(){return _.keys(obj)[discrete(_.values(obj))]});
+    }
+
+
+var writeERP = function(myERP){
+  return map(
+          function(value){
+            value.concat(Math.exp(myERP.score([], value)))
+          },
+          myERP.support([]))
+}
+
+// load prior data
+
+
+var priorClean = utils_wppl.parsePriorData(priorDM)
+
+var propertyTuples = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
+                      [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+
+
+var domainsSingular = ['cracker','knife','strawberry','lightbulb']
+
+///
+
+/// load reasoning (exp 1; or exp2) data
+
+//var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
+// var drfilepath = "/Users/sbridgers/Documents/MHT/syllogism-project/data/"
+// var drfilepath = "/home/mht/projectsyll/syllogism-project/data/"
+
+// var drfile1 = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
+// var drfile2 = drfilepath + "04syllogism_reasoning/syllbelief-exp2-mturk.csv";
+
+
+
+
+var csvInput = utils_wppl.readReasoningData();
+
+
+var conditionCol = csvInput[0].indexOf("condition")
+var domainCol = csvInput[0].indexOf("domain")
+var syllCol = csvInput[0].indexOf("syll")
+
+var radioIndices = {"all": csvInput[0].indexOf("radio_A"),
+                    "none": csvInput[0].indexOf("radio_E"), 
+                    "some": csvInput[0].indexOf("radio_I"),
+                    "not all": csvInput[0].indexOf("radio_O")}
+
+var radioData = filter(function(row){
+            return row[conditionCol]=='radio'
+            }, csvInput)
+
+var domains = _.uniq(map(function(row){return row[domainCol]}, radioData))
+var syllogisms = _.uniq(map(function(row){return row[syllCol]}, radioData))
+
+
+// var mapObject2 = function(fn, obj){  
+//   return _.object(
+//     map(
+//       function(kv){
+//         return [kv[0], fn(kv[1])]
+//       }, 
+//       _.pairs(obj))
+//   );
+// }
+
+// for joint, map row into string of 1s and 0s
+var mapObject2 = function(fn, obj){  
+  return  map(function(x){return fn(x[1])}, _.pairs(obj))
+}
+
+var rowToObject = function(row){
+  return mapObject2(function(index){return row[index]}, radioIndices)
+}
+
+// for marginal, map row into "YES" conclusions
+var mapObject3 = function(fn, obj){  
+  return  map(function(x){return fn(x[1])==1 ? x[0] : ''}, _.pairs(obj))
+}
+
+var rowToConclusion = function(row){
+  return mapObject3(function(index){return row[index]}, radioIndices)
+}
+
+// organize by domain and syllogism , 
+// and then within each subject, organized into an object from conclusions --> binary
+// structuredData[domainName][syllName]
+
+var structuredDataJoint = _.object(map(function(domain){
+              return [domain, _.object(map(function(syll){
+                return [syll, map(rowToObject,filter(function(row){
+                    return (row[domainCol]==domain && row[syllCol] == syll)
+                  }, radioData))
+                ]
+              }, syllogisms))]
+            }, domains))
+
+
+// organize by domain and syllogism , 
+// and then within each subject, organized into an object from conclusions --> binary
+// structuredData[domainName][syllName]
+
+var structuredDataMarginal = _.object(map(function(domain){
+              return [domain, _.object(map(function(syll){
+                return [syll, 
+                          _.filter(
+                            _.flatten(
+                                map(rowToConclusion,
+                                    filter(function(row){
+                                      return (row[domainCol]==domain && row[syllCol] == syll)
+                           }, radioData))), Boolean)
+                       ]
+              }, syllogisms))]
+            }, domains))
+
+////
+
+var domainSingularPlural = {
+  "cracker":"crackers",
+  "lightbulb":"lightbulbs",
+  "strawberry":"strawberries",
+  "knife":"knives"
+}
+
+
+
+// creating the syllogistic space
+
+var quantifiers = ["all","some","none", "not all"];
+var sentenceForms = [ ["A","B"],["B","A"],
+                      ["B","C"],["C","B"],
+                      ["A","C"],["C","A"]];
+
+var propertyOrder = ["A","B","C"];
+
+
+var conclusionOrder = [ [["C","A"],"all"],
+                        [["C","A"],"none"],
+                        [["C","A"],"some"],
+                        [["C","A"],"not all"]];
+
+var conclusionListOrder = [ [["C","A"],"all"],
+                          [["C","A"],"none"],
+                          [["C","A"],"some"],
+                          [["C","A"],"not all"],
+                          [[["C","A"],"all"],[["C","A"],"some"]],
+                          [[["C","A"],"some"],[["C","A"],"not all"]],
+                          [[["C","A"],"none"],[["C","A"],"not all"]]];
+
+
+var binarizedConclusionSet = ['1000',
+                              '0100',
+                              '0010',
+                              '0001',
+                              '1010',
+                              '0011',
+                              '0101'];
+
+
+var syllogisticSentences = _.flatten(map(function(x)
+  {return map(function(y){return [y,x]} ,sentenceForms)}, quantifiers),true)
+
+var premiseForms = {"1":[["B","A"],["C","B"]],
+                  "2":[["A","B"],["C","B"]],
+                  "3":[["B","A"],["B","C"]],
+                  "4":[["A","B"],["B","C"]]}
+
+var scholasticDict = {"all":"A","none":"E","some":"I","not all":"O"}
+
+var premisesToScholasticCode = function(premises){
+  var figure = _.invert(premiseForms)[premises[0][0]+','+premises[1][0]]
+  var code = map(function(x){return scholasticDict[x[1]]}, premises).join('')
+  return code+figure
+}
+
+
+var scholasticCodeToPremises = function(code){
+  var invertedDict = _.invert(scholasticDict)
+  var p = premiseForms[code[2]]
+  var premise1 = [p[0], invertedDict[code[0]]]
+  var premise2 = [p[1], invertedDict[code[1]]]
+  return [premise1, premise2]
+}
+
+
+var isPremise = function(sentence,figure,premiseNo){
+  return sentence[0] == premiseForms[figure][premiseNo-1]
+}
+
+var isConclusion = function(x){
+//  return (x[0][0]=='A' || x[0][0]=='C') && (x[0][1]=='A' || x[0][1]=='C')
+//  return (x[0][0]=='A') && (x[0][1]=='C')
+  return (x[0][0]=='C') && (x[0][1]=='A')
+}
+
+
+var stateToSentence = function(state){
+  return filter(function(x){return state[syllogisticSentences.indexOf(x)]
+  }, syllogisticSentences)
+}
+
+var flattenSentences = function(sentences){
+  return map(function(sentence){
+    return [sentence[0][0], sentence[0][1], sentence[1]].join()
+  },sentences)
+}
+
+
+var syllogisticPremisesNested = map(function(x)
+  {return map(function(y)
+    {return map(function(q1)
+      {return map(function(q2)
+        {return [[y,q1],[x,q2]]},
+        quantifiers)},
+      quantifiers)},
+    sentenceForms.slice(0,2))},
+  sentenceForms.slice(2,4))
+
+var syllogisticPremises = _.flatten(
+  _.flatten(
+    _.flatten(syllogisticPremisesNested,
+      true),
+    true),
+  true)
+
+
+var premiseDictionary = {"1": _.flatten(_.flatten(syllogisticPremisesNested,true)[3],true),
+                          "2": _.flatten(_.flatten(syllogisticPremisesNested,true)[2],true),
+                          "3": _.flatten(_.flatten(syllogisticPremisesNested,true)[1],true),
+                          "4": _.flatten(_.flatten(syllogisticPremisesNested,true)[0],true)}
+
+
+
+// quantifier logic and helpers
+
+var hasProperty = function(props,term)
+  {return props[propertyOrder.indexOf(term)]}
+
+
+
+var plentifulWorlds = function(propObject){
+  var pO = map(second,_.pairs(propObject)) // function designed for list of lists
+  var fOR = function(v1,v2){
+    return map2(function(e1,e2){return e1 || e2}, v1, v2)
+  }
+  return reduce(function(e1,e2){return e1 && e2}, 1, (reduce(fOR,[0,0,0],pO)))
+}
+
+var allOverObjectVals = function(fn, obj)
+  {return all(function(kv){return fn(kv[1])}, _.pairs(obj))}
+
+var anyOverObjectVals = function(fn, obj)
+  {return any(function(kv){return fn(kv[1])}, _.pairs(obj))}
+
+var allSentence = function(propObject, termOne, termTwo){
+  return allOverObjectVals(function(val){return hasProperty(val,termOne)? hasProperty(val,termTwo) : 1},
+    propObject)
+}
+
+var someSentence = function(propObject, termOne, termTwo){
+  return anyOverObjectVals(function(val){return hasProperty(val,termOne)? hasProperty(val,termTwo) : 0},
+    propObject)
+}
+
+var notallSentence = function(propObject, termOne, termTwo){
+  return 1 - allSentence(propObject,termOne,termTwo)
+}
+
+var noneSentence = function(propObject, termOne, termTwo){
+  return 1 - someSentence(propObject,termOne,termTwo)
+}
+
+var mu = function(propObject, termOne, termTwo){
+  return 1
+}
+
+
+// equivalence class transformation
+
+
+var multinomialProbabilities = function(br){
+  return [Math.pow(1-br,3),Math.pow(1-br,2)*br,Math.pow(1-br,2)*br,Math.pow(br,2)*(1-br),
+          Math.pow(1-br,2)*br,Math.pow(br,2)*(1-br),Math.pow(br,2)*(1-br),Math.pow(br,3)]
+}
+
+
+//  propertyTuples = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
+//                       [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+
+var multinomialProbabilitiesFromid = function(a,b,c){
+  return [(1-a)*(1-b)*(1-c), (1-a)*(1-b)*c, (1-a)*b*(1-c), (1-a)*b*c,
+          a*(1-b)*(1-c), a*(1-b)*c, a*b*(1-c), a*b*c]
+}
+
+
+var equivalentTransform = cache(function(objects, backgroundPrior){
+
+//  var backgroundPrior = [1,1,1,1,1,1,1,1]
+//  var backgroundPrior = multinomialProbabilities(0.25)
+
+
+  var getProperties = function(obj) {
+      var p = propertyTuples[discrete(backgroundPrior)]
+      return p
+    }
+
+  Enumerate(function(){
+
+    var propertiesOfObjects = _.object(_.zip(objects,map(getProperties,objects)))
+
+    var meaning = function(quantifier) {
+      return quantifier=="all"? allSentence :
+             quantifier=="some"? someSentence :
+             quantifier=="none"? noneSentence :
+             quantifier=="not all"? notallSentence : 
+             true
+    }
+
+    var nonEmptyWorld = plentifulWorlds(propertiesOfObjects) 
+    factor(nonEmptyWorld?0:-Infinity)
+
+    return map(function(sentence)
+      {return meaning(sentence[1])(propertiesOfObjects,
+                                    sentence[0][0],
+                                    sentence[0][1])}, 
+      syllogisticSentences)
+  })
+})
+
+var pruneERP = function(myERP){
+  var scr = map(function(lst)
+                 {var y = myERP.score([],lst);
+                  return y},
+                 myERP.support())
+  
+  var prnScr=filter(function(lst){return lst[0] > -Infinity}, _.zip(scr,myERP.support()))
+  var ps = map(function(x){return Math.exp(first(x))}, prnScr)
+  var vs = map(second,prnScr)
+  return Enumerate(function(){return vs[discrete(ps)]});
+}
+
+
+/// helpers for sentences
+
+var flattenSentences = function(sentences){
+    return map(function(sentence){
+      return [sentence[0][0], sentence[0][1], sentence[1]].join()
+    },sentences)
+  }
+
+// var binarizeConclusionSet = function(trueConcl){
+//   return map(function(conclusion){
+//     return (flattenSentences(trueConcl).indexOf(conclusion) > -1) ? 1 : 0
+//   }, flattenSentences(conclusionOrder)).join('')
+// }
+
+
+// this considers "multiple conclusions" explicitly
+var trueLists = function(trueConcls){
+      _.flatten([map(function(x){return flattenSentences(conclusionListOrder).indexOf(x)}, 
+                    flattenSentences(trueConcls)), 
+                 flattenSentences(conclusionListOrder).indexOf(flattenSentences(trueConcls).join())])
+}
+
+
+// this considers "multiple conclusions" implicitly
+// var trueLists = function(trueConcls){
+//       map(function(x){return flattenSentences(conclusionListOrder).indexOf(x)}, 
+//                     flattenSentences(trueConcls))
+// }
+
+var reasoner0_independent = cache(function(premises, a, b, c, domain) {
+  Enumerate(function(){
+
+    var equivalentWorlds = equivalentTransform(objects, multinomialProbabilitiesFromid(a,b,c))
+
+    var state = sample(equivalentWorlds)
+    var trueSentences = stateToSentence(state)
+        // this could probably be optimized
+    var flattenedSentences = flattenSentences(trueSentences) 
+
+    var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
+                        flattenedSentences.indexOf(premises[1].join())!=-1
+
+    var trueConclusions = filter(isConclusion, trueSentences)
+
+    var listConclusions = trueLists(trueConclusions)
+//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+   var whichConclusions = uniformDraw(listConclusions)
+//    var conclusion = uniformDraw(trueConclusions)
+
+    factor(premisesTrue?0:-Infinity)
+//    return conclusion // what is the conclusion?
+    return whichConclusions // which conclusions are true?
+  })
+})
+
+
+var reasoner0_naive = cache(function(premises, br) {
+  Enumerate(function(){
+
+    var equivalentWorlds = equivalentTransform(objects, multinomialProbabilities(br))
+
+    var state = sample(equivalentWorlds)
+    var trueSentences = stateToSentence(state)
+        // this could probably be optimized
+    var flattenedSentences = flattenSentences(trueSentences) 
+
+    var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
+                        flattenedSentences.indexOf(premises[1].join())!=-1
+
+    var trueConclusions = filter(isConclusion, trueSentences)
+
+    var listConclusions = trueLists(trueConclusions)
+//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+   var whichConclusions = uniformDraw(listConclusions)
+//    var conclusion = uniformDraw(trueConclusions)
+
+    factor(premisesTrue?0:-Infinity)
+//    return conclusion // what is the conclusion?
+    return whichConclusions // which conclusions are true?
+  })
+})
+
+var reasoner0_iid = cache(function(premises, br, domain) {
+  Enumerate(function(){
+
+    var equivalentWorlds = equivalentTransform(objects, multinomialProbabilities(br))
+
+    var state = sample(equivalentWorlds)
+    var trueSentences = stateToSentence(state)
+        // this could probably be optimized
+    var flattenedSentences = flattenSentences(trueSentences) 
+
+    var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
+                        flattenedSentences.indexOf(premises[1].join())!=-1
+
+    var trueConclusions = filter(isConclusion, trueSentences)
+
+    var listConclusions = trueLists(trueConclusions)
+//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+   var whichConclusions = uniformDraw(listConclusions)
+//    var conclusion = uniformDraw(trueConclusions)
+
+    factor(premisesTrue?0:-Infinity)
+//    return conclusion // what is the conclusion?
+    return whichConclusions // which conclusions are true?
+  })
+})
+
+
+
+var experimenter1_naive = cache(function(QUDval, figure, br) {
+  Enumerate(function(){
+//    var premises = uniformDraw(premiseDictionary[figure])
+    var premises = uniformDraw(syllogisticPremises)
+
+    var R0 = reasoner0_naive(premises, br)
+
+    factor(R0.score([],QUDval))
+    return premises
+  })
+})
+
+var reasoner1_naive = cache(function(premises, alpha, baseRate) {
+  Enumerate(function(){
+    // simple prep stuff
+    var figure = _.invert(premiseForms)[premises[0][0]+','+premises[1][0]]
+
+    // sampling of worlds
+//    var backoffPrior = [1,1,1,1,1,1,1,1] // uniform
+    var backoffPrior = multinomialProbabilities(baseRate) // binomial
+//    var wonkyworld = false 
+
+    var equivalentWorlds = pruneERP(equivalentTransform(objects, backoffPrior))
+
+    var state = sample(equivalentWorlds)
+
+    // mapping from worlds to sentences, conclusions
+    var trueSentences = stateToSentence(state)
+    var trueConclusions = filter(isConclusion, trueSentences)
+    var listConclusions = trueLists(trueConclusions)
+
+ //   var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+    var whichConclusions = uniformDraw(listConclusions)
+//    var conclusion = uniformDraw(trueConclusions)
+
+    // recursive reasoning
+    var E1 = experimenter1_naive(whichConclusions, figure, baseRate)
+//    var E1 = experimenter1(conclusion, figure, equivalentWorlds)
+
+    factor(alpha*E1.score([],premises))
+  //  return conclusion // what is the conclusion?
+   return whichConclusions // which conclusions are true?
+  })
+})
+
+
+var reasoner0_empirical = cache(function(premises, domain) {
+  Enumerate(function(){
+
+    var backgroundPrior = priorClean[domain]
+    var equivalentWorlds = pruneERP(equivalentTransform(objects, backgroundPrior))
+    var state = sample(equivalentWorlds)
+
+
+    var trueSentences = stateToSentence(state)
+        // this could probably be optimized
+    var flattenedSentences = flattenSentences(trueSentences) 
+
+    var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
+                        flattenedSentences.indexOf(premises[1].join())!=-1
+
+    var trueConclusions = filter(isConclusion, trueSentences)
+
+    var listConclusions = trueLists(trueConclusions)
+//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+   var whichConclusions = uniformDraw(listConclusions)
+//    var conclusion = uniformDraw(trueConclusions)
+
+    factor(premisesTrue?0:-Infinity)
+//    return conclusion // what is the conclusion?
+    return whichConclusions // which conclusions are true?
+  })
+})
+
+var experimenter1_empirical = cache(function(QUDval, figure, domain) {
+  Enumerate(function(){
+//    var premises = uniformDraw(premiseDictionary[figure])
+    var premises = uniformDraw(syllogisticPremises)
+
+    var R0 = reasoner0_empirical(premises, domain)
+
+    factor(R0.score([],QUDval))
+    return premises
+  })
+})
+
+var reasoner1_empirical = cache(function(premises, domain, alpha) {
+  Enumerate(function(){
+    // simple prep stuff
+    var figure = _.invert(premiseForms)[premises[0][0]+','+premises[1][0]]
+
+    var backgroundPrior = priorClean[domain]
+    var equivalentWorlds = pruneERP(equivalentTransform(objects, backgroundPrior))
+
+    var state = sample(equivalentWorlds)
+
+    // mapping from worlds to sentences, conclusions
+    var trueSentences = stateToSentence(state)
+    var trueConclusions = filter(isConclusion, trueSentences)
+    var listConclusions = trueLists(trueConclusions)
+
+ //   var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+    var whichConclusions = uniformDraw(listConclusions)
+//    var conclusion = uniformDraw(trueConclusions)
+
+    // recursive reasoning
+    var E1 = experimenter1_empirical(whichConclusions, figure, domain)
+//    var E1 = experimenter1(conclusion, figure, equivalentWorlds)
+
+    factor(alpha*E1.score([],premises))
+  //  return conclusion // what is the conclusion?
+   return whichConclusions // which conclusions are true?
+  })
+})
+
+
+
+// //var reasoner0 = cache(function(premises, equivalentWorlds) {
+// var reasoner0 = cache(function(premises, equivalentWorlds, domain, wonkyworld) {
+//   Enumerate(function(){
+//     var state = sample(equivalentWorlds)
+//     var trueSentences = stateToSentence(state)
+//         // this could probably be optimized
+//     var flattenedSentences = flattenSentences(trueSentences) 
+
+//     var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
+//                         flattenedSentences.indexOf(premises[1].join())!=-1
+
+//     var trueConclusions = filter(isConclusion, trueSentences)
+
+//     var listConclusions = trueLists(trueConclusions)
+// //    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+//    var whichConclusions = uniformDraw(listConclusions)
+// //    var conclusion = uniformDraw(trueConclusions)
+
+//     factor(premisesTrue?0:-Infinity)
+// //    return conclusion // what is the conclusion?
+//     return whichConclusions // which conclusions are true?
+//   })
+// })
+
+// var experimenter1 = cache(function(QUDval, figure, equivalentWorlds, domain, wonkyworld) {
+//   Enumerate(function(){
+// //    var premises = uniformDraw(premiseDictionary[figure])
+//     var premises = uniformDraw(syllogisticPremises)
+
+//     var R0 = reasoner0(premises, equivalentWorlds, domain, wonkyworld)
+
+//     factor(R0.score([],QUDval))
+//     return premises
+//   })
+// })
+
+// var reasoner1 = cache(function(premises, domain, alpha, wonkyprior, baseRate) {
+//   Enumerate(function(){
+//     // simple prep stuff
+//     var figure = _.invert(premiseForms)[premises[0][0]+','+premises[1][0]]
+//     var backgroundPrior = priorClean[domain]
+
+//     // sampling of worlds
+// //    var backoffPrior = [1,1,1,1,1,1,1,1] // uniform
+//     var backoffPrior = (baseRate==99)? [1,1,1,1,1,1,1,1]: multinomialProbabilities(baseRate) // binomial
+//     var wonkyworld = flip(wonkyprior)
+// //    var wonkyworld = false 
+
+//     var equivalentWorlds = wonkyworld ?
+//                             pruneERP(equivalentTransform(objects, backoffPrior)):
+//                             pruneERP(equivalentTransform(objects, backgroundPrior))
+
+//     var state = sample(equivalentWorlds)
+
+//     // mapping from worlds to sentences, conclusions
+//     var trueSentences = stateToSentence(state)
+//     var trueConclusions = filter(isConclusion, trueSentences)
+//     var listConclusions = trueLists(trueConclusions)
+
+//  //   var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
+//     var whichConclusions = uniformDraw(listConclusions)
+// //    var conclusion = uniformDraw(trueConclusions)
+
+//     // recursive reasoning
+//     var E1 = experimenter1(whichConclusions, figure, equivalentWorlds, domain, wonkyworld)
+// //    var E1 = experimenter1(conclusion, figure, equivalentWorlds)
+
+//     factor(alpha*E1.score([],premises))
+//   //  return conclusion // what is the conclusion?
+//    return whichConclusions // which conclusions are true?
+//   })
+// })
+
+
+
+
+var guessing = 
+Enumerate(function(){
+    var guess = uniformDraw(conclusionOrder)
+    return guess.join()
+  })
+
+
+// //var br = 0.25                            
+// var domain = 'cracker'
+// var alpha = 2.6
+// //var wonkyprior = 0
+// var syllogism = scholasticCodeToPremises('AA1')
+
+// reasoner1_empirical(syllogism, domain, alpha)
+
+// utils_wppl.marginalsFromFullList(
+//   pruneERP(
+//    // reasoner1_naive(syllogism, alpha, br)
+//     reasoner1(syllogism, domain, alpha, wonkyprior, br)
+// //    reasoner0_naive(syllogism, br)
+//     ),
+//     conclusionOrder,
+//     conclusionListOrder)
+
+//reasoner1_naive(syllogism, alpha, br)
+
+// var guessing = cache(function(){
+//   Enumerate(function(){
+//     var guess = uniformDraw(['0000','1000','0100','0010','0001',
+//                                   '1100','1010','1001','0110','0101','0011',
+//                                   '1110','1101','0111','1011','1111'])
+//     return guess
+//   })
+// })
+
+
+// var equivalentWorlds = br == 99? 
+//                         pruneERP(
+//                           equivalentTransform(
+//                               objects, 
+//                               priorClean[domain])) :
+//                          pruneERP(
+//                           equivalentTransform(
+//                               objects, 
+//                                 multinomialProbabilities(br)))
+
+
+// var out = utils_wppl.marginalsFromFullList(
+//                               reasoner0_naive(syllogism, br),
+//                               conclusionOrder,
+//                               conclusionListOrder)
+// pruneERP(reasoner0_naive(syllogism, br))
+//console.log(writeERP(out))
+
+
+// var equivalentDomainWorlds = {
+//   "cracker": equivalentTransform(objects, priorClean["cracker"]),
+//   "knife": equivalentTransform(objects, priorClean["knife"]),
+//   "lightbulb": equivalentTransform(objects, priorClean["lightbulb"]),
+//   "strawberry":equivalentTransform(objects, priorClean["strawberry"])
+// }
+
+
+//////////////////////////////////////
+/////// integrate out parameters
+//////////////////////////////////////
+
+var fullBayesianTreatment = function() {
+
+  var alpha = uniformDraw(utils_wppl.sequence(0.1,5,0.1))
+//  var alpha = 2
+  var phi = uniformDraw(utils_wppl.sequence(0.01,1,0.05))
+//  var wonkyprior = uniformDraw(utils_wppl.sequence(0.1,1,0.1))
+  var wonkyprior = 0
+
+  var br = uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))
+  // var br = 99
+    // var baserates = {
+    //   "cracker": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
+    //   "knife": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
+    //   "lightbulb": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))},
+    //   "strawberry":{"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "b":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //               "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))}
+    // }
+
+    var baserates = {
+      "cracker": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+      "knife": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+      "lightbulb": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+      "strawberry":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))}
+
+
+
+  // var alpha = sample(uniformERP,[0,5]);
+  // var phi = sample(uniformERP,[0,1]);
+
+
+  // var wonkyRSAwithGuessing_empirical = cache(function(phi, syllogism, domain, alpha, wonkyprior, br){
+  //   Enumerate(function(){
+  //     var isGuessing = flip(phi)
+
+  //     var RSA = reasoner1(syllogism, domain, alpha, wonkyprior, br)
+
+  //     var cleanRSA = makeERPfromObject(
+  //                       utils_wppl.marginalsFromFullList(
+  //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+  //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+  //     return prediction
+  //   })
+
+  // })
+
+
+  // var R1withGuessing_empirical = cache(function(phi, syllogism, domain, alpha){
+  //   Enumerate(function(){
+  //     var isGuessing = flip(phi)
+
+  //     // console.log(syllogism)
+  //      console.log(domain)
+  //     // console.log(alpha)
+  //     // console.log(phi)
+  //     var RSA = reasoner1_empirical(syllogism, domain, alpha)
+
+
+  //     var cleanRSA = makeERPfromObject(
+  //                       utils_wppl.marginalsFromFullList(
+  //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+  //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+  //     return prediction
+  //   })
+  // })
+
+  // var R1withGuessing_naive = cache(function(phi, syllogism, alpha, br){
+  //   Enumerate(function(){
+  //     var isGuessing = flip(phi)
+
+  //     var RSA = reasoner1_naive(syllogism, alpha, br)
+
+  //     var cleanRSA = makeERPfromObject(
+  //                       utils_wppl.marginalsFromFullList(
+  //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+  //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+  //     return prediction
+  //   })
+  // })
+
+  var R0withGuessing_empirical = cache(function(phi, syllogism, domain){
+      Enumerate(function(){
+        var isGuessing = flip(phi)
+
+        var RSA =  reasoner0_empirical(syllogism, domain)
+
+      var cleanRSA = makeERPfromObject(
+                        utils_wppl.marginalsFromFullList(
+                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+      return prediction
+      })
+    })
+
+  var R0withGuessing_naive = cache(function(phi, syllogism, br){
+
+      Enumerate(function(){
+        var isGuessing = flip(phi)
+
+        var RSA = reasoner0_naive(syllogism, br)
+
+      var cleanRSA = makeERPfromObject(
+                        utils_wppl.marginalsFromFullList(
+                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+        return prediction
+      })
+    })
+
+  var R0withGuessing_iid = cache(function(phi, syllogism, baserates, domain){
+
+      Enumerate(function(){
+        var isGuessing = flip(phi)
+
+        var RSA = reasoner0_iid(syllogism, baserates[domain], domain)
+
+      var cleanRSA = makeERPfromObject(
+                        utils_wppl.marginalsFromFullList(
+                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+        return prediction
+      })
+    })
+
+  var R0withGuessing_independent = cache(function(phi, syllogism, baserates,domain){
+
+      Enumerate(function(){
+        var isGuessing = flip(phi)
+
+        var RSA = reasoner0_independent(syllogism, baserates[domain]["a"],
+                                              baserates[domain]["b"], 
+                                              baserates[domain]["c"], domain)
+
+      var cleanRSA = makeERPfromObject(
+                        utils_wppl.marginalsFromFullList(
+                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+        return prediction
+      })
+    })
+
+
+  var posteriorPredictive = 
+    map(function(syll){
+
+      var syllogism = scholasticCodeToPremises(syll)
+
+      return _.flatten(
+
+        map(function(domain){
+
+      //    var domainSylldata =  structuredDataJoint[domainSingularPlural[domain]][syll]
+          var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
+
+          //  var cognitiveModel = reasoner1(scholasticCodeToPremises(syll), domain, alpha, wonkyprior)
+          // // var marginals = utils_wppl.marginalsFromFullList(cognitiveModel, 
+          // //                                                 conclusionOrder, 
+          // //                                                 conclusionListOrder)
+
+           // var supportOrder = _.keys(utils_wppl.marginalsFromFullList(
+           //                        reasoner1(syllogism, domain, alpha, wonkyprior, 0.25),
+           //                        conclusionOrder,
+           //                        conclusionListOrder))
+
+          var supportOrder = _.keys(utils_wppl.marginalsFromFullList(
+                      reasoner0_empirical(syllogism, domain),
+                      conclusionOrder,
+                      conclusionListOrder))
+
+           // var supportOrder = _.keys(utils_wppl.marginalsFromFullList(
+           //                        reasoner0(syllogism, pruneERP(
+           //                        equivalentTransform(
+           //                            objects, 
+           //                            priorClean[domain])), domain),
+           //                        conclusionOrder,
+           //                        conclusionListOrder))
+
+         //var modelWithGuessing = R1withGuessing_empirical(phi, syllogism, domain, alpha)
+         //  var modelWithGuessing = R0withGuessing_empirical(phi, syllogism, domain)
+         //  var modelWithGuessing = R0withGuessing_naive(phi, syllogism, br)
+           var modelWithGuessing = R0withGuessing_iid(phi, syllogism, baserates, domain)
+          //var modelWithGuessing = R0withGuessing_independent(phi, syllogism, baserates, domain)
+
+         // var modelWithGuessing = argumentStrengthWithGuessing(phi, syllogism, domain, br)
+
+          map(function(data){
+
+            // var withGuessing = cache(function(phi){
+            //   Enumerate(function(){
+            //     var isGuessing = flip(phi)
+            //     var prediction = isGuessing ? sample(guessing) : sample(cogmod)
+            //     return prediction
+            //   })
+            // })
+
+
+            var dataString = 'C,A,'+data
+
+            factor(
+              modelWithGuessing.score([],dataString)
+              )
+
+
+            // for marginalized data
+            // factor(Math.log(
+            //       (phi*Math.exp(guessing().score([],dataString)))+
+            //       ((1-phi)*marginals[dataString])))
+
+            // for joint data
+           //  var dataString = data.join('')
+           // factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+           //                ((1-phi)*Math.exp(cognitiveModel.score([],dataString)))))
+
+          }, domainSylldata)
+
+          return map(function(value){
+                      Math.exp(modelWithGuessing.score([], value))
+                      },
+                  supportOrder)
+
+  //        map(function(kv){return kv[1]}, _.pairs(marginals))
+
+        }, domainsSingular)
+    )
+  },
+  syllogisms)
+//  return _.flatten([phi,alpha,wonkyprior,br,posteriorPredictive])
+
+//  return _.flatten([phi,br,posteriorPredictive])
+  return _.flatten([phi,_.values(baserates),posteriorPredictive])
+
+//  return _.flatten([phi,_.flatten(map(function(k){return _.values(k)},_.values(baserates))),posteriorPredictive])
+
+
+}
+
+
+
+
+// // var m = reasoner1(scholasticCodeToPremises("AA1"),"cracker",1,1)
+ 
+// // makeERPfromObject(utils_wppl.marginalsFromFullList(m, conclusionOrder, conclusionListOrder))
+
+
+
+
+// //syllogisticPremises
+// // reasoner0(scholasticCodeToPremises('AO2'),  pruneERP(equivalentTransform(objects,priorClean['lightbulb'])))// ,2)
+
+
+var nsamples = 10000
+var results = MH(fullBayesianTreatment,nsamples)
+
+var posterior = map(
+  function(value){
+    value.concat(Math.exp(results.score([], value)))
+  },
+  results.support([]))
+
+var header = _.flatten(
+                map(function(s){
+                  _.flatten(map(function(d)
+                    {return map(function(c){return s+'_'+d+'_'+c[1]}, conclusionOrder)},
+                  domainsSingular))},
+                  syllogisms))
+//header.unshift('phi','alpha','priorwonky','br')
+
+
+//  var paramshead = _.flatten(map(function(key){
+//   return map(function(letter){return [key,letter].join('_')}, ["a","b","c"])
+// } , ["cracker","knife","lightbulb","strawberry"]))
+
+// map(function(h){header.unshift(h)},paramshead)
+
+header.unshift('phi','br_cracker','br_knife','br_lightbulb','br_strawberry')
+//header.unshift('phi','br')
+header.push('prob')
+
+posterior.unshift(header);
+
+//var filename = 'exp12_n'+n_objects+'Marginal_argstr_empirical_'+ nsamples+'a_'+priorDM+'.csv'
+//var filename = 'exp12_n'+n_objects+'Marginal_argstr_naive_'+ nsamples+'a_'+priorDM+'.csv'
+//var filename = 'exp12_n'+n_objects+'Marginal_pragmatic_naive_'+ nsamples+'a_'+priorDM+'.csv'
+var filename = 'exp12_n'+n_objects+'Marginal_r0_iid_'+ 
+                    nsamples+'a_'+priorDM+'.csv'
+
+utils_wppl.writeCSV(posterior, 'FBT/'+filename);
+
+console.log(filename+' written')
+
+
+//////////////////////////////////////
+// Bayesian bayesian model comparison
+////////////////////////////////////
+
+//  var bayesianModelComparison = function() {
+
+//   //var wonkyHypothesis = uniformDraw(utils_wppl.sequence(0,1,0.05))
+//   var isModel1 = flip(0.5)
+
+//   var alpha_M1 = uniformDraw(utils_wppl.sequence(0.1,5,0.1))
+//   var alpha_M2 = uniformDraw(utils_wppl.sequence(0.1,5,0.1))
+
+//   var phi_M1 = uniformDraw(utils_wppl.sequence(0.1,1,0.05))
+//   var phi_M2 = uniformDraw(utils_wppl.sequence(0.1,1,0.05))
+
+//   // var wonkinessPrior = uniformDraw(utils_wppl.sequence(0.1,1,0.1))
+//   var br = uniformDraw(utils_wppl.sequence(0.05, 0.95, 0.05))
+//   // var wonky_br = uniformDraw(utils_wppl.sequence(0.05, 0.95, 0.05))
+//   var wonky_br = 0.99
+//   var wonkinessPrior = 0
+
+// //  var br = 99
+//   // var wonkyRSAwithGuessing_empirical = cache(function(phi, syllogism, domain, alpha, wonkyprior, br){
+//   //   Enumerate(function(){
+//   //     var isGuessing = flip(phi)
+
+//   //     var RSA = reasoner1(syllogism, domain, alpha, wonkyprior, br)
+
+//   //     var cleanRSA = makeERPfromObject(
+//   //                       utils_wppl.marginalsFromFullList(
+//   //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+//   //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+//   //     return prediction
+//   //   })
+
+//   // })
+
+
+//   var R1withGuessing_empirical = cache(function(phi, syllogism, domain, alpha){
+//     Enumerate(function(){
+//       var isGuessing = flip(phi)
+
+//       // console.log(syllogism)
+//       // console.log(alpha)
+//       // console.log(phi)
+//       var RSA = reasoner1_empirical(syllogism, domain, alpha)
+
+
+//       var cleanRSA = makeERPfromObject(
+//                         utils_wppl.marginalsFromFullList(
+//                           pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+//       var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+//       return prediction
+//     })
+//   })
+
+//   var R1withGuessing_naive = cache(function(phi, syllogism, alpha, br){
+//     Enumerate(function(){
+//       var isGuessing = flip(phi)
+
+//       var RSA = reasoner1_naive(syllogism, alpha, br)
+
+//       var cleanRSA = makeERPfromObject(
+//                         utils_wppl.marginalsFromFullList(
+//                           pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+//       var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+//       return prediction
+//     })
+//   })
+
+//   var R0withGuessing_empirical = cache(function(phi, syllogism, domain){
+//       Enumerate(function(){
+//         var isGuessing = flip(phi)
+
+//         var RSA =  reasoner0_empirical(syllogism, domain)
+
+//       var cleanRSA = makeERPfromObject(
+//                         utils_wppl.marginalsFromFullList(
+//                           pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+//       var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+//       return prediction
+//       })
+//     })
+
+//   var R0withGuessing_naive = cache(function(phi, syllogism, br){
+
+//       Enumerate(function(){
+//         var isGuessing = flip(phi)
+
+//         var RSA = reasoner0_naive(syllogism, br)
+
+//       var cleanRSA = makeERPfromObject(
+//                         utils_wppl.marginalsFromFullList(
+//                           pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+//       var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+//         return prediction
+//       })
+//     })
+
+
+
+
+//   var whichModelIsRight = function(isModel1, syllogism, domain){
+//     Enumerate(function(){
+//     //  var isWRSA = flip(0.5)
+
+//       var prediction = isModel1 ? 
+//             sample(R1withGuessing_empirical(phi_M1, syllogism, domain, alpha_M1)):
+//             sample(R1withGuessing_naive(phi_M2, syllogism, alpha_M2, br))
+
+// //            sample(R0withGuessing_naive(phi_M2, syllogism, br))
+// //            sample(R0withGuessing_empirical(phi_M2, syllogism, domain))
+// //            sample(R0withGuessing_naive(phi_M2, syllogism, br))
+//             // sample(RSAwithGuessing_empirical(phi_M1, syllogism, domain, alpha_M1)):
+//             // sample(argumentStrengthWithGuessing_empirical(phi_M2, syllogism, domain))
+// //            sample(RSAwithGuessing(phi_M1, syllogism, domain, alpha_M1, wonkinessPrior, 99)):
+//             //  sample(RSAwithGuessing(phi_M1, syllogism, domain, alpha_M1, 0, 99)):
+//             // sample(argumentStrengthWithGuessing(phi_M2, syllogism, domain, 99))
+//             // sample(argumentStrengthWithGuessing(phi_M2, syllogism, domain, br))
+
+//       return prediction
+//     })
+//   }
+
+  
+//   map(function(syll){
+//       map(function(domain){
+
+//         var syllogism = scholasticCodeToPremises(syll)
+
+//         var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
+
+//          map(function(data){
+
+//           // for marginalized data
+//           var dataString = 'C,A,'+data
+//          // console.log(Math.exp(whichModelIsRight(isWRSA, syllogism, domain).score([],dataString)))
+//           factor(whichModelIsRight(isModel1, syllogism, domain).score([],dataString))
+
+//           // factor(Math.log(
+                      
+//           //             (wonkyHypothesis*
+//           //               (
+//           //                 (phi_W1*
+//           //                   Math.exp(guessing.score([],dataString)))+
+//           //                 ((1-phi_W1)*
+//           //                   marginals_W1[dataString])
+//           //               ))
+//           //               +
+//           //           ((1-wonkyHypothesis)*
+//           //             (
+//           //               (phi_R1*
+//           //                 Math.exp(guessing.score([],dataString)))+
+//           //               ((1-phi_R1)*
+//           //                 marginals_R1[dataString])
+//           //             ))
+
+//           //           )
+//           // )
+
+//           // for joint data
+//          //  var dataString = data.join('')
+//          // factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+//          //                ((1-phi)*Math.exp(cognitiveModel.score([],dataString)))))
+
+//         }, domainSylldata)
+
+//       }, domainsSingular)
+
+//      }, syllogisms)
+
+// //  return [isModel1, alpha_M1, phi_M1, phi_M2, wonkinessPrior, wonky_br]
+// //  return [isModel1, alpha_M1, phi_M1, phi_M2]
+//   return [isModel1, phi_M1, alpha_M1, phi_M2, alpha_M2, br]
+
+// }
+
+//   // utils_wppl.marginalsFromFullList(
+//   //     reasoner0(scholasticCodeToPremises('AA1'), pruneERP(
+//   //                             equivalentTransform(
+//   //                                 objects, 
+//   //                                   multinomialProbabilities(0.25)))),                             
+//   //                                    conclusionOrder,
+//   //                             conclusionListOrder)
+
+
+
+//  var nsamples = 10000
+//  var results = MH(bayesianModelComparison,nsamples)
+
+// var posterior = map(
+//   function(value){
+//     value.concat(Math.exp(results.score([], value)))
+//   },
+//   results.support([]))
+
+// //var header = ['modelcomparison', 'alpha_M1', 'phi_M1', 'alpha_M2', 'phi_M2','br' ,'wonkyprior', 'prob']
+// //var header = ['modelcomparison', 'alpha_M1', 'phi_M1', 'phi_M2','prob']
+// //var header = ['modelcomparison', 'alpha_M1', 'phi_M1', 'phi_M2','wonkyprior', 'wonkybr','prob']
+// var header = ['modelcomparison', 'phi_M1', 'alpha_M1', 'phi_M2', 'alpha_M2','br','prob']
+
+// posterior.unshift(header);
+
+
+// //var filename = 'modelComparison_EmpiricalVsNaive_r0_n'+n_objects+'_'+ nsamples+'a_'+priorDM+'.csv'
+// //var filename = 'modelComparison_WonkyVsLiteral_Empirical_n'+n_objects+'_'+ nsamples+'b_'+priorDM+'.csv'
+// var filename = 'modelComparison_R1evsR1n_n'+n_objects+'_'+ nsamples+'b_'+priorDM+'.csv'
+// utils_wppl.writeCSV(posterior, 
+//   'FBT/'+filename);
+
+// console.log(filename+' written')
+
+

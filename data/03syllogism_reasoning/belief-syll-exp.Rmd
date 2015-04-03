@@ -15,6 +15,8 @@ library(plyr)
 library(stringr)
 library(gridExtra)
 library(bootstrap)
+library(tidyr)
+library(dplyr)
 
 theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
 ci.low <- function(x,na.rm=T) {
@@ -54,8 +56,11 @@ quantifiers = c("All of the","None of the","Some of the","Some of the...not")
 
 ```{r RTs1, echo=FALSE}
 
-fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_reasoning/'
-fpath2 = '/Users/mht/Documents/research/syllogism/data/04syllogism_reasoning/'
+#fpath = '/Users/mht/Documents/research/syllogism/data/03syllogism_reasoning/'
+fpath = 'C:/Users/Henry/Documents/RESEARCH/syllogism-project/data/03syllogism_reasoning/'
+
+
+fpath2 = 'C:/Users/Henry/Documents/RESEARCH/syllogism-project/data/04syllogism_reasoning/'
 
 
 df<-read.csv((paste(fpath,'syllbelief-exp-mturk_all_n250.csv',sep="")))
@@ -69,8 +74,6 @@ df.c <- rbind(df,df2)
 exp1sylls<-levels(df$syll)
 exp2sylls<-levels(df2$syll)
 resp_labels<-c("Q_A","Q_E","Q_I","Q_O")
-
-
 
 #for (i in 1:length(df2$subj)){
 #  if (df2[i,]$condition=='radio'){
@@ -768,6 +771,60 @@ ggplot(data=filter(d.tidy,parameter!='alpha'), aes(x=value,y=marginal))+
 
 ```
 
+# Analysis of radio buttons alone
+
+```{r}
+fpath = '~/Documents/MHT/syllogism-project/data/03syllogism_reasoning/'
+fpath2 = '~/Documents/MHT/syllogism-project/data/04syllogism_reasoning/'
+fpath = 'C:/Users/Henry/Documents/RESEARCH/syllogism-project/data/03syllogism_reasoning/'
+
+
+fpath2 = 'C:/Users/Henry/Documents/RESEARCH/syllogism-project/data/04syllogism_reasoning/'
+
+df<-read.csv((paste(fpath,'syllbelief-exp-mturk_all_n250.csv',sep="")))
+df2<-read.csv((paste(fpath2,'syllbelief-exp2-mturk.csv',sep="")))
+df.c <- bind_rows(df,df2)
+
+df.tidy<- df.c %>% 
+  filter(condition=='radio') %>%
+  select(starts_with('radio'), domain, syll) %>%
+  gather(quantifier, response, starts_with('radio')) %>%
+  group_by(domain, syll, quantifier) %>%
+  summarise(prop = sum(response)/length(response),
+            n = length(response),
+            sterr = sqrt(((sum(response)/length(response))*
+                    (1-(sum(response)/length(response))))/(length(response))))
+
+
+
+ggplot(df.tidy, aes(x=quantifier, y = prop, fill = quantifier))+
+  geom_bar(stat='identity', position=position_dodge())+
+  geom_errorbar(aes(ymin=prop-2*sterr, ymax = prop+2*sterr), 
+                position=position_dodge(),
+                width = 0.3, size = 0.3)+
+  facet_grid(domain~syll)
+
+
+
+df.tidy<-df.tidy %>% rename(conclusion = quantifier, 
+                   syllog = syll) %>% ungroup()
+
+df.tidy$conclusion <- factor(df.tidy$conclusion, 
+                             labels = c('all','none','some','not.all'))
+df.norm <- df.tidy %>% 
+  group_by(domain, syllog) %>%
+  mutate(prop = prop/sum(prop)) %>%
+  mutate(sterr = sqrt((prop*(1-prop))/n))
+#####
+ggplot(df.norm, aes(x=conclusion, y = prop, fill = conclusion))+
+  geom_bar(stat='identity', position=position_dodge())+
+  geom_errorbar(aes(ymin=prop-2*sterr, ymax = prop+2*sterr), 
+                position=position_dodge(),
+                width = 0.3, size = 0.3)+
+  facet_grid(domain~syllog)
+
+
+```
 
 
 # Experimental data: Using radio buttons only
@@ -857,7 +914,6 @@ ggplot(params, aes(x=val, y= marginal))+
   geom_histogram(stat='identity',position=position_dodge())+
   facet_wrap(~param, scales='free')
 
-
 ```
 
 ### Posterior predictive
@@ -925,9 +981,11 @@ d<-read.csv('../models/FBT/exp2_n4Marginal_posteriorD_backoffUnif_test_100.csv')
 d<-read.csv('../models/FBT/exp2_n4Marginal_posteriorD_backoffBinom_test_100.csv')
 
 
-
 params<-d %>%
-  select(phi, alpha, prob) %>%
+ # select(phi, alpha, prob) %>%
+  #select(phi, br, prob) %>%
+  select(phi, starts_with('br'), prob) %>%
+  select(phi,prob) %>%
   gather(param, val, -prob) %>%
   group_by(param,val) %>%
   summarise(marginal = sum(prob))
@@ -937,17 +995,37 @@ ggplot(params, aes(x=val, y= marginal))+
   facet_wrap(~param, scales='free')
 
 
+brs <- d %>%
+  select(starts_with("lightbulb"), starts_with("cracker"),starts_with("knife"),
+         starts_with("strawberry"), prob) %>%
+  gather(param, val, -prob) %>%
+  separate(param, into=c("domain","property"), by="_") %>%
+  group_by(domain, property, val) %>%
+  summarise(marginal = sum(prob))
+
+ggplot(brs, aes(x = val, y = marginal, fill = domain))+
+  geom_histogram(stat='identity', position=position_dodge())+
+  facet_grid(domain ~ property)
+
+
 ```
 
-### Posterior predictive
-```{r}
+## Posterior predictive
+```{r FBT.postpred}
 
 predict<-d %>% 
-  select(-phi,-alpha) %>%
+  #select(-phi,-alpha) %>%
+  select(-phi, -starts_with("lightbulb"), -starts_with("cracker"),
+         -starts_with("knife"),
+         -starts_with("strawberry")) %>%
+#  select(-phi, -br) %>%
+select(-phi) %>%
+#  select(-phi, -starts_with('br')) %>%
   gather(item, val, -prob) %>%
   separate(item, into=c("syllog","domain","conclusion"), sep="_") %>%
   group_by(syllog, domain, conclusion) %>%
   summarise(expval = sum(prob*val))
+
 
 predict$conclusion<-factor(predict$conclusion, levels = c('all','none','some','not.all'))
 predict$syllog<-factor(predict$syllog)
@@ -957,7 +1035,6 @@ md.tidy<- md %>%
   gather(type, value, response, expval)
 
 md.tidy$type<-factor(md.tidy$type, levels=c("response","expval"), labels=c("data","model"))
-
 
 
 ggplot(predict, aes(x=conclusion, y= expval, fill=conclusion))+
@@ -1081,6 +1158,102 @@ params<-d %>%
 ggplot(params, aes(x=val, y= marginal))+
   geom_histogram(stat='identity',position=position_dodge())+
   facet_wrap(~param, scales='free')
+
+
+```
+
+## Model / Data
+
+```{r FBT.modeldata}
+predict$domain<-factor(predict$domain, 
+                       labels = c("crackers","knives","lightbulbs","strawberries"))
+dm<-left_join(df.norm, predict, by=c("syllog","domain","conclusion"))
+with(dm, cor(prop, expval))
+
+empirical<-predict
+independent<-predict
+
+independent<- independent %>% rename(independent = expval)
+empirical <- empirical %>% rename(empirical = expval)
+
+models <- left_join(independent, empirical, by=c("syllog","domain","conclusion"))
+
+dm<-left_join(df.norm, models, by=c("syllog","domain","conclusion"))
+
+
+dm$conclusion<- factor(dm$conclusion, labels = c("all", "none", "some", "not all"))
+
+with(dm, cor(prop, independent))
+with(dm, cor(prop, empirical))
+with(dm, cor(empirical, independent))
+
+ggplot(dm, aes(x=empirical, y=prop, color=conclusion))+
+  geom_point(size=2)+
+  theme_paper()+
+  xlim(0,0.6)+
+  ylim(0,0.6)+
+  scale_color_brewer(type='qual',palette=6)+
+  xlab("(empirical prior) model predictions")+
+  ylab("human proportion endorsements")+
+  coord_fixed()
+
+dm.tidy<- dm %>% 
+  gather(type, value, prop, empirical, independent)
+
+dm.tidy$type <- factor(dm.tidy$type, levels=c("independent","empirical", "prop"),
+                       labels=c("(independent) model", "(empirical) model", "human data"))
+
+dm.sub<-filter(dm.tidy, syllog%in%c("AI1","IE1","AA1"))
+dm.sub$syllog<-factor(dm.sub$syllog, levels =c("AI1","IE1","AA1"), 
+       labels = c("all / some", "some / none","all / all"))
+
+
+ggplot(dm.sub, 
+       aes(x=conclusion, y = value, fill = conclusion, alpha = type))+
+  geom_bar(stat='identity', 
+           position=position_dodge(), color='black')+
+  theme_paper()+
+  scale_alpha_manual(values=c(0.3,0.7,1))+
+  theme(axis.text.x = element_blank(),
+        strip.text.y = element_text(angle=0),
+        legend.position = "bottom",
+        legend.direction = 'horizontal',
+        legend.box = 'horizontal')+
+  scale_fill_brewer(type='qual',palette=6)+
+  #geom_errorbar(aes(ymin=value-2*sterr, 
+  #                  ymax = value+2*sterr), 
+  #              position=position_dodge(),
+  #              width = 0.3, size = 0.3)+
+  facet_grid(syllog~domain)+
+  xlab("")+
+  ylab("percent endorsement")+
+  guides(alpha = guide_legend(title = NULL))
+
+
+dm.sub$conclusion<-factor(dm.sub$conclusion, levels = c(
+  "all","some","not all","none"))
+
+ggplot(dm.sub, 
+       aes(x=conclusion, y = value, fill = type))+
+  geom_bar(stat='identity', 
+           position=position_dodge(), color='black')+
+  theme_paper()+
+  #scale_alpha_manual(values=c(0.3,0.7,1))+
+  theme(#axis.text.x = element_blank(),
+        strip.text.y = element_text(angle=0),
+        legend.position = "bottom",
+        legend.direction = 'horizontal',
+        legend.box = 'horizontal')+
+#  scale_fill_brewer(type='qual',palette=2)+
+  #geom_errorbar(aes(ymin=value-2*sterr, 
+  #                  ymax = value+2*sterr), 
+  #              position=position_dodge(),
+  #              width = 0.3, size = 0.3)+
+  facet_grid(syllog~domain)+
+  xlab("")+
+  ylab("percent endorsement")+
+  guides(alpha = guide_legend(title = NULL))
+
 
 
 ```
