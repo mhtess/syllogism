@@ -1,0 +1,27 @@
+// webppl phm.wppl --require-js ./phm.js
+
+var modelAnalysis = function(){
+
+	var maxPremiseEndorsement = {
+		"A": sample(uniformERP,[0,1]),
+		"E": sample(uniformERP,[0,1]),
+		"I": sample(uniformERP,[0,1]),
+		"O": sample(uniformERP,[0,1])
+	}
+
+	var pEntailments = sample(uniformERP,[0,1]);
+
+	map(function(syllogism){
+		var conclusion = flip(pEntailments) ? phm.pEntailment(syllogism):
+									  	 phm.minHeuristic(syllogism)
+
+		factor(maxPremiseEndorsement[conclusion], 
+					meansFromMetaAnalysis)
+
+
+	}, 
+	allSyllogisms)
+
+
+
+}
