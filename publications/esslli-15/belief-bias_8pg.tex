@@ -23,10 +23,9 @@
 \usepackage{wrapfig}
 \usepackage{lipsum}
 
- \newcommand{\denote}[1]{\mbox{ $[\![ #1 ]\!]$}}
-
 \definecolor{Red}{RGB}{255,0,0}
 \newcommand{\red}[1]{\textcolor{Red}{#1}}  
+\newcommand{\denote}[1]{\mbox{ $[\![ #1 ]\!]$}}
 
 \newcommand{\subsubsubsection}[1]{{\em #1}}
 \newcommand{\eref}[1]{(\ref{#1})}
@@ -69,9 +68,19 @@
 Belief bias in syllogistic reasoning is an effect wherein the a priori believability of the conclusion influences the intuitive acceptability of that conclusion \cite{Evans1983}. Prior beliefs about the world can be formalized into a probabilistic generative model of situations. \citeA{Tessler2014} proposed that this very idea can account for the range of acceptability observed across categorical syllogisms with abstract content. Here, I extend their model to accommodate syllogistic reasoning data where content effects are observed. I collect data about the prior plausibility of various properties co-occurring, and use this data to predict syllogistic reasoning behavior in a separate experiment. I compare models with different types of assumptions about the prior and discuss open questions for this approach. 
 \end{abstract}
 
-Prior beliefs about the world guide our actions, thoughts, and reasoning in new situations. It can be helpful, for example, to know how fast a particular kind of animal can run, if you are also thinking about if that animal can eat you. Similarly, humans can use prior beliefs in a domain (e.g. life expectancies) to reason about everyday contexts  (e.g. guessing how long someone will live) \cite{Griffiths2006}. Finally, it has been argued that prior beliefs influence the very meaning of words \cite{GoodLass2015}. It is odd then that so little formal theory has gone into understanding prior beliefs in reasoning tasks that have occupied much of cognitive psychology (but, cf. \citeA{Klauer2000, Dube2010}). 
+Your logic-chopping friend is in a room with a number of lamps and lightbulbs; you are in a different room and can't see what she sees. She gives you the following logic puzzle. 
 
-One formal approach, with the potential to model the influence of prior beliefs in syllogistic reasoning, was proposed by \citeA{Tessler2014}, who argued that syllogistic reasoning could be understood through the broader lens of language understanding. This intuition was formalized in a probabilistic model of pragmatic reasoning about syllogistic premises. They found that a probabilistic model of argument strength based on situations populated by objects with properties accounted for much of the variability in conclusion endorsements for syllogisms. That work further explored syllogistic reasoning by incorporating Gricean principles---formalized in the Rational Speech-Act (RSA) theory of language understanding \cite{Frank2012,Goodman2013}---and specifying the Question Under Discussion as the relationship between the conclusion terms (i.e. the QUD is the syllogistic conclusion). This component was important in capturing some of the qualitative phenomena in syllogistic reasoning. %(e.g. the relative preference for the \emph{all X are Y} conclusion over the \emph{some X are Y} conclusion when both are valid).
+\begin{quote}
+All of the lightbulbs that are hot are bright.\\
+Some of the lightbulbs that are bright are \emph{not} on.
+\end{quote}
+
+Are some of the hot lightbulbs \emph{not} on? Are any of the hot ones on?
+\vspace{0.3cm}
+
+Prior beliefs about the world guide our actions, thoughts, and reasoning in new situations. It can be helpful, for example, to know how fast a particular kind of animal can run, if you are also thinking about if that animal can eat you. Similarly, humans can use prior beliefs in a domain (e.g. life expectancies) to reason accurately about everyday contexts  (e.g. guessing how long someone will live; \citeNP{Griffiths2006}). Finally, it has been argued that prior beliefs influence the very meaning of words \cite{GoodLass2015}. It is odd then that so little formal theory has gone into understanding prior beliefs in reasoning tasks that have occupied much of cognitive psychology \cite<but, cf.>{Klauer2000, Dube2010}. 
+
+Bayesian approaches to cognitive science have a very natural of accounting for prior beliefs in reasoning. \citeA{Tessler2014} argue that syllogistic reasoning can be understood through the broader lens of language understanding, formalized in a probabilistic model of pragmatic reasoning about syllogistic premises. They found that a probabilistic model of argument strength based on an ontology of situations populated by objects with properties accounted for much of the variability in conclusion endorsements for syllogisms. That work further explored syllogistic reasoning by incorporating Gricean principles---formalized in the Rational Speech-Act (RSA) theory of language understanding \cite{Frank2012,Goodman2013}---and specifying the Question Under Discussion as the relationship between the conclusion terms (i.e. the QUD is the syllogistic conclusion). This component was important in capturing some of the qualitative phenomena in syllogistic reasoning. %(e.g. the relative preference for the \emph{all X are Y} conclusion over the \emph{some X are Y} conclusion when both are valid).
 Here, I extend the model of argument strength to capture qualitative phenomena associated with \emph{belief bias} by incorporating prior beliefs about real-world content and test it against behavioral data obtained in targeted studies of the role of prior beliefs in syllogistic reasoning.
 
 %The extent to which beliefs influence reasoning depends on the a priori acceptability of the conclusion \cite{Evans1983}, of the premises \cite{Cherubini1998}, as well as the relative strength of the argument \cite{Evans2001}. The approach outlined in this paper is to account for the gradience in argument strength in terms of the prior distribution over properties in question; i.e., I explain relative argument strength and the influence of beliefs jointly.
@@ -139,29 +148,50 @@ The organization for the rest of the paper is as follows. First, I review the mo
 
 \section{Bayesian argument strength in syllogistic reasoning}
 
-Gradience in syllogistic reasoning was formalized by \citeA{Tessler2014} (henceforth, TG). The computational model presented by TG is a Bayesian model; as such, it is important to understand the implications of the prior for syllogistic reasoning. The model samples situations which are composed of objects with properties. 
+Gradience in syllogistic reasoning was formalized by \citeA{Tessler2014} (henceforth, TG). The computational model presented by TG is a Bayesian model; as such, it is important to understand the implications of the prior for syllogistic reasoning. 
 
-Situations are composed of $n$ objects:
-\begin{lstlisting}
-(define objects (list 'o1 'o2 ... 'on))
-\end{lstlisting}
+\subsection{Ontology}
 
-(Ellipses indicate omissions for brevity, otherwise models are specified via runnable Church\footnote{The model was written in the probabilistic programming language Church \cite{probmods}, a higher-order probabilistic logic based on the lambda calculus. For background and details on this form of model representation, see \url{http://probmods.org}} code\footnote{A fully-specified version of this model can be accessed at: \url{http://forestdb.org/models/syllogisms-cogsci14.html}}.) Properties \lstinline{A}, \lstinline{B}, and \lstinline{C} of these objects are represented as functions from objects to the property value. Properties are assumed to be Boolean. The TG model assumed no a priori information about the meaning of the properties; thus, properties were determined independently and identically:
+The model is based on an ontology of situations composed of objects with properties. 
+%
+Situations are composed of $n$ objects: $\{o_1, o_2, ..., o_n\}$.
+%
+%    \begin{lstlisting}
+%    (define objects (list 'o1 'o2 ... 'on))
+%    \end{lstlisting}
+%
+Properties $A$, $B$, and $C$ of these objects are stochastic, but persistent\footnote{This is so a given object has the same value each time it is examined, even though it is initially determined probabilistically} and assumed to be Boolean for simplicity. The TG model assumed no a priori information about the meaning of the properties; thus, properties were determined independently and identically:
 
-\begin{lstlisting}
-(define A (mem (lambda (x) (flip br))))
-(define B (mem (lambda (x) (flip br))))
-(define C (mem (lambda (x) (flip br))))
-\end{lstlisting}
 
-Note that the operator \lstinline{mem} memoizes these functions, so that a given object has the same value each time it is examined within a given situation, even though it is initially determined probabilistically (via \lstinline{flip}\footnote{For clarity, \lstinline{(flip br)} is equivalent to Bernoulli ($br$).}). Hence, the number of objects $n$ is a parameter of the model, as is the base rate $P(x)=br$ of properties. In fitting the model to the meta-analysis data by \citeA{Chater1999}, TG found $P(x) \sim 0.25$. This is qualitatively consistent with the ``rarity assumption'' --- that properties are relatively rare of objects --- first used by \citeA{Oaksford1994}.
+\begin{align*}
+\text{P(}A\text{)} \sim \text{Bernoulli(}br\text{)} \\ 
+\text{P(}B\text{)} \sim \text{Bernoulli(}br\text{)} \\
+\text{P(}C\text{)} \sim \text{Bernoulli(}br\text{)}
+\end{align*}
 
-The Bayesian model has a very natural way to account for prior beliefs in reasoning. Indeed, beliefs simply specify a different prior distribution of properties. In particular, the assumption that properties are \emph{independent and identically distributed (\emph{i.i.d.}} must be relaxed if we are to consider real-world content. I extend the model by considering that properties can follow any discrete distribution; the presence or absence of properties can be represented by the joint distribution $P(a,b,c)$:
+%\begin{lstlisting}
+%(define A (mem (lambda (x) (flip br))))
+%(define B (mem (lambda (x) (flip br))))
+%(define C (mem (lambda (x) (flip br))))
+%\end{lstlisting}
 
-\begin{lstlisting}
-(define ABC (mem (lambda (x) 
-     (multinomial (list 'ABC 'AB_ 'A_C '_BC 'A__ '_B_ '__C '___) real-world-prior))))
-\end{lstlisting}
+%Note that the operator \lstinline{mem} memoizes these functions, so that a given object has the same value each time it is examined within a given situation, even though it is initially determined probabilistically (via \lstinline{flip}\footnote{For clarity, \lstinline{(flip br)} is equivalent to Bernoulli ($br$).}). 
+
+The number of objects $n$ is a parameter of the model, as is the base rate $br$ of properties. In fitting the model to the meta-analysis data by \citeA{Chater1999}, TG found $br \approx 0.25$. This is qualitatively consistent with the ``rarity assumption'' --- that properties are relatively rare of objects --- first used by \citeA{Oaksford1994}.
+
+The Bayesian model has a very natural way to account for prior beliefs in reasoning. Indeed, beliefs simply specify a different prior distribution of properties. In particular, the assumption that properties are \emph{independent and identically distributed (i.i.d.)} must be relaxed if we are to consider real-world content. I extend the model by considering that properties can follow any discrete distribution; the presence or absence of properties can be represented by the joint distribution:
+
+$$
+\{A, B, C\} \sim \text{Discrete(}\alpha\text{)}
+$$
+
+
+The model was written in the probabilistic programming language Church \cite{probmods}, a higher-order probabilistic logic based on the lambda calculus\footnote{A fully-specified version of this model can be accessed at: \url{http://forestdb.org/models/syllogisms-cogsci14.html}}. For background and details on this form of model representation, see \url{http://probmods.org}.
+
+%\begin{lstlisting}
+%(define ABC (mem (lambda (x) 
+%     (multinomial (list 'ABC 'AB_ 'A_C '_BC 'A__ '_B_ '__C '___) real-world-prior))))
+%\end{lstlisting}
 
 
 %\subsection{Model overview and previous findings}
@@ -177,29 +207,48 @@ The Bayesian model has a very natural way to account for prior beliefs in reason
 The model of argument strength relies upon the interpretation of quantifier sentences as truth-functional operators, consistent with standard practice in formal semantics. 
 
 
-A quantifier (e.g. \lstinline{all}) is a function of two properties (e.g. \lstinline{A} and \lstinline{B}) which maps to a truth value by consulting the properties of the objects in the current situation. For instance:
-\begin{lstlisting}
-(define all (lambda (A B) 
-    (all-true (map (lambda (x) (if (A x) (B x) true)) objects))))
-\end{lstlisting}
-The function \lstinline{map} applies the given function ---\lstinline{(lambda ...)}--- to each element of the list \lstinline{objects}. The helper function \lstinline{all-true} simply checks that all elements of a list are true, i.e. that all the \emph{As} are indeed \emph{Bs}. In a similar way, \lstinline{some}, \lstinline{none}, \lstinline{not-all} are defined to have their standard meanings. 
+A quantifier utterance (e.g $u_{\textrm{all \emph{A} are \emph{B}}}$) maps two properties (e.g. \emph{A} and \emph{B}) to a truth value by consulting the properties of the objects in the current situation and applying the usual literal meaning. For instance:
+\begin{align*}
+\denote{u_{\textrm{no  \emph{A} are \emph{B}}}}= \{s : \| A \cap B \| = 0\}\\ 
+\denote{u_{\textrm{some  \emph{A} are \emph{B}}}}= \{s : \| A \cap B \|> 0\}\\
+\denote{u_{\textrm{all  \emph{A} are \emph{B}}}}= \{s : \| A \cap B \| = n\}\\
+\denote{u_{\textrm{not all  \emph{A} are \emph{B}}}}= \{s : \| A \cap B \|< n\}\\
+\end{align*}
+%
+Thus, the quantifier utterances pick out the situations $s$ where the truth-functional meaning of the utterance is satisfied. 
+%
+%
+%\begin{lstlisting}
+%(define all (lambda (A B) 
+%    (all-true (map (lambda (x) (if (A x) (B x) true)) objects))))
+%\end{lstlisting}
+%
+%The function \lstinline{map} applies the given function ---\lstinline{(lambda ...)}--- to each element of the list \lstinline{objects}. The helper function \lstinline{all-true} simply checks that all elements of a list are true, i.e. that all the \emph{As} are indeed \emph{Bs}. In a similar way, \lstinline{some}, \lstinline{none}, \lstinline{not-all} are defined to have their standard meanings. 
+%
 
-The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over situations to a posterior belief distribution. For syllogistic reasoning, we are interested not in the posterior distribution over situations \emph{per se}, but the distribution on true conclusions that these situations entail. In Church this looks like:
-\begin{lstlisting}
-(query
- (define objects (list 'o1 'o2 ... 'on))
- . . . define A,B,C . . .
- . . . define all, some, no, not-all . . .
- (define true-conclusions (filter (lambda (conclusion) (conclusion A C))
- 								 all-conclusions))
+The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over situations to a posterior belief distribution: $P(s \mid premises)$, where $premises$ are the two quantifier-utterances of a syllogism (e.g. $u_{\textrm{all  \emph{A} are \emph{B}}}, u_{\textrm{some  \emph{B} are not \emph{C}}}$).
 
- true-conclusions
- 
- (condition	(and (premise-one A B)
-      			(premise-two B C))))
-\end{lstlisting}
+For syllogistic reasoning, we are interested not in the posterior distribution over situations \emph{per se}, but the distribution on true conclusions that these situations entail: $P(conclusion \mid s)$, where $conclusion$ is a quantifier-utterance relating the conclusion terms (e.g. $u_{\textrm{some  \emph{A} are \emph{C}}}$).
 
-The first arguments to a query function comprise a generative model: the background knowledge with which a reasoning agent is endowed. Definitions for which a prior is stipulated (e.g. \lstinline{A, B, C} i.e, the situation in terms of the properties) denote aspects of the world over which the agent has uncertainty. The second argument, called the \emph{query expression}, is what the agent wants to know. The final argument, called the \emph{conditioner}, is the information with which the agent updates her beliefs; it is what she knows. This model, thus, returns a posterior distribution over conclusions conditioned on some premises being true.
+%In Church this looks like:
+%\begin{lstlisting}
+%(query
+% (define objects (list 'o1 'o2 ... 'on))
+% . . . define A,B,C . . .
+% . . . define all, some, no, not-all . . .
+% (define true-conclusions (filter (lambda (conclusion) (conclusion A C))
+% 								 all-conclusions))
+%
+% true-conclusions
+% 
+% (condition	(and (premise-one A B)
+%      			(premise-two B C))))
+%\end{lstlisting}
+%
+%The first arguments to a query function comprise a generative model: the background knowledge with which a reasoning agent is endowed. Definitions for which a prior is stipulated (e.g. \lstinline{A, B, C} i.e, the situation in terms of the properties) denote aspects of the world over which the agent has uncertainty. The second argument, called the \emph{query expression}, is what the agent wants to know. The final argument, called the \emph{conditioner}, is the information with which the agent updates her beliefs; it is what she knows. 
+
+
+This model, thus, returns a posterior distribution over conclusions conditioned on some premises being true.
 
 
 
