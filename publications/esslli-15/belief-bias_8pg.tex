@@ -66,10 +66,10 @@
 
 
 \begin{abstract}
-Belief bias in syllogistic reasoning is an effect wherein the a priori believability of the conclusion influences the intuitive acceptability of that conclusion \cite{Evans1983}. Prior beliefs about the world can be formalized into a probabilistic generative model of situations. \citeA{Tessler2014} proposed that this very idea can account for the range of acceptability observed across categorical syllogisms with abstract content. Here, I extend their model to accommodate syllogistic reasoning data where content effects are observed. I collect data about the prior plausibility of various properties co-occurring, and use this data to predict syllogistic reasoning behavior in a separate experiment. I compare models with different types of assumptions about the prior and discuss open questions for this approach. 
+The phenomenon of \emph{belief bias} in syllogistic reasoning occurs when the a priori believability of a conclusion influences the intuitive acceptability of that conclusion \cite{Evans1983}. Prior beliefs about the world can be formalized into a probabilistic generative model of situations. \citeA{Tessler2014} proposed that this very idea can account for the range of acceptability observed across categorical syllogisms with abstract content. Here, I generalize their model to accommodate syllogistic reasoning data where content effects are observed. I collect data about the prior plausibility of various properties co-occurring, and use this data to predict syllogistic reasoning behavior in a separate experiment. I compare models with different types of assumptions concerning the prior and discuss open questions for this approach. 
 \end{abstract}
 
-Your logic-chopping friend is in a room with a number of lamps and lightbulbs; you are in a different room and can't see what she sees. She gives you the following logic puzzle. 
+Your logic-chopping friend is in a room with a number of lamps and lightbulbs; you are in a different room and cannot see what she sees. She gives you the following logic puzzle. 
 
 \begin{quote}
 All of the lightbulbs that are hot are bright.\\
@@ -79,10 +79,18 @@ Some of the lightbulbs that are bright are \emph{not} on.
 Are some of the hot lightbulbs \emph{not} on? Are any of the hot ones on?
 \vspace{0.3cm}
 
-Prior beliefs about the world guide our actions, thoughts, and reasoning in new situations. It can be helpful, for example, to know how fast a particular kind of animal can run, if you are also thinking about if that animal can eat you. Similarly, humans can use prior beliefs in a domain (e.g. life expectancies) to reason accurately about everyday contexts  (e.g. guessing how long someone will live; \citeNP{Griffiths2006}). Finally, it has been argued that prior beliefs influence the very meaning of words \cite{GoodLass2015}. It is odd then that so little formal theory has gone into understanding prior beliefs in reasoning tasks that have occupied much of cognitive psychology \cite<but, cf.>{Klauer2000, Dube2010}. 
+Prior beliefs about the world guide our actions, thoughts, and reasoning in new situations. It can be helpful, for example, to know how fast a particular kind of animal can run, if you are also thinking about if that animal can eat you. Similarly, humans can use prior beliefs in a domain (e.g. life expectancies) to reason accurately about everyday contexts  (e.g. guessing how long someone will live; \citeNP{Griffiths2006}). Finally, it has been argued that prior beliefs influence the very meaning of words \cite{GoodLass2015}. It is odd then that so little formal theory has gone into understanding prior beliefs in classic reasoning tasks \cite<but, cf.>{Klauer2000, Dube2010}. 
 
-Bayesian approaches to cognitive science have a very natural of accounting for prior beliefs in reasoning. \citeA{Tessler2014} argue that syllogistic reasoning can be understood through the broader lens of language understanding, formalized in a probabilistic model of pragmatic reasoning about syllogistic premises. They found that a probabilistic model of argument strength based on an ontology of situations populated by objects with properties accounted for much of the variability in conclusion endorsements for syllogisms. That work further explored syllogistic reasoning by incorporating Gricean principles---formalized in the Rational Speech-Act (RSA) theory of language understanding \cite{Frank2012,Goodman2013}---and specifying the Question Under Discussion as the relationship between the conclusion terms (i.e. the QUD is the syllogistic conclusion). This component was important in capturing some of the qualitative phenomena in syllogistic reasoning. %(e.g. the relative preference for the \emph{all X are Y} conclusion over the \emph{some X are Y} conclusion when both are valid).
-Here, I extend the model of argument strength to capture qualitative phenomena associated with \emph{belief bias} by incorporating prior beliefs about real-world content and test it against behavioral data obtained in targeted studies of the role of prior beliefs in syllogistic reasoning.
+Bayesian approaches to cognitive science have a natural way of accounting for prior beliefs in reasoning. 
+%\citeA{Tessler2014} argue that syllogistic reasoning can be understood through the broader lens of language understanding, formalized in a probabilistic model of pragmatic reasoning about syllogistic premises. They
+ \citeA{Tessler2014} described a probabilistic model of argument strength based on an ontology of situations populated by objects with properties. 
+ This model accounted for much of the variability in \citeA{Chater1999}'s meta-analysis data  of categorical syllogistic reasoning. 
+That work further explored syllogistic reasoning by incorporating Gricean principles---formalized in the Rational Speech-Act (RSA) theory of language understanding \cite{Frank2012,Goodman2013}---and specifying the Question Under Discussion as the relationship between the conclusion terms (i.e. the QUD is the syllogistic conclusion). 
+This pragmatic component was important in capturing important qualitative phenomena in syllogistic reasoning (e.g. the relative preference for the \emph{all X are Y} conclusion over the \emph{some X are Y} conclusion when both are logically valid).
+This work was done with respect to meta-analysis data that differed largely in the materials used, and for which prior beliefs about the materials was not expected to have a substantial effect.
+However, it is known that prior expectations about the categories and properties at stake in a syllogism influence the acceptability of a conclusion \cite{Evans83, Cherubini1998, Evans2001}.
+
+Here, I generalize \citeA{Tessler2014}'s model of argument strength to capture qualitative phenomena associated with \emph{belief bias}. This is done by empirically measuring prior beliefs about real-world content, deriving model predictions based on those beliefs, and testing the probabilisitic model of argument strength against behavioral data obtained in a separate experiment of syllogistic reasoning.
 
 %The extent to which beliefs influence reasoning depends on the a priori acceptability of the conclusion \cite{Evans1983}, of the premises \cite{Cherubini1998}, as well as the relative strength of the argument \cite{Evans2001}. The approach outlined in this paper is to account for the gradience in argument strength in terms of the prior distribution over properties in question; i.e., I explain relative argument strength and the influence of beliefs jointly.
 
@@ -90,7 +98,7 @@ Here, I extend the model of argument strength to capture qualitative phenomena a
 
 %In this paper, I address two questions: Does the prior distribution matter for syllogistic reasoning about real world content? Is it necessary to model dependencies in background knowledge? 
 
-The organization for the rest of the paper is as follows. First, I review the model by \citeA{Tessler2014} and propose an extension to account for reasoning about real-world content. I then collect data measuring the prior distributions of various properties co-occurring in 4 domains: frozen fruit, expired crackers, bright lightbulbs, and sharp knives. I also collect data about 8 syllogisms using each domain's content (32 items in total). I then compare the model to the data by integrating out the parameters of the computational model and comparing alternative models with increasingly relaxed assumptions about background knowledge. I conclude by discussing intriguing questions raised by this work.
+The organization for the rest of the paper is as follows. First, I review the model by \citeA{Tessler2014} and propose an extension to account for reasoning about real-world content. I then collect data measuring prior expectations about the distributions of various properties co-occurring in 4 domains: frozen fruit, expired crackers, bright lightbulbs, and sharp knives. I also collect data about 8 syllogisms using each domain's content (32 items in total). I then compare the model to the data by integrating out the parameters of the raesoning model and comparing alternative models with increasingly relaxed assumptions about background knowledge. I conclude by discussing intriguing questions raised by this work.
 
 
 % \citeA{Evans1999} conducted a standard syllogistic reasoning study (syllogistic reasoning with only abstract terms) and found gradient endorsement rates for logically invalid syllogisms; this gradient can be interpreted as relatively weaker and stronger arguments. \citeA{Evans2001} replicated this finding and found that weaker syllogisms were more susceptible to positive belief bias (i.e. accepting a believable conclusion) and stronger syllogisms were more susceptible to negative belief belief (i.e. rejecting an unbelievable conclusion). This work suggests a gradient influence of prior beliefs on argument strength. 
@@ -149,7 +157,7 @@ The organization for the rest of the paper is as follows. First, I review the mo
 
 \section{Bayesian argument strength in syllogistic reasoning}
 
-Gradience in syllogistic reasoning was formalized by \citeA{Tessler2014} (henceforth, TG). The computational model presented by TG is a Bayesian model; as such, it is important to understand the implications of the prior for syllogistic reasoning. 
+A formal account of gradience in syllogistic reasoning was presented by \citeA{Tessler2014}. The computational model is a Bayesian model; as such, it is important to understand the implications of the prior for syllogistic reasoning. I review the model, highlighting along the way how I generalize the model to consider content effects.
 
 \subsection{Ontology}
 
@@ -161,13 +169,17 @@ Situations are composed of $n$ objects: $\{o_1, o_2, ..., o_n\}$.
 %    (define objects (list 'o1 'o2 ... 'on))
 %    \end{lstlisting}
 %
-Properties $A$, $B$, and $C$ of these objects are stochastic, but persistent\footnote{This is so a given object has the same value each time it is examined, even though it is initially determined probabilistically} and assumed to be Boolean for simplicity. The TG model assumed no a priori information about the meaning of the properties; thus, properties were determined independently and identically:
-
+Properties $A$, $B$, and $C$ of these objects are stochastic, but persistent\footnote{This is so a given object has the same value each time it is examined, even though that property-value is initially determined probabilistically} and assumed to be Boolean for simplicity. To account for syllogistic reasoning in \citeA{Chater1999}'s meta-analysis of 5 studies, which differed with respect to the materials used, the model assumed no \emph{a priori} information about the meaning of the properties; thus, properties were determined independently and identically:
+%\begin{align*}
+%\text{P(}A\text{)} \sim \text{Bernoulli(}br\text{)} \\ 
+%\text{P(}B\text{)} \sim \text{Bernoulli(}br\text{)} \\
+%\text{P(}C\text{)} \sim \text{Bernoulli(}br\text{)}
+%\end{align*}
 
 \begin{align*}
-\text{P(}A\text{)} \sim \text{Bernoulli(}br\text{)} \\ 
-\text{P(}B\text{)} \sim \text{Bernoulli(}br\text{)} \\
-\text{P(}C\text{)} \sim \text{Bernoulli(}br\text{)}
+A \sim \text{Bernoulli(}\theta\text{)} \\ 
+B \sim \text{Bernoulli(}\theta\text{)} \\
+C \sim \text{Bernoulli(}\theta\text{)}
 \end{align*}
 
 %\begin{lstlisting}
@@ -175,19 +187,8 @@ Properties $A$, $B$, and $C$ of these objects are stochastic, but persistent\foo
 %(define B (mem (lambda (x) (flip br))))
 %(define C (mem (lambda (x) (flip br))))
 %\end{lstlisting}
-
 %Note that the operator \lstinline{mem} memoizes these functions, so that a given object has the same value each time it is examined within a given situation, even though it is initially determined probabilistically (via \lstinline{flip}\footnote{For clarity, \lstinline{(flip br)} is equivalent to Bernoulli ($br$).}). 
-
-The number of objects $n$ is a parameter of the model, as is the base rate $br$ of properties. In fitting the model to the meta-analysis data by \citeA{Chater1999}, TG found $br \approx 0.25$. This is qualitatively consistent with the ``rarity assumption'' --- that properties are relatively rare of objects --- first used by \citeA{Oaksford1994}.
-
-The Bayesian model has a very natural way to account for prior beliefs in reasoning. Indeed, beliefs simply specify a different prior distribution of properties. In particular, the assumption that properties are \emph{independent and identically distributed (i.i.d.)} must be relaxed if we are to consider real-world content. I extend the model by considering that properties can that can have correlations ; the presence or absence of properties can be represented by the joint distribution: P$(A, B, C)$.
-
-%$$
-%\{A, B, C\} \sim \text{Discrete(}\alpha\text{)}
-%$$
-
-
-The model was written in the probabilistic programming language Church \cite{probmods}, a higher-order probabilistic logic based on the lambda calculus\footnote{A fully-specified version of this model can be accessed at: \url{http://forestdb.org/models/syllogisms-cogsci14.html}}. For background and details on this form of model representation, see \url{http://probmods.org}.
+The number of objects in a situation $n$ is a parameter of the model, as is the base rate $\theta$ of properties. In fitting the model to the meta-analysis data, \citeA{Tessler2014} found $\theta \approx 0.25$, qualitatively consistent with the ``rarity assumption''---that properties are relatively rare of objects---first used by \citeA{Oaksford1994}. The best fitting $n$ was around 5, also consistent with the minimal models assumption of the Mental Models framework \cite{JL1983}.
 
 %\begin{lstlisting}
 %(define ABC (mem (lambda (x) 
@@ -205,10 +206,9 @@ The model was written in the probabilistic programming language Church \cite{pro
 
 \subsection{A generative model of argument strength}
 
-The model of argument strength relies upon the interpretation of quantifier sentences as truth-functional operators, consistent with standard practice in formal semantics. 
+The generative model of situations can be turned into a generative model of syllogistic reasoning by providing a semantics for the quantifier sentences of a syllogism. The model uses the interpretation of the quantifier sentences as truth-functional operators, consistent with standard practice in formal semantics. 
 
-
-A quantifier utterance (e.g $u_{\textrm{all \emph{A} are \emph{B}}}$) maps two properties (e.g. \emph{A} and \emph{B}) to a truth value by consulting the properties of the objects in the current situation and applying the usual literal meaning. For instance:
+A quantifier utterance (e.g $u_{\textrm{all \emph{A} are \emph{B}}}$) maps two properties (e.g. \emph{A} and \emph{B}) to a truth value by consulting the properties of the objects in the situation and applying the usual literal meaning. For instance:
 \begin{align*}
 \denote{u_{\textrm{no  \emph{A} are \emph{B}}}}= \{s : \| o_A \cap o_B \| = 0\}\\ 
 \denote{u_{\textrm{some  \emph{A} are \emph{B}}}}= \{s : \| o_A \cap o_B \|> 0\}\\
@@ -228,14 +228,17 @@ Thus, the quantifier utterances pick out the situations $s$ where the truth-func
 %The function \lstinline{map} applies the given function ---\lstinline{(lambda ...)}--- to each element of the list \lstinline{objects}. The helper function \lstinline{all-true} simply checks that all elements of a list are true, i.e. that all the \emph{As} are indeed \emph{Bs}. In a similar way, \lstinline{some}, \lstinline{none}, \lstinline{not-all} are defined to have their standard meanings. 
 %
 
-The key observation to connect these truth-functional meanings of quantifier expressions to probability distributions over situations is that an expression which assigns a Boolean value to each situation can be used for probabilistic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over situations to a posterior belief distribution: $P(s \mid premises)$, where $premises$ are the two quantifier-utterances of a syllogism (e.g. $u_{\textrm{all  \emph{A} are \emph{B}}}, u_{\textrm{some  \emph{B} are not \emph{C}}}$).
+Truth-functional meanings of quantifier expressions are useful here because an expression which assigns a Boolean value to a situation can be used for probabilisitic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over situations into a posterior belief distribution: $P(s \mid u_1, u_2)$, where $u_1, u_2$ are the two quantifier-utterances corresponding to the premises of a syllogism (e.g. $u_{\textrm{all  \emph{A} are \emph{B}}}, u_{\textrm{some  \emph{B} are not \emph{C}}}$).
 
-For syllogistic reasoning, we are interested not in the posterior distribution over situations \emph{per se}, but the distribution on true conclusions that these situations entail: $P(conclusion \mid s)$, where $conclusion$ is a quantifier-utterance relating the conclusion terms (e.g. $u_{\textrm{some  \emph{A} are \emph{C}}}$). Hence,
+For syllogistic reasoning, we are interested not in the posterior distribution over situations \emph{per se}, but the distribution on true conclusions that these situations entail: $P(u_3 \mid s)$, where $u_3$ is a quantifier-utterance corresponding to the conclusion of a syllogism (e.g. $u_{\textrm{some  \emph{A} are \emph{C}}}$). Hence,
 
 $$
-P(conclusion \mid premises) \propto P(s \mid premises)\cdot P(conclusion\mid s)
+P(u_3 \mid u_1, u_2) \propto P(u_3\mid s) \cdot P(s \mid u_1, u_2)
 $$
-
+or
+$$
+P(conclusion \mid premises) \propto P(conclusion\mid situation) \cdot P(situation \mid premises)
+$$
 %In Church this looks like:
 %\begin{lstlisting}
 %(query
@@ -254,8 +257,17 @@ $$
 %The first arguments to a query function comprise a generative model: the background knowledge with which a reasoning agent is endowed. Definitions for which a prior is stipulated (e.g. \lstinline{A, B, C} i.e, the situation in terms of the properties) denote aspects of the world over which the agent has uncertainty. The second argument, called the \emph{query expression}, is what the agent wants to know. The final argument, called the \emph{conditioner}, is the information with which the agent updates her beliefs; it is what she knows. 
 
 
-This model, thus, returns a posterior distribution over conclusions conditioned on some premises being true.
+This model, thus, returns a posterior distribution over conclusions conditioned on the premises of a syllogism being true.
 
+
+The Bayesian model has a natural way of accounting for the influence of prior beliefs in reasoning. Indeed, beliefs simply specify a prior distribution over situations. In particular, the assumption that properties in a situatoin are \emph{independent and identically distributed (i.i.d.)} must be relaxed if we are to consider real-world content. I generalize the model by considering that properties can have correlations; the representation of expectations about the presence or absence of properties will be generalized from 3 marginal distributions---P($a$), P($b$), P($c$)---to the joint distribution: P$(a, b, c)$.
+
+%$$
+%\{A, B, C\} \sim \text{Discrete(}\alpha\text{)}
+%$$
+
+
+The model was written in the probabilistic programming language WebPPL\footnote{A fully-specified version of this model can be accessed at: \url{http://forestdb.org/models/syllogisms-cogsci14.html}}\cite{dippl}. For background and details on this form of model representation, see \url{http://probmods.org}.
 
 
 %\begin{eqnarray}
@@ -279,63 +291,35 @@ This model, thus, returns a posterior distribution over conclusions conditioned 
 
 
 %
-%\section{Experiment 1: Measuring $P(a, b, c)$ for real-world content}
-%\label{prelicit}
-%
-%To achieve reliability of the prior estimates, I selected 4 domains that could be interpreted as having properties with causal relationships because people typically have strong intuitions about causal domains. The 4 causal domains divided into two structural forms: common cause and common effect, in order to increase the variability of the domains. 
-%
-%\subsubsection{Design}
-%
-%I recruited 70 participants on Amazon's Mechanical Turk to rate the likelihood of various combinations of properties co-occurring. Participants were paid \$0.80 for their work.
-%
-%I ran the experiment using two different dependent measures as a between-subjects variable. Each participant was randomly assigned to either the ``frequency'' or the ``plausibility'' dependent measure condition. Within each of these conditions, participants completed the ``frequency'' or ``plausibility'' judgment task for all 4 domains. The design can be summarized as follows: 2 (task: ``frequency'' or ``plausibility'' judgment; between subjects) x 4 (domains: see table \ref{tab:domains}; within subjects).
-%
-%
-%\subsubsection{Procedure \& Materials}
-%
+\section{Experiment 1: Measuring $P(a, b, c)$ for real-world content}
+\label{prelicit}
+
+Bayesian models of reasoning and language typically measure the relevant prior distribution for a given task in order to generate predictions. For the model of syllogistic reasoning presented by \citeA{Tessler2014}, the natural prior to measure is the distribution over the presence and absence of the properties mentioned in the syllogism.
+I constructed content domains to intuitively cover a range of probabilities.
+
+%To achieve reliable estimates of $P(a, b, c)$, I selected causal domains  strong intuitions about causal domains. The 4 causal domains divided into two structural forms: common cause and common effect, in order to increase the variability of the domains. 
+
+\subsubsection{Design}
+
+I recruited 70 participants on Amazon's Mechanical Turk to rate the likelihood of various combinations of properties co-occurring. Participants were paid \$0.80 for their work.
+
+To assess the reliability of the elicitation task, I ran the experiment using two different dependent measures as a between-subjects variable. 
+Each participant was randomly assigned to either the ``frequency'' or the ``plausibility'' dependent measure condition (described below). 
+Within each of these conditions, participants completed the judgment task for 4 content domains\footnote{The experiment in full can be accessed at: \url{http://stanford.edu/~mtessler/experiments/syllogism-belief-priors/prior-exp.html}}. . 
+
+\subsubsection{Procedure \& Materials}
+
+I selected property domains based on model simulations using qualitatively different priors (elicited from people in my lab). 
+These preliminary simulations suggested that domains with causal structure led to the biggest differences between content domains (possibly due to the probability estimates being more reliable for causal domains). 
+Table \ref{tab:domains} shows the properties used.
+
+The prompts for the ``plausibility'' condition read: ``Imagine an X (e.g. a lightbulb; see Table \ref{tab:domains}, column ``Noun''). How likely is it that it is \_\_\_?''  
+The prompts for the ``frequency'' condition read: ``Imagine 100 Xs (e.g. lightbulbs). About how many of them are \_\_\_?''
+Below these prompts were listed the 8 possible combinations of the presence and absence of the Properties A, B, C (e.g. ``is on'', ``is bright'', and ``is hot'') found in Table \ref{tab:domains}. 
+Next to each set of properties, was a slider bar.
+In the ``plausibility'' condition, the slider bar ranged from ``Impossible'' to ``Certain'', with intermediate arrows pointing to the left and right indicating ``less likely'' and ``more likely''. In the ``frequency'' condition, the slider bar ranged from ``0'' to ``100'', with intermediate arrows pointing to the left and right indicated ``fewer'' and ``more''. 
 
 
-
-
-
-%The most reliable way of eliciting probability judgments from subjects remains an open question. We ran the prior elicitation with two different dependent measures to examine the reliability of our materials.
-%For each causal structure, we explored relations where the 
-%used 3 different domains. 
-%
-%We based our selection of domains on simulations of argument-strength using qualitatively different priors (elicited from people in the lab). Our simulations suggested that domains using: \red{\{common-cause / multiple-cause\}} with \red{\{2-enabling / 2-preventative / 1-enabling,1-preventative\}} and a conclusion relating \red{\{cause and effect, 2 causes, 2 effects\}} lead to the largest differences between model predictions.
-%For each domain, participants were told to either ``Imagine an X (e.g. a lightbulb)'' or ``Imagine 100 Xs'' and told to rate the plausibility or frequency, respectively, of all 8 possible combinations of the presence and absence of the properties found in Table \ref{tab:domains}. Slider bars ranged from ``Impossible'' to ``Certain'' or ``0'' to ``100'', respectively. These different dependent measures were collected to examine the reliability of our materials. Participants rated all 8 combinations of properties for each domain.
-
-%The instructions for the ``plausibility'' condition, were as follows: ``Imagine an X (e.g. a lightbulb; see Table \ref{tab:domains}, column ``Noun''). How likely is it that it:''  The instructions for the ``frequency'' condition were: ``Imagine 100 Xs (e.g. lightbulbs). About how many of them:''
-%
-%Below these prompts were listed the 8 possible combinations of the presence and absence of the Properties A, B, C found in Table \ref{tab:domains}. In the ``plausibility'' condition, the properties agreed with the singular form of the noun (e.g. ``is on'', ``is bright'', and ``is hot''). In the ``frequency'' condition, properties agreed with the plural form (e.g. ``are on'', ``are bright'', and ``are hot''). All 8 combinations of the presence and absence of properties (``are on, are bright, aren't hot''; ``are on, aren't bright, are hot'', etc...) were listed. Next to each set of properties, was a slider bar.
-%
-%In the ``plausibility'' condition, the slider bar ranged from ``Impossible'' to ``Certain'', with intermediate arrows pointing to the left and right indicating ``less likely'' and ``more likely''. In the ``frequency'' condition, the slider bar ranged from ``0'' to ``100'', with intermediate arrows pointing to the left and right indicated ``fewer'' and ``more''. 
-
-
-%\subsubsection{Data analysis and results}
-%
-%Participants' responses were normalized within each domain so that the ratings for the 8 property combinations made a well-formed probability distribution (i.e. they added up to 1). I then took the mean rating for each of the 8 property combinations in each of the 4 domains, to arrive at mean empirical priors for all 4 domains. These were used as the empirical $P(a,b,c)$ for the Bayesian model. 
-%
-%The experiment elicited unique priors for each domain (see Figure \ref{fig:priors}). The data elicited with different dependent measures were highly correlated ($r_{pearson} = 0.78; r_{spearman} = 0.85$). I collapsed ratings across dependent measures for use in the Bayesian model\footnote{Though the correlations are good between the prior data elicited by different dependent measures, the correlations were even higher ($r_{pearson} \thicksim 0.95$) between the model predictions based on these different dependent measures.}.
-
-
-
-
-
-
-%$P(\delta_{\denote{c}(x)})$ is used because the model of argument strength isn't given a conclusion, but rather \emph{generates} a conclusion according to the prior distribution over situations. $P(\delta_{\denote{c}(x)})$ ensure that a conclusion wihich is true of the 
-
-
-%For concreteness, assume that the number of objects in a situation is 4. The relevant number of objects that satisfy the a premise will depend on that particular premise. For example, \emph{All of the grey elephants are herbivores} is true if all of the elephants that are grey in the particular situation are also herbivores\footnote{N.B. I use the ``of the'' construction to make clear that I am describing a particular situation of elephants and not elephants in general.}. The model is given some number of elephants: in our example, 4. The model then samples properties \emph{grey, herbivore} according to the joint prior distribution of these properties $P(x) = P(g,h)$. Depending on the prior probabilities of $g$, a given situation may have 0, 1, 2, 3, or 4 grey elephants. The premise that \emph{All of the grey elephants are herbivores} is evaluated with respect to the number of grey elephants in that situation. If there are 3 grey elephants, then $\denote{\emph{All of the grey elephants are herbivores}]}: \forall{x}, g(x) \Rightarrow h(x)$
-
-%and $S = \{s_0, s_1, s_2, \dots, s_{4}\}$, where the subscript indicates the number of objects (e.g., marbles) that exhibit an effect (e.g., sinking). 
-%Further assume that the set of utterances \emph{All/None/Some of the marbles sank} is denoted $U = \{u_{\textrm{all}}, u_{\textrm{none}}, u_{\textrm{some}}\}$ and each has its usual literal meaning: 
-%%$\denote{u_{\textrm{none}}}: s=0$,  
-%%$\denote{u_{\textrm{some}}}: s>0$,
-%%$\denote{u_{\textrm{all}}}: s=15$.
-%$\denote{u_{\textrm{none}}}= \{s_i | i = 0\}$,  
-%$\denote{u_{\textrm{some}}}= \{s_i | i > 0\}$,
-%$\denote{u_{\textrm{all}}}= \{s_i | i = 15\}$.
 \begin{table}
 \centering
 \tabcolsep=0.11cm
@@ -356,13 +340,11 @@ strawberries & common cause & are in the freezer & are soft & are warm  \\ \hlin
 \end{table}
 
 
-\section{Experiment: Syllogistic reasoning about real world content}
+\subsubsection{Data analysis and results}
 
+Participants' responses were normalized within each domain so that the ratings for the 8 property combinations made a well-formed probability distribution (i.e. they added up to 1). I then took the mean rating for each of the 8 property combinations in each of the 4 domains, to arrive at mean empirical priors for all 4 domains. These were used as the empirical $P(a,b,c)$ for the Bayesian model. 
 
-In a preliminary experiment, I recruited 70 participants from Amazon's Mechanical Turk to judge the likelihood of various combinations of properties co-occurring. 
-I selected property domains based on model simulations using qualitatively different priors (elicited from people in my lab). These preliminary simulations suggested that domains with causal structure led to the biggest differences between predictions of alternative models of theoretical interest (introduced more fully in Section \ref{sec:models}). Table \ref{tab:domains} shows the properties used.
-The resulting empirical priors from that preliminary experiment are shown in Figure \ref{fig:priors}. 
-
+The experiment elicited unique priors for each domain (see Figure \ref{fig:priors}). The data elicited with different dependent measures were highly correlated ($r_{pearson} = 0.78; r_{spearman} = 0.85$). I collapsed ratings across dependent measures for use in the Bayesian model\footnote{Though the correlations are good between the prior data elicited by different dependent measures, the correlations were even higher ($r_{pearson} \thicksim 0.95$) between the model predictions based on these different dependent measures.}.
 
 
 \begin{figure}
@@ -374,7 +356,36 @@ The resulting empirical priors from that preliminary experiment are shown in Fig
 
 
 
-I tested if syllogisms using the real world content from the preliminary experiment led to different conclusions.
+
+
+
+%$P(\delta_{\denote{c}(x)})$ is used because the model of argument strength isn't given a conclusion, but rather \emph{generates} a conclusion according to the prior distribution over situations. $P(\delta_{\denote{c}(x)})$ ensure that a conclusion wihich is true of the 
+
+
+%For concreteness, assume that the number of objects in a situation is 4. The relevant number of objects that satisfy the a premise will depend on that particular premise. For example, \emph{All of the grey elephants are herbivores} is true if all of the elephants that are grey in the particular situation are also herbivores\footnote{N.B. I use the ``of the'' construction to make clear that I am describing a particular situation of elephants and not elephants in general.}. The model is given some number of elephants: in our example, 4. The model then samples properties \emph{grey, herbivore} according to the joint prior distribution of these properties $P(x) = P(g,h)$. Depending on the prior probabilities of $g$, a given situation may have 0, 1, 2, 3, or 4 grey elephants. The premise that \emph{All of the grey elephants are herbivores} is evaluated with respect to the number of grey elephants in that situation. If there are 3 grey elephants, then $\denote{\emph{All of the grey elephants are herbivores}]}: \forall{x}, g(x) \Rightarrow h(x)$
+
+%and $S = \{s_0, s_1, s_2, \dots, s_{4}\}$, where the subscript indicates the number of objects (e.g., marbles) that exhibit an effect (e.g., sinking). 
+%Further assume that the set of utterances \emph{All/None/Some of the marbles sank} is denoted $U = \{u_{\textrm{all}}, u_{\textrm{none}}, u_{\textrm{some}}\}$ and each has its usual literal meaning: 
+%%$\denote{u_{\textrm{none}}}: s=0$,  
+%%$\denote{u_{\textrm{some}}}: s>0$,
+%%$\denote{u_{\textrm{all}}}: s=15$.
+%$\denote{u_{\textrm{none}}}= \{s_i | i = 0\}$,  
+%$\denote{u_{\textrm{some}}}= \{s_i | i > 0\}$,
+%$\denote{u_{\textrm{all}}}= \{s_i | i = 15\}$.
+
+
+
+\section{Experiment: Syllogistic reasoning about real world content}
+
+
+%In a preliminary experiment, I recruited 70 participants from Amazon's Mechanical Turk to judge the likelihood of various combinations of properties co-occurring. 
+%I selected property domains based on model simulations using qualitatively different priors (elicited from people in my lab). These preliminary simulations suggested that domains with causal structure led to the biggest differences between predictions of alternative models of theoretical interest (introduced more fully in Section \ref{sec:models}). Table \ref{tab:domains} shows the properties used.
+%The resulting empirical priors from that preliminary experiment are shown in Figure \ref{fig:priors}. 
+
+
+
+
+In this experiment, I tested if the real world content from Experiment 1 influenced the conclusions drawn from categorical syllogisms. 
 
 \subsubsection{Design}
 
@@ -382,7 +393,7 @@ I recruited 254 participants from Amazon's Mechanical Turk. All participants wer
 
 \subsubsection{Procedures \& Materials}
 
-Each participant completed 4 syllogisms. On each experimental trial, participants were presented with the syllogism (e.g. \emph{Some of the lightbulbs that are bright are on. None of the lightbulbs that are hot are bright.}) and each possible conclusion (e.g. \emph{\{All, Some, Not all, None\} of the lightbulbs that are hot are on.}) and asked ``Does it follow that: X'', for each conclusion. Radio buttons with the options ``Doesn't follow'' and ``Follows'' were provided. Below that was a vertically-oriented slider bar with endpoints labeled ``Certain'' and ``Don't know'' to measure confidence. Participants were required to mark each conclusion before continuing to the next trial.
+Each participant completed 4 syllogisms. On each experimental trial, participants were presented with the syllogism (e.g. \emph{Some of the lightbulbs that are bright are on. None of the lightbulbs that are hot are bright.}) and each possible conclusion (e.g. \emph{\{All, Some, Not all, None\} of the lightbulbs that are hot are on.}) and asked ``Does it follow that: X'', for each conclusion. Radio buttons with the options ``Doesn't follow'' and ``Follows'' were provided. Below that was a vertically-oriented slider bar with endpoints labeled ``Certain'' and ``Don't know'' to measure confidence. Participants were required to mark each conclusion before continuing to the next trial \footnote{The experiment in full can be viewed at \url{.
 
 
 %\begin{quotation}
@@ -412,7 +423,7 @@ In addition, for all models I include a single data analytic ``guessing'' parame
 
 \begin{figure}
 \centering
-    \includegraphics[width=0.5\columnwidth]{figures/scatter}
+    \includegraphics[width=0.5\columnwidth]{figures/scatter_withShape}
     \caption{Data vs. (Empirical prior) Model plot. The model provides a good overall fit ($r=0.87$) to the 128 data points (32 syllogism, domain pairs X 4 conclusions each). The posterior predictions bottom out around 0.07. This is the work of the response noise parameter $\phi$. It's likely that different syllogisms have different amounts of response noise, however I do not model this here.}
   \label{fig:scatterplot}
 \end{figure}
@@ -462,7 +473,8 @@ Further, an interaction between content and reasoning can be observed by compari
 %
 
 Finally, it's worth drawing attention to the bottom row, the \emph{all / all} syllogism. This is a valid syllogism (a maximally strong argument) with two logically valid conclusions: \emph{all} and \emph{some}. Participants show a consistent preference for the \emph{all} conclusion over the \emph{some} conclusion, consistent with many other studies of syllogistic reasoning \cite{Khemlani2012}. It's interesting that this asymmetry is robust across the different content domains. The model predicts consistent responses across the content domains because the syllogistic argument is so strong. However, it has no way to capture the asymmetry between \emph{all} and \emph{some} because it is using only the truth-functional semantics. 
-TG was able to capture this asymmetry by extending this model of argument strength to include pragmatic reasoning. 
+The pragmatic reasoning model of TG predicted this asymmetry.
+%
 I leave for future work the incorporation of pragmatic reasoning with syllogistic arguments about real-world content. 
 
 %To address the relevance of background knowledge in syllogistic reasoning, I performed a Bayesian model comparison between two models of argument strength: one with empirical priors and one completely abstract priors. The model without the empirical priors has an additional single parameter representing the base rate of properties  $br \thicksim \beta(1,1)$.
