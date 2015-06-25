@@ -66,10 +66,10 @@
 
 
 \begin{abstract}
-The phenomenon of \emph{belief bias} in syllogistic reasoning occurs when the a priori believability of a conclusion influences the intuitive acceptability of that conclusion. Prior beliefs about the world can be formalized into a probabilistic generative model of situations. \citeA{Tessler2014} proposed that this very idea can account for the range of acceptability observed across categorical syllogisms with abstract content. Here, I generalize their model to accommodate syllogistic reasoning data where content effects are observed. I collect data about the prior plausibility of various properties co-occurring, and use this data to predict syllogistic reasoning behavior in a separate experiment. I compare models with different types of assumptions concerning the prior and discuss open questions for this approach. 
+The phenomenon of \emph{belief bias} in syllogistic reasoning occurs when the a priori believability of a conclusion influences the intuitive acceptability of that conclusion. Prior beliefs about the world can be formalized into a probabilistic generative model of situations. \citeA{Tessler2014} proposed that this very idea can account for the range of acceptabilities of conclusions from categorical syllogisms with abstract content. Here, I generalize their model to accommodate syllogistic reasoning data where content effects are observed. I collect data about the prior plausibility of various properties co-occurring, and use this data to predict syllogistic reasoning behavior in a separate experiment. I compare models with different types of assumptions concerning the prior and discuss open questions for this approach. 
 \end{abstract}
 
-Your logic-chopping friend is in a room with a number of lamps and lightbulbs; you are in a different room and cannot see what she sees. She gives you the following logic puzzle. 
+Your logic-chopping friend is in a room with a number of lamps and lightbulbs; you are in a different room and cannot see what she sees. She gives you the following logic puzzle:
 
 \begin{quote}
 All of the lightbulbs that are hot are bright.\\
@@ -79,11 +79,11 @@ Some of the lightbulbs that are bright are \emph{not} on.
 Are some of the hot lightbulbs \emph{not} on? Are any of the hot ones on?
 \vspace{0.3cm}
 
-Prior beliefs about the world guide our actions, thoughts, and reasoning in new situations. It can be helpful, for example, to know how fast a particular kind of animal can run, if you are also thinking about if that animal can eat you. Similarly, humans can use prior beliefs in a domain (e.g. life expectancies) to reason accurately about everyday contexts  (e.g. guessing how long someone will live; \citeNP{Griffiths2006}). Finally, it has been argued that prior beliefs influence the very meaning of words \cite{GoodLass2015}. It is odd then that so little formal theory has gone into understanding prior beliefs in classic reasoning tasks \cite<but, cf.>{Klauer2000, Dube2010}. 
+Prior beliefs about the world guide our actions, thoughts, and reasoning in new situations. It can be helpful, for example, to know how fast a particular kind of animal can run, if you are also thinking about if that animal can eat you. Similarly, humans can use prior beliefs in a domain (e.g. life expectancies) to reason accurately about everyday contexts  (e.g. guessing how long someone will live; \citeNP{Griffiths2006}). Finally, it has been argued that prior beliefs influence the very meaning of words \cite{GoodLass2015}. It is odd then that so little formal theory has gone into understanding prior beliefs in classic reasoning tasks \cite<but, cf.>{Klauer2000, Dube2010}.
 
 Bayesian approaches to cognitive science have a natural way of accounting for prior beliefs in reasoning. 
 %\citeA{Tessler2014} argue that syllogistic reasoning can be understood through the broader lens of language understanding, formalized in a probabilistic model of pragmatic reasoning about syllogistic premises. They
- \citeA{Tessler2014} described a generative model of argument strength that used a truth-functional semantics applied to idealized situations composed of objects with properties. 
+ \citeA{Tessler2014} described a generative model of argument strength that uses a truth-functional semantics applied to idealized situations composed of objects with properties. 
  This model accounted for much of the variability in \citeA{Chater1999}'s meta-analysis data  of categorical syllogistic reasoning. 
 That work further explored syllogistic reasoning by incorporating Gricean principles, formalized in the Rational Speech-Act (RSA) theory of language understanding \cite{Frank2012,Goodman2013}.
 %}---and specifying the Question Under Discussion as the relationship between the conclusion terms (i.e. the QUD is the syllogistic conclusion). 
@@ -91,7 +91,7 @@ This pragmatic component was important in capturing important qualitative phenom
 This work was done with respect to meta-analysis data that differed largely in the materials used, and for which prior beliefs about the materials were not expected to have a substantial effect.
 However, it is known that prior expectations about the categories and properties at stake in a syllogism influence the acceptability of a conclusion \cite{Evans83, Cherubini1998, Evans2001}.
 
-Here, I generalize \citeA{Tessler2014}'s model of argument strength to capture qualitative phenomena associated with \emph{belief bias}. This is done by empirically measuring prior beliefs about real-world content, deriving model predictions based on those beliefs, and testing the probabilisitic model of argument strength against behavioral data obtained in a separate experiment of syllogistic reasoning. A secondary, primarily methodological concern is about the granularity of information needed to capture these syllogistic reasoning phenomena.
+Here, I generalize \citeA{Tessler2014}'s model of argument strength to capture qualitative phenomena associated with \emph{belief bias}. This is done by empirically measuring prior beliefs about real-world content, deriving model predictions based on those beliefs, and testing the probabilisitic model of argument strength against behavioral data obtained in a separate experiment of syllogistic reasoning. A secondary, primarily methodological concern is about the granularity of information needed to capture these syllogistic reasoning phenomena. 
 
 %The extent to which beliefs influence reasoning depends on the a priori acceptability of the conclusion \cite{Evans1983}, of the premises \cite{Cherubini1998}, as well as the relative strength of the argument \cite{Evans2001}. The approach outlined in this paper is to account for the gradience in argument strength in terms of the prior distribution over properties in question; i.e., I explain relative argument strength and the influence of beliefs jointly.
 
@@ -101,7 +101,7 @@ Here, I generalize \citeA{Tessler2014}'s model of argument strength to capture q
 
 %The organization for the rest of the paper is as follows. First, I review the Bayesian model of argument strength by \citeA{Tessler2014} and propose an extension to account for reasoning about real-world content. I then collect data measuring prior expectations about the distributions of various properties co-occurring in 4 domains: frozen fruit, expired crackers, bright lightbulbs, and sharp knives. I also collect data about 8 syllogisms using each domain's content (32 items in total). I then compare the model to the data by integrating out the parameters of the reasoning model and comparing alternative models with increasingly relaxed assumptions about background knowledge. 
 
-To foreshadow the results, empirically measured priors (Expt.~1) coupled with a Bayesian model of argument strength accounts for much of the syllogistic reasoning data (Expt.~1), including qualitative effects of content. The predictions of the model, which has no parameters, are as good as those of a model with a prior parametrized by 12 variables. The most likely values (conditioned on the data of Expt.~2) of these 12 variables correspond roughly with the marginal distributions of the priors elicited in Expt.~1. This interesting correspondence suggests the syllogistic reasoning task is too coarse grained to disambiguate models of reasoning that rely on correlated properties from models where independence is assumed.
+To foreshadow the results, empirically measured priors (Expt.~1) coupled with a Bayesian model of argument strength accounts for much of the syllogistic reasoning data (Expt.~2), including qualitative effects of content. The predictions of the model, which has no parameters, are as good as those of a model with a prior parametrized by 12 variables. The most likely values (conditioned on the data of Expt.~2) of these 12 variables correspond roughly with the marginal distributions of the priors elicited in Expt.~1. This interesting correspondence suggests the syllogistic reasoning task is too coarse-grained to disambiguate models of reasoning that rely on correlated properties from models where independence is assumed.
 
 
 % \citeA{Evans1999} conducted a standard syllogistic reasoning study (syllogistic reasoning with only abstract terms) and found gradient endorsement rates for logically invalid syllogisms; this gradient can be interpreted as relatively weaker and stronger arguments. \citeA{Evans2001} replicated this finding and found that weaker syllogisms were more susceptible to positive belief bias (i.e. accepting a believable conclusion) and stronger syllogisms were more susceptible to negative belief belief (i.e. rejecting an unbelievable conclusion). This work suggests a gradient influence of prior beliefs on argument strength. 
@@ -186,7 +186,7 @@ Properties \emph{across} objects are assumed to be independent and identically d
 %			&					= P(a, b, c)
 %\end{align*}
 %and 
-$$P(s) = \prod_{0\leq i\leq n} P(A_{o_{i}}, B_{o_{i}}, C_{o_{i}}) = (P(a, b, c)) ^ n $$%= (P(a) \cdot P(b) \cdot P(c)) ^n$$
+$$P(s) = \prod_{1\leq i\leq n} P(A_{o_{i}}, B_{o_{i}}, C_{o_{i}}) = (P(a, b, c)) ^ n $$%= (P(a) \cdot P(b) \cdot P(c)) ^n$$
 %
 To account for syllogistic reasoning in \citeA{Chater1999}'s meta-analysis of 5 studies, which differed with respect to the materials used, the model assumed no \emph{a priori} information about the meaning of the properties; thus, properties  \emph{within} objects were determined independently and identically (\emph{i.i.d.}): $P(A_{o_{i}}, B_{o_{i}}, C_{o_{i}}) = P(A_{o_{i}}) \cdot P(B_{o_{i}}) \cdot P(C_{o_{i}}) = (P(p))^3 $, with $p \sim \text{Bernoulli(}\theta\text{)}$.
 
@@ -374,7 +374,7 @@ The experiment elicited unique priors for each domain (see Figure \ref{fig:prior
 
 \begin{figure}
 \centering
-    \includegraphics[width=\columnwidth]{priors}
+    \includegraphics[width=\columnwidth]{figures/priors.pdf}
     \caption{Mean elicited priors collapsed across dependent measure (see text for details). Error bars denote 95\% confidence intervals. X-axis shows presence or absence of each property, the ordering of which can be found in Table \ref{tab:domains}. For example, the tallest bar in the cracker domain (001) is a cracker which isn't soggy, isn't past expiration date, and has lots of flavors.}
   \label{fig:priors}
 \end{figure}
@@ -400,12 +400,12 @@ The experiment elicited unique priors for each domain (see Figure \ref{fig:prior
 
 
 
-\section{Experiment: Syllogistic reasoning about real world content}
+\section{Experiment 2: Syllogistic reasoning about real world content}
 
 
 %In a preliminary experiment, I recruited 70 participants from Amazon's Mechanical Turk to judge the likelihood of various combinations of properties co-occurring. 
 %I selected property domains based on model simulations using qualitatively different priors (elicited from people in my lab). These preliminary simulations suggested that domains with causal structure led to the biggest differences between predictions of alternative models of theoretical interest (introduced more fully in Section \ref{sec:models}). Table \ref{tab:domains} shows the properties used.
-%The resulting empirical priors from that preliminary experiment are shown in Figure \ref{fig:priors}. 
+%The resulting empirical priors from that preliminary experiment are shown in the \ref{fig:priors}. 
 
 
 
@@ -428,12 +428,12 @@ Each participant completed 4 syllogisms. On each experimental trial, participant
 
 \subsubsection{Results}
 
-Shown in Figure \ref{fig:syllogismXdomain} (lighter bars) are a subset of the results of the experiment. Content effects can be observed by comparing panels within a row (i.e. comparing across columns). For example, for the \emph{some / none} syllogism (top row), the proportion of responses endorsing  ``Some of the lightbulbs that are hot are on'' is appreciably higher than the proportion endorsing ``Some of the crackers that have lots of flavor are soggy'' (blue bars, 2nd row, columns 1 \& 3). Effects of reasoning (i.e. of syllogism) can be observed by comparing panels within a column (i.e comparing down rows). For example, ``Some of the crackers that have lots of flavor are soggy'' is a substantially more endorsed conclusion if the premises are: ``All of the crackers that are past expiration date are soggy. Some of the crackers that have lots of flavor are past expiration date.'' (blue bars, 4th column, rows 1 \& 2). 
+Shown in Figure \ref{fig:syllogismXdomain} (lighter bars) are a subset of the results of the experiment. Content effects can be observed by comparing panels within a row (i.e. comparing across columns). For example, for the \emph{some / none} syllogism (top row), the proportion of responses endorsing  ``Some of the lightbulbs that are hot are on'' is appreciably higher than the proportion endorsing ``Some of the crackers that have lots of flavor are soggy'' ( 2nd row, columns 1 \& 3; \emph{some} conclusion). Effects of reasoning (i.e. of syllogism) can be observed by comparing panels within a column (i.e comparing down rows). For example, ``Some of the crackers that have lots of flavor are soggy'' is a substantially more endorsed conclusion if the premises are: ``All of the crackers that are past expiration date are soggy. Some of the crackers that have lots of flavor are past expiration date.'' (4th column, rows 1 \& 2; \emph{some} conclusion). 
 
 
 \begin{figure}
 \centering
-    \includegraphics[width=\columnwidth]{figures/bars_Xlabels}
+    \includegraphics[width=\columnwidth]{figures/bars_bw.pdf}
     \caption{Reasoning patterns and predictions for 3 (of the 8) syllogisms in the experiment. Human reasoning data is in the darkest shade. The lighter shade is the 12-parameter (``independent'') model. The medium shade is the 0-parameter (``empirical prior'') model. All syllogisms shown here were of the form B-A / C-B and the conclusions were of the form C-A (e.g. First row: All B are A, Some C are B). Reasoning effects can be seen by comparing rows within a column. Content effects can be seen by comparing columns within a row.}
   \label{fig:syllogismXdomain}
 \end{figure}
@@ -441,34 +441,42 @@ Shown in Figure \ref{fig:syllogismXdomain} (lighter bars) are a subset of the re
 
 
 
-\section{Bayesian analysis of models}
+\section{Bayesian analysis of Bayesian reasoning models}
 \label{sec:models}
 
 %I compared the predictions of the TG model of argument strength using the priors elicited in the preliminary experiment to the syllogistic reasoning data. 
 
-In this section, I explore 4 different models of argument strength that vary in their assumptions about the  prior. The first model---the ``abstract'' model---uses a single base-rate parameter in its prior\footnote{This is the model of argument strength used by \citeA{Tessler2014} to model meta-analysis data.}; this model assumes properties are \emph{i.i.d.} both within domains and across domains. The second model---the ``within-\emph{i.i.d.}'' model---is the simplest parametrized model that can predict content effects; it is identical to the first model except in that the base-rate parameter can vary across domains (but not within a domain; hence it is \emph{i.i.d.} within but not across domains). This model has 4 parameters (one base-rate for each domain). The third model---the ``fully independent'' model---assumes only that properties of an object are independent (not necessarily identically distributed); it uses a different base-rate parameter for each property within and across domains. This model has 12 parameters (3 properties per domain and 4 domains in total). The final model is the model that uses the empirically elicited priors from the preliminary experiment; this model has no free parameters for the prior. For all of the models I consider, properties are assumed to be independent \emph{across items} ($o_1$ having property A does not influence $o_2$'s chance of having property A).
+In this section, I explore 4 different models of argument strength that vary in their independence assumptions in the prior\footnote{For all of the models I consider, properties are assumed to be independent \emph{across} objects (e.g. $o_1$ having property A does not influence $o_2$'s chance of having property A). It is the assumption of independence \emph{within} objects that is explored in this paper.}. The first model---the ``abstract'' model---uses a single base-rate parameter in its prior\footnote{This is the model of argument strength used by \citeA{Tessler2014} to model meta-analysis data.}; this model assumes properties are \emph{i.i.d.} both within domains and across domains. The second model---the ``within-\emph{i.i.d.}'' model---is the simplest parametrized model that can predict content effects; it is identical to the first model except in that the base-rate parameter can vary across domains (but not within a domain; hence it is \emph{i.i.d.} within but not across domains). This model has 4 parameters (one base-rate for each domain). The third model---the ``fully independent'' model---assumes only that properties of an object are independent (not necessarily identically distributed); it uses a different base-rate parameter for each property within and across domains. This model has 12 parameters (3 properties per domain and 4 domains in total). The final model is a model that uses the empirically elicited priors from Expt.~1; this model has no free variables parametrizing the prior over properties. 
 
 One parameter is shared by all models. This is the number of objects in a situation $n$, which controls the size of the worlds reasoned over. A preliminary analysis revealed that results were highly consistent for $n \geq 4$ and so I use $n=4$ for all simulations.  
 
-I analyze the models by putting uninformative priors ($\theta \thicksim U(0,1)$) on the base-rate parameter(s) and conditioning on the observed experimental data. 
-In addition, for all models I include a single data analytic ``guessing'' parameter $\phi \thicksim U(0,1)$ to account for response noise. This noise parameter is important to accommodate data points that deviate largely from what the reasoning model predicts\footnote{In some cases, this parameter is actually \emph{necessary} to analyze the data. This is the case with logically impossible conclusions (e.g. \emph{All A are B // All B are C} $\therefore$ \emph{No A are C}); in this case, the reasoning model gives this conclusion probability 0 (i.e. \emph{logically impossible} means probability 0). If, for whatever reason, the experimental data includes this conclusion as a response, the data analysis model will crash because that particular data point is expected to have probability 0. The guessing parameter allows us to relax this condition, allowing any data point to be accommodated. This is done by postulating that with $\phi$ probability, the participant selects a conclusion at random. This guessing parameter has the additional feature of serving as a gross measure of fit. In $\phi$ is inferred to be relatively high, the reasoning model is not doing a good job of accounting for the data.}. 
+I analyze the models by putting uninformative priors ($\theta \thicksim \textrm{Uniform}(0,1)$) on the base-rate parameter(s) and conditioning on the observed experimental data. 
+In addition, for all models I include a single data analytic ``guessing'' parameter $\phi \thicksim \textrm{Uniform}(0,1)$ to account for response noise. This noise parameter is important to accommodate data points that deviate largely from what the reasoning model predicts\footnote{In some cases, this parameter is actually \emph{necessary} to analyze the data. This is the case with logically impossible conclusions (e.g. \emph{All A are B // All B are C} $\therefore$ \emph{No A are C}); in this case, the reasoning model gives this conclusion probability 0 (i.e. \emph{logically impossible} means probability 0). If, for whatever reason, the experimental data includes this conclusion as a response, the data analysis model will crash because that particular data point is expected to have probability 0. The guessing parameter lets us accommodate any data point. 
+This is done by postulating that with $\phi$ probability, the participant selects a conclusion at random. I put a distribution over the probability and infer this value from the experimental data. 
+}. 
 
 %There are two parameters to the model. The first is an optimality or rationality parameter. TG takes the probabilities to represent actual persons in a communicative setting, and so conclusions or premises are selected from these distributions according to a Luce choice, or softmax, decision rule with a parameter $\lambda$ that denotes the degree to which utterances are chosen optimally \cite{Luce1959}. This is one of the parameters of the model. 
 %
 %I put a uniform prior over the optimality parameter $\lambda \thicksim U(0,5)$.
 
-Inference for the combined Bayesian data analysis and Bayesian reasoning model was done via the Metropolis-Hastings algorithm implemented in the probabilistic programming language WebPPL \cite{dippl}. Models were analyzed independently, and MCMC chains were run for 10,000 samples.
+Inference for the combined Bayesian data analysis of the Bayesian reasoning model was done via the Metropolis-Hastings algorithm implemented in the probabilistic programming language WebPPL \cite{dippl}. Models were analyzed independently, and MCMC chains were run for 10,000 samples.
 
 \subsection{Posteriors over model parameters}
 
 %Base rate parameters had a uniform prior distribution over them: $br \thicksim U(0,1)$. 
- The posterior value for $\phi$, the guessing variable, was near 0.25 for all models; this analysis attributes about a quarter of the responses to noise. Note that this this estimate of noise is with respect to the reasoning model. In other words, it is an estimate of the proportion of responses better explained by random guessing than by the reasoning model. If the posterior predictive distribution of the model predicts the data well, $\phi$ would be an accurate measure of the response noise in the syllogistic reasoning task. Alternatively, $\phi$ could also include aspects of the data set that these models don't predict well.
+ The posterior value for $\phi$, the guessing variable, was near 0.25 for all models; this analysis attributes about a quarter of the responses to noise. Note that this estimate of noise is with respect to the reasoning model. In other words, it is an estimate of the proportion of responses better explained by random guessing than by the reasoning model. If the posterior predictive distribution of the model predicts the data well, $\phi$ would be an accurate measure of the response noise in the syllogistic reasoning task. Alternatively, $\phi$ could also include aspects of the data set that these particular reasoning models do not predict well.
  
- One hypothesis about the base rate parameters of the parametrized-prior models is that the parameter values that account best for the reasoning data are lower-order representations of the empirically-elicited prior. To test this, I compared the posterior distributions over the base rate parameters of the 12-parameter, ``fully independent'' model to the marginal distributions of the empirical prior data (Figure \ref{fig:priors}). For the properties corresponding the conclusion terms of the syllogism (properties A \& C), the inferred base-rates based on the 12-parameter model are qualitatively consistent with the marginal distributions from Experiment 1. For example, the most likely base rates for property A for the cracker and strawberry domains are definitively smaller than those of the knife and lightbulb domains (Figure \ref{fig:postbr}, column 1, rows 1 \& 4 vs. rows 2 \& 3). As well, the most likely base rate for property C of the strawberry domain is smaller than the other 3 domains. The inferred base rates from the 12-parameter model have the most uncertainty about property B, possibly because it is only indirectly related to the responses, which are about properties A \& C. Overall, this is suggestive evidence that the parametrized model of argument strength is using base rates like those of the marginal distribution over properties elicited in Experiment 1.
+ One hypothesis about the base rate parameters of the parametrized-prior models is that the parameter values that account best for the reasoning data are lower-order representations of the empirically-elicited prior. 
+ To test this, I compared the posterior distributions over the base rate parameters of the 12-parameter, ``fully independent'' model to the marginal distributions of the empirical prior data (Figure \ref{fig:postbr}). 
+ For the properties corresponding the conclusion terms of the syllogism (properties A \& C), the inferred base-rates based on the 12-parameter model are qualitatively consistent with the marginal distributions from Experiment 1. 
+ For example, the most likely base rates for property A for the cracker and strawberry domains are definitively smaller than those of the knife and lightbulb domains (Figure \ref{fig:postbr}, column 1, rows 1 \& 4 vs. rows 2 \& 3). 
+ As well, the most likely base rate for property C of the strawberry domain is smaller than the other 3 domains. 
+ The inferred base rates from the 12-parameter model have the most uncertainty about property B, possibly because B is only indirectly related to the responses, which are statements about properties A \& C. 
+ Overall, this is suggestive evidence that the parametrized model of argument strength is using base rates corresponding to those of the marginal distributions over properties elicited in Expt.~1.
 
 \begin{figure}
 \centering
-    \includegraphics[width=\columnwidth]{figures/posterior_brs}
+    \includegraphics[width=\columnwidth]{figures/posterior_brs.pdf}
     \caption{Marginal posterior distributions over the base rates of properties in the 12-parameter, fully independent model. 95\% CIs for the marginal distributions derived from the empirical priors elicited in Experiment 1 are shown at the top of each plot. Qualitative consistencies between the two suggest the base rates inferred from the reasoning data resemble lower-order statistics (the marginal distributions) of the richer joint-distributions shown in Figure \ref{fig:priors}.}
   \label{fig:postbr}
 \end{figure}
@@ -482,7 +490,7 @@ Inference for the combined Bayesian data analysis and Bayesian reasoning model w
 \begin{table}[h]
 \centering
 \begin{tabular}{@{}|c|c|c|c|@{}}
-Model       & parameters for priors & other parameters & correlation with data \\
+Model       & free parameters for priors & other free parameters & correlation with data \\
 \midrule
 abstract    & 1                          & 1                     & 0.81                  \\
 within-\emph{iid}         & 4                          & 1                     & 0.86                  \\
@@ -500,25 +508,25 @@ The posterior predictive distribution marginalizes over the inferred parameter v
 
 \begin{figure}
 \centering
-    \includegraphics[width=0.7\columnwidth]{figures/scatter_withShape}
-    \caption{Data vs. (empirical prior) Model plot. The model provides a good overall fit ($r=0.87$) to the 128 data points (32 syllogism, domain pairs X 4 conclusions each). The posterior predictions bottom out around 0.07. This is the work of the ``guessing'' parameter $\phi$. Color is overplotted with shape to represent the conclusions.}
+    \includegraphics[width=0.7\columnwidth]{figures/scatterplot_bw.pdf}
+    \caption{Data vs. (empirical prior) Model plot. The model provides a good overall fit ($r=0.87$) to the 128 data points (32 syllogism, domain pairs X 4 conclusions each). The posterior predictions bottom out around 0.07. This is the work of the ``guessing'' parameter $\phi$.}
   \label{fig:scatterplot}
 \end{figure}
 
 
-Figure \ref{fig:syllogismXdomain} shows predictions for the ``empirical prior'' (0 parameter) model (darker shade) together with the experimental data (lighter shade) for 3 example syllogisms. 
+Figure \ref{fig:syllogismXdomain} shows predictions for the empirical prior model (darker shade) together with the experimental data (lighter shade) for 3 example syllogisms. 
 The model based on the empirical prior shows effects of content. 
-For example, the knives and lightbulbs domains show lower endorsements for the \emph{not all} conclusion relative to the crackers and strawberries domains (and the reverse can be observed for the \emph{all} conclusion), consistent with participants reasoning behavior (Figure \ref{fig:syllogismXdomain}, row 1: columns 2 \& 3 vs. 1 \& 4, green bars). 
+For example, the knives and lightbulbs domains show lower endorsements for the \emph{not all} conclusion relative to the crackers and strawberries domains (and the reverse can be observed for the \emph{all} conclusion), consistent with participants' reasoning behavior (Figure \ref{fig:syllogismXdomain}, row 1: columns 2 \& 3 vs. 1 \& 4, \emph{not all} conclusion). 
 %
-In addition, the model shows effects of reasoning. For example, the endorsement for the \emph{some} conclusion is much higher for the \emph{all / some} premises than for the \emph{some / none} premises, also consistent with the experimental data (Figure \ref{fig:syllogismXdomain}, column 3: rows 1 vs. 2, blue bars). 
+In addition, the model shows effects of reasoning. For example, the endorsement for the \emph{some} conclusion is much higher for the \emph{all / some} premises than for the \emph{some / none} premises, also consistent with the experimental data (Figure \ref{fig:syllogismXdomain}, column 3: rows 1 vs. 2, \emph{some} conclusion). 
 Further, an interaction between content and reasoning can be observed by comparing the lightbulb domain to the knife domain for those same syllogisms (columns 3 vs. 2 X rows 1 vs. 2). In the knife domain, the experimental data shows the effects of the syllogism are much weaker (the light bars are not very different from one another). The model predictions are also very similar for these two syllogisms in the knife domain.
 %
 
 
-Finally, it's worth drawing attention to the bottom row of Figure \ref{fig:syllogismXdomain}, the \emph{all / all} syllogism. This is a valid syllogism (a maximally strong argument) with two logically valid conclusions: \emph{all} and \emph{some}. Participants show a consistent preference for the \emph{all} conclusion over the \emph{some} conclusion, consistent with many other studies of syllogistic reasoning \cite{Khemlani2012}. It's interesting that this asymmetry is robust across the different content domains. The model predicts consistent responses across the content domains because the syllogistic argument is so strong. However, it has no way to capture the asymmetry between \emph{all} and \emph{some} because it is using only a truth-functional semantics. 
+Finally, it's worth drawing attention to the bottom row of Figure \ref{fig:syllogismXdomain}, the \emph{all / all} syllogism. This is a valid syllogism (a maximally strong argument) with two logically valid conclusions: \emph{all} and \emph{some}. Participants show a consistent preference for the \emph{all} conclusion over the \emph{some} conclusion, consistent with many other studies of syllogistic reasoning \cite{Khemlani2012}. It's interesting that this asymmetry is robust across the different content domains. The model predicts consistent responses across the content domains because the syllogistic argument is so strong. However, it has no way to capture the asymmetry between \emph{all} and \emph{some} because it is using only a truth-functional semantics (\emph{all} entails \emph{some}). 
 \citeA{Tessler2014} predicted this asymmetry by extending to the model to take into account pragmatic reasoning.
 %
-I leave for future work the incorporation of communicative reasoning with syllogistic arguments about real-world content. 
+I leave for future work the incorporation of pragmatic reasoning with syllogistic arguments about real-world content. 
 
 %To address the relevance of background knowledge in syllogistic reasoning, I performed a Bayesian model comparison between two models of argument strength: one with empirical priors and one completely abstract priors. The model without the empirical priors has an additional single parameter representing the base rate of properties  $br \thicksim \beta(1,1)$.
 %
@@ -543,18 +551,23 @@ I leave for future work the incorporation of communicative reasoning with syllog
 
 \section{Discussion}
 
-I have demonstrated that a model of syllogistic reasoning with a rich prior distribution can account for the flexibility of interpretation of a syllogistic argument with real world content. The phenomenon of ``belief bias'' can be viewed in this framework as a natural extension of the notion of ``argument strength''. Arguments vary in strength depending on the prior probabilities of the properties in question. 
+I have demonstrated that a model of syllogistic reasoning with a rich prior distribution can account for the flexibility of interpretation of a syllogistic argument with real world content. The phenomenon of ``belief bias'' can be viewed in this framework as a natural extension of the notion of ``argument strength''. Arguments vary in strength depending on the prior distribution of the properties in question. 
 
 
 This modeling work reveals that the empirical prior model predicts the data well. Using Bayesian data analytic techniques, I observed that the 4-parameter ``within-\emph{iid}'' model and the 12-parameter ``fully independent'' model can also accommodate the content effects well. I say the models \emph{accomodate} the data because their predictions are dependent on the particular parameter settings inferred \emph{from that data}. The empirical prior model, by contrast, predicts the data with no parameter fitting. Additionally, it's likely that performing a formal, Bayesian model comparison between these models would favor the empirical prior model due to Bayes' Occam's Razor. However, it is interesting to consider the implications of these modeling results as they stand. 
 
-The 4-parameter ``within-\emph{iid}'' model is the simplest model that could possibly account for content effects. What this model posits is that there is some difference in the base rate of properties in these four different domains. In terms of cognition, this might mean that our artificial domains (e.g. knives that could be sharp, rusty, and/or that cut well) call to mind a general intuition about the base rate of these properties, and that this general base rate enters into the computation of argument strength. The posterior over base rate parameters for this model is consistent with this explanation: base rates for domains with properties that tended to co-occur (e.g. the lightbulbs domain) were relatively high while those for domains with properties that tended \emph{not} to co-occur (e.g. the crackers domain) were low.
-
+The 4-parameter ``within-\emph{iid}'' model is the simplest model that could possibly account for content effects. What this model posits is that there is some difference in the base rates of properties in these four different domains. In terms of cognition, this might mean that our artificial domains (e.g. knives that could be sharp, rusty, and/or that cut well) call to mind a general intuition about the base rate of these properties, and that this general base rate enters into the computation of argument strength. The posterior over base rate parameters for this model is consistent with this explanation: base rates for domains with properties that tended to co-occur (e.g. the lightbulbs domain) were relatively high while those for domains with properties that tended \emph{not} to co-occur (e.g. the crackers domain) were low.
 The 12-parameter ``fully independent'' model also accommodates the data well. This model posits that properties in a given domain are independent but differ in their base rates. Correlations between properties need not be tracked explicitly. 
 
-An alternative explanation for the ubiquitous good fits is that the experiment itself is confounded. The 8 syllogisms used in my experiment might not be the best syllogisms to distinguish models with subtly different assumptions about the priors over properties. An even more radical proposal is that categorical syllogistic reasoning \emph{in general} is not the best kind of experiment to distinguish these models. In categorical syllogisms, there are only 3 logical possibilities for conclusions entailed by situations: \emph{all}, \emph{some and not all}, or \emph{none}. It's possible that these models would make different predictions if we allowed more possible responses, e.g. \emph{most} and \emph{few}.
+An alternative explanation for the ubiquitous good fits is that the experiment itself is confounded. 
+The 8 syllogisms used in my experiment might not be the best syllogisms to distinguish models with subtly different independence assumptions about the priors over properties. 
+I found that the most likely base rate parameter values for the parametrized prior models given the data from Expt.~2 were those that roughly corresponded to the marginal distributions of properties from Expt.~1. 
+Both models (parametrized priors and empirical priors) modeled the data equally well, suggesting that these experiments were not well suited to disambiguate them.
+An even more radical proposal is that categorical syllogistic reasoning \emph{in general} is not the best kind of experiment to distinguish these models. 
+In categorical syllogisms, there are only 3 logical possibilities for conclusions entailed by situations: \emph{all}, \emph{some and not all}, or \emph{none}. 
+It's possible that these models would make different predictions if we allowed more possible responses, e.g. \emph{most} and \emph{few}, exact numbers.
 
-Finally, it is worth noting that classical reasoning experiments such as the one explored here use language to communicate information for participants to reason over. Basic communicative principles, however, are often neglected in the scientist's analysis of behavior. \citeA{Tessler2014} formalized basic communicative principles in their probabilistic pragmatics model of syllogistic reasoning, as an extension of the Rational Speech-Act theory of language understanding. I leave for future work the interplay between pragmatics and prior beliefs in the syllogistic domain. 
+Finally, it is worth noting that classical reasoning experiments such as the one explored here use language to communicate information for participants to reason over. Basic communicative principles, however, are often ignored in the scientist's analysis of behavior. \citeA{Tessler2014} formalized basic communicative principles in their probabilistic pragmatics model of syllogistic reasoning, as an extension of the Rational Speech-Act theory of language understanding. I leave for future work the interplay between pragmatics and prior beliefs in the syllogistic domain. 
 
 
 
