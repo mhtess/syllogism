@@ -1,0 +1,255 @@
+---
+title: "figures for esslli 2015 paper / talk"
+author: "mhtessler"
+date: "June 25, 2015"
+output: html_document
+---
+# plots for esslli 2015 paper / talk
+
+```{r setup}
+setwd("~/Documents/research/syllogism/publications/esslli-15/rscripts")
+
+fpath ='../data/'
+
+```
+
+## Figure 1: prior elicitation
+```{r fig1}
+bootstrap.prior.ci <- function(x){
+  agr = aggregate(value ~ domain + variable, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + variable, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + variable, data=x, FUN=ci.high)$value
+  agr$YMin = agr$value - agr$CILow
+  agr$YMax = agr$value + agr$CIHigh
+  return(agr)
+}
+
+df<-read.csv((paste(fpath,'prior-exp-mturk_all_n71.csv',sep="")))[c(1:12,16)]
+df$condition<-factor(df$condition,labels=c('plausibility','frequency'))
+
+priors_norm = ddply(df, .(domain, condition), function(x) {
+  means = x[,c('Q_XYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ','Q_XnYnZ','Q_nXYnZ','Q_nXnYZ','Q_nXnYnZ')]
+  means / rowSums(means)
+})
+
+df.tidy<- priors_norm %>%
+  select(domain, starts_with('Q'), condition) %>%
+  gather(variable,value, -domain, -condition) %>%
+  filter(!(domain %in% c("tomatoplant","painting")))
+
+ci_bs <- bootstrap.prior.ci(df.tidy)
+
+ci_bs$domain<-factor(ci_bs$domain,
+                     levels=c('lightbulb','tomatoplant','strawberry',
+                              'cracker','knife','painting'))
+
+ci_bs$variable<-factor(ci_bs$variable,
+                       levels=c('Q_nXnYnZ','Q_XnYnZ','Q_nXYnZ',
+                                'Q_nXnYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ',
+                                'Q_XYZ'),
+                       labels=c('000','100','010','001','110','101','011','111'))
+
+plt1<-ggplot(ci_bs, aes(x=variable, y=value)) + 
+  geom_bar(position=position_dodge(.6), stat='identity')+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=0.5,alpha=0.6,
+                position=position_dodge(.6))+
+  xlab("\nset of properties")+
+  ylab("mean rating\n")+
+   facet_grid(.~domain)+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
+        strip.text.y = element_text(angle=270))+
+  guides(fill=F)
+
+plt1
+
+# plotpath<-'../../syllogism/publications/esslli-15/'
+# ggsave(plot=a,file = paste(plotpath,'priors.pdf',sep=''), 
+#        width = 8, height = 3.5)
+```
+
+
+## Figure 2: syllogism X domain X model/data
+
+```{r fig2}
+d<-read.csv(paste(fpath,'exp12_n4Marginal_r0_empirical_10000a_combined.csv',sep=''))
+
+model<-d %>% 
+  select(-phi) %>%
+  gather(item, val, -prob) %>%
+  separate(item, into=c("syllog","domain","conclusion"), sep="_") %>%
+  group_by(syllog, domain, conclusion) %>%
+  summarise(expval = sum(prob*val)) %>%
+  ungroup() %>%
+  mutate(conclusion=factor(conclusion, 
+                            levels = c('all','none','some','not.all')),
+         syllog=factor(syllog),
+         domain=factor(domain, 
+                        labels = c("crackers","knives","lightbulbs","strawberries")))
+
+
+
+df<-read.csv((paste(fpath,'syllbelief-exp-mturk_all_n250.csv',sep="")))
+df2<-read.csv((paste(fpath2,'syllbelief-exp2-mturk.csv',sep="")))
+df.c <- bind_rows(df,df2)
+
+
+bootstrap.ci.reasoning <- function(x){
+  agr = aggregate(response ~ domain + quantifier + syll, data=x, FUN=mean)
+  agr$CILow = aggregate(response ~ domain + quantifier + syll, data=x, FUN=ci.low)$response
+  agr$CIHigh = aggregate(response ~ domain + quantifier + syll, data=x, FUN=ci.high)$response
+  agr$YMin = agr$response - agr$CILow
+  agr$YMax = agr$response + agr$CIHigh
+  return(agr)
+}
+
+
+
+df.tidy<- df.c %>% 
+  filter(condition=='radio') %>%
+  select(starts_with('radio'), domain, syll) %>%
+  gather(quantifier, response, starts_with('radio'))
+
+d.bs<-bootstrap.ci.reasoning(df.tidy)
+
+d.bs.t<-d.bs %>%
+  rename(conclusion = quantifier, 
+         syllog = syll) %>%
+  group_by(domain,syllog) %>%
+  mutate(total = sum(response)) %>%
+  mutate(response = response/total,
+         YMin = YMin/total,
+         YMax = YMax/total) %>%
+  mutate(conclusion=factor(conclusion, 
+                           labels = c('all','none','some','not.all')))
+
+
+
+dm<-left_join(d.bs.t, model, by=c("syllog","domain","conclusion"))
+
+
+
+dm.tidy<- dm %>% 
+  gather(type, value, response, expval) %>%
+  mutate(type = factor(type, levels=c("response", "expval"),
+                       labels=c( "human data","(empirical prior) model")))
+
+
+dm.sub <- dm.tidy %>% 
+  filter(syllog%in%c("AI1","IE1","AA1")) %>%
+  mutate(syllog=factor(syllog, levels =c("AI1","IE1","AA1"), 
+                       labels = c("all / some", "some / none","all / all")),
+         conclusion = factor(conclusion, 
+                             levels = c("all","some","not.all","none"),
+                             labels = c("all","some","not all","none")))
+
+
+
+# make dummy CIs for model predictions
+dm.sub[dm.sub$type=="(empirical prior) model",]$YMin<-dm.sub[dm.sub$type=="(empirical prior) model",]$value
+dm.sub[dm.sub$type=="(empirical prior) model",]$YMax<-dm.sub[dm.sub$type=="(empirical prior) model",]$value
+
+plt2<-ggplot(dm.sub, 
+          aes(x=conclusion, y = value, alpha = type, group=type))+
+  geom_bar(stat='identity', 
+           position=position_dodge(), color='black')+
+  theme_paper()+
+  geom_errorbar(aes(x=conclusion,
+                    group=type,
+                    ymin=YMin, 
+                    ymax =YMax), 
+                position=position_dodge(0.9),
+                width = 0.3, size = 1,
+                alpha=1, inherit.aes=F)+
+  scale_alpha_manual(values=c(0.3,1))+
+  theme(axis.text.x = element_text(angle=45),
+        strip.text.y = element_text(angle=0, size =16),
+        strip.text.x = element_text(size =16),
+        legend.position = "bottom",
+        legend.direction = 'horizontal',
+        legend.box = 'horizontal'
+  )+
+  scale_fill_brewer(type='qual',palette=6)+
+  facet_grid(syllog~domain)+
+  xlab("conclusion")+
+  ylab("percent endorsement")+
+  guides(alpha = guide_legend(title = NULL),
+         fill=F)
+
+plt2
+
+# ggsave(b, filename='../publications/esslli-15/figures/bars_bw.pdf',
+#        height = 5.5,
+#        width=11)
+```
+
+## Figure 3: Posterior over base rates for 12 parameter model
+
+```{r fig3}
+
+ci.marginal <- function(x){
+  agr = aggregate(value ~ domain + variable, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + variable, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + variable, data=x, FUN=ci.high)$value
+  agr$YMin = agr$value - agr$CILow
+  agr$YMax = agr$value + agr$CIHigh
+  return(agr)
+}
+
+df.marg<-priors_norm %>%
+  select(domain, starts_with('Q')) %>%
+  rowwise() %>%
+  mutate(A = Q_XYZ + Q_XYnZ + Q_XnYZ + Q_XnYnZ,
+         B = Q_XYZ + Q_XYnZ + Q_nXYZ + Q_nXYnZ,
+         C = Q_XYZ + Q_nXYZ + Q_XnYZ + Q_nXnYZ) %>%
+  select(domain, A,B,C) %>%
+  gather(variable,value, -domain) %>%
+  filter(!(domain %in% c("tomatoplant","painting")))
+
+marg.ci<- ci.marginal(df.marg) %>%
+  rename(position=variable) %>%
+  mutate(position=factor(position, labels=c("a","b","c")))
+
+
+
+d<-read.csv(paste(fpath,'exp12_n4Marginal_r0_independent_10000a_combined.csv',sep=''))
+
+params<-d %>%
+  select(ends_with('_a'),ends_with('_b'),ends_with('_c'),prob) %>%
+  gather(param, val, -prob) %>%
+  separate(param, into=c("domain","position"), by="_") %>%
+  group_by(domain, position,val) %>%
+  summarise(marginal = sum(prob))
+
+
+plt3<-ggplot(params, aes(x=val, y= marginal))+
+  geom_histogram(stat='identity',position=position_dodge())+
+  geom_errorbarh(data=marg.ci, aes(xmin = YMin, x=value, xmax = YMax, y=0.6),
+                 height=0.1)+
+  facet_grid(domain~position, scales='fixed')+
+  theme(strip.text.y = element_text(angle=0, size =16))+
+  xlab("base rate")+
+  ylab("posterior probability")+
+  scale_y_continuous(breaks=c(0,0.3,0.6))
+plt3
+```
+
+## Figure 4: Scatterplot (empirical prior model vs data)
+
+```{r}
+plt4<-ggplot(data=dm, aes(x=expval, y = response, shape = conclusion))+
+  geom_point(size = 2.5)+
+  geom_abline(intercept = 0, slope=1, linetype = 2)+
+  xlab("model predictions (empirical prior)")+
+  ylab("human proportion endorsements")+
+  scale_color_brewer(type='qual',palette=2)+
+  coord_fixed(ratio=1,xlim = c(0,0.65), ylim = c(0,0.65))+
+  guides(color=F)
+
+plt4
+
+# ggsave(file=paste("../publications/esslli-15/figures/scatterplot_bw.pdf",
+#                   sep=''),
+#        width=6, height = 4)
+
+
+```
