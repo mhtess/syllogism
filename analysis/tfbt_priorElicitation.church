@@ -45,6 +45,8 @@
    ))
 
 (define output-file-name (string-append 'post_alpha-beta_mh mh_samples '_ mh_burnin '_fScore_ domain '.csv))
+(define output-file-name 'test.csv)
+
 (write-csv samples output-file-name)
 (define complete? 'complete)
 complete?

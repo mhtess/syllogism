@@ -416,7 +416,7 @@ models$conclusion<-factor(models$conclusion, labels = c('all','none','some','som
 # Faceted grids of model predictions (Syll X Domain)
 
 plot2<-ggplot(subset(models,syll%in%c('AO2', 'EA3', 'IE1', 'OA1') & alpha==2),
-              aes(x=conclusion,y=n5,fill=conclusion))+
+              aes(x=conclusion,y=n7,fill=conclusion))+
   geom_bar(position=position_dodge(.6), 
            width = .6,
            stat='identity')+

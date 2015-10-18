@@ -158,25 +158,150 @@ This note holds for n's = 35. Frequency is mostly strictly decreasing, while pla
 
 ### 8-state multinomial elicitation
 
-```{r, fig.width=16, fig.height=8}
+```{r 8state, fig.width=16, fig.height=8}
 
 #df_norm$max<-apply(df_norm[,property_labels],1,max)
 #df_norm<-subset(df_norm,max<0.95)
 #df_norm<- df_norm[,-11]
 
-ci_bs <- agr.ci(melt(df_norm))
+agr.ci.collapsed <- function(x){
+  agr = aggregate(value ~ domain + variable, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + variable, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + variable, data=x, FUN=ci.high)$value
+  agr$YMin = agr$value - agr$CILow
+  agr$YMax = agr$value + agr$CIHigh
+  return(agr)
+}
+
+
+#ci_bs <- agr.ci(melt(df_norm))
+
+
+df.tidy<- df_norm %>%
+  select(domain, starts_with('Q'), condition) %>%
+  gather(variable,value, -domain, -condition) %>%
+  filter(!(domain %in% c("tomatoplant","painting")))
+
+df.plaus<-df.tidy %>%
+  filter(condition=='plausibility')
+
+ci_bs <- agr.ci.collapsed(df.tidy)
+
 ci_bs$domain<-factor(ci_bs$domain,
                      levels=c('lightbulb','tomatoplant','strawberry',
                               'cracker','knife','painting'))
+
 ci_bs$variable<-factor(ci_bs$variable,
                        levels=c('Q_nXnYnZ','Q_XnYnZ','Q_nXYnZ',
                                 'Q_nXnYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ',
-                                'Q_XYZ'))
+                                'Q_XYZ'),
+                       labels=c('000','100','010','001','110','101','011','111'))
+
+a<-ggplot(ci_bs, aes(x=variable, y=value)) + 
+  geom_bar(position=position_dodge(.6), stat='identity')+
+    geom_errorbar(aes(ymin=YMin,ymax=YMax),width=0.5,alpha=0.6,
+                position=position_dodge(.6))+
+  xlab("\nset of properties")+
+  ylab("mean rating\n")+
+  facet_grid(.~domain)+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
+    strip.text.y = element_text(angle=270))+
+  guides(fill=F)
+a
+
+plotpath<-'../../syllogism/publications/esslli-15/'
+ggsave(plot=a,file = paste(plotpath,'priors.pdf',sep=''), 
+       width = 8, height = 3.5)
+
+
+
+
+```
+
+### Compute marginal distributions 
+```{r}
+
+
+ci.marginal <- function(x){
+  agr = aggregate(value ~ domain + variable, data=x, FUN=mean)
+  agr$CILow = aggregate(value ~ domain + variable, data=x, FUN=ci.low)$value
+  agr$CIHigh = aggregate(value ~ domain + variable, data=x, FUN=ci.high)$value
+  agr$YMin = agr$value - agr$CILow
+  agr$YMax = agr$value + agr$CIHigh
+  return(agr)
+}
+
+
+df.marg<-df_norm %>%
+  select(domain, starts_with('Q')) %>%
+  rowwise() %>%
+  mutate(A = Q_XYZ + Q_XYnZ + Q_XnYZ + Q_XnYnZ,
+         B = Q_XYZ + Q_XYnZ + Q_nXYZ + Q_nXYnZ,
+         C = Q_XYZ + Q_nXYZ + Q_XnYZ + Q_nXnYZ) %>%
+  select(domain, A,B,C) %>%
+  gather(variable,value, -domain) %>%
+   filter(!(domain %in% c("tomatoplant","painting")))
+
+#%>%
+#   mutate(variable = factor(variable,
+#                        levels=c('Q_nXnYnZ','Q_XnYnZ','Q_nXYnZ',
+#                                 'Q_nXnYZ','Q_XYnZ','Q_XnYZ','Q_nXYZ',
+#                                 'Q_XYZ'),
+#                        labels=c('000','100','010','001','110','101','011','111'))) %>%
+#   separate(variable, sep=c(1,2), into=c("A","B","C"))
+
+  
+
+marg.ci<- ci.marginal(df.marg)
+
+marg.ci %>% select(domain, variable, value,YMin, YMax) 
+marg.ci<-marg.ci %>%
+  rename(position=variable) %>%
+  mutate(position=factor(position, labels=c("a","b","c")))
+
+
+
+
+%>%
+  spread(variable, value, YMin, YMax)
+
+
+marg.tidy<- marg.ci %>% 
+  select(domain, variable, value) %>%
+  spread(variable, value) %>%
+  mutate(condition = 'marginal',
+         '111' = A*B*C,
+         '110' = A*B*(1-C),
+         '101' = A*(1-B)*C,
+         '011' = (1-A)*B*C,
+         '100' = A*(1-B)*(1-C),
+         '010' = (1-A)*B*(1-C),
+         '001' = (1-A)*(1-B)*C,
+         '000' = (1-A)*(1-B)*C) %>%
+  select(-A, -B, -C)
+
+write.csv(marg.tidy,'../data/03syllogism_prior_psychjs/prior-exp-mturk_collapsed_marginals_n71.csv')
+```
+
+
+# Reliability between frequency and plausibility
+
+```{r compare.freq.plaus}
+
+ci_bs<-agr.ci(df_norm %>% select(-max) %>%
+                gather(variable,value,-domain,-condition))
 
 mean_cast <-dcast(ci_bs[,1:4], value.var='value',...~condition)
 with(mean_cast,cor(frequency,plausibility))
 
-ggplot(mean_cast,aes(x=frequency,y=plausibility,color=domain))+
+with(mean_cast,cor(frequency,plausibility, method='spearman'))
+
+mean_cast %>% group_by(domain) %>%
+  summarise(pearson = cor(frequency, plausibility, method = 'pearson'),
+            spearman = cor(frequency, plausibility, method = 'spearman'))
+
+
+0ggplot(mean_cast,aes(x=frequency,y=plausibility,color=domain))+
 geom_point(size=4)+
   theme_bw()+
   xlim(0,0.4)+
@@ -195,6 +320,71 @@ ggplot(ci_bs, aes(x=variable, y=value, fill=condition)) +
     strip.text.x = element_text(size=20),
     strip.text.y = element_text(size=24,angle=270))
 ```
+
+## Split half correlations within dependent measure and across dependent measure
+
+```{r splithalfs}
+
+prophet <- function(reliability, length) {
+  prophecy <- length * reliability / (1 + (length - 1)*reliability)
+  return (prophecy)
+}
+
+
+# d.tidy<-df %>% 
+#   select(subj,starts_with("Q_"),condition,domain) %>%
+#   mutate(subj = factor(subj),
+#          domain = factor(domain),
+#          condition = factor(condition))
+
+
+d.tidy<-df_norm %>% 
+  gather(variable,value,-domain,-condition)
+
+d.plaus<- df_norm %>% filter(condition=='plausibility')
+d.plaus<-df_norm
+#subjects <- levels(d.tidy$subj)
+#n.subj<-length(subjects)
+
+cor.array=array()
+prophet.array=array()
+for (i in 1:1000){
+  
+  d.resamp<-d.plaus %>%
+    group_by(domain) %>%
+  sample_frac(size=1, replace=F) %>%
+  mutate(ones = 1) %>%
+  mutate(count = cumsum(ones)) %>%
+  mutate(half = ifelse(count < (length(ones)/2), 'half1','half2')) %>%
+  gather(property, value,starts_with("Q_")) %>%
+  group_by(domain,half, property) %>%
+  summarise(mn = mean(value)) %>%
+  spread(half,mn)
+  
+# %>%
+#   
+# d.resamp<-d.plaus %>%
+#   group_by(variable,domain) %>%
+#   sample_frac(size=1, replace=F) %>%
+#   mutate(ones = 1) %>%
+#   mutate(count = cumsum(ones)) %>%
+#   mutate(half = ifelse(count < (length(ones)/2), 'half1','half2'))
+# 
+# %>%
+
+
+  cor.array[i] = with(d.resamp,cor(half1,half2,use="pairwise.complete.obs"))
+  prophet.array[i]= prophet(cor.array[i], 2)
+}
+
+
+qplot(cor.array)
+qplot(prophet.array)
+
+quantile(prophet.array,probs = c(0.025,0.975))
+
+```
+
 
 NOTE: Properties on the X-axis are arranged from Absence of all properties (Left) to Presence of all proeprties (Right)
 

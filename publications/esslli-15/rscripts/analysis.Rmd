@@ -10,7 +10,8 @@ output: html_document
 setwd("~/Documents/research/syllogism/publications/esslli-15/rscripts")
 
 fpath ='../data/'
-
+#plotpath<-'../../syllogism/publications/esslli-15/'
+plotpath<-'~/Box Sync/talks/esslli-2015-syllogism/figures/'
 ```
 
 ## Figure 1: prior elicitation
@@ -50,29 +51,31 @@ ci_bs$variable<-factor(ci_bs$variable,
                        labels=c('000','100','010','001','110','101','011','111'))
 
 plt1<-ggplot(ci_bs, aes(x=variable, y=value)) + 
-  geom_bar(position=position_dodge(.6), stat='identity')+
-  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=0.5,alpha=0.6,
-                position=position_dodge(.6))+
+  geom_bar(position=position_dodge(.6), stat='identity', fill='grey89')+
+  geom_errorbar(aes(ymin=YMin,ymax=YMax),width=0.5,alpha=1,
+                position=position_dodge(.6), color='white')+
   xlab("\nset of properties")+
   ylab("mean rating\n")+
-   facet_grid(.~domain)+
-  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=.5,colour='gray50'),
+  facet_grid(.~domain)+
+  scale_fill_brewer(palette='Pastel1')+
+  theme_black()+
+  theme(axis.text.x=element_text(angle=45,hjust=1,vjust=.5,colour='gray69'),
         strip.text.y = element_text(angle=270))+
   guides(fill=F)
 
 plt1
 
-# plotpath<-'../../syllogism/publications/esslli-15/'
-# ggsave(plot=a,file = paste(plotpath,'priors.pdf',sep=''), 
-#        width = 8, height = 3.5)
+
+ggsave(plot=plt1,file = paste(plotpath,'priors.pdf',sep=''), 
+       width = 10, height = 4)
 ```
 
 
 ## Figure 2: syllogism X domain X model/data
 
 ```{r fig2}
-d<-read.csv(paste(fpath,'exp12_n4Marginal_r0_empirical_10000a_combined.csv',sep=''))
-
+ d<-read.csv(paste(fpath,'exp12_n4Marginal_r0_empirical_10000a_combined.csv',sep=''))
+#fpath2<-'~/Documents/research/syllogism/
 model<-d %>% 
   select(-phi) %>%
   gather(item, val, -prob) %>%
@@ -89,7 +92,7 @@ model<-d %>%
 
 
 df<-read.csv((paste(fpath,'syllbelief-exp-mturk_all_n250.csv',sep="")))
-df2<-read.csv((paste(fpath2,'syllbelief-exp2-mturk.csv',sep="")))
+df2<-read.csv((paste(fpath,'syllbelief-exp2-mturk.csv',sep="")))
 df.c <- bind_rows(df,df2)
 
 
@@ -133,14 +136,32 @@ dm.tidy<- dm %>%
   mutate(type = factor(type, levels=c("response", "expval"),
                        labels=c( "human data","(empirical prior) model")))
 
-
+dm.sub <- dm.tidy
+# dm.sub <- dm.tidy %>% 
+#   filter(syllog%in%c("AI1","IE1","AA1")) %>%
+#   mutate(syllog=factor(syllog, levels =c("AI1","IE1","AA1"), 
+#                        labels = c("all / some", "some / none","all / all")),
+#          conclusion = factor(conclusion, 
+#                              levels = c("all","some","not.all","none"),
+#                              labels = c("all","some","not all","none")))
 dm.sub <- dm.tidy %>% 
-  filter(syllog%in%c("AI1","IE1","AA1")) %>%
-  mutate(syllog=factor(syllog, levels =c("AI1","IE1","AA1"), 
-                       labels = c("all / some", "some / none","all / all")),
+  filter((syllog%in%c("AI1","IE1") & domain %in%c("crackers", "knives"))) %>%
+  mutate(syllog=factor(syllog, levels =c("AI1","IE1"), 
+                       labels = c("all / some", "some / none")),
          conclusion = factor(conclusion, 
                              levels = c("all","some","not.all","none"),
                              labels = c("all","some","not all","none")))
+dm.sub <- dm.tidy %>% 
+  filter((syllog%in%c("AA1","EA1") & domain %in%c("crackers", "knives"))) %>%
+  mutate(syllog=factor(syllog, levels =c("AA1","EA1"), 
+                       labels = c("all / all", "none / all")),
+         conclusion = factor(conclusion, 
+                             levels = c("all","some","not.all","none"),
+                             labels = c("all","some","not all","none")))
+
+
+
+
 
 
 
@@ -149,30 +170,32 @@ dm.sub[dm.sub$type=="(empirical prior) model",]$YMin<-dm.sub[dm.sub$type=="(empi
 dm.sub[dm.sub$type=="(empirical prior) model",]$YMax<-dm.sub[dm.sub$type=="(empirical prior) model",]$value
 
 plt2<-ggplot(dm.sub, 
-          aes(x=conclusion, y = value, alpha = type, group=type))+
+          aes(x=conclusion, y = value, alpha = type, group=type, fill=conclusion))+
   geom_bar(stat='identity', 
-           position=position_dodge(), color='black')+
-  theme_paper()+
+           position=position_dodge(), color='white')+
+ # theme_paper()+
   geom_errorbar(aes(x=conclusion,
                     group=type,
                     ymin=YMin, 
                     ymax =YMax), 
                 position=position_dodge(0.9),
                 width = 0.3, size = 1,
-                alpha=1, inherit.aes=F)+
-  scale_alpha_manual(values=c(0.3,1))+
+                alpha=1, inherit.aes=F,
+                color='white')+
+  scale_alpha_manual(values=c(0.4,1))+
+  theme_black()+
+  scale_fill_brewer(palette='Pastel1')+
   theme(axis.text.x = element_text(angle=45),
         strip.text.y = element_text(angle=0, size =16),
         strip.text.x = element_text(size =16),
         legend.position = "bottom",
         legend.direction = 'horizontal',
-        legend.box = 'horizontal'
-  )+
-  scale_fill_brewer(type='qual',palette=6)+
-  facet_grid(syllog~domain)+
+        legend.box = 'horizontal')+
+#  scale_fill_brewer(type='qual',palette=6)+
+  facet_grid(domain~syllog)+
   xlab("conclusion")+
   ylab("percent endorsement")+
-  guides(alpha = guide_legend(title = NULL),
+  guides(alpha = F,
          fill=F)
 
 plt2
@@ -180,6 +203,10 @@ plt2
 # ggsave(b, filename='../publications/esslli-15/figures/bars_bw.pdf',
 #        height = 5.5,
 #        width=11)
+
+
+ggsave(plot=plt2,file = paste(plotpath,'human-model_bars2x2_data.pdf',sep=''), 
+     width = 10, height = 7)
 ```
 
 ## Figure 3: Posterior over base rates for 12 parameter model
@@ -213,6 +240,12 @@ marg.ci<- ci.marginal(df.marg) %>%
 
 d<-read.csv(paste(fpath,'exp12_n4Marginal_r0_independent_10000a_combined.csv',sep=''))
 
+d.phi <- d %>%
+  select(phi)
+
+qplot(data=d.phi,x = phi, geom='histogram')
+
+
 params<-d %>%
   select(ends_with('_a'),ends_with('_b'),ends_with('_c'),prob) %>%
   gather(param, val, -prob) %>%
@@ -221,35 +254,41 @@ params<-d %>%
   summarise(marginal = sum(prob))
 
 
-plt3<-ggplot(params, aes(x=val, y= marginal))+
+plt3<-ggplot(params, aes(x=val, y= marginal, fill=domain))+
   geom_histogram(stat='identity',position=position_dodge())+
   geom_errorbarh(data=marg.ci, aes(xmin = YMin, x=value, xmax = YMax, y=0.6),
-                 height=0.1)+
+                 height=0.1, color='white')+
   facet_grid(domain~position, scales='fixed')+
+  theme_black()+
   theme(strip.text.y = element_text(angle=0, size =16))+
+  scale_fill_brewer(palette='Pastel1')+
   xlab("base rate")+
   ylab("posterior probability")+
-  scale_y_continuous(breaks=c(0,0.3,0.6))
+  scale_y_continuous(breaks=c(0,0.3,0.6))+
+  guides(fill=F)
 plt3
+
+
+ggsave(plot=plt3,file = paste(plotpath,'inferred_thetas.pdf',sep=''), 
+       width = 14, height = 10)
 ```
 
 ## Figure 4: Scatterplot (empirical prior model vs data)
 
 ```{r}
-plt4<-ggplot(data=dm, aes(x=expval, y = response, shape = conclusion))+
+plt4<-ggplot(data=dm, aes(x=expval, y = response, shape = conclusion, color=conclusion))+
   geom_point(size = 2.5)+
-  geom_abline(intercept = 0, slope=1, linetype = 2)+
+  geom_abline(intercept = 0, slope=1, linetype = 2, color='white')+
+  theme_black()+
   xlab("model predictions (empirical prior)")+
   ylab("human proportion endorsements")+
-  scale_color_brewer(type='qual',palette=2)+
-  coord_fixed(ratio=1,xlim = c(0,0.65), ylim = c(0,0.65))+
-  guides(color=F)
+  scale_color_brewer(type='qual',palette='Pastel1')+
+  coord_fixed(ratio=1,xlim = c(0,0.65), ylim = c(0,0.65))
 
 plt4
 
-# ggsave(file=paste("../publications/esslli-15/figures/scatterplot_bw.pdf",
-#                   sep=''),
-#        width=6, height = 4)
+ggsave(plot=plt4,file = paste(plotpath,'scatterplot.pdf',sep=''), 
+       width = 8, height = 6)
 
 
 ```

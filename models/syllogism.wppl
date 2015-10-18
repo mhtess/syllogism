@@ -45,105 +45,14 @@ var writeERP = function(myERP){
           myERP.support([]))
 }
 
-// load prior data
-
+// load elicited prior data
 
 var priorClean = utils_wppl.parsePriorData(priorDM)
-
+// ordering of the 8-state properties
 var propertyTuples = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
                       [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
 
-
 var domainsSingular = ['cracker','knife','strawberry','lightbulb']
-
-///
-
-/// load reasoning (exp 1; or exp2) data
-
-var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
-var drfile1 = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
-var drfile2 = drfilepath + "04syllogism_reasoning/syllbelief-exp2-mturk.csv";
-
-var csvInput = utils_wppl.readReasoningData();
-
-
-var conditionCol = csvInput[0].indexOf("condition")
-var domainCol = csvInput[0].indexOf("domain")
-var syllCol = csvInput[0].indexOf("syll")
-
-var radioIndices = {"all": csvInput[0].indexOf("radio_A"),
-                    "none": csvInput[0].indexOf("radio_E"), 
-                    "some": csvInput[0].indexOf("radio_I"),
-                    "not all": csvInput[0].indexOf("radio_O")}
-
-var radioData = filter(function(row){
-            return row[conditionCol]=='radio'
-            }, csvInput)
-
-var domains = _.uniq(map(function(row){return row[domainCol]}, radioData))
-var syllogisms = _.uniq(map(function(row){return row[syllCol]}, radioData))
-
-
-// var mapObject2 = function(fn, obj){  
-//   return _.object(
-//     map(
-//       function(kv){
-//         return [kv[0], fn(kv[1])]
-//       }, 
-//       _.pairs(obj))
-//   );
-// }
-
-// for joint, map row into string of 1s and 0s
-var mapObject2 = function(fn, obj){  
-  return  map(function(x){return fn(x[1])}, _.pairs(obj))
-}
-
-var rowToObject = function(row){
-  return mapObject2(function(index){return row[index]}, radioIndices)
-}
-
-// for marginal, map row into "YES" conclusions
-var mapObject3 = function(fn, obj){  
-  return  map(function(x){return fn(x[1])==1 ? x[0] : ''}, _.pairs(obj))
-}
-
-var rowToConclusion = function(row){
-  return mapObject3(function(index){return row[index]}, radioIndices)
-}
-
-// organize by domain and syllogism , 
-// and then within each subject, organized into an object from conclusions --> binary
-// structuredData[domainName][syllName]
-
-var structuredDataJoint = _.object(map(function(domain){
-              return [domain, _.object(map(function(syll){
-                return [syll, map(rowToObject,filter(function(row){
-                    return (row[domainCol]==domain && row[syllCol] == syll)
-                  }, radioData))
-                ]
-              }, syllogisms))]
-            }, domains))
-
-
-// organize by domain and syllogism , 
-// and then within each subject, organized into an object from conclusions --> binary
-// structuredData[domainName][syllName]
-
-var structuredDataMarginal = _.object(map(function(domain){
-              return [domain, _.object(map(function(syll){
-                return [syll, 
-                          _.filter(
-                            _.flatten(
-                                map(rowToConclusion,
-                                    filter(function(row){
-                                      return (row[domainCol]==domain && row[syllCol] == syll)
-                           }, radioData))), Boolean)
-                       ]
-              }, syllogisms))]
-            }, domains))
-
-////
 
 var domainSingularPlural = {
   "cracker":"crackers",
@@ -151,6 +60,97 @@ var domainSingularPlural = {
   "strawberry":"strawberries",
   "knife":"knives"
 }
+
+
+
+///
+
+/// load reasoning (exp 1; or exp2) data
+
+// var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
+// var drfile1 = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
+// var drfile2 = drfilepath + "04syllogism_reasoning/syllbelief-exp2-mturk.csv";
+
+// var csvInput = utils_wppl.readReasoningData();
+
+
+// var conditionCol = csvInput[0].indexOf("condition")
+// var domainCol = csvInput[0].indexOf("domain")
+// var syllCol = csvInput[0].indexOf("syll")
+
+// var radioIndices = {"all": csvInput[0].indexOf("radio_A"),
+//                     "none": csvInput[0].indexOf("radio_E"), 
+//                     "some": csvInput[0].indexOf("radio_I"),
+//                     "not all": csvInput[0].indexOf("radio_O")}
+
+// var radioData = filter(function(row){
+//             return row[conditionCol]=='radio'
+//             }, csvInput)
+
+// var domains = _.uniq(map(function(row){return row[domainCol]}, radioData))
+// var syllogisms = _.uniq(map(function(row){return row[syllCol]}, radioData))
+
+
+// // var mapObject2 = function(fn, obj){  
+// //   return _.object(
+// //     map(
+// //       function(kv){
+// //         return [kv[0], fn(kv[1])]
+// //       }, 
+// //       _.pairs(obj))
+// //   );
+// // }
+
+// // for joint, map row into string of 1s and 0s
+// var mapObject2 = function(fn, obj){  
+//   return  map(function(x){return fn(x[1])}, _.pairs(obj))
+// }
+
+// var rowToObject = function(row){
+//   return mapObject2(function(index){return row[index]}, radioIndices)
+// }
+
+// // for marginal, map row into "YES" conclusions
+// var mapObject3 = function(fn, obj){  
+//   return  map(function(x){return fn(x[1])==1 ? x[0] : ''}, _.pairs(obj))
+// }
+
+// var rowToConclusion = function(row){
+//   return mapObject3(function(index){return row[index]}, radioIndices)
+// }
+
+// // organize by domain and syllogism , 
+// // and then within each subject, organized into an object from conclusions --> binary
+// // structuredData[domainName][syllName]
+
+// var structuredDataJoint = _.object(map(function(domain){
+//               return [domain, _.object(map(function(syll){
+//                 return [syll, map(rowToObject,filter(function(row){
+//                     return (row[domainCol]==domain && row[syllCol] == syll)
+//                   }, radioData))
+//                 ]
+//               }, syllogisms))]
+//             }, domains))
+
+
+// // organize by domain and syllogism , 
+// // and then within each subject, organized into an object from conclusions --> binary
+// // structuredData[domainName][syllName]
+
+// var structuredDataMarginal = _.object(map(function(domain){
+//               return [domain, _.object(map(function(syll){
+//                 return [syll, 
+//                           _.filter(
+//                             _.flatten(
+//                                 map(rowToConclusion,
+//                                     filter(function(row){
+//                                       return (row[domainCol]==domain && row[syllCol] == syll)
+//                            }, radioData))), Boolean)
+//                        ]
+//               }, syllogisms))]
+//             }, domains))
+
+////
 
 
 
@@ -391,7 +391,7 @@ var trueLists = function(trueConcls){
 
 
 
-var reasoner0_naive = cache(function(premises, br) {
+var reasoner0_naive = cache(function(premises, br, domain) {
   Enumerate(function(){
 
     var equivalentWorlds = equivalentTransform(objects, multinomialProbabilities(br))
@@ -672,11 +672,10 @@ Enumerate(function(){
 //   "lightbulb": equivalentTransform(objects, priorClean["lightbulb"]),
 //   "strawberry":equivalentTransform(objects, priorClean["strawberry"])
 // }
-
-
+reasoner1_naive(scholasticCodeToPremises("AA1"), 2, 0.25)
 //////////////////////////////////////
 /////// integrate out parameters
-//////////////////////////////////////
+////////////////////////////////////
 
 // var fullBayesianTreatment = function() {
 
@@ -686,8 +685,16 @@ Enumerate(function(){
 // //  var wonkyprior = uniformDraw(utils_wppl.sequence(0.1,1,0.1))
 //   var wonkyprior = 0
 
-//   //var br = uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))
-//    var br = 99
+//   var br = uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))
+
+//   // var baserates = {
+//   //     "cracker": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+//   //     "knife": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+//   //     "lightbulb": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+//   //     "strawberry":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))
+//   //   }
+
+//   // var br = 99
 //   // var alpha = sample(uniformERP,[0,5]);
 //   // var phi = sample(uniformERP,[0,1]);
 
@@ -729,43 +736,46 @@ Enumerate(function(){
 //   //   })
 //   // })
 
-//   // var R1withGuessing_naive = cache(function(phi, syllogism, alpha, br){
-//   //   Enumerate(function(){
-//   //     var isGuessing = flip(phi)
+//   var R1withGuessing_naive = cache(function(phi, syllogism, alpha, br){
+//     Enumerate(function(){
+//       var isGuessing = flip(phi)
 
-//   //     var RSA = reasoner1_naive(syllogism, alpha, br)
-
-//   //     var cleanRSA = makeERPfromObject(
-//   //                       utils_wppl.marginalsFromFullList(
-//   //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
-
-//   //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
-//   //     return prediction
-//   //   })
-//   // })
-
-//   var R0withGuessing_empirical = cache(function(phi, syllogism, domain){
-//       Enumerate(function(){
-//         var isGuessing = flip(phi)
-
-//         var RSA =  reasoner0_empirical(syllogism, domain)
+//       var RSA = reasoner1_naive(syllogism, alpha, br)
 
 //       var cleanRSA = makeERPfromObject(
 //                         utils_wppl.marginalsFromFullList(
 //                           pruneERP(RSA), conclusionOrder, conclusionListOrder))
 
 //       var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
-
 //       return prediction
-//       })
 //     })
+//   })
 
-//   // var R0withGuessing_naive = cache(function(phi, syllogism, br){
+//   // var R0withGuessing_empirical = cache(function(phi, syllogism, domain){
+//   //     Enumerate(function(){
+//   //       var isGuessing = flip(phi)
+
+//   //       var RSA =  reasoner0_empirical(syllogism, domain)
+
+//   //     var cleanRSA = makeERPfromObject(
+//   //                       utils_wppl.marginalsFromFullList(
+//   //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+//   //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+//   //     return prediction
+//   //     })
+//   //   })
+
+// //  var R0withGuessing_naive = cache(function(phi, syllogism, br){
+//   // var R0withGuessing_naive = cache(function(phi, syllogism, domain, baserates){
 
 //   //     Enumerate(function(){
 //   //       var isGuessing = flip(phi)
 
-//   //       var RSA = reasoner0_naive(syllogism, br)
+//   //       var br = baserates[domain]
+
+//   //       var RSA = reasoner0_naive(syllogism, br, domain)
 
 //   //     var cleanRSA = makeERPfromObject(
 //   //                       utils_wppl.marginalsFromFullList(
@@ -815,7 +825,8 @@ Enumerate(function(){
 //            //                        conclusionListOrder))
 
 //          //var modelWithGuessing = R1withGuessing_empirical(phi, syllogism, domain, alpha)
-//           var modelWithGuessing = R0withGuessing_empirical(phi, syllogism, domain)
+// //          var modelWithGuessing = R0withGuessing_empirical(phi, syllogism, domain)
+//           var modelWithGuessing = R0withGuessing_naive(phi, syllogism, domain, baserates)
 
 //          // var modelWithGuessing = argumentStrengthWithGuessing(phi, syllogism, domain, br)
 
@@ -861,8 +872,10 @@ Enumerate(function(){
 //   },
 //   syllogisms)
 // //  return _.flatten([phi,alpha,wonkyprior,br,posteriorPredictive])
+//   return _.flatten([phi,alpha,
+//     _.values(baserates), posteriorPredictive])
 
-//   return _.flatten([phi,alpha,posteriorPredictive])
+// //  return _.flatten([phi,alpha,posteriorPredictive])
 // }
 
 
@@ -895,17 +908,17 @@ Enumerate(function(){
 //                   domainsSingular))},
 //                   syllogisms))
 // //header.unshift('phi','alpha','priorwonky','br')
- 
-// header.unshift('phi','alpha')
+// header.unshift('phi','alpha','br_cracker','br_knife','br_lightbulb','br_strawberry')
+// //header.unshift('phi','alpha')
 // header.push('prob')
 
 // posterior.unshift(header);
 
 // //var filename = 'exp12_n'+n_objects+'Marginal_argstr_empirical_'+ nsamples+'a_'+priorDM+'.csv'
-// //var filename = 'exp12_n'+n_objects+'Marginal_argstr_naive_'+ nsamples+'a_'+priorDM+'.csv'
+// var filename = 'exp12_n'+n_objects+'Marginal_r0_naive_byDomain'+ nsamples+'a_'+priorDM+'.csv'
 // //var filename = 'exp12_n'+n_objects+'Marginal_pragmatic_naive_'+ nsamples+'a_'+priorDM+'.csv'
-// var filename = 'exp12_n'+n_objects+'Marginal_r0_empirical_'+ 
-//                     nsamples+'a_'+priorDM+'.csv'
+// //var filename = 'exp12_n'+n_objects+'Marginal_r0_empirical_'+ 
+//  //                   nsamples+'a_'+priorDM+'.csv'
 
 // utils_wppl.writeCSV(posterior, 'FBT/'+filename);
 
@@ -914,221 +927,254 @@ Enumerate(function(){
 
 //////////////////////////////////////
 // Bayesian bayesian model comparison
-////////////////////////////////////
+// ////////////////////////////////////
 
- var bayesianModelComparison = function() {
+//  var bayesianModelComparison = function() {
 
-  //var wonkyHypothesis = uniformDraw(utils_wppl.sequence(0,1,0.05))
-  var isModel1 = flip(0.5)
+//   //var wonkyHypothesis = uniformDraw(utils_wppl.sequence(0,1,0.05))
+//   var isModel1 = flip(0.5)
 
-  var alpha_M1 = uniformDraw(utils_wppl.sequence(0.1,5,0.1))
-  var alpha_M2 = uniformDraw(utils_wppl.sequence(0.1,5,0.1))
+//   // var alpha_M1 = uniformDraw(utils_wppl.sequence(0.1,5,0.1))
+//   // var alpha_M2 = uniformDraw(utils_wppl.sequence(0.1,5,0.1))
 
-  var phi_M1 = uniformDraw(utils_wppl.sequence(0.1,1,0.05))
-  var phi_M2 = uniformDraw(utils_wppl.sequence(0.1,1,0.05))
+//   var phi_M1 = uniformDraw(utils_wppl.sequence(0.1,1,0.05))
+//   var phi_M2 = uniformDraw(utils_wppl.sequence(0.1,1,0.05))
 
-  // var wonkinessPrior = uniformDraw(utils_wppl.sequence(0.1,1,0.1))
-  var br = uniformDraw(utils_wppl.sequence(0.05, 0.95, 0.05))
-  // var wonky_br = uniformDraw(utils_wppl.sequence(0.05, 0.95, 0.05))
-  var wonky_br = 0.99
-  var wonkinessPrior = 0
+//   // var wonkinessPrior = uniformDraw(utils_wppl.sequence(0.1,1,0.1))
+//  // var br = uniformDraw(utils_wppl.sequence(0.05, 0.95, 0.05))
 
-//  var br = 99
-  // var wonkyRSAwithGuessing_empirical = cache(function(phi, syllogism, domain, alpha, wonkyprior, br){
-  //   Enumerate(function(){
-  //     var isGuessing = flip(phi)
+//   var baserates = {
+//       "cracker": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+//       "knife": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+//       "lightbulb": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+//       "strawberry":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))
+//     }
 
-  //     var RSA = reasoner1(syllogism, domain, alpha, wonkyprior, br)
+//   // var wonky_br = uniformDraw(utils_wppl.sequence(0.05, 0.95, 0.05))
+//   var wonky_br = 0.99
+//   var wonkinessPrior = 0
 
-  //     var cleanRSA = makeERPfromObject(
-  //                       utils_wppl.marginalsFromFullList(
-  //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
+// //  var br = 99
+//   // var wonkyRSAwithGuessing_empirical = cache(function(phi, syllogism, domain, alpha, wonkyprior, br){
+//   //   Enumerate(function(){
+//   //     var isGuessing = flip(phi)
 
-  //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
-  //     return prediction
-  //   })
+//   //     var RSA = reasoner1(syllogism, domain, alpha, wonkyprior, br)
 
-  // })
+//   //     var cleanRSA = makeERPfromObject(
+//   //                       utils_wppl.marginalsFromFullList(
+//   //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
 
+//   //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+//   //     return prediction
+//   //   })
 
-  var R1withGuessing_empirical = cache(function(phi, syllogism, domain, alpha){
-    Enumerate(function(){
-      var isGuessing = flip(phi)
-
-      // console.log(syllogism)
-      // console.log(alpha)
-      // console.log(phi)
-      var RSA = reasoner1_empirical(syllogism, domain, alpha)
+//   // })
 
 
-      var cleanRSA = makeERPfromObject(
-                        utils_wppl.marginalsFromFullList(
-                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
+//   var R1withGuessing_empirical = cache(function(phi, syllogism, domain, alpha){
+//     Enumerate(function(){
+//       var isGuessing = flip(phi)
 
-      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
-      return prediction
-    })
-  })
-
-  var R1withGuessing_naive = cache(function(phi, syllogism, alpha, br){
-    Enumerate(function(){
-      var isGuessing = flip(phi)
-
-      var RSA = reasoner1_naive(syllogism, alpha, br)
-
-      var cleanRSA = makeERPfromObject(
-                        utils_wppl.marginalsFromFullList(
-                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
-
-      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
-      return prediction
-    })
-  })
-
-  var R0withGuessing_empirical = cache(function(phi, syllogism, domain){
-      Enumerate(function(){
-        var isGuessing = flip(phi)
-
-        var RSA =  reasoner0_empirical(syllogism, domain)
-
-      var cleanRSA = makeERPfromObject(
-                        utils_wppl.marginalsFromFullList(
-                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
-
-      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
-
-      return prediction
-      })
-    })
-
-  var R0withGuessing_naive = cache(function(phi, syllogism, br){
-
-      Enumerate(function(){
-        var isGuessing = flip(phi)
-
-        var RSA = reasoner0_naive(syllogism, br)
-
-      var cleanRSA = makeERPfromObject(
-                        utils_wppl.marginalsFromFullList(
-                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
-
-      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
-
-        return prediction
-      })
-    })
+//       // console.log(syllogism)
+//       // console.log(alpha)
+//       // console.log(phi)
+//       var RSA = reasoner1_empirical(syllogism, domain, alpha)
 
 
+//       var cleanRSA = makeERPfromObject(
+//                         utils_wppl.marginalsFromFullList(
+//                           pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+//       var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+//       return prediction
+//     })
+//   })
+
+//   var R1withGuessing_naive = cache(function(phi, syllogism, alpha, br){
+//     Enumerate(function(){
+//       var isGuessing = flip(phi)
+
+//       var RSA = reasoner1_naive(syllogism, alpha, br)
+
+//       var cleanRSA = makeERPfromObject(
+//                         utils_wppl.marginalsFromFullList(
+//                           pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+//       var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+//       return prediction
+//     })
+//   })
+
+//   var R0withGuessing_empirical = cache(function(phi, syllogism, domain){
+//       Enumerate(function(){
+//         var isGuessing = flip(phi)
+
+//         var RSA =  reasoner0_empirical(syllogism, domain)
+
+//       var cleanRSA = makeERPfromObject(
+//                         utils_wppl.marginalsFromFullList(
+//                           pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+//       var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+//       return prediction
+//       })
+//     })
+
+//   // var R0withGuessing_naive = cache(function(phi, syllogism, br){
+
+//   //     Enumerate(function(){
+//   //       var isGuessing = flip(phi)
+
+//   //       var RSA = reasoner0_naive(syllogism, br)
+
+//   //     var cleanRSA = makeERPfromObject(
+//   //                       utils_wppl.marginalsFromFullList(
+//   //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+//   //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+//   //       return prediction
+//   //     })
+//   //   })
 
 
-  var whichModelIsRight = function(isModel1, syllogism, domain){
-    Enumerate(function(){
-    //  var isWRSA = flip(0.5)
+//   var R0withGuessing_naive = cache(function(phi, syllogism, domain, baserates){
 
-      var prediction = isModel1 ? 
-            sample(R1withGuessing_empirical(phi_M1, syllogism, domain, alpha_M1)):
-            sample(R1withGuessing_naive(phi_M2, syllogism, alpha_M2, br))
+//       Enumerate(function(){
+//         var isGuessing = flip(phi)
 
-//            sample(R0withGuessing_naive(phi_M2, syllogism, br))
-//            sample(R0withGuessing_empirical(phi_M2, syllogism, domain))
-//            sample(R0withGuessing_naive(phi_M2, syllogism, br))
-            // sample(RSAwithGuessing_empirical(phi_M1, syllogism, domain, alpha_M1)):
-            // sample(argumentStrengthWithGuessing_empirical(phi_M2, syllogism, domain))
-//            sample(RSAwithGuessing(phi_M1, syllogism, domain, alpha_M1, wonkinessPrior, 99)):
-            //  sample(RSAwithGuessing(phi_M1, syllogism, domain, alpha_M1, 0, 99)):
-            // sample(argumentStrengthWithGuessing(phi_M2, syllogism, domain, 99))
-            // sample(argumentStrengthWithGuessing(phi_M2, syllogism, domain, br))
+//         var br = baserates[domain]
 
-      return prediction
-    })
-  }
+//         var RSA = reasoner0_naive(syllogism, br, domain)
+
+//       var cleanRSA = makeERPfromObject(
+//                         utils_wppl.marginalsFromFullList(
+//                           pruneERP(RSA), conclusionOrder, conclusionListOrder))
+
+//       var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+
+//         return prediction
+//       })
+//     })
+
+
+
+
+//   var whichModelIsRight = function(isModel1, syllogism, domain){
+//     Enumerate(function(){
+//     //  var isWRSA = flip(0.5)
+
+//       var prediction = isModel1 ? 
+//           sample(R0withGuessing_empirical(phi_M1, syllogism, domain)):
+//           sample(R0withGuessing_naive(phi_M2, syllogism, domain, baserates))
+//             // sample(R1withGuessing_empirical(phi_M1, syllogism, domain, alpha_M1)):
+//             // sample(R1withGuessing_naive(phi_M2, syllogism, alpha_M2, br))
+
+// //            sample(R0withGuessing_naive(phi_M2, syllogism, br))
+// //            sample(R0withGuessing_empirical(phi_M2, syllogism, domain))
+// //            sample(R0withGuessing_naive(phi_M2, syllogism, br))
+//             // sample(RSAwithGuessing_empirical(phi_M1, syllogism, domain, alpha_M1)):
+//             // sample(argumentStrengthWithGuessing_empirical(phi_M2, syllogism, domain))
+// //            sample(RSAwithGuessing(phi_M1, syllogism, domain, alpha_M1, wonkinessPrior, 99)):
+//             //  sample(RSAwithGuessing(phi_M1, syllogism, domain, alpha_M1, 0, 99)):
+//             // sample(argumentStrengthWithGuessing(phi_M2, syllogism, domain, 99))
+//             // sample(argumentStrengthWithGuessing(phi_M2, syllogism, domain, br))
+
+//       return prediction
+//     })
+//   }
 
   
-  map(function(syll){
-      map(function(domain){
+//   map(function(syll){
+//       map(function(domain){
 
-        var syllogism = scholasticCodeToPremises(syll)
+//         var syllogism = scholasticCodeToPremises(syll)
 
-        var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
+//         var domainSylldata =  structuredDataMarginal[domainSingularPlural[domain]][syll]
 
-         map(function(data){
+//          map(function(data){
 
-          // for marginalized data
-          var dataString = 'C,A,'+data
-         // console.log(Math.exp(whichModelIsRight(isWRSA, syllogism, domain).score([],dataString)))
-          factor(whichModelIsRight(isModel1, syllogism, domain).score([],dataString))
+//           // for marginalized data
+//           var dataString = 'C,A,'+data
+//          // console.log(Math.exp(whichModelIsRight(isWRSA, syllogism, domain).score([],dataString)))
+//           factor(whichModelIsRight(isModel1, syllogism, domain).score([],dataString))
 
-          // factor(Math.log(
+//           // factor(Math.log(
                       
-          //             (wonkyHypothesis*
-          //               (
-          //                 (phi_W1*
-          //                   Math.exp(guessing.score([],dataString)))+
-          //                 ((1-phi_W1)*
-          //                   marginals_W1[dataString])
-          //               ))
-          //               +
-          //           ((1-wonkyHypothesis)*
-          //             (
-          //               (phi_R1*
-          //                 Math.exp(guessing.score([],dataString)))+
-          //               ((1-phi_R1)*
-          //                 marginals_R1[dataString])
-          //             ))
+//           //             (wonkyHypothesis*
+//           //               (
+//           //                 (phi_W1*
+//           //                   Math.exp(guessing.score([],dataString)))+
+//           //                 ((1-phi_W1)*
+//           //                   marginals_W1[dataString])
+//           //               ))
+//           //               +
+//           //           ((1-wonkyHypothesis)*
+//           //             (
+//           //               (phi_R1*
+//           //                 Math.exp(guessing.score([],dataString)))+
+//           //               ((1-phi_R1)*
+//           //                 marginals_R1[dataString])
+//           //             ))
 
-          //           )
-          // )
+//           //           )
+//           // )
 
-          // for joint data
-         //  var dataString = data.join('')
-         // factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
-         //                ((1-phi)*Math.exp(cognitiveModel.score([],dataString)))))
+//           // for joint data
+//          //  var dataString = data.join('')
+//          // factor(Math.log((phi*Math.exp(guessing().score([],dataString)))+
+//          //                ((1-phi)*Math.exp(cognitiveModel.score([],dataString)))))
 
-        }, domainSylldata)
+//         }, domainSylldata)
 
-      }, domainsSingular)
+//       }, domainsSingular)
 
-     }, syllogisms)
+//      }, syllogisms)
 
-//  return [isModel1, alpha_M1, phi_M1, phi_M2, wonkinessPrior, wonky_br]
-//  return [isModel1, alpha_M1, phi_M1, phi_M2]
-  return [isModel1, phi_M1, alpha_M1, phi_M2, alpha_M2, br]
+// //  return [isModel1, alpha_M1, phi_M1, phi_M2, wonkinessPrior, wonky_br]
+//   return _.flatten([isModel1, phi_M1, phi_M2, _.values(baserates)])
+// //  return [isModel1, phi_M1, alpha_M1, phi_M2, alpha_M2, br]
 
-}
+//   // return _.flatten([phi,alpha,
+//   //   _.values(baserates), posteriorPredictive])
 
-  // utils_wppl.marginalsFromFullList(
-  //     reasoner0(scholasticCodeToPremises('AA1'), pruneERP(
-  //                             equivalentTransform(
-  //                                 objects, 
-  //                                   multinomialProbabilities(0.25)))),                             
-  //                                    conclusionOrder,
-  //                             conclusionListOrder)
+// }
 
-
-
- var nsamples = 10000
- var results = MH(bayesianModelComparison,nsamples)
-
-var posterior = map(
-  function(value){
-    value.concat(Math.exp(results.score([], value)))
-  },
-  results.support([]))
-
-//var header = ['modelcomparison', 'alpha_M1', 'phi_M1', 'alpha_M2', 'phi_M2','br' ,'wonkyprior', 'prob']
-//var header = ['modelcomparison', 'alpha_M1', 'phi_M1', 'phi_M2','prob']
-//var header = ['modelcomparison', 'alpha_M1', 'phi_M1', 'phi_M2','wonkyprior', 'wonkybr','prob']
-var header = ['modelcomparison', 'phi_M1', 'alpha_M1', 'phi_M2', 'alpha_M2','br','prob']
-
-posterior.unshift(header);
+//   // utils_wppl.marginalsFromFullList(
+//   //     reasoner0(scholasticCodeToPremises('AA1'), pruneERP(
+//   //                             equivalentTransform(
+//   //                                 objects, 
+//   //                                   multinomialProbabilities(0.25)))),                             
+//   //                                    conclusionOrder,
+//   //                             conclusionListOrder)
 
 
-//var filename = 'modelComparison_EmpiricalVsNaive_r0_n'+n_objects+'_'+ nsamples+'a_'+priorDM+'.csv'
-//var filename = 'modelComparison_WonkyVsLiteral_Empirical_n'+n_objects+'_'+ nsamples+'b_'+priorDM+'.csv'
-var filename = 'modelComparison_R1evsR1n_n'+n_objects+'_'+ nsamples+'b_'+priorDM+'.csv'
-utils_wppl.writeCSV(posterior, 
-  'FBT/'+filename);
 
-console.log(filename+' written')
+//  var nsamples = 100000
+//  var results = MH(bayesianModelComparison,nsamples)
+
+// var posterior = map(
+//   function(value){
+//     value.concat(Math.exp(results.score([], value)))
+//   },
+//   results.support([]))
+
+// //var header = ['modelcomparison', 'alpha_M1', 'phi_M1', 'alpha_M2', 'phi_M2','br' ,'wonkyprior', 'prob']
+// //var header = ['modelcomparison', 'alpha_M1', 'phi_M1', 'phi_M2','prob']
+// //var header = ['modelcomparison', 'alpha_M1', 'phi_M1', 'phi_M2','wonkyprior', 'wonkybr','prob']
+// var header = ['modelcomparison', 'phi_M1', 'phi_M2', 'br_cracker','br_knife','br_lightbulb','br_strawberry','prob']
+
+// posterior.unshift(header);
+
+
+// var filename = 'modelComparison_EmpiricalVsNaiveByDomain_r0_n'+n_objects+'_'+ nsamples+'a_'+priorDM+'.csv'
+// //var filename = 'modelComparison_WonkyVsLiteral_Empirical_n'+n_objects+'_'+ nsamples+'b_'+priorDM+'.csv'
+// //var filename = 'modelComparison_R1evsR1n_n'+n_objects+'_'+ nsamples+'b_'+priorDM+'.csv'
+// utils_wppl.writeCSV(posterior, 
+//   'FBT/'+filename);
+
+// console.log(filename+' written')
 
 

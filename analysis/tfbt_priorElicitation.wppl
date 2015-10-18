@@ -13,6 +13,7 @@ var domainPriors =
       lst.slice(4))},
     domainData)
 
+
 var model = function() {
 	var a = exponential(1);
 	var b = dirichlet([1,1,1,1,1,1,1,1]);
@@ -22,10 +23,7 @@ var model = function() {
 		return dirichletERP.score(c, observedValue)
 	},
 	domainPriors)))
-	// map(function(observedValue){
-	// 	erpFactor(dirichletERP, c, observedValue)
-	// },
-	// domainPriors)
+
 	return [a].concat(b)
 }
 
@@ -38,5 +36,4 @@ var posterior = map(
   results.support([]))
 
 posterior.unshift(['alpha','d1','d2','d3','d4','d5','d6','d7','d8','prob']);
-
 simpleCSV.writeCSV(posterior, domain+'posterior_test.csv');

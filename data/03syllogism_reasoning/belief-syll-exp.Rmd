@@ -774,12 +774,10 @@ ggplot(data=filter(d.tidy,parameter!='alpha'), aes(x=value,y=marginal))+
 # Analysis of radio buttons alone
 
 ```{r}
-fpath = '~/Documents/MHT/syllogism-project/data/03syllogism_reasoning/'
-fpath2 = '~/Documents/MHT/syllogism-project/data/04syllogism_reasoning/'
-fpath = 'C:/Users/Henry/Documents/RESEARCH/syllogism-project/data/03syllogism_reasoning/'
-
-
-fpath2 = 'C:/Users/Henry/Documents/RESEARCH/syllogism-project/data/04syllogism_reasoning/'
+fpath = '~/Documents/research/syllogism/data/03syllogism_reasoning/'
+fpath2 = '~/Documents/research/syllogism/data/04syllogism_reasoning/'
+#fpath = 'C:/Users/Henry/Documents/RESEARCH/syllogism-project/data/03syllogism_reasoning/'
+#fpath2 = 'C:/Users/Henry/Documents/RESEARCH/syllogism-project/data/04syllogism_reasoning/'
 
 df<-read.csv((paste(fpath,'syllbelief-exp-mturk_all_n250.csv',sep="")))
 df2<-read.csv((paste(fpath2,'syllbelief-exp2-mturk.csv',sep="")))
@@ -1069,6 +1067,8 @@ ggplot(md.tidy, aes(x=conclusion, y= value, fill=type))+
 setwd("~/Documents/research/syllogism/analysis")
 d<-read.csv('../models/FBT//exp12_n4Marginal_wonky_1000a_combined.csv')
 
+d<-read.csv('../models/FBT/exp12_n4Marginal_r0_empirical_10000a_combined.csv')
+
 
 
 params<-d %>%
@@ -1090,7 +1090,8 @@ ggplot(params, aes(x=val, y= marginal))+
 
 predict<-d %>% 
   #select(-phi,-alpha) %>%
-  select(-phi,-alpha, -priorwonky) %>%
+  #select(-phi,-alpha, -priorwonky) %>%
+  select(-phi) %>%
   gather(item, val, -prob) %>%
   separate(item, into=c("syllog","domain","conclusion"), sep="_") %>%
   group_by(syllog, domain, conclusion) %>%
@@ -1165,23 +1166,61 @@ ggplot(params, aes(x=val, y= marginal))+
 ## Model / Data
 
 ```{r FBT.modeldata}
+
+
+df.tidy<- df.c %>% 
+  filter(condition=='radio') %>%
+  select(starts_with('radio'), domain, syll) %>%
+  gather(quantifier, response, starts_with('radio'))
+
+
+agr.ci <- function(x){
+  agr = aggregate(response ~ domain + quantifier + syll, data=x, FUN=mean)
+  agr$CILow = aggregate(response ~ domain + quantifier + syll, data=x, FUN=ci.low)$response
+  agr$CIHigh = aggregate(response ~ domain + quantifier + syll, data=x, FUN=ci.high)$response
+  agr$YMin = agr$response - agr$CILow
+  agr$YMax = agr$response + agr$CIHigh
+  return(agr)
+}
+
+
+d.bs<-agr.ci(df.tidy)
+
+d.bs.t<-d.bs %>%
+  rename(conclusion = quantifier, 
+                   syllog = syll) %>%
+   group_by(domain,syllog) %>%
+  mutate(total = sum(response)) %>%
+  mutate(response = response/total,
+         YMin = YMin/total,
+         YMax = YMax/total) %>%
+  mutate(conclusion=factor(conclusion, 
+                             labels = c('all','none','some','not.all')))
+
 predict$domain<-factor(predict$domain, 
                        labels = c("crackers","knives","lightbulbs","strawberries"))
-dm<-left_join(df.norm, predict, by=c("syllog","domain","conclusion"))
-with(dm, cor(prop, expval))
-
-empirical<-predict
-independent<-predict
-
-independent<- independent %>% rename(independent = expval)
-empirical <- empirical %>% rename(empirical = expval)
-
-models <- left_join(independent, empirical, by=c("syllog","domain","conclusion"))
-
-dm<-left_join(df.norm, models, by=c("syllog","domain","conclusion"))
 
 
-dm$conclusion<- factor(dm$conclusion, labels = c("all", "none", "some", "not all"))
+#dm<-left_join(df.norm, predict, by=c("syllog","domain","conclusion"))
+# to get bootstrapped 95% CI in plot
+dm<-left_join(d.bs.t, predict, by=c("syllog","domain","conclusion"))
+
+
+with(dm, cor(response, expval))
+# 
+# empirical<-predict
+# independent<-predict
+# 
+# independent<- independent %>% rename(independent = expval)
+# empirical <- empirical %>% rename(empirical = expval)
+# 
+# models <- left_join(independent, 
+#                     empirical, by=c("syllog","domain","conclusion"))
+# 
+# dm<-left_join(df.norm, models, by=c("syllog","domain","conclusion"))
+# 
+# 
+# dm$conclusion<- factor(dm$conclusion, labels = c("all", "none", "some", "not all"))
 
 with(dm, cor(prop, independent))
 with(dm, cor(prop, empirical))
@@ -1198,40 +1237,58 @@ ggplot(dm, aes(x=empirical, y=prop, color=conclusion))+
   coord_fixed()
 
 dm.tidy<- dm %>% 
-  gather(type, value, prop, empirical, independent)
+#  gather(type, value, prop, empirical, independent)
+  gather(type, value, response, expval)
 
-dm.tidy$type <- factor(dm.tidy$type, levels=c("independent","empirical", "prop"),
-                       labels=c("(independent) model", "(empirical) model", "human data"))
+# dm.tidy$type <- factor(dm.tidy$type, levels=c("independent","empirical", "prop"),
+#                        labels=c("(independent) model", "(empirical) model", "human data"))
+dm.tidy$type <- factor(dm.tidy$type, levels=c("response", "expval"),
+                       labels=c( "human data","(empirical prior) model"))
+
+
 
 dm.sub<-filter(dm.tidy, syllog%in%c("AI1","IE1","AA1"))
 dm.sub$syllog<-factor(dm.sub$syllog, levels =c("AI1","IE1","AA1"), 
        labels = c("all / some", "some / none","all / all"))
+dm.sub$conclusion<-factor(dm.sub$conclusion, 
+                          levels = c("all","some","not.all","none"),
+                          labels = c("all","some","not all","none"))
 
 
-ggplot(dm.sub, 
-       aes(x=conclusion, y = value, fill = conclusion, alpha = type))+
+dm.sub[dm.sub$type=="(empirical prior) model",]$YMin<-dm.sub[dm.sub$type=="(empirical prior) model",]$value
+dm.sub[dm.sub$type=="(empirical prior) model",]$YMax<-dm.sub[dm.sub$type=="(empirical prior) model",]$value
+
+p<-ggplot(dm.sub, 
+       aes(x=conclusion, y = value, alpha = type, group=type))+
   geom_bar(stat='identity', 
            position=position_dodge(), color='black')+
   theme_paper()+
-  scale_alpha_manual(values=c(0.3,0.7,1))+
-  theme(axis.text.x = element_blank(),
-        strip.text.y = element_text(angle=0),
+    geom_errorbar(aes(x=conclusion,
+                      group=type,
+                      ymin=YMin, 
+                   ymax =YMax), 
+               position=position_dodge(0.9),
+               width = 0.3, size = 1,
+               alpha=1, inherit.aes=F)+
+  scale_alpha_manual(values=c(0.3,1))+
+  theme(axis.text.x = element_text(angle=45),
+        strip.text.y = element_text(angle=0, size =16),
+        strip.text.x = element_text(size =16),
         legend.position = "bottom",
         legend.direction = 'horizontal',
-        legend.box = 'horizontal')+
+        legend.box = 'horizontal'
+        )+
   scale_fill_brewer(type='qual',palette=6)+
-  #geom_errorbar(aes(ymin=value-2*sterr, 
-  #                  ymax = value+2*sterr), 
-  #              position=position_dodge(),
-  #              width = 0.3, size = 0.3)+
   facet_grid(syllog~domain)+
-  xlab("")+
+  xlab("conclusion")+
   ylab("percent endorsement")+
-  guides(alpha = guide_legend(title = NULL))
+  guides(alpha = guide_legend(title = NULL),
+         fill=F)
 
+ggsave(p, filename='../publications/esslli-15/figures/bars_bw.pdf',
+       height = 5.5,
+       width=11)
 
-dm.sub$conclusion<-factor(dm.sub$conclusion, levels = c(
-  "all","some","not all","none"))
 
 ggplot(dm.sub, 
        aes(x=conclusion, y = value, fill = type))+

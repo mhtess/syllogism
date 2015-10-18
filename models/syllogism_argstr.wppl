@@ -6,7 +6,7 @@
 /// model parameter: number of objects
 
 var n_objects = 4
-var priorDM = 'combined'
+var priorDM = 'plausibility'
 
 // mht's gensym
 globalStore.gensymCounter = 0
@@ -754,7 +754,7 @@ var fullBayesianTreatment = function() {
 //  var wonkyprior = uniformDraw(utils_wppl.sequence(0.1,1,0.1))
   var wonkyprior = 0
 
-  var br = uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))
+  // var br = uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))
   // var br = 99
     // var baserates = {
     //   "cracker": {"a":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
@@ -771,11 +771,11 @@ var fullBayesianTreatment = function() {
     //               "c":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))}
     // }
 
-    var baserates = {
-      "cracker": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-      "knife": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-      "lightbulb": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
-      "strawberry":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))}
+    // var baserates = {
+    //   "cracker": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //   "knife": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //   "lightbulb": uniformDraw(utils_wppl.sequence(0.05,0.95,0.05)),
+    //   "strawberry":uniformDraw(utils_wppl.sequence(0.05,0.95,0.05))}
 
 
 
@@ -851,58 +851,58 @@ var fullBayesianTreatment = function() {
       })
     })
 
-  var R0withGuessing_naive = cache(function(phi, syllogism, br){
+  // var R0withGuessing_naive = cache(function(phi, syllogism, br){
 
-      Enumerate(function(){
-        var isGuessing = flip(phi)
+  //     Enumerate(function(){
+  //       var isGuessing = flip(phi)
 
-        var RSA = reasoner0_naive(syllogism, br)
+  //       var RSA = reasoner0_naive(syllogism, br)
 
-      var cleanRSA = makeERPfromObject(
-                        utils_wppl.marginalsFromFullList(
-                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
+  //     var cleanRSA = makeERPfromObject(
+  //                       utils_wppl.marginalsFromFullList(
+  //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
 
-      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+  //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
 
-        return prediction
-      })
-    })
+  //       return prediction
+  //     })
+  //   })
 
-  var R0withGuessing_iid = cache(function(phi, syllogism, baserates, domain){
+  // var R0withGuessing_iid = cache(function(phi, syllogism, baserates, domain){
 
-      Enumerate(function(){
-        var isGuessing = flip(phi)
+  //     Enumerate(function(){
+  //       var isGuessing = flip(phi)
 
-        var RSA = reasoner0_iid(syllogism, baserates[domain], domain)
+  //       var RSA = reasoner0_iid(syllogism, baserates[domain], domain)
 
-      var cleanRSA = makeERPfromObject(
-                        utils_wppl.marginalsFromFullList(
-                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
+  //     var cleanRSA = makeERPfromObject(
+  //                       utils_wppl.marginalsFromFullList(
+  //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
 
-      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+  //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
 
-        return prediction
-      })
-    })
+  //       return prediction
+  //     })
+  //   })
 
-  var R0withGuessing_independent = cache(function(phi, syllogism, baserates,domain){
+  // var R0withGuessing_independent = cache(function(phi, syllogism, baserates,domain){
 
-      Enumerate(function(){
-        var isGuessing = flip(phi)
+  //     Enumerate(function(){
+  //       var isGuessing = flip(phi)
 
-        var RSA = reasoner0_independent(syllogism, baserates[domain]["a"],
-                                              baserates[domain]["b"], 
-                                              baserates[domain]["c"], domain)
+  //       var RSA = reasoner0_independent(syllogism, baserates[domain]["a"],
+  //                                             baserates[domain]["b"], 
+  //                                             baserates[domain]["c"], domain)
 
-      var cleanRSA = makeERPfromObject(
-                        utils_wppl.marginalsFromFullList(
-                          pruneERP(RSA), conclusionOrder, conclusionListOrder))
+  //     var cleanRSA = makeERPfromObject(
+  //                       utils_wppl.marginalsFromFullList(
+  //                         pruneERP(RSA), conclusionOrder, conclusionListOrder))
 
-      var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
+  //     var prediction = isGuessing ? sample(guessing) : sample(cleanRSA)
 
-        return prediction
-      })
-    })
+  //       return prediction
+  //     })
+  //   })
 
 
   var posteriorPredictive = 
@@ -941,9 +941,9 @@ var fullBayesianTreatment = function() {
            //                        conclusionListOrder))
 
          //var modelWithGuessing = R1withGuessing_empirical(phi, syllogism, domain, alpha)
-         //  var modelWithGuessing = R0withGuessing_empirical(phi, syllogism, domain)
+          var modelWithGuessing = R0withGuessing_empirical(phi, syllogism, domain)
          //  var modelWithGuessing = R0withGuessing_naive(phi, syllogism, br)
-           var modelWithGuessing = R0withGuessing_iid(phi, syllogism, baserates, domain)
+           // var modelWithGuessing = R0withGuessing_iid(phi, syllogism, baserates, domain)
           //var modelWithGuessing = R0withGuessing_independent(phi, syllogism, baserates, domain)
 
          // var modelWithGuessing = argumentStrengthWithGuessing(phi, syllogism, domain, br)
@@ -992,7 +992,8 @@ var fullBayesianTreatment = function() {
 //  return _.flatten([phi,alpha,wonkyprior,br,posteriorPredictive])
 
 //  return _.flatten([phi,br,posteriorPredictive])
-  return _.flatten([phi,_.values(baserates),posteriorPredictive])
+//  return _.flatten([phi,_.values(baserates),posteriorPredictive])
+  return _.flatten([phi,posteriorPredictive])
 
 //  return _.flatten([phi,_.flatten(map(function(k){return _.values(k)},_.values(baserates))),posteriorPredictive])
 
@@ -1037,17 +1038,18 @@ var header = _.flatten(
 
 // map(function(h){header.unshift(h)},paramshead)
 
-header.unshift('phi','br_cracker','br_knife','br_lightbulb','br_strawberry')
+//header.unshift('phi','br_cracker','br_knife','br_lightbulb','br_strawberry')
 //header.unshift('phi','br')
+header.unshift('phi')
 header.push('prob')
 
 posterior.unshift(header);
 
-//var filename = 'exp12_n'+n_objects+'Marginal_argstr_empirical_'+ nsamples+'a_'+priorDM+'.csv'
+var filename = 'exp12_n'+n_objects+'Marginal_argstr_empirical_'+ nsamples+'a_'+priorDM+'.csv'
 //var filename = 'exp12_n'+n_objects+'Marginal_argstr_naive_'+ nsamples+'a_'+priorDM+'.csv'
 //var filename = 'exp12_n'+n_objects+'Marginal_pragmatic_naive_'+ nsamples+'a_'+priorDM+'.csv'
-var filename = 'exp12_n'+n_objects+'Marginal_r0_iid_'+ 
-                    nsamples+'a_'+priorDM+'.csv'
+// var filename = 'exp12_n'+n_objects+'Marginal_r0_iid_'+ 
+//                     nsamples+'a_'+priorDM+'.csv'
 
 utils_wppl.writeCSV(posterior, 'FBT/'+filename);
 

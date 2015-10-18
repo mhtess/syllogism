@@ -38,8 +38,8 @@ function parsePriorData(priorDM){
 	var dfile;
 	var dPriors;
 	var domainPriors;
-//	var dfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
-	var dfilepath = "/Users/sbridgers/Documents/MHT/syllogism-project/data/03syllogism_prior_psychjs/";
+	var dfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
+	//var dfilepath = "/Users/sbridgers/Documents/MHT/syllogism-project/data/03syllogism_prior_psychjs/";
 	//var dfilepath = "/home/mht/projectsyll/syllogism-project/data/03syllogism_prior_psychjs/";
 
 
@@ -47,8 +47,11 @@ function parsePriorData(priorDM){
 	    dfile = dfilepath + "prior-exp-mturk_collapsed_means_n71.csv";
 		dPriors = readCSV(dfile).data;
 		domainPriors = dPriors.slice(1);
+	} else if (priorDM =='marginals'){
+	    dfile = dfilepath + "prior-exp-mturk_collapsed_marginals_n71.csv";
+		dPriors = readCSV(dfile).data;
+		domainPriors = dPriors.slice(1);
 	} else {
-
 	  dfile = dfilepath + "prior-exp-mturk_means_n71.csv";
 	  dPriors = readCSV(dfile).data;
 	  var conditionCol = dPriors[0].indexOf("condition")
@@ -78,8 +81,8 @@ function parsePriorData(priorDM){
 // read and concat exp. 1 and 2 data
 
 function readReasoningData(){
-	var drfilepath = "/Users/sbridgers/Documents/MHT/syllogism-project/data/";
-	//var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
+	//var drfilepath = "/Users/sbridgers/Documents/MHT/syllogism-project/data/";
+	var drfilepath = "/Users/mht/Documents/research/syllogism/data/";
 	//var drfilepath = "/home/mht/projectsyll/syllogism-project/data/";
 
 	var drfile1 = drfilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
@@ -149,7 +152,104 @@ function normalize(distributionObject){
 	return _.object(_.map(distributionObject, function(val,key){
 	 	return [key, val/total]
 	 }))
+};
+
+
+// from Rips (1994) [chapter 7]; n = 20
+function parseRipsData(){
+	var dfilepath = "/Users/mht/Documents/research/syllogism/models/ripsdata/rips-data.csv";
+
+	var raw = readCSV(dfilepath).data;
+
+	// var data = _.object(
+	// 	_.map(raw, 
+	// 	function(y){return [y[0], 
+	// 		_.object(
+	// 			_.zip(
+	// 				["A","E","I","O"],
+	// 				_.map(y.slice(1),
+	// 					function(x){return fillArray(true,x*(20/100))} // convert to # of "valids" (since n =20)
+	// 					)
+	// 				)
+	// 			)
+	// 			]
+	// 		}
+	// 		)
+	
+	// );
+
+	var data = _.object(
+		_.map(raw, 
+		function(y){return [y[0], 
+			_.flatten(
+				_.map(
+					_.zip(
+						["A","E","I","O"],
+						y.slice(1)
+					),
+					function(x){return fillArray(x[0],x[1]*(20/100))} // convert to # of "valids" (since n =20)
+					)
+				)
+				]
+			}
+			)
+	
+	);
+
+
+	return data
+};
+
+function fillArray(value, len) {
+  var arr = [];
+  for (var i = 0; i < len; i++) {
+    arr.push(value);
+  }
+  return arr;
+};
+
+
+
+var writeERP = function(myERP){
+  return _.map(myERP.support(),
+    function(val){
+      return [val, Math.exp(myERP.score([],val))]
+    })
 }
+
+var transpose = function(a) {
+
+  // Calculate the width and height of the Array
+  var w = a.length ? a.length : 0,
+    h = a[0] instanceof Array ? a[0].length : 0;
+
+  // In case it is a zero matrix, no transpose routine needed.
+  if(h === 0 || w === 0) { return []; }
+
+  /**
+   * @var {Number} i Counter
+   * @var {Number} j Counter
+   * @var {Array} t Transposed data is stored in this array.
+   */
+  var i, j, t = [];
+
+  // Loop through every item in the outer array (height)
+  for(i=0; i<h; i++) {
+
+    // Insert a new row (array)
+    t[i] = [];
+
+    // Loop through every item per item in outer array (width)
+    for(j=0; j<w; j++) {
+
+      // Save transposed data.
+      t[i][j] = a[j][i];
+    }
+  }
+
+  return t;
+};
+
 
 module.exports = {
   readCSV: readCSV,
@@ -160,4 +260,7 @@ module.exports = {
   readReasoningData: readReasoningData,
   unrollConclusionList: unrollConclusionList,
   normalize: normalize,
-  marginalsFromFullList: marginalsFromFullList};
+  marginalsFromFullList: marginalsFromFullList,
+  parseRipsData: parseRipsData,
+writeERP:writeERP,
+transpose:transpose};
