@@ -1,6 +1,4 @@
-// syllogism.wppl
-
-// webppl syllogism.wppl --require-js ./utils_wppl 
+// webppl syllogism.wppl --require syllUtils
 
 
 /// model parameter: number of objects
@@ -9,243 +7,23 @@ var n_objects = 4
 var priorDM = 'combined'
 
 // mht's gensym
-globalStore.gensymCounter = 0
-var gensym = function(){
-  globalStore.gensymCounter = globalStore.gensymCounter+1
-  return "g" + globalStore.gensymCounter
-}
 
 var objects = repeat(n_objects, gensym)
 
 
 // load elicited prior data
-
-var priorClean = utils_wppl.parsePriorData(priorDM)
-// ordering of the 8-state properties
-var propertyTuples = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
-                      [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
-
-var domainsSingular = ['cracker','knife','strawberry','lightbulb']
-
-var domainSingularPlural = {
-  "cracker":"crackers",
-  "lightbulb":"lightbulbs",
-  "strawberry":"strawberries",
-  "knife":"knives"
-}
+console.log(syllogisticPremises[0])
 
 
 
+syllogisticRSA(syllogisticPremises[0], 0.25, objects, 2, 
+                                 {pragmaticProduction: false,
+                                  pragmaticInterpretation: false,
+                                  QUD_E1: "state",
+                                  QUD_cL0: "premises"})
 
-var reasoner0_empirical = cache(function(premises, domain) {
-  Enumerate(function(){
+// reasoner1(syllogisticPremises[0])
 
-    var backgroundPrior = priorClean[domain]
-    var equivalentWorlds = pruneERP(equivalentTransform(objects, backgroundPrior))
-    var state = sample(equivalentWorlds)
-
-
-    var trueSentences = stateToSentence(state)
-        // this could probably be optimized
-    var flattenedSentences = flattenSentences(trueSentences) 
-
-    var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
-                        flattenedSentences.indexOf(premises[1].join())!=-1
-
-    var trueConclusions = filter(isConclusion, trueSentences)
-
-    var listConclusions = trueLists(trueConclusions)
-//    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
-   var whichConclusions = uniformDraw(listConclusions)
-//    var conclusion = uniformDraw(trueConclusions)
-
-    factor(premisesTrue?0:-Infinity)
-//    return conclusion // what is the conclusion?
-    return whichConclusions // which conclusions are true?
-  })
-})
-
-var experimenter1_empirical = cache(function(QUDval, figure, domain) {
-  Enumerate(function(){
-//    var premises = uniformDraw(premiseDictionary[figure])
-    var premises = uniformDraw(syllogisticPremises)
-
-    var R0 = reasoner0_empirical(premises, domain)
-
-    factor(R0.score([],QUDval))
-    return premises
-  })
-})
-
-var reasoner1_empirical = cache(function(premises, domain, alpha) {
-  Enumerate(function(){
-    // simple prep stuff
-    var figure = _.invert(premiseForms)[premises[0][0]+','+premises[1][0]]
-
-    var backgroundPrior = priorClean[domain]
-    var equivalentWorlds = pruneERP(equivalentTransform(objects, backgroundPrior))
-
-    var state = sample(equivalentWorlds)
-
-    // mapping from worlds to sentences, conclusions
-    var trueSentences = stateToSentence(state)
-    var trueConclusions = filter(isConclusion, trueSentences)
-    var listConclusions = trueLists(trueConclusions)
-
- //   var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
-    var whichConclusions = uniformDraw(listConclusions)
-//    var conclusion = uniformDraw(trueConclusions)
-
-    // recursive reasoning
-    var E1 = experimenter1_empirical(whichConclusions, figure, domain)
-//    var E1 = experimenter1(conclusion, figure, equivalentWorlds)
-
-    factor(alpha*E1.score([],premises))
-  //  return conclusion // what is the conclusion?
-   return whichConclusions // which conclusions are true?
-  })
-})
-
-
-
-// //var reasoner0 = cache(function(premises, equivalentWorlds) {
-// var reasoner0 = cache(function(premises, equivalentWorlds, domain, wonkyworld) {
-//   Enumerate(function(){
-//     var state = sample(equivalentWorlds)
-//     var trueSentences = stateToSentence(state)
-//         // this could probably be optimized
-//     var flattenedSentences = flattenSentences(trueSentences) 
-
-//     var premisesTrue = flattenedSentences.indexOf(premises[0].join())!=-1 &&
-//                         flattenedSentences.indexOf(premises[1].join())!=-1
-
-//     var trueConclusions = filter(isConclusion, trueSentences)
-
-//     var listConclusions = trueLists(trueConclusions)
-// //    var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
-//    var whichConclusions = uniformDraw(listConclusions)
-// //    var conclusion = uniformDraw(trueConclusions)
-
-//     factor(premisesTrue?0:-Infinity)
-// //    return conclusion // what is the conclusion?
-//     return whichConclusions // which conclusions are true?
-//   })
-// })
-
-// var experimenter1 = cache(function(QUDval, figure, equivalentWorlds, domain, wonkyworld) {
-//   Enumerate(function(){
-// //    var premises = uniformDraw(premiseDictionary[figure])
-//     var premises = uniformDraw(syllogisticPremises)
-
-//     var R0 = reasoner0(premises, equivalentWorlds, domain, wonkyworld)
-
-//     factor(R0.score([],QUDval))
-//     return premises
-//   })
-// })
-
-// var reasoner1 = cache(function(premises, domain, alpha, wonkyprior, baseRate) {
-//   Enumerate(function(){
-//     // simple prep stuff
-//     var figure = _.invert(premiseForms)[premises[0][0]+','+premises[1][0]]
-//     var backgroundPrior = priorClean[domain]
-
-//     // sampling of worlds
-// //    var backoffPrior = [1,1,1,1,1,1,1,1] // uniform
-//     var backoffPrior = (baseRate==99)? [1,1,1,1,1,1,1,1]: multinomialProbabilities(baseRate) // binomial
-//     var wonkyworld = flip(wonkyprior)
-// //    var wonkyworld = false 
-
-//     var equivalentWorlds = wonkyworld ?
-//                             pruneERP(equivalentTransform(objects, backoffPrior)):
-//                             pruneERP(equivalentTransform(objects, backgroundPrior))
-
-//     var state = sample(equivalentWorlds)
-
-//     // mapping from worlds to sentences, conclusions
-//     var trueSentences = stateToSentence(state)
-//     var trueConclusions = filter(isConclusion, trueSentences)
-//     var listConclusions = trueLists(trueConclusions)
-
-//  //   var whichConclusions = binarizedConclusionSet[uniformDraw(listConclusions)]
-//     var whichConclusions = uniformDraw(listConclusions)
-// //    var conclusion = uniformDraw(trueConclusions)
-
-//     // recursive reasoning
-//     var E1 = experimenter1(whichConclusions, figure, equivalentWorlds, domain, wonkyworld)
-// //    var E1 = experimenter1(conclusion, figure, equivalentWorlds)
-
-//     factor(alpha*E1.score([],premises))
-//   //  return conclusion // what is the conclusion?
-//    return whichConclusions // which conclusions are true?
-//   })
-// })
-
-
-
-
-var guessing = 
-Enumerate(function(){
-    var guess = uniformDraw(conclusionOrder)
-    return guess.join()
-  })
-
-
-// //var br = 0.25                            
-// var domain = 'cracker'
-// var alpha = 2.6
-// //var wonkyprior = 0
-// var syllogism = scholasticCodeToPremises('AA1')
-
-// reasoner1_empirical(syllogism, domain, alpha)
-
-// utils_wppl.marginalsFromFullList(
-//   pruneERP(
-//    // reasoner1_naive(syllogism, alpha, br)
-//     reasoner1(syllogism, domain, alpha, wonkyprior, br)
-// //    reasoner0_naive(syllogism, br)
-//     ),
-//     conclusionOrder,
-//     conclusionListOrder)
-
-//reasoner1_naive(syllogism, alpha, br)
-
-// var guessing = cache(function(){
-//   Enumerate(function(){
-//     var guess = uniformDraw(['0000','1000','0100','0010','0001',
-//                                   '1100','1010','1001','0110','0101','0011',
-//                                   '1110','1101','0111','1011','1111'])
-//     return guess
-//   })
-// })
-
-
-// var equivalentWorlds = br == 99? 
-//                         pruneERP(
-//                           equivalentTransform(
-//                               objects, 
-//                               priorClean[domain])) :
-//                          pruneERP(
-//                           equivalentTransform(
-//                               objects, 
-//                                 multinomialProbabilities(br)))
-
-
-// var out = utils_wppl.marginalsFromFullList(
-//                               reasoner0_naive(syllogism, br),
-//                               conclusionOrder,
-//                               conclusionListOrder)
-// pruneERP(reasoner0_naive(syllogism, br))
-//console.log(writeERP(out))
-
-
-// var equivalentDomainWorlds = {
-//   "cracker": equivalentTransform(objects, priorClean["cracker"]),
-//   "knife": equivalentTransform(objects, priorClean["knife"]),
-//   "lightbulb": equivalentTransform(objects, priorClean["lightbulb"]),
-//   "strawberry":equivalentTransform(objects, priorClean["strawberry"])
-// }
-reasoner1_naive(scholasticCodeToPremises("AA1"), 2, 0.25)
 //////////////////////////////////////
 /////// integrate out parameters
 ////////////////////////////////////
