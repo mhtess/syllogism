@@ -1,0 +1,98 @@
+---
+title: "syllogisms"
+author: "mht"
+date: "October 21, 2015"
+output: html_document
+---
+
+
+
+```{r helders}
+library(coda)
+library(purrr)
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+HPDhi<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+HPDlo<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+options("scipen"=10)   
+```
+
+
+# Rips Data
+
+```{r data.load}
+d<-read.csv("~/Documents/research/syllogism/models/ripsdata/rips-data-raw-boolean.csv")
+
+d.tidy <- d %>% 
+  group_by(syllogism, conclusion) %>%
+  multi_boot_standard(column="response")
+
+```
+
+
+# Model
+
+```{r model.load}
+fpath<- "~/Documents/research/syllogism/models/results/"
+prefix<- "rips-bySyllogism-nObj4-br-phi-MH"
+prefix<- "rips-bySyllogism-pragProd-qudcL0premises_nObj4-br-phi-MH"
+prefix<- "rips-bySyllogism-pragProd-qudcL0premises_nObj4-br-phi-MH"
+prefix<- "rips-bySyllogism-pragInt-qudE1conclusion_nObj4-br-phi-MH"
+samples = 1000
+burn = 0 #samples /2
+m<-read.csv(paste(fpath, prefix, samples, "burn", burn,".csv", sep=''))
+m.samples <- m[rep(row.names(m), m$Probability*samples), 1:4]
+```
+
+
+# Posterior over parameters
+
+```{r posterior.parameters}
+
+m.params <- m.samples %>%
+  filter(Type=='parameter')
+
+ggplot(m.params, aes(x=Value))+
+  geom_histogram()+
+  facet_wrap(~Parameter, scales='free')
+
+```
+
+# Posterior predictive
+
+```{r posterior.predictives}
+
+m.pp <- m.samples %>%
+  filter(Type == 'predictive') %>%
+  group_by(Parameter, Item) %>%
+  summarize(MAP = estimate_mode(Value),
+            credHigh = HPDhi(Value),
+            credLow = HPDlo(Value)) %>%
+  rename(syllogism = Parameter,
+         conclusion=Item)
+
+
+m.d <-left_join(d.tidy, m.pp)
+
+
+with(m.d, cor(mean, MAP))
+
+ggplot(m.d, aes(x=MAP, y = mean, color=conclusion))+
+  geom_point()+
+  coord_fixed()+
+  xlim(0,1)+
+  ylim(0,1)
++
+  #geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper))+
+  #geom_errorbarh(aes(xmin=credLow, xmax=credHigh))
+
+```
+
