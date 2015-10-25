@@ -6,8 +6,8 @@ var ripsDF = dataFrame(ripsData)
 var syllogisms = _.uniq(_.pluck(ripsDF, "syllogism"))
 
 // for testing purposes, keep n_objects fixed
-var n_objects = 4
-var objects = ["g1","g2","g3", "g4"]
+var n_objects = 3
+var objects = ["g1","g2","g3"]
 
 var RSAoptions ={pragmaticInterpretation: false,
                  QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
