@@ -7,36 +7,48 @@ var syllogisms = _.uniq(_.pluck(ripsDF, "syllogism"))
 
 // for testing purposes, keep n_objects fixed
 var n_objects = 4
-var objects = ["g1","g2","g3", "g4"]
 
-var RSAoptions ={pragmaticInterpretation: false,
+// var makeObjects = function(n){
+// 	return map(function(x){return "g" + x},_.range(0,n))
+// }
+
+var RSAoptions ={pragmaticInterpretation: true,
                  QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
-                 pragmaticProduction: true,
+                 pragmaticProduction: false,
                  QUD_cL0: "premises"}
+
+var brBins = map(function(x){return x/20}, _.range(1,20))
+
 
 var modelAnalysis = function(){
 
 	var phi= uniform(0,1)
 
+	// var n_objects = uniformDraw([3,4,5,6,7])
+
 	var RSAparams = {
 	 speakerOptimality_E1: RSAoptions["pragmaticInterpretation"] ? uniform(0,20) : 0,
 	 speakerOptimality_cL0: RSAoptions["pragmaticProduction"] ? uniform(0,20) : 0,
-	 baseRate: uniform(0,1),
-	 objects: objects
+	 // baseRate: uniform(0,1),
+	 baseRate: uniformDraw(brBins),
+	 n_objects: n_objects
 	}
 
 	foreach(syllogisms, function(syllogism){
 		var data = _.pluck(subset(ripsDF, "syllogism", syllogism), "conclusion")
 		var syll = scholasticCodeToPremises(syllogism)
 
+		var t0 = syllUtils.getTime()
 		var predictionERP = syllogisticRSA(syll, RSAparams, RSAoptions)
-
+		var t1 = syllUtils.getTime()
+		console.log(t1-t0)
 		var linkedERP = addGuessing(predictionERP, phi)
 
 		var scr = sum(map(function(d){
 			return linkedERP.score([], d)
 		}, data))
 
+		// console.log(syllogism + scr)
 		factor(scr)
 
 		foreach(["all","some","not all","none"],
@@ -51,6 +63,7 @@ var modelAnalysis = function(){
 	RSAoptions["pragmaticInterpretation"]  ?
 		query.add(["parameter","speakerOptimality_E1","global"], RSAparams["speakerOptimality_E1"]) : null
 	query.add(["parameter","baseRate","global"], RSAparams["baseRate"])
+	query.add(["parameter","nObjects","global"], n_objects)
 	query.add(["parameter","phi","global"], phi)
 
 	return query
@@ -58,19 +71,22 @@ var modelAnalysis = function(){
 }
 
 var inference ='MH'
-var samples = 1000
+var samples = 2
 var burn = 0
 var resultsERP = MCMC(modelAnalysis, {samples:samples, burn:burn, verbose:true})
 
 console.log('inference complete... printing')
-var pre1 = RSAoptions["pragmaticInterpretation"] ? "pragInt-" + 'qudE1' + RSAoptions["QUD_E1"] + "_" : ""
-var pre2 = RSAoptions["pragmaticProduction"] ? "pragProd-" + 'qudcL0' + RSAoptions["QUD_cL0"] +"_": ""
 
-var optPrefix = pre1 + pre2
+// var pre1 = RSAoptions["pragmaticInterpretation"] ? "pragInt-" + 'qudE1' + RSAoptions["QUD_E1"] + "_" : ""
+// var pre2 = RSAoptions["pragmaticProduction"] ? "pragProd-" + 'qudcL0' + RSAoptions["QUD_cL0"] +"_": ""
+
+// var optPrefix = pre1 + pre2
 				
 
-var outfile = "results/rips-bySyllogism-"+optPrefix+"nObj" + n_objects + "-br-phi-"+ 
-											inference + samples + "burn" + burn + ".csv"
-syllUtils.erpWriter(resultsERP, outfile)
+// var outfile = "results/rips-bySyllogism-"+optPrefix+"nObj" + '' + "-br-phi-"+ 
+// 											inference + samples + "burn" + burn + ".csv"
+// syllUtils.erpWriter(resultsERP, outfile)
 
-console.log('output written to ' + outfile)
+// console.log('output written to ' + outfile)
+
+resultsERP
