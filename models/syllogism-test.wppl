@@ -1,0 +1,37 @@
+// time webppl syllogism.wppl --require syllUtils
+
+var fpath = "/Users/mht/Documents/research/syllogism/models/ripsdata/"
+var ripsData = syllUtils.readCSV(fpath+"rips-data-raw.csv").data
+var ripsDF = dataFrame(ripsData)
+var syllogisms = _.uniq(_.pluck(ripsDF, "syllogism"))
+
+// for testing purposes, keep n_objects fixed
+var n_objects = 4
+var objects = ["g1","g2","g3", "g4"]
+
+var RSAoptions ={pragmaticInterpretation: true,
+                 QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
+                 pragmaticProduction: false,
+                 QUD_cL0: "state"}
+
+
+
+var RSAparams = {
+ speakerOptimality_E1: 2,
+ speakerOptimality_cL0: 2,
+ baseRate: 0.25,
+ objects: objects,
+ cost: 1
+}
+
+var syllogism = 'AA1'
+
+var data = _.pluck(subset(ripsDF, "syllogism", syllogism), "conclusion")
+var syll = scholasticCodeToPremises(syllogism)
+
+syllogisticRSA(syll, [["C","A"],"all"], RSAparams, RSAoptions)
+
+// var scr = sum(map(function(d){
+// 	return predictionERP.score([], d)
+// }, data))
+
