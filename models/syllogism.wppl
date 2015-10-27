@@ -1,101 +1,158 @@
 // time webppl syllogism.wppl --require syllUtils
 
 var fpath = "/Users/mht/Documents/research/syllogism/models/ripsdata/"
-var ripsData = syllUtils.readCSV(fpath+"rips-data-raw-boolean.csv").data
-var ripsDF = dataFrame(ripsData)
-var syllogisms = _.uniq(_.pluck(ripsDF, "syllogism"))
 
-// for testing purposes, keep n_objects fixed
+
+// prior data for models with content effects
+
+var priorfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
+var priordata = syllUtils.readCSV(priorfilepath + "prior-exp-mturk_collapsed_means_n71.csv").data
+var priorDF = _.object(map(function(obj){return [obj["domain"], obj] }, dataFrame(priordata)))
+
+
+// reasoning data foor models with content effects
+var datafilepath = "/Users/mht/Documents/research/syllogism/data/";
+var drfile1 = datafilepath + "03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv";
+var drfile2 = datafilepath + "04syllogism_reasoning/syllbelief-exp2-mturk.csv";
+var exp1data = syllUtils.readCSV(drfile1).data
+var exp2data = syllUtils.readCSV(drfile2).data
+var dataDF = subset(_.flatten([dataFrame(exp1data), dataFrame(exp2data)]), "condition", "radio")
+
+var syllogisms = _.uniq(_.pluck(dataDF, "syll"))
+var domains = _.uniq(_.pluck(dataDF, "domain"))
+
+// Rips (1994) data
+// var ripsData = syllUtils.readCSV(fpath+"rips-data-raw-boolean.csv").data
+// var ripsDF = dataFrame(ripsData)
+// var syllogisms = _.uniq(_.pluck(ripsDF, "syllogism"))
+
+ // for testing purposes, keep n_objects fixed
 var n_objects = 4
 var objects = ["g1","g2","g3", "g4"]
 
-var RSAoptions ={pragmaticInterpretation: true,
+var RSAoptions ={pragmaticInterpretation: false,
                  QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
-                 pragmaticProduction: false,
+                 pragmaticProduction: true,
                  QUD_cL0: "premises"}
+
+var pre1 = RSAoptions["pragmaticInterpretation"] ? "pragInt-" + 'qudE1' + RSAoptions["QUD_E1"] + "_" : ""
+var pre2 = RSAoptions["pragmaticProduction"] ? "pragProd-" + 'qudcL0' + RSAoptions["QUD_cL0"] +"_": ""
+
+var optPrefix = pre1 + pre2
+				
+console.log("running " + optPrefix)
 
 var booleanDictionary = {
 	"TRUE":true,
 	"FALSE":false
 }
 
-var modelAnalysis = function(){
-
-	var phi= uniform(0,1)
-
-	var RSAparams = {
-	 speakerOptimality_E1: RSAoptions["pragmaticInterpretation"] ? uniform(0,20) : 0,
-	 speakerOptimality_cL0: RSAoptions["pragmaticProduction"] ? uniform(0,20) : 0,
-	 baseRate: uniform(0,1),
-	 objects: objects,
-	 cost: uniform(0,2)
-	}
-
-	foreach(syllogisms, function(syllogism){
-		// var data = _.pluck(subset(ripsDF, "syllogism", syllogism), "conclusion")
-		var syllogismData = subset(ripsDF, "syllogism", syllogism)
-		var conclusions = _.uniq(_.pluck(syllogismData, "conclusion"))
-		var syll = scholasticCodeToPremises(syllogism)
-
-		foreach(conclusions, function(conclusion){
-			var responseData = _.pluck(subset(syllogismData, 
-												"conclusion", 
-												conclusion), 
-									"response")
-
-			var t0 = syllUtils.getTime()
-			var predictionERP = syllogisticRSA(syll, 
-												[["C","A"], conclusion],
-												 RSAparams, 
-												 RSAoptions)
-			var t1 = syllUtils.getTime()
-			console.log(t1-t0)
-
-			var linkedERP = addGuessing(predictionERP, phi)
-
-			var scr = sum(map(function(d){
-				return linkedERP.score([], booleanDictionary[d])
-			}, responseData))
-			// console.log(scr)
-			factor(scr)
-
-			query.add(["predictive",syllogism,conclusion], 
-						Math.exp(linkedERP.score([], true)))
-
-
-		})
-		// foreach(["all","some","not all","none"],
-		// 	function(c){
-		// 		query.add(["predictive",syllogism,c], Math.exp(linkedERP.score([], c)))
-		// })
-	})
-
-	RSAoptions["pragmaticProduction"]  ? 
-		query.add(["parameter","speakerOptimality_cL0","global"], RSAparams["speakerOptimality_cL0"]) : null
-	RSAoptions["pragmaticInterpretation"]  ?
-		query.add(["parameter","speakerOptimality_E1","global"], RSAparams["speakerOptimality_E1"]) : null
-	query.add(["parameter","baseRate","global"], RSAparams["baseRate"])
-	query.add(["parameter","phi","global"], phi)
-	query.add(["parameter","cost","global"], RSAparams["cost"])
-
-	return query
-
+var booleanDictionary2 = {
+	"1":true,
+	"0":false
 }
 
-var inference ='MH'
-var samples = 10
-var burn = 0
-var resultsERP = MCMC(modelAnalysis, {samples:samples, burn:burn, verbose:true})
+var dataDictionary = {
+	"all":"radio_A",
+	"some":"radio_I",
+	"not all":"radio_O",
+	"none":"radio_E"
+}
 
-console.log('inference complete... printing')
-var pre1 = RSAoptions["pragmaticInterpretation"] ? "pragInt-" + 'qudE1' + RSAoptions["QUD_E1"] + "_" : ""
-var pre2 = RSAoptions["pragmaticProduction"] ? "pragProd-" + 'qudcL0' + RSAoptions["QUD_cL0"] +"_": ""
 
-var optPrefix = pre1 + pre2
-				
 
-var outfile = "results/rips-byConclusion-"+optPrefix+"nObj" + n_objects + "-br-phi-"+ 
-											inference + samples + "burn" + burn + ".csv"
-syllUtils.erpWriter(resultsERP, outfile)
+var conclusions = ["all", "some", "not all", "none"]
+var syllogismData = subset(dataDF, "syll", "AA1")
+var conclusion = conclusions[0]
+var domain = domains[0]
+var domainData = subset(syllogismData, "domain", domain)
+var responseData = _.pluck(domainData, dataDictionary[conclusion])
 
-console.log('output written to ' + outfile)
+priorDF
+
+// syllogismData
+
+// domains
+
+//
+// syllogismData
+
+// var modelAnalysis = function(){
+// 	var t0 = syllUtils.getTime()
+
+// 	var phi= uniform(0,1)
+
+// 	var RSAparams = {
+// 	 speakerOptimality_E1: RSAoptions["pragmaticInterpretation"] ? uniform(0,20) : 0,
+// 	 speakerOptimality_cL0: RSAoptions["pragmaticProduction"] ? uniform(0,20) : 0,
+// 	 baseRate: uniform(0,1),
+// 	 objects: objects,
+// 	 cost: 1//uniform(0,2)
+// 	}
+
+// 	foreach(domains, function(domain){
+
+// 		foreach(syllogisms, function(syllogism){
+// 			// var data = _.pluck(subset(ripsDF, "syllogism", syllogism), "conclusion")
+// 			var syllogismData = subset(ripsDF, "syllogism", syllogism)
+// 			var conclusions = _.uniq(_.pluck(syllogismData, "conclusion"))
+// 			var syll = scholasticCodeToPremises(syllogism)
+
+// 			foreach(conclusions, function(conclusion){
+// 				var responseData = _.pluck(subset(syllogismData, 
+// 													"conclusion", 
+// 													conclusion), 
+// 										"response")
+
+// 				var predictionERP = syllogisticRSA(syll, 
+// 													[["C","A"], conclusion],
+// 													 RSAparams, 
+// 													 RSAoptions)
+
+
+// 				var linkedERP = addGuessing(predictionERP, phi)
+
+// 				var scr = sum(map(function(d){
+// 					return linkedERP.score([], booleanDictionary[d])
+// 				}, responseData))
+// 				// console.log(scr)
+// 				factor(scr)
+
+// 				query.add(["predictive",syllogism,conclusion], 
+// 							Math.exp(linkedERP.score([], true)))
+
+
+// 			})
+// 			// foreach(["all","some","not all","none"],
+// 			// 	function(c){
+// 			// 		query.add(["predictive",syllogism,c], Math.exp(linkedERP.score([], c)))
+// 			// })
+// 		})
+// 	})
+
+// 	RSAoptions["pragmaticProduction"]  ? 
+// 		query.add(["parameter","speakerOptimality_cL0","global"], RSAparams["speakerOptimality_cL0"]) : null
+// 	RSAoptions["pragmaticInterpretation"]  ?
+// 		query.add(["parameter","speakerOptimality_E1","global"], RSAparams["speakerOptimality_E1"]) : null
+// 	query.add(["parameter","baseRate","global"], RSAparams["baseRate"])
+// 	query.add(["parameter","phi","global"], phi)
+// 	query.add(["parameter","cost","global"], RSAparams["cost"])
+// 	var t1 = syllUtils.getTime()
+// 	console.log(t1-t0)
+// 	return query
+
+// }
+
+// var inference ='MH'
+// var samples = 100
+// var burn = 0
+// var resultsERP = MCMC(modelAnalysis, {samples:samples, burn:burn, verbose:true})
+
+// console.log('inference complete... printing')
+
+
+// var outfile = "results/rips-byConclusion-16alts-"+optPrefix+"nObj" + n_objects + "-br-phi-"+ 
+// 											inference + samples + "burn" + burn + ".csv"
+// syllUtils.erpWriter(resultsERP, outfile)
+
+// console.log('output written to ' + outfile)
