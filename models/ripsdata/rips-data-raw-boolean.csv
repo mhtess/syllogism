@@ -1,0 +1,5121 @@
+"syllogism","conclusion","response"
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",TRUE
+"AA1","all",FALSE
+"AA1","all",FALSE
+"AA1","none",TRUE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","none",FALSE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",TRUE
+"AA1","some",FALSE
+"AA1","some",FALSE
+"AA1","some",FALSE
+"AA1","some",FALSE
+"AA1","some",FALSE
+"AA1","some",FALSE
+"AA1","some",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA1","not all",FALSE
+"AA2","all",TRUE
+"AA2","all",TRUE
+"AA2","all",TRUE
+"AA2","all",TRUE
+"AA2","all",TRUE
+"AA2","all",TRUE
+"AA2","all",TRUE
+"AA2","all",TRUE
+"AA2","all",FALSE
+"AA2","all",FALSE
+"AA2","all",FALSE
+"AA2","all",FALSE
+"AA2","all",FALSE
+"AA2","all",FALSE
+"AA2","all",FALSE
+"AA2","all",FALSE
+"AA2","all",FALSE
+"AA2","all",FALSE
+"AA2","all",FALSE
+"AA2","all",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","none",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","some",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA2","not all",FALSE
+"AA3","all",TRUE
+"AA3","all",TRUE
+"AA3","all",TRUE
+"AA3","all",TRUE
+"AA3","all",TRUE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","all",FALSE
+"AA3","none",TRUE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","none",FALSE
+"AA3","some",TRUE
+"AA3","some",TRUE
+"AA3","some",TRUE
+"AA3","some",TRUE
+"AA3","some",TRUE
+"AA3","some",TRUE
+"AA3","some",TRUE
+"AA3","some",TRUE
+"AA3","some",TRUE
+"AA3","some",FALSE
+"AA3","some",FALSE
+"AA3","some",FALSE
+"AA3","some",FALSE
+"AA3","some",FALSE
+"AA3","some",FALSE
+"AA3","some",FALSE
+"AA3","some",FALSE
+"AA3","some",FALSE
+"AA3","some",FALSE
+"AA3","some",FALSE
+"AA3","not all",TRUE
+"AA3","not all",TRUE
+"AA3","not all",TRUE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA3","not all",FALSE
+"AA4","all",TRUE
+"AA4","all",TRUE
+"AA4","all",TRUE
+"AA4","all",TRUE
+"AA4","all",TRUE
+"AA4","all",TRUE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","all",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","none",FALSE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",TRUE
+"AA4","some",FALSE
+"AA4","some",FALSE
+"AA4","some",FALSE
+"AA4","some",FALSE
+"AA4","some",FALSE
+"AA4","not all",TRUE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AA4","not all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","all",FALSE
+"AE1","none",TRUE
+"AE1","none",TRUE
+"AE1","none",TRUE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","none",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","some",FALSE
+"AE1","not all",TRUE
+"AE1","not all",TRUE
+"AE1","not all",TRUE
+"AE1","not all",TRUE
+"AE1","not all",TRUE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE1","not all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","all",FALSE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",TRUE
+"AE2","none",FALSE
+"AE2","none",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","some",FALSE
+"AE2","not all",TRUE
+"AE2","not all",TRUE
+"AE2","not all",TRUE
+"AE2","not all",TRUE
+"AE2","not all",TRUE
+"AE2","not all",TRUE
+"AE2","not all",TRUE
+"AE2","not all",TRUE
+"AE2","not all",TRUE
+"AE2","not all",TRUE
+"AE2","not all",FALSE
+"AE2","not all",FALSE
+"AE2","not all",FALSE
+"AE2","not all",FALSE
+"AE2","not all",FALSE
+"AE2","not all",FALSE
+"AE2","not all",FALSE
+"AE2","not all",FALSE
+"AE2","not all",FALSE
+"AE2","not all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","all",FALSE
+"AE3","none",TRUE
+"AE3","none",TRUE
+"AE3","none",TRUE
+"AE3","none",TRUE
+"AE3","none",TRUE
+"AE3","none",TRUE
+"AE3","none",TRUE
+"AE3","none",TRUE
+"AE3","none",FALSE
+"AE3","none",FALSE
+"AE3","none",FALSE
+"AE3","none",FALSE
+"AE3","none",FALSE
+"AE3","none",FALSE
+"AE3","none",FALSE
+"AE3","none",FALSE
+"AE3","none",FALSE
+"AE3","none",FALSE
+"AE3","none",FALSE
+"AE3","none",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","some",FALSE
+"AE3","not all",TRUE
+"AE3","not all",TRUE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE3","not all",FALSE
+"AE4","all",TRUE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","all",FALSE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",TRUE
+"AE4","none",FALSE
+"AE4","none",FALSE
+"AE4","none",FALSE
+"AE4","none",FALSE
+"AE4","none",FALSE
+"AE4","none",FALSE
+"AE4","none",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","some",FALSE
+"AE4","not all",TRUE
+"AE4","not all",TRUE
+"AE4","not all",TRUE
+"AE4","not all",TRUE
+"AE4","not all",TRUE
+"AE4","not all",TRUE
+"AE4","not all",TRUE
+"AE4","not all",TRUE
+"AE4","not all",TRUE
+"AE4","not all",TRUE
+"AE4","not all",FALSE
+"AE4","not all",FALSE
+"AE4","not all",FALSE
+"AE4","not all",FALSE
+"AE4","not all",FALSE
+"AE4","not all",FALSE
+"AE4","not all",FALSE
+"AE4","not all",FALSE
+"AE4","not all",FALSE
+"AE4","not all",FALSE
+"AI1","all",TRUE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","all",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","none",FALSE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",TRUE
+"AI1","some",FALSE
+"AI1","some",FALSE
+"AI1","some",FALSE
+"AI1","some",FALSE
+"AI1","not all",TRUE
+"AI1","not all",TRUE
+"AI1","not all",TRUE
+"AI1","not all",TRUE
+"AI1","not all",TRUE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI1","not all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","all",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","none",FALSE
+"AI2","some",TRUE
+"AI2","some",TRUE
+"AI2","some",TRUE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","some",FALSE
+"AI2","not all",TRUE
+"AI2","not all",TRUE
+"AI2","not all",TRUE
+"AI2","not all",TRUE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI2","not all",FALSE
+"AI3","all",TRUE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","all",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","none",FALSE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",TRUE
+"AI3","some",FALSE
+"AI3","some",FALSE
+"AI3","some",FALSE
+"AI3","some",FALSE
+"AI3","some",FALSE
+"AI3","not all",TRUE
+"AI3","not all",TRUE
+"AI3","not all",TRUE
+"AI3","not all",TRUE
+"AI3","not all",TRUE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI3","not all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","all",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","none",FALSE
+"AI4","some",TRUE
+"AI4","some",TRUE
+"AI4","some",TRUE
+"AI4","some",TRUE
+"AI4","some",TRUE
+"AI4","some",TRUE
+"AI4","some",TRUE
+"AI4","some",TRUE
+"AI4","some",FALSE
+"AI4","some",FALSE
+"AI4","some",FALSE
+"AI4","some",FALSE
+"AI4","some",FALSE
+"AI4","some",FALSE
+"AI4","some",FALSE
+"AI4","some",FALSE
+"AI4","some",FALSE
+"AI4","some",FALSE
+"AI4","some",FALSE
+"AI4","some",FALSE
+"AI4","not all",TRUE
+"AI4","not all",TRUE
+"AI4","not all",TRUE
+"AI4","not all",TRUE
+"AI4","not all",TRUE
+"AI4","not all",TRUE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AI4","not all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","all",FALSE
+"AO1","none",TRUE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","none",FALSE
+"AO1","some",TRUE
+"AO1","some",TRUE
+"AO1","some",TRUE
+"AO1","some",TRUE
+"AO1","some",TRUE
+"AO1","some",TRUE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","some",FALSE
+"AO1","not all",TRUE
+"AO1","not all",TRUE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO1","not all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","all",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","none",FALSE
+"AO2","some",TRUE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","some",FALSE
+"AO2","not all",TRUE
+"AO2","not all",TRUE
+"AO2","not all",TRUE
+"AO2","not all",TRUE
+"AO2","not all",TRUE
+"AO2","not all",TRUE
+"AO2","not all",TRUE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO2","not all",FALSE
+"AO3","all",TRUE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","all",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","none",FALSE
+"AO3","some",TRUE
+"AO3","some",TRUE
+"AO3","some",TRUE
+"AO3","some",TRUE
+"AO3","some",TRUE
+"AO3","some",TRUE
+"AO3","some",TRUE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","some",FALSE
+"AO3","not all",TRUE
+"AO3","not all",TRUE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO3","not all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","all",FALSE
+"AO4","none",TRUE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","none",FALSE
+"AO4","some",TRUE
+"AO4","some",TRUE
+"AO4","some",TRUE
+"AO4","some",TRUE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","some",FALSE
+"AO4","not all",TRUE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"AO4","not all",FALSE
+"EA1","all",TRUE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","all",FALSE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",TRUE
+"EA1","none",FALSE
+"EA1","none",FALSE
+"EA1","none",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","some",FALSE
+"EA1","not all",TRUE
+"EA1","not all",TRUE
+"EA1","not all",TRUE
+"EA1","not all",TRUE
+"EA1","not all",TRUE
+"EA1","not all",TRUE
+"EA1","not all",TRUE
+"EA1","not all",TRUE
+"EA1","not all",TRUE
+"EA1","not all",TRUE
+"EA1","not all",TRUE
+"EA1","not all",TRUE
+"EA1","not all",FALSE
+"EA1","not all",FALSE
+"EA1","not all",FALSE
+"EA1","not all",FALSE
+"EA1","not all",FALSE
+"EA1","not all",FALSE
+"EA1","not all",FALSE
+"EA1","not all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","all",FALSE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",TRUE
+"EA2","none",FALSE
+"EA2","none",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","some",FALSE
+"EA2","not all",TRUE
+"EA2","not all",TRUE
+"EA2","not all",TRUE
+"EA2","not all",TRUE
+"EA2","not all",TRUE
+"EA2","not all",TRUE
+"EA2","not all",TRUE
+"EA2","not all",TRUE
+"EA2","not all",TRUE
+"EA2","not all",TRUE
+"EA2","not all",TRUE
+"EA2","not all",TRUE
+"EA2","not all",FALSE
+"EA2","not all",FALSE
+"EA2","not all",FALSE
+"EA2","not all",FALSE
+"EA2","not all",FALSE
+"EA2","not all",FALSE
+"EA2","not all",FALSE
+"EA2","not all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","all",FALSE
+"EA3","none",TRUE
+"EA3","none",TRUE
+"EA3","none",TRUE
+"EA3","none",TRUE
+"EA3","none",TRUE
+"EA3","none",TRUE
+"EA3","none",TRUE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","none",FALSE
+"EA3","some",TRUE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","some",FALSE
+"EA3","not all",TRUE
+"EA3","not all",TRUE
+"EA3","not all",TRUE
+"EA3","not all",TRUE
+"EA3","not all",TRUE
+"EA3","not all",TRUE
+"EA3","not all",TRUE
+"EA3","not all",TRUE
+"EA3","not all",TRUE
+"EA3","not all",TRUE
+"EA3","not all",FALSE
+"EA3","not all",FALSE
+"EA3","not all",FALSE
+"EA3","not all",FALSE
+"EA3","not all",FALSE
+"EA3","not all",FALSE
+"EA3","not all",FALSE
+"EA3","not all",FALSE
+"EA3","not all",FALSE
+"EA3","not all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","all",FALSE
+"EA4","none",TRUE
+"EA4","none",TRUE
+"EA4","none",TRUE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","none",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","some",FALSE
+"EA4","not all",TRUE
+"EA4","not all",TRUE
+"EA4","not all",TRUE
+"EA4","not all",TRUE
+"EA4","not all",TRUE
+"EA4","not all",TRUE
+"EA4","not all",TRUE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EA4","not all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","all",FALSE
+"EE1","none",TRUE
+"EE1","none",TRUE
+"EE1","none",TRUE
+"EE1","none",TRUE
+"EE1","none",TRUE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","none",FALSE
+"EE1","some",TRUE
+"EE1","some",TRUE
+"EE1","some",TRUE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","some",FALSE
+"EE1","not all",TRUE
+"EE1","not all",TRUE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE1","not all",FALSE
+"EE2","all",TRUE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","all",FALSE
+"EE2","none",TRUE
+"EE2","none",TRUE
+"EE2","none",TRUE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","none",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","some",FALSE
+"EE2","not all",TRUE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE2","not all",FALSE
+"EE3","all",TRUE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","all",FALSE
+"EE3","none",TRUE
+"EE3","none",TRUE
+"EE3","none",TRUE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","none",FALSE
+"EE3","some",TRUE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","some",FALSE
+"EE3","not all",TRUE
+"EE3","not all",TRUE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE3","not all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","all",FALSE
+"EE4","none",TRUE
+"EE4","none",TRUE
+"EE4","none",TRUE
+"EE4","none",TRUE
+"EE4","none",TRUE
+"EE4","none",TRUE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","none",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","some",FALSE
+"EE4","not all",TRUE
+"EE4","not all",TRUE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EE4","not all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","all",FALSE
+"EI1","none",TRUE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","none",FALSE
+"EI1","some",TRUE
+"EI1","some",TRUE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","some",FALSE
+"EI1","not all",TRUE
+"EI1","not all",TRUE
+"EI1","not all",TRUE
+"EI1","not all",TRUE
+"EI1","not all",TRUE
+"EI1","not all",TRUE
+"EI1","not all",TRUE
+"EI1","not all",TRUE
+"EI1","not all",TRUE
+"EI1","not all",TRUE
+"EI1","not all",TRUE
+"EI1","not all",TRUE
+"EI1","not all",FALSE
+"EI1","not all",FALSE
+"EI1","not all",FALSE
+"EI1","not all",FALSE
+"EI1","not all",FALSE
+"EI1","not all",FALSE
+"EI1","not all",FALSE
+"EI1","not all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","all",FALSE
+"EI2","none",TRUE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","none",FALSE
+"EI2","some",TRUE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","some",FALSE
+"EI2","not all",TRUE
+"EI2","not all",TRUE
+"EI2","not all",TRUE
+"EI2","not all",TRUE
+"EI2","not all",TRUE
+"EI2","not all",TRUE
+"EI2","not all",TRUE
+"EI2","not all",TRUE
+"EI2","not all",TRUE
+"EI2","not all",TRUE
+"EI2","not all",TRUE
+"EI2","not all",TRUE
+"EI2","not all",FALSE
+"EI2","not all",FALSE
+"EI2","not all",FALSE
+"EI2","not all",FALSE
+"EI2","not all",FALSE
+"EI2","not all",FALSE
+"EI2","not all",FALSE
+"EI2","not all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","all",FALSE
+"EI3","none",TRUE
+"EI3","none",TRUE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","none",FALSE
+"EI3","some",TRUE
+"EI3","some",TRUE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","some",FALSE
+"EI3","not all",TRUE
+"EI3","not all",TRUE
+"EI3","not all",TRUE
+"EI3","not all",TRUE
+"EI3","not all",TRUE
+"EI3","not all",TRUE
+"EI3","not all",TRUE
+"EI3","not all",TRUE
+"EI3","not all",TRUE
+"EI3","not all",TRUE
+"EI3","not all",TRUE
+"EI3","not all",TRUE
+"EI3","not all",FALSE
+"EI3","not all",FALSE
+"EI3","not all",FALSE
+"EI3","not all",FALSE
+"EI3","not all",FALSE
+"EI3","not all",FALSE
+"EI3","not all",FALSE
+"EI3","not all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","all",FALSE
+"EI4","none",TRUE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","none",FALSE
+"EI4","some",TRUE
+"EI4","some",TRUE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","some",FALSE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",TRUE
+"EI4","not all",FALSE
+"EI4","not all",FALSE
+"EI4","not all",FALSE
+"EI4","not all",FALSE
+"EI4","not all",FALSE
+"EI4","not all",FALSE
+"EI4","not all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","all",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","none",FALSE
+"EO1","some",TRUE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","some",FALSE
+"EO1","not all",TRUE
+"EO1","not all",TRUE
+"EO1","not all",TRUE
+"EO1","not all",TRUE
+"EO1","not all",TRUE
+"EO1","not all",TRUE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO1","not all",FALSE
+"EO2","all",TRUE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","all",FALSE
+"EO2","none",TRUE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","none",FALSE
+"EO2","some",TRUE
+"EO2","some",TRUE
+"EO2","some",TRUE
+"EO2","some",TRUE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","some",FALSE
+"EO2","not all",TRUE
+"EO2","not all",TRUE
+"EO2","not all",TRUE
+"EO2","not all",TRUE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO2","not all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","all",FALSE
+"EO3","none",TRUE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","none",FALSE
+"EO3","some",TRUE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","some",FALSE
+"EO3","not all",TRUE
+"EO3","not all",TRUE
+"EO3","not all",TRUE
+"EO3","not all",TRUE
+"EO3","not all",TRUE
+"EO3","not all",TRUE
+"EO3","not all",TRUE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO3","not all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","all",FALSE
+"EO4","none",TRUE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","none",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","some",FALSE
+"EO4","not all",TRUE
+"EO4","not all",TRUE
+"EO4","not all",TRUE
+"EO4","not all",TRUE
+"EO4","not all",TRUE
+"EO4","not all",TRUE
+"EO4","not all",TRUE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"EO4","not all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","all",FALSE
+"IA1","none",TRUE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","none",FALSE
+"IA1","some",TRUE
+"IA1","some",TRUE
+"IA1","some",TRUE
+"IA1","some",TRUE
+"IA1","some",TRUE
+"IA1","some",TRUE
+"IA1","some",TRUE
+"IA1","some",TRUE
+"IA1","some",FALSE
+"IA1","some",FALSE
+"IA1","some",FALSE
+"IA1","some",FALSE
+"IA1","some",FALSE
+"IA1","some",FALSE
+"IA1","some",FALSE
+"IA1","some",FALSE
+"IA1","some",FALSE
+"IA1","some",FALSE
+"IA1","some",FALSE
+"IA1","some",FALSE
+"IA1","not all",TRUE
+"IA1","not all",TRUE
+"IA1","not all",TRUE
+"IA1","not all",TRUE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA1","not all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","all",FALSE
+"IA2","none",TRUE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","none",FALSE
+"IA2","some",TRUE
+"IA2","some",TRUE
+"IA2","some",TRUE
+"IA2","some",TRUE
+"IA2","some",TRUE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","some",FALSE
+"IA2","not all",TRUE
+"IA2","not all",TRUE
+"IA2","not all",TRUE
+"IA2","not all",TRUE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA2","not all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","all",FALSE
+"IA3","none",TRUE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","none",FALSE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",TRUE
+"IA3","some",FALSE
+"IA3","some",FALSE
+"IA3","some",FALSE
+"IA3","some",FALSE
+"IA3","not all",TRUE
+"IA3","not all",TRUE
+"IA3","not all",TRUE
+"IA3","not all",TRUE
+"IA3","not all",TRUE
+"IA3","not all",TRUE
+"IA3","not all",TRUE
+"IA3","not all",TRUE
+"IA3","not all",FALSE
+"IA3","not all",FALSE
+"IA3","not all",FALSE
+"IA3","not all",FALSE
+"IA3","not all",FALSE
+"IA3","not all",FALSE
+"IA3","not all",FALSE
+"IA3","not all",FALSE
+"IA3","not all",FALSE
+"IA3","not all",FALSE
+"IA3","not all",FALSE
+"IA3","not all",FALSE
+"IA4","all",TRUE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","all",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","none",FALSE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",TRUE
+"IA4","some",FALSE
+"IA4","some",FALSE
+"IA4","some",FALSE
+"IA4","some",FALSE
+"IA4","some",FALSE
+"IA4","some",FALSE
+"IA4","not all",TRUE
+"IA4","not all",TRUE
+"IA4","not all",TRUE
+"IA4","not all",TRUE
+"IA4","not all",TRUE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IA4","not all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","all",FALSE
+"IE1","none",TRUE
+"IE1","none",TRUE
+"IE1","none",TRUE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","none",FALSE
+"IE1","some",TRUE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","some",FALSE
+"IE1","not all",TRUE
+"IE1","not all",TRUE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE1","not all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","all",FALSE
+"IE2","none",TRUE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","none",FALSE
+"IE2","some",TRUE
+"IE2","some",TRUE
+"IE2","some",TRUE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","some",FALSE
+"IE2","not all",TRUE
+"IE2","not all",TRUE
+"IE2","not all",TRUE
+"IE2","not all",TRUE
+"IE2","not all",TRUE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE2","not all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","all",FALSE
+"IE3","none",TRUE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","none",FALSE
+"IE3","some",TRUE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","some",FALSE
+"IE3","not all",TRUE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE3","not all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","all",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","none",FALSE
+"IE4","some",TRUE
+"IE4","some",TRUE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","some",FALSE
+"IE4","not all",TRUE
+"IE4","not all",TRUE
+"IE4","not all",TRUE
+"IE4","not all",TRUE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"IE4","not all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","all",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","none",FALSE
+"II1","some",TRUE
+"II1","some",TRUE
+"II1","some",TRUE
+"II1","some",TRUE
+"II1","some",TRUE
+"II1","some",TRUE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","some",FALSE
+"II1","not all",TRUE
+"II1","not all",TRUE
+"II1","not all",TRUE
+"II1","not all",TRUE
+"II1","not all",TRUE
+"II1","not all",TRUE
+"II1","not all",TRUE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II1","not all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","all",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","none",FALSE
+"II2","some",TRUE
+"II2","some",TRUE
+"II2","some",TRUE
+"II2","some",TRUE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","some",FALSE
+"II2","not all",TRUE
+"II2","not all",TRUE
+"II2","not all",TRUE
+"II2","not all",TRUE
+"II2","not all",TRUE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II2","not all",FALSE
+"II3","all",TRUE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","all",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","none",FALSE
+"II3","some",TRUE
+"II3","some",TRUE
+"II3","some",TRUE
+"II3","some",TRUE
+"II3","some",TRUE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","some",FALSE
+"II3","not all",TRUE
+"II3","not all",TRUE
+"II3","not all",TRUE
+"II3","not all",TRUE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II3","not all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","all",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","none",FALSE
+"II4","some",TRUE
+"II4","some",TRUE
+"II4","some",TRUE
+"II4","some",TRUE
+"II4","some",TRUE
+"II4","some",TRUE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","some",FALSE
+"II4","not all",TRUE
+"II4","not all",TRUE
+"II4","not all",TRUE
+"II4","not all",TRUE
+"II4","not all",TRUE
+"II4","not all",TRUE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"II4","not all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","all",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","none",FALSE
+"IO1","some",TRUE
+"IO1","some",TRUE
+"IO1","some",TRUE
+"IO1","some",TRUE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","some",FALSE
+"IO1","not all",TRUE
+"IO1","not all",TRUE
+"IO1","not all",TRUE
+"IO1","not all",TRUE
+"IO1","not all",TRUE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO1","not all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","all",FALSE
+"IO2","none",TRUE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","none",FALSE
+"IO2","some",TRUE
+"IO2","some",TRUE
+"IO2","some",TRUE
+"IO2","some",TRUE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","some",FALSE
+"IO2","not all",TRUE
+"IO2","not all",TRUE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO2","not all",FALSE
+"IO3","all",TRUE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","all",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","none",FALSE
+"IO3","some",TRUE
+"IO3","some",TRUE
+"IO3","some",TRUE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","some",FALSE
+"IO3","not all",TRUE
+"IO3","not all",TRUE
+"IO3","not all",TRUE
+"IO3","not all",TRUE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO3","not all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","all",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","none",FALSE
+"IO4","some",TRUE
+"IO4","some",TRUE
+"IO4","some",TRUE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","some",FALSE
+"IO4","not all",TRUE
+"IO4","not all",TRUE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"IO4","not all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","all",FALSE
+"OA1","none",TRUE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","none",FALSE
+"OA1","some",TRUE
+"OA1","some",TRUE
+"OA1","some",TRUE
+"OA1","some",TRUE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","some",FALSE
+"OA1","not all",TRUE
+"OA1","not all",TRUE
+"OA1","not all",TRUE
+"OA1","not all",TRUE
+"OA1","not all",TRUE
+"OA1","not all",TRUE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA1","not all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","all",FALSE
+"OA2","none",TRUE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","none",FALSE
+"OA2","some",TRUE
+"OA2","some",TRUE
+"OA2","some",TRUE
+"OA2","some",TRUE
+"OA2","some",TRUE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","some",FALSE
+"OA2","not all",TRUE
+"OA2","not all",TRUE
+"OA2","not all",TRUE
+"OA2","not all",TRUE
+"OA2","not all",TRUE
+"OA2","not all",TRUE
+"OA2","not all",TRUE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA2","not all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","all",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","none",FALSE
+"OA3","some",TRUE
+"OA3","some",TRUE
+"OA3","some",TRUE
+"OA3","some",TRUE
+"OA3","some",TRUE
+"OA3","some",TRUE
+"OA3","some",TRUE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","some",FALSE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",TRUE
+"OA3","not all",FALSE
+"OA3","not all",FALSE
+"OA3","not all",FALSE
+"OA3","not all",FALSE
+"OA4","all",TRUE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","all",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","none",FALSE
+"OA4","some",TRUE
+"OA4","some",TRUE
+"OA4","some",TRUE
+"OA4","some",TRUE
+"OA4","some",TRUE
+"OA4","some",TRUE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","some",FALSE
+"OA4","not all",TRUE
+"OA4","not all",TRUE
+"OA4","not all",TRUE
+"OA4","not all",TRUE
+"OA4","not all",TRUE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OA4","not all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","all",FALSE
+"OE1","none",TRUE
+"OE1","none",TRUE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","none",FALSE
+"OE1","some",TRUE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","some",FALSE
+"OE1","not all",TRUE
+"OE1","not all",TRUE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE1","not all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","all",FALSE
+"OE2","none",TRUE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","none",FALSE
+"OE2","some",TRUE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","some",FALSE
+"OE2","not all",TRUE
+"OE2","not all",TRUE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE2","not all",FALSE
+"OE3","all",TRUE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","all",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","none",FALSE
+"OE3","some",TRUE
+"OE3","some",TRUE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","some",FALSE
+"OE3","not all",TRUE
+"OE3","not all",TRUE
+"OE3","not all",TRUE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE3","not all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","all",FALSE
+"OE4","none",TRUE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","none",FALSE
+"OE4","some",TRUE
+"OE4","some",TRUE
+"OE4","some",TRUE
+"OE4","some",TRUE
+"OE4","some",TRUE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","some",FALSE
+"OE4","not all",TRUE
+"OE4","not all",TRUE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OE4","not all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","all",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","none",FALSE
+"OI1","some",TRUE
+"OI1","some",TRUE
+"OI1","some",TRUE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","some",FALSE
+"OI1","not all",TRUE
+"OI1","not all",TRUE
+"OI1","not all",TRUE
+"OI1","not all",TRUE
+"OI1","not all",TRUE
+"OI1","not all",TRUE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI1","not all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","all",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","none",FALSE
+"OI2","some",TRUE
+"OI2","some",TRUE
+"OI2","some",TRUE
+"OI2","some",TRUE
+"OI2","some",TRUE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","some",FALSE
+"OI2","not all",TRUE
+"OI2","not all",TRUE
+"OI2","not all",TRUE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI2","not all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","all",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","none",FALSE
+"OI3","some",TRUE
+"OI3","some",TRUE
+"OI3","some",TRUE
+"OI3","some",TRUE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","some",FALSE
+"OI3","not all",TRUE
+"OI3","not all",TRUE
+"OI3","not all",TRUE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI3","not all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","all",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","none",FALSE
+"OI4","some",TRUE
+"OI4","some",TRUE
+"OI4","some",TRUE
+"OI4","some",TRUE
+"OI4","some",TRUE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","some",FALSE
+"OI4","not all",TRUE
+"OI4","not all",TRUE
+"OI4","not all",TRUE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OI4","not all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","all",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","none",FALSE
+"OO1","some",TRUE
+"OO1","some",TRUE
+"OO1","some",TRUE
+"OO1","some",TRUE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","some",FALSE
+"OO1","not all",TRUE
+"OO1","not all",TRUE
+"OO1","not all",TRUE
+"OO1","not all",TRUE
+"OO1","not all",TRUE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO1","not all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","all",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","none",FALSE
+"OO2","some",TRUE
+"OO2","some",TRUE
+"OO2","some",TRUE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","some",FALSE
+"OO2","not all",TRUE
+"OO2","not all",TRUE
+"OO2","not all",TRUE
+"OO2","not all",TRUE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO2","not all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","all",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","none",FALSE
+"OO3","some",TRUE
+"OO3","some",TRUE
+"OO3","some",TRUE
+"OO3","some",TRUE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","some",FALSE
+"OO3","not all",TRUE
+"OO3","not all",TRUE
+"OO3","not all",TRUE
+"OO3","not all",TRUE
+"OO3","not all",TRUE
+"OO3","not all",TRUE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO3","not all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","all",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","none",FALSE
+"OO4","some",TRUE
+"OO4","some",TRUE
+"OO4","some",TRUE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","some",FALSE
+"OO4","not all",TRUE
+"OO4","not all",TRUE
+"OO4","not all",TRUE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
+"OO4","not all",FALSE
