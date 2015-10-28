@@ -26,7 +26,9 @@ options("scipen"=10)
 ```
 
 
-# Rips Data
+# Human data from existing data sets
+
+### Rips (1994) Data
 
 ```{r data.load}
 d<-read.csv("~/Documents/research/syllogism/models/ripsdata/rips-data-raw-boolean.csv")
@@ -34,6 +36,140 @@ d<-read.csv("~/Documents/research/syllogism/models/ripsdata/rips-data-raw-boolea
 d.tidy <- d %>% 
   group_by(syllogism, conclusion) %>%
   multi_boot_standard(column="response")
+
+
+qplot(data=d.tidy, x = mean, geom='histogram')
+
+```
+
+Rips told participants that valid things would only occur on 10% of trials.
+
+### Evans et al. (1999) Data
+
+```{r data.load}
+e<-read.csv("~/Documents/research/syllogism/models/ripsdata/evans-data-raw-boolean.csv")
+
+e.tidy <- e %>% 
+  group_by(syllogism, conclusion) %>%
+  multi_boot_standard(column="response")
+qplot(data=e.tidy, x = mean, geom='histogram')
+
+```
+
+Told participants to that the conclusion had to necessary follow form the premises.
+
+### Comaparison of Rips and Evans
+
+```{r}
+de.joined<- left_join(
+              d.tidy %>%
+                rename(ripsMean = mean,
+                       ripsLower = ci_lower,
+                       ripsUpper = ci_upper),
+              e.tidy %>%
+                rename(evansMean = mean,
+                       evansLower = ci_lower,
+                       evansUpper = ci_upper)
+)
+
+ggplot(de.joined, aes(x=ripsMean, y=evansMean, color=conclusion))+
+  geom_point()+
+ # geom_errorbar(aes(ymin=evansLower, ymax=evansUpper))+
+ # geom_errorbarh(aes(xmin=ripsLower, xmax = ripsUpper))+
+  scale_color_solarized()
+
+with(de.joined, cor(ripsMean, evansMean))
+```
+
+### Closer look at Evans et al. (1999)
+
+How different are the structural forms?
+
+```{r evans.byFigure}
+
+#evans data
+e.tidy %>%
+  separate(syllogism, sep = 2, into = c("premises", "figure")) %>%
+  select(-ci_lower, -ci_upper) %>%
+  spread(figure, mean) %>%
+  ggcorplot()
+
+#rips data
+d.tidy %>%
+  separate(syllogism, sep = 2, into = c("premises", "figure")) %>%
+  select(-ci_lower, -ci_upper) %>%
+  spread(figure, mean) %>%
+  ggcorplot()
+```
+
+
+# Human data from FYP data sets
+
+### Prior elicitation experiment
+
+Here, I'm looking at the prior elicitation data, but I'm not sure I have decoded the randomization scheme properly.
+
+```{r data.fyp.prior}
+fyp.prior<- read.csv("~/Documents/research/syllogism/data/02syllogism-1ca/syllogism02_priors.csv")
+
+pr.tidy<-fyp.prior %>% 
+  select(-subj,-time, -language,-age,-gender,-logic,-browser, -comments, -X) %>%
+  gather(prop, response, starts_with("X")) 
+
+
+pr.stats<- pr.tidy %>%
+  group_by(matId, prop) %>%
+  multi_boot_standard(column="response")
+
+ggplot(pr.stats,aes(x=prop, y = mean))+
+  geom_bar(stat='identity', position=position_dodge())+
+  geom_errorbar(aes(ymin=ci_lower, ymax=ci_upper))+
+  facet_wrap(~matId)
+```
+
+
+Here, I'm looking at this data set collapsing across content (which was very strongly randomized that I'm not sure I can decode it).
+
+```{r data.fyp.1}
+
+fyp.data<- read.csv("~/Documents/research/syllogism/data/02syllogism-1ca/syllogism02-1_conclusions.csv")
+
+fyp.data<-fyp.data %>% 
+  unite(SMP, S, M, P)
+
+fyp.tidy <- fyp.data %>%
+  select(syll, matId, Asp, Esp, Isp, Osp, SMP) %>%
+  gather(conclusion, response, Asp, Esp, Isp, Osp) %>%
+  group_by(syll, conclusion) %>%
+  multi_boot_standard(column='response') %>%
+  mutate(conclusion = factor(conclusion, 
+                             levels=c("Asp", "Isp", "Esp", "Osp"),
+                             labels=c("all", "some", "none","not all"))) %>%
+  rename(syllogism = syll)
+  
+
+fyp.evans.joined<- left_join(
+              fyp.tidy %>%
+                rename(fypMean = mean,
+                       fypLower = ci_lower,
+                       fypUpper = ci_upper),
+              e.tidy %>%
+                rename(evansMean = mean,
+                       evansLower = ci_lower,
+                       evansUpper = ci_upper)
+)
+
+ggplot(fyp.evans.joined, aes(x=fypMean, y=evansMean, color=conclusion))+
+  geom_point()+
+  geom_errorbar(aes(ymin=evansLower, ymax=evansUpper))+
+  geom_errorbarh(aes(xmin=fypLower, xmax = fypUpper))+
+  geom_abline(intercept=0, slope=1)+
+  scale_color_solarized()+
+  xlim(0,1)+
+  ylim(0,1)+
+  coord_fixed()
+
+with(fyp.evans.joined, cor(fypMean, evansMean))
 
 ```
 
@@ -46,7 +182,9 @@ prefix<- "rips-bySyllogism-nObj4-br-phi-MH"
 prefix<- "rips-bySyllogism-pragProd-qudcL0premises_nObj4-br-phi-MH"
 prefix<- "rips-bySyllogism-pragProd-qudcL0premises_nObj4-br-phi-MH"
 prefix<- "rips-bySyllogism-pragInt-qudE1conclusion_nObj4-br-phi-MH"
-samples = 1000
+prefix<- "rips-byConclusion-16alts-pragInt-qudE1conclusion_nObj4-br-phi-MH"
+prefix<- "rips-byConclusion-16alts-pragProd-qudcL0premises_nObj4-br-phi-cost-MH"
+samples = 100
 burn = 0 #samples /2
 m<-read.csv(paste(fpath, prefix, samples, "burn", burn,".csv", sep=''))
 m.samples <- m[rep(row.names(m), m$Probability*samples), 1:4]
@@ -89,10 +227,10 @@ ggplot(m.d, aes(x=MAP, y = mean, color=conclusion))+
   geom_point()+
   coord_fixed()+
   xlim(0,1)+
-  ylim(0,1)
-+
-  #geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper))+
-  #geom_errorbarh(aes(xmin=credLow, xmax=credHigh))
+  ylim(0,1)+
+  geom_errorbarh(aes(xmin=credLow, xmax=credHigh))
 
+
+  #geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper))+
 ```
 
