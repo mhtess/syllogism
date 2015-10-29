@@ -1,37 +1,61 @@
-// time webppl syllogism.wppl --require syllUtils
+// time webppl syllogism-test.wppl --require syllUtils
 
-var fpath = "/Users/mht/Documents/research/syllogism/models/ripsdata/"
-var ripsData = syllUtils.readCSV(fpath+"rips-data-raw.csv").data
-var ripsDF = dataFrame(ripsData)
-var syllogisms = _.uniq(_.pluck(ripsDF, "syllogism"))
+// var fpath = "/Users/mht/Documents/research/syllogism/models/ripsdata/"
+// var ripsData = syllUtils.readCSV(fpath+"rips-data-raw.csv").data
+// var ripsDF = dataFrame(ripsData)
+// var syllogisms = _.uniq(_.pluck(ripsDF, "syllogism"))
 
 // for testing purposes, keep n_objects fixed
 var n_objects = 4
 var objects = ["g1","g2","g3", "g4"]
 
-var RSAoptions ={pragmaticInterpretation: true,
+var RSAoptions ={pragmaticInterpretation: false,
                  QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
-                 pragmaticProduction: false,
+                 pragmaticProduction: true,
                  QUD_cL0: "state"}
 
 
 
 var RSAparams = {
- speakerOptimality_E1: 2,
+ speakerOptimality_E1: 4,
  speakerOptimality_cL0: 2,
- baseRate: 0.25,
- objects: objects,
  cost: 1
+}
+
+
+var priorfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
+var priordata = syllUtils.readCSV(priorfilepath + "prior-exp-mturk_collapsed_means_n71.csv").data
+var priorDF = _.object(map(function(obj){return [obj["domain"], obj] }, dataFrame(priordata)))
+
+var empiricalPrior = extractMultinomial(priorDF["lightbulbs"])
+
+var priorParams = {
+	 baseRate: null,
+	 objects: objects,
+	 empiricalPrior: empiricalPrior
 }
 
 var syllogism = 'AA1'
 
-var data = _.pluck(subset(ripsDF, "syllogism", syllogism), "conclusion")
+// var data = _.pluck(subset(ripsDF, "syllogism", syllogism), "conclusion")
 var syll = scholasticCodeToPremises(syllogism)
 
-syllogisticRSA(syll, [["C","A"],"all"], RSAparams, RSAoptions)
+// syllogisticRSA(syll, [["C","A"],"all"], RSAparams, RSAoptions)
 
+
+
+
+var predictionERP = syllogisticRSA(syll, [["C","A"], "some"],
+					 RSAparams, 
+					 RSAoptions,
+					 priorParams)
+
+var phi = 0.1
+
+var linkedERP = addGuessing(predictionERP, phi)
+linkedERP
 // var scr = sum(map(function(d){
 // 	return predictionERP.score([], d)
 // }, data))
 
+// priorDF
