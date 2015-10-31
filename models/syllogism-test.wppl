@@ -23,16 +23,17 @@ var RSAparams = {
 }
 
 
-var priorfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
-var priordata = syllUtils.readCSV(priorfilepath + "prior-exp-mturk_collapsed_means_n71.csv").data
-var priorDF = _.object(map(function(obj){return [obj["domain"], obj] }, dataFrame(priordata)))
+// var priorfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
+// var priordata = syllUtils.readCSV(priorfilepath + "prior-exp-mturk_collapsed_means_n71.csv").data
+// var priorDF = _.object(map(function(obj){return [obj["domain"], obj] }, dataFrame(priordata)))
 
-var empiricalPrior = extractMultinomial(priorDF["lightbulbs"])
+// var empiricalPrior = extractMultinomial(priorDF["lightbulbs"])
 
 var priorParams = {
-	 baseRate: null,
+	 baseRate: 0.25,
 	 objects: objects,
-	 empiricalPrior: empiricalPrior
+	 // empiricalPrior: empiricalPrior
+	 empiricalPrior: [null]
 }
 
 var syllogism = 'AA1'
@@ -45,15 +46,30 @@ var syll = scholasticCodeToPremises(syllogism)
 
 
 
-var predictionERP = syllogisticRSA(syll, [["C","A"], "some"],
+var predictionERP = syllogisticRSA(syll, 
+					[["C","A"], "some"],
 					 RSAparams, 
 					 RSAoptions,
 					 priorParams)
+predictionERP
 
-var phi = 0.1
 
-var linkedERP = addGuessing(predictionERP, phi)
-linkedERP
+var marginalizeConclusions = function(reasonerERP, conclusion){
+Enumerate(function(){
+  var c = sample(reasonerERP)
+  return _.isArray(c[1]) ? 
+  	conclusion[1]==c[0][1] || conclusion[1]==c[1][1] : 
+  	conclusion[1]==c[1]
+})
+}
+
+
+marginalizeConclusions(predictionERP,[["C","A"], "all"])
+
+// var phi = 0
+
+// var linkedERP = addGuessing(predictionERP, phi)
+// linkedERP
 // var scr = sum(map(function(d){
 // 	return predictionERP.score([], d)
 // }, data))

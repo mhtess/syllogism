@@ -184,10 +184,11 @@ prefix<- "rips-bySyllogism-pragProd-qudcL0premises_nObj4-br-phi-MH"
 prefix<- "rips-bySyllogism-pragInt-qudE1conclusion_nObj4-br-phi-MH"
 prefix<- "rips-byConclusion-16alts-pragInt-qudE1conclusion_nObj4-br-phi-MH"
 prefix<- "rips-byConclusion-16alts-pragProd-qudcL0premises_nObj4-br-phi-cost-MH"
+prefix<- "evansData-conclusionPairs-pragProd-qudcL0premises_nObj4-phi-costMH"
 samples = 100
-burn = 0 #samples /2
+burn = samples /2
 m<-read.csv(paste(fpath, prefix, samples, "burn", burn,".csv", sep=''))
-m.samples <- m[rep(row.names(m), m$Probability*samples), 1:4]
+m.samples <- m[rep(row.names(m), m$Probability*samples), 1:5]
 ```
 
 
@@ -218,7 +219,7 @@ m.pp <- m.samples %>%
          conclusion=Item)
 
 
-m.d <-left_join(d.tidy, m.pp)
+m.d <-left_join( m.pp,e.tidy)
 
 
 with(m.d, cor(mean, MAP))
@@ -226,11 +227,10 @@ with(m.d, cor(mean, MAP))
 ggplot(m.d, aes(x=MAP, y = mean, color=conclusion))+
   geom_point()+
   coord_fixed()+
-  xlim(0,1)+
-  ylim(0,1)+
+  xlim(0.05,1.05)+
+  ylim(0.05,1.05)+
   geom_errorbarh(aes(xmin=credLow, xmax=credHigh))
-
-
-  #geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper))+
+#+
+# geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper))
 ```
 
