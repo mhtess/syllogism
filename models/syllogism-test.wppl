@@ -17,7 +17,7 @@ var RSAoptions ={pragmaticInterpretation: false,
 
 
 var RSAparams = {
- speakerOptimality_E1: 4,
+ speakerOptimality_E1: 3,
  speakerOptimality_cL0: 2,
  cost: 1
 }
@@ -29,14 +29,17 @@ var RSAparams = {
 
 // var empiricalPrior = extractMultinomial(priorDF["lightbulbs"])
 
+// var empiricalPrior = [1,1,1,1,1,1,1,1]
+
 var priorParams = {
-	 baseRate: 0.25,
+	 baseRate: 0.4,
+	 // baseRate: null,
 	 objects: objects,
 	 // empiricalPrior: empiricalPrior
 	 empiricalPrior: [null]
 }
 
-var syllogism = 'AA1'
+var syllogism = 'IA1'
 
 // var data = _.pluck(subset(ripsDF, "syllogism", syllogism), "conclusion")
 var syll = scholasticCodeToPremises(syllogism)
@@ -47,7 +50,6 @@ var syll = scholasticCodeToPremises(syllogism)
 
 
 var predictionERP = syllogisticRSA(syll, 
-					[["C","A"], "some"],
 					 RSAparams, 
 					 RSAoptions,
 					 priorParams)
@@ -63,8 +65,10 @@ Enumerate(function(){
 })
 }
 
-
-marginalizeConclusions(predictionERP,[["C","A"], "all"])
+console.log("P(all) =" + Math.exp(marginalizeConclusions(predictionERP,[["C","A"], "all"]).score([], true)))
+console.log("P(some) =" + Math.exp(marginalizeConclusions(predictionERP,[["C","A"], "some"]).score([], true)))
+console.log("P(not all) = " + Math.exp(marginalizeConclusions(predictionERP,[["C","A"], "not all"]).score([], true)))
+console.log("P(none) =" + Math.exp(marginalizeConclusions(predictionERP,[["C","A"], "none"]).score([], true)))
 
 // var phi = 0
 

@@ -12,9 +12,9 @@ var n_objects = 4
 var objects = ["g1","g2","g3", "g4"]
 
 var RSAoptions ={pragmaticInterpretation: true,
-                 QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
+                 QUD_E1: "state", // if pragmaticInterpretation==false, this must be conclusion
                  pragmaticProduction: true,
-                 QUD_cL0: "premises"}
+                 QUD_cL0: "state"}
 
 var pre1 = RSAoptions["pragmaticInterpretation"] ? 
 				"pragInt-" + 'qudE1' + RSAoptions["QUD_E1"] + "_" : ""
@@ -105,8 +105,8 @@ var modelAnalysis = function(){
 		query.add(["parameter","NA","speakerOptimality_cL0","global"], RSAparams["speakerOptimality_cL0"]) : null
 	RSAoptions["pragmaticInterpretation"]  ?
 		query.add(["parameter","NA","speakerOptimality_E1","global"], RSAparams["speakerOptimality_E1"]) : null
-	RSAparams["baseRate"] != null ? 
-		query.add(["parameter","NA","baseRate","global"], RSAparams["baseRate"]) : null
+	priorParams["baseRate"] != null ? 
+		query.add(["parameter","NA","baseRate","global"], priorParams["baseRate"]) : null
 
 	query.add(["parameter","NA","phi","global"], phi)
 	// query.add(["parameter","NA","cost","global"], RSAparams["cost"])
