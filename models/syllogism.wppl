@@ -8,12 +8,12 @@ var evansDF = dataFrame(evansData)
 var syllogisms = _.uniq(_.pluck(evansDF, "syllogism"))
 
  // for testing purposes, keep n_objects fixed
-var n_objects = 4
-var objects = ["g1","g2","g3", "g4"]
+// var n_objects = 4
+// var objects = ["g1","g2","g3", "g4"]
 
 var RSAoptions ={pragmaticInterpretation: true,
-                 QUD_E1: "state", // if pragmaticInterpretation==false, this must be conclusion
-                 pragmaticProduction: true,
+                 QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
+                 pragmaticProduction: false,
                  QUD_cL0: "state"}
 
 var pre1 = RSAoptions["pragmaticInterpretation"] ? 
@@ -42,6 +42,12 @@ var marginalizeConclusions = function(reasonerERP, conclusion){
 	})
 }
 
+
+var baseRates = map(function(x){return x/20}, _.range(1, 20, 1))
+var nObjects = [3,4,5,6]
+
+var possiblePriors = allPriors(nObjects, baseRates)
+
 var modelAnalysis = function(){
 
 	var t0 = syllUtils.getTime()
@@ -55,10 +61,24 @@ var modelAnalysis = function(){
 	}
 
 	var priorParams = {
-		baseRate: uniform(0,1),
-		objects: objects,
+		baseRate: uniformDraw(baseRates),
+		n_objects: uniformDraw(nObjects),
 		empiricalPrior: [null]
 	}
+
+
+	// var baseRate = uniform(0.05,0.95)
+	// var baseRate = uniformDraw(baseRates)
+	// var n_objects = uniformDraw(nObjects)
+	// // var n_objects = uniform(1,10)
+	// console.log("br = " + baseRate)
+	// console.log("n = " + n_objects)
+	// var empiricalPrior = [null]
+
+	var prior = possiblePriors[priorParams.n_objects][priorParams.baseRate]
+	// var prior = baseRate==null ? 
+ //        pruneERP(regionTransform(n_objects, empiricalPrior)):
+ //        pruneERP(regionTransform(n_objects, baseRate))
 
 
 	foreach(syllogisms, function(syllogism){
@@ -72,7 +92,7 @@ var modelAnalysis = function(){
 		var predictionERP = syllogisticRSA(syll, 
 											 RSAparams, 
 											 RSAoptions,
-											 priorParams)
+											 prior)
 
 		foreach(conclusions, function(conclusion){
 			var responseData = _.pluck(subset(syllogismData, 
@@ -108,6 +128,15 @@ var modelAnalysis = function(){
 	priorParams["baseRate"] != null ? 
 		query.add(["parameter","NA","baseRate","global"], priorParams["baseRate"]) : null
 
+	priorParams["n_objects"] != null ? 
+		query.add(["parameter","NA","n","global"], priorParams["n_objects"]) : null
+
+	// query.add(["parameter","NA","n","global"], n_objects)
+
+	// baseRate != null ? 
+	// 	query.add(["parameter","NA","baseRate","global"], baseRate) : null
+
+
 	query.add(["parameter","NA","phi","global"], phi)
 	// query.add(["parameter","NA","cost","global"], RSAparams["cost"])
 	var t1 = syllUtils.getTime()
@@ -119,13 +148,13 @@ var modelAnalysis = function(){
 // console.log(syllogisms)
 
 var inference ='MH'
-var samples = 100
-var burn = 0
+var samples = 1000
+var burn = 500
 var resultsERP = MCMC(modelAnalysis, {samples:samples, burn:burn, verbose:true})
 // resultsERP
 console.log('inference complete... printing')
 
-var outfile = "results/evansData-conclusionPairs-"+optPrefix+"nObj" + n_objects + "-phi"+ 
+var outfile = "results/evansData-conclusionPairs-"+optPrefix+"n3456-br-phi"+ 
 											inference + samples + "burn" + burn + ".csv"
 
 syllUtils.erpWriter(resultsERP, outfile)
