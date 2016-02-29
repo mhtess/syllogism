@@ -1,162 +1,273 @@
-// time webppl syllogism.wppl --require syllUtils
+// // time webppl syllogism.wppl --require syll2utils
 
-var fpath = "/Users/mht/Documents/research/syllogism/models/ripsdata/"
+var quantifiers = ["all","some","none", "not all"];
+var sentenceForms = [ ["A","B"],["B","A"],
+                      ["B","C"],["C","B"],
+                      ["A","C"],["C","A"]];
 
-// Evans (1999) data
-var evansData = syllUtils.readCSV(fpath+"evans-data-raw-boolean-fig1.csv").data
-var evansDF = dataFrame(evansData)
-var syllogisms = _.uniq(_.pluck(evansDF, "syllogism"))
+var syllogisticSentences = _.flatten(map(
+  function(x){ 
+    return map(
+      function(y){ 
+        return {terms: y,
+            quantifier: x}
+      } ,sentenceForms)
+  }, quantifiers))
 
- // for testing purposes, keep n_objects fixed
-// var n_objects = 4
-// var objects = ["g1","g2","g3", "g4"]
+var probs = [0.125,0.125,0.5,0.125,0.01,0.3,0.1,0.125]
+var n = 3
 
-var RSAoptions ={pragmaticInterpretation: true,
-                 QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
-                 pragmaticProduction: false,
-                 QUD_cL0: "state"}
+var property_values = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
+                       [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
 
-var pre1 = RSAoptions["pragmaticInterpretation"] ? 
-				"pragInt-" + 'qudE1' + RSAoptions["QUD_E1"] + "_" : ""
-var pre2 = RSAoptions["pragmaticProduction"] ? 
-				"pragProd-" + 'qudcL0' + RSAoptions["QUD_cL0"] +"_": ""
+// equivalence class transformation
+var equivalenceTransform = function(probs, n){
+  Enumerate(function(){
 
-var optPrefix = pre1 + pre2
+    var objects = multinomial(probs, n)
+    var objects_w_values = _.zip(objects, property_values)
+    var world = map(second, filter(function(o){
+      return o[0]
+    }, objects_w_values))
+
+    ///////////////////////////////////////
+    // existential presupposition condition
+    // condition(plentifulWorlds(world))
+    ///////////////////////////////////////
+
+    // returns list of truth values
+    // return map(function(sentence){
+    //   return meaning(sentence.quantifier)(world, sentence.terms[0], sentence.terms[1])
+    // }, syllogisticSentences)
+
+    // returns list of sentence objects, with truthValue property
+    return map(function(sentence){
+      return _.extend(
+          _.clone(sentence),
+          {truthValue: meaning(sentence.quantifier)(world, sentence.terms[0], sentence.terms[1])}
+          )
+    }, syllogisticSentences)
+  })
+}
+
+
+var worldPrior = equivalenceTransform(probs, n)
+
+var isConclusion = function(s){
+	return ((s.terms[0]=="A") & (s.terms[1]=="C"))
+	// return ((s.terms[0]=="C") & (s.terms[1]=="A"))
+	// return (_.contains(s.terms, "A") & _.contains(s.terms, "C"))
+}
+
+var premises = [{ terms: [ 'A', 'B' ], quantifier: 'all' },
+{ terms: [ 'B', 'C' ], quantifier: 'some' }]
+
+// console.log(world)
+var premisesTrue = function(premises, trueSentences){
+	return filter(function(s){
+		return (
+			_.isEqual(_.omit(s, "truthValue"), premises[0]) || 
+			_.isEqual(_.omit(s, "truthValue"), premises[1])
+			)
+	}, trueSentences).length==2
+}
+
+
+var reasoner0 = cache(function(premises, prior, QUD_E1) {
+  Enumerate(function(){
+    var world = sample(prior)
+    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
+    var trueConclusions = filter(isConclusion, trueSentences) // grab the conclusions
+    var conclusion = uniformDraw(trueConclusions) // uniform draw from true conclusions
+    condition(premisesTrue(premises, trueSentences))
+    return QUD_E1=="state" ? state : _.omit(conclusion, "truthValue")
+  })
+})
+
+
+
+reasoner0(premises, worldPrior, "conclusion")
+
+// trueSentences
+// var fpath = "/Users/mht/Documents/research/syllogism/models/ripsdata/"
+
+// // Evans (1999) data
+// var evansData = mht.readCSV(fpath+"evans-data-raw-boolean-fig1.csv").data
+// var evansDF = dataFrame(evansData)
+// var syllogisms = _.uniq(_.pluck(evansDF, "syllogism"))
+
+//  // for testing purposes, keep n_objects fixed
+// // var n_objects = 4
+// // var objects = ["g1","g2","g3", "g4"]
+
+// var RSAoptions ={pragmaticInterpretation: false,
+//                  QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
+//                  pragmaticProduction: true,
+//                  QUD_cL0: "state"}
+
+// var pre1 = RSAoptions["pragmaticInterpretation"] ? 
+// 				"pragInt-" + 'qudE1' + RSAoptions["QUD_E1"] + "_" : ""
+// var pre2 = RSAoptions["pragmaticProduction"] ? 
+// 				"pragProd-" + 'qudcL0' + RSAoptions["QUD_cL0"] +"_": ""
+
+// var optPrefix = pre1 + pre2
 				
-console.log("running " + optPrefix)
+// console.log("running " + optPrefix)
 
-var booleanDictionary = {
-	"TRUE":true,
-	"FALSE":false
-}
+// var booleanDictionary = {
+// 	"TRUE":true,
+// 	"FALSE":false
+// }
 
-var conclusions = ["all", "some", "not all", "none"]
-
-
-var marginalizeConclusions = function(reasonerERP, conclusion){
-	Enumerate(function(){
-	  var c = sample(reasonerERP)
-	  return _.isArray(c[1]) ? 
-	  	(conclusion==c[0][1] || conclusion==c[1][1]) : 
-	  	conclusion==c[1]
-	})
-}
+// var conclusions = ["all", "some", "not all", "none"]
 
 
-var baseRates = map(function(x){return x/20}, _.range(1, 20, 1))
-var nObjects = [3,4,5,6]
-
-var possiblePriors = allPriors(nObjects, baseRates)
-
-var modelAnalysis = function(){
-
-	var t0 = syllUtils.getTime()
-
-	var phi= uniform(0,1)
-
-	var RSAparams = {
-	 speakerOptimality_E1: RSAoptions["pragmaticInterpretation"] ? uniform(0,20) : 0,
-	 speakerOptimality_cL0: RSAoptions["pragmaticProduction"] ? uniform(0,20) : 0,
-	 cost: 0//uniform(0,5)
-	}
-
-	var priorParams = {
-		baseRate: uniformDraw(baseRates),
-		n_objects: uniformDraw(nObjects),
-		empiricalPrior: [null]
-	}
+// var marginalizeConclusions = function(reasonerERP, conclusion){
+// 	Enumerate(function(){
+// 	  var c = sample(reasonerERP)
+// 	  return _.isArray(c[1]) ? 
+// 	  	(conclusion==c[0][1] || conclusion==c[1][1]) : 
+// 	  	conclusion==c[1]
+// 	})
+// }
 
 
-	// var baseRate = uniform(0.05,0.95)
-	// var baseRate = uniformDraw(baseRates)
-	// var n_objects = uniformDraw(nObjects)
-	// // var n_objects = uniform(1,10)
-	// console.log("br = " + baseRate)
-	// console.log("n = " + n_objects)
-	// var empiricalPrior = [null]
+// var baseRates = map(function(x){return x/20}, _.range(1, 20, 1))
+// var baseRates = [0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65]
+// var nObjects = [4,5, 6, 7, 8, 9]
 
-	var prior = possiblePriors[priorParams.n_objects][priorParams.baseRate]
-	// var prior = baseRate==null ? 
- //        pruneERP(regionTransform(n_objects, empiricalPrior)):
- //        pruneERP(regionTransform(n_objects, baseRate))
+// var possiblePriors = allPriors(nObjects, baseRates)
 
+// var modelAnalysis = function(){
 
-	foreach(syllogisms, function(syllogism){
+// 	var t0 = syllUtils.getTime()
 
-		var data = _.pluck(subset(evansDF, "syllogism", syllogism), "conclusion")
-		var syllogismData = subset(evansDF, "syllogism", syllogism)
-		var conclusions = _.uniq(_.pluck(syllogismData, "conclusion"))
+// 	var phi= uniform(0,1)
+// 	// var phi = 0.1
 
-		var syll = scholasticCodeToPremises(syllogism)
+// 	var RSAparams = {
+// 	 speakerOptimality_E1: RSAoptions["pragmaticInterpretation"] ? uniform(0,20) : 0,
+// 	 speakerOptimality_cL0: RSAoptions["pragmaticProduction"] ? uniform(0,20) : 0,
+// 	 cost: 0//uniform(0,5)
+// 	}
 
-		var predictionERP = syllogisticRSA(syll, 
-											 RSAparams, 
-											 RSAoptions,
-											 prior)
+// 	var softmax = uniform(0,5)
+// 	// var RSAparams = {
+// 	//  speakerOptimality_E1: 2,
+// 	//  speakerOptimality_cL0: 2,
+// 	//  cost: 0//uniform(0,5)
+// 	// }
 
-		foreach(conclusions, function(conclusion){
-			var responseData = _.pluck(subset(syllogismData, 
-												"conclusion", 
-												conclusion), 
-									"response")
+// 	var priorParams = {
+// 		baseRate: uniformDraw(baseRates),
+// 		n_objects: uniformDraw(nObjects),
+// 		empiricalPrior: [null]
+// 	}
 
-			var marginalERP = marginalizeConclusions(predictionERP,
-														conclusion)
+// 	// var priorParams = {
+// 	// 	baseRate: 0.5,
+// 	// 	n_objects: 5,
+// 	// 	empiricalPrior: [null]
+// 	// }
 
-			var linkedERP = addGuessing(marginalERP, phi)
+// 	// var baseRate = uniform(0.05,0.95)
+// 	// var baseRate = uniformDraw(baseRates)
+// 	// var n_objects = uniformDraw(nObjects)
+// 	// // var n_objects = uniform(1,10)
+// 	// console.log("br = " + baseRate)
+// 	// console.log("n = " + n_objects)
+// 	// var empiricalPrior = [null]
 
-			var scr = sum(map(function(d){
-				return linkedERP.score([], booleanDictionary[d])
-			}, responseData))
-			// console.log(scr)
-			factor(scr)
-
-			query.add(["predictive","NA", syllogism,conclusion], 
-						Math.exp(linkedERP.score([], true)))
-
-		})
-			// foreach(["all","some","not all","none"],
-			// 	function(c){
-			// 		query.add(["predictive",syllogism,c], Math.exp(linkedERP.score([], c)))
-			// })
-	})
-
-	RSAoptions["pragmaticProduction"]  ? 
-		query.add(["parameter","NA","speakerOptimality_cL0","global"], RSAparams["speakerOptimality_cL0"]) : null
-	RSAoptions["pragmaticInterpretation"]  ?
-		query.add(["parameter","NA","speakerOptimality_E1","global"], RSAparams["speakerOptimality_E1"]) : null
-	priorParams["baseRate"] != null ? 
-		query.add(["parameter","NA","baseRate","global"], priorParams["baseRate"]) : null
-
-	priorParams["n_objects"] != null ? 
-		query.add(["parameter","NA","n","global"], priorParams["n_objects"]) : null
-
-	// query.add(["parameter","NA","n","global"], n_objects)
-
-	// baseRate != null ? 
-	// 	query.add(["parameter","NA","baseRate","global"], baseRate) : null
+// 	var prior = possiblePriors[priorParams.n_objects][priorParams.baseRate]
+// 	// var prior = baseRate==null ? 
+//  //        pruneERP(regionTransform(n_objects, empiricalPrior)):
+//  //        pruneERP(regionTransform(n_objects, baseRate))
 
 
-	query.add(["parameter","NA","phi","global"], phi)
-	// query.add(["parameter","NA","cost","global"], RSAparams["cost"])
-	var t1 = syllUtils.getTime()
-	console.log((t1-t0)/1000)
-	return query
+// 	foreach(syllogisms, function(syllogism){
+// 		// console.log(syllogism)
 
-}
+// 		var data = _.pluck(subset(evansDF, "syllogism", syllogism), "conclusion")
+// 		var syllogismData = subset(evansDF, "syllogism", syllogism)
+// 		var conclusions = _.uniq(_.pluck(syllogismData, "conclusion"))
 
-// console.log(syllogisms)
+// 		var syll = scholasticCodeToPremises(syllogism)
 
-var inference ='MH'
-var samples = 1000
-var burn = 500
-var resultsERP = MCMC(modelAnalysis, {samples:samples, burn:burn, verbose:true})
-// resultsERP
-console.log('inference complete... printing')
+// 		var predictionERP = syllogisticRSA(syll, 
+// 											 RSAparams, 
+// 											 RSAoptions,
+// 											 prior)
 
-var outfile = "results/evansData-conclusionPairs-"+optPrefix+"n3456-br-phi"+ 
-											inference + samples + "burn" + burn + ".csv"
 
-syllUtils.erpWriter(resultsERP, outfile)
+// 		foreach(conclusions, function(conclusion){
+// 			var responseData = _.pluck(subset(syllogismData, 
+// 												"conclusion", 
+// 												conclusion), 
+// 									"response")
 
-console.log('output written to ' + outfile)
+// 			var marginalERP = marginalizeConclusions(predictionERP,
+// 														conclusion)
+
+// 			var softmaxedERP = softmaxSpeaker(marginalERP, softmax)
+// 			var linkedERP = addGuessing(softmaxedERP, phi)
+
+// 			var scr = sum(map(function(d){
+// 				return linkedERP.score([], booleanDictionary[d])
+// 			}, responseData))
+// 			// console.log(scr)
+// 			factor(scr)
+
+// 			query.add(["predictive","NA", syllogism,conclusion], 
+// 						Math.exp(linkedERP.score([], true)))
+
+// 		})
+// 			// foreach(["all","some","not all","none"],
+// 			// 	function(c){
+// 			// 		query.add(["predictive",syllogism,c], Math.exp(linkedERP.score([], c)))
+// 			// })
+// 	})
+
+// 	RSAoptions["pragmaticProduction"]  ? 
+// 		query.add(["parameter","NA","speakerOptimality_cL0","global"], RSAparams["speakerOptimality_cL0"]) : null
+// 	RSAoptions["pragmaticInterpretation"]  ?
+// 		query.add(["parameter","NA","speakerOptimality_E1","global"], RSAparams["speakerOptimality_E1"]) : null
+// 	priorParams["baseRate"] != null ? 
+// 		query.add(["parameter","NA","baseRate","global"], priorParams["baseRate"]) : null
+
+// 	priorParams["n_objects"] != null ? 
+// 		query.add(["parameter","NA","n","global"], priorParams["n_objects"]) : null
+
+// 	query.add(["parameter","NA","softmax","global"], softmax)
+
+// 	// query.add(["parameter","NA","n","global"], n_objects)
+
+// 	// baseRate != null ? 
+// 	// 	query.add(["parameter","NA","baseRate","global"], baseRate) : null
+
+
+// 	query.add(["parameter","NA","phi","global"], phi)
+// 	// query.add(["parameter","NA","cost","global"], RSAparams["cost"])
+// 	var t1 = syllUtils.getTime()
+// 	console.log((t1-t0)/1000)
+// 	return query
+
+// }
+
+// // console.log(syllogisms)
+// // possiblePriors
+// var inference ='MH'
+// var samples = 500
+// var burn = 250
+// var resultsERP = MCMC(modelAnalysis, {samples:samples, burn:burn, verbose:true})
+// // resultsERP
+// console.log('inference complete... printing')
+
+// var outfile = "results/evansData-conclusionPairs-"+optPrefix+"n45678910-br-softmaxMarg-phi"+ 
+// 											inference + samples + "burn" + burn + ".csv"
+
+// // var outfile = "results/evansData-conclusionPairs-"+optPrefix+"n3456-br-phi"+ 
+// 											// inference + samples + "burn" + burn + ".csv"
+
+// syllUtils.erpWriter(resultsERP, outfile)
+
+// console.log('output written to ' + outfile)
