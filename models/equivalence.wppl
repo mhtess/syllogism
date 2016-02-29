@@ -1,0 +1,86 @@
+var hasProperty = function(props,term){
+	return props[["A","B","C"].indexOf(term)]
+}
+
+var allOverObjectVals = function(fn, obj){
+	return all(
+		function(kv){return fn(kv)}, 
+		obj)
+}
+
+var anyOverObjectVals = function(fn, obj){
+	return any(
+		function(kv){return fn(kv)}, 
+		obj)
+}
+
+var allSentence = function(propObject, termOne, termTwo){
+  return allOverObjectVals(
+  	function(val){
+  		return hasProperty(val,termOne)? hasProperty(val,termTwo) : 1
+  	},propObject)
+}
+
+var someSentence = function(propObject, termOne, termTwo){
+  return anyOverObjectVals(
+  	function(val){
+  		return hasProperty(val,termOne)? hasProperty(val,termTwo) : 0
+  	},propObject)
+}
+
+var notallSentence = function(propObject, termOne, termTwo){
+  return 1 - allSentence(propObject,termOne,termTwo)
+}
+
+var noneSentence = function(propObject, termOne, termTwo){
+  return 1 - someSentence(propObject,termOne,termTwo)
+}
+
+var mu = function(propObject, termOne, termTwo){
+  return 1
+}
+
+var meaning = function(quantifier) {
+  return quantifier=="all"? allSentence :
+         quantifier=="some"? someSentence :
+         quantifier=="none"? noneSentence :
+         quantifier=="not all"? notallSentence : 
+         true
+}
+
+var quantifiers = ["all","some","none", "not all"];
+var sentenceForms = [ ["A","B"],["B","A"],
+                      ["B","C"],["C","B"],
+                      ["A","C"],["C","A"]];
+
+
+var syllogisticSentences = _.flatten(map(
+	function(x){ 
+		return map(
+			function(y){ 
+				return {terms: y,
+						quantifier: x}
+			} ,sentenceForms)
+	}, quantifiers))
+
+
+var probs = [0.125,0.125,0.125,0.125,0.125,0.125,0.125,0.125]
+var n = 15
+
+var property_values = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
+		                  [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+
+var statePrior = Enumerate(function(){
+	var objects = multinomial(probs, n)
+	var objects_w_values = _.zip(objects, property_values)
+	var world = map(second, filter(function(o){
+		return o[0]
+	}, objects_w_values))
+
+	return map(function(sentence){
+		return meaning(sentence.quantifier)(world, sentence.terms[0], sentence.terms[1])
+	}, syllogisticSentences)
+
+})
+
+statePrior
