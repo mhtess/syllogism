@@ -14,8 +14,33 @@ var syllogisticSentences = _.flatten(map(
       } ,sentenceForms)
   }, quantifiers))
 
-var probs = [0.125,0.125,0.5,0.125,0.01,0.3,0.1,0.125]
-var n = 3
+var isPremise1 = function(s){
+  return (_.contains(s.terms, "A") & _.contains(s.terms, "B"))
+}
+
+var isPremise2 = function(s){
+  return (_.contains(s.terms, "B") & _.contains(s.terms, "C"))
+}
+
+var isConclusion = function(s){
+  return ((s.terms[0]=="A") & (s.terms[1]=="C"))
+  // return ((s.terms[0]=="C") & (s.terms[1]=="A"))
+  // return (_.contains(s.terms, "A") & _.contains(s.terms, "C"))
+}
+
+var premisesTrue = function(premises, trueSentences){
+  return filter(function(s){
+    return (
+      _.isEqual(_.omit(s, "truthValue"), premises[0]) || 
+      _.isEqual(_.omit(s, "truthValue"), premises[1])
+      )
+  }, trueSentences).length==2
+}
+
+var first_premises = filter(isPremise1, syllogisticSentences)
+var second_premises = filter(isPremise2, syllogisticSentences)
+
+
 
 var property_values = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
                        [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
@@ -51,43 +76,85 @@ var equivalenceTransform = function(probs, n){
 }
 
 
-var worldPrior = equivalenceTransform(probs, n)
-
-var isConclusion = function(s){
-	return ((s.terms[0]=="A") & (s.terms[1]=="C"))
-	// return ((s.terms[0]=="C") & (s.terms[1]=="A"))
-	// return (_.contains(s.terms, "A") & _.contains(s.terms, "C"))
-}
-
-var premises = [{ terms: [ 'A', 'B' ], quantifier: 'all' },
-{ terms: [ 'B', 'C' ], quantifier: 'some' }]
-
+var speakerOptimality_E1 = 3
 // console.log(world)
-var premisesTrue = function(premises, trueSentences){
-	return filter(function(s){
-		return (
-			_.isEqual(_.omit(s, "truthValue"), premises[0]) || 
-			_.isEqual(_.omit(s, "truthValue"), premises[1])
-			)
-	}, trueSentences).length==2
-}
 
-
-var reasoner0 = cache(function(premises, prior, QUD_E1) {
+var argumentStrength_literal = cache(function(premises, prior) {
   Enumerate(function(){
+    // console.log(premises)
     var world = sample(prior)
     var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
     var trueConclusions = filter(isConclusion, trueSentences) // grab the conclusions
     var conclusion = uniformDraw(trueConclusions) // uniform draw from true conclusions
     condition(premisesTrue(premises, trueSentences))
-    return QUD_E1=="state" ? state : _.omit(conclusion, "truthValue")
+    return _.omit(conclusion, "truthValue")
+  })
+})
+
+var premisesToState_literal = cache(function(premises, prior) {
+  Enumerate(function(){
+    var world = sample(prior)
+    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
+    condition(premisesTrue(premises, trueSentences))
+    return world
+  })
+})
+
+var qudvalToPremises = cache(function(QUDval, prior, qud) {
+  Enumerate(function(){
+    var premise_1 = uniformDraw(first_premises)
+    var premise_2 = uniformDraw(second_premises)
+    var premises = [premise_1, premise_2]
+    var R0 = qud=='conclusion' ? argumentStrength_literal(premises, prior) : 
+                                  premisesToState_literal(premises, prior)
+    factor(R0.score([],QUDval))
+    return premises
+  })
+})
+
+var argumentStrength_pragmatic = cache(function(premises, prior){
+  Enumerate(function(){
+    var world = sample(prior)
+    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
+    var trueConclusions = filter(isConclusion, trueSentences) // grab the conclusions
+    var conclusion = uniformDraw(trueConclusions) // uniform draw from true conclusions
+
+    var E1 = qudvalToPremises( _.omit(conclusion, "truthValue"), prior, "conclusion")
+    factor(speakerOptimality_E1 * E1.score([], premises))
+
+    return  _.omit(conclusion, "truthValue")
+  })
+})
+
+var premisesToState_pragmatic = cache(function(premises, prior, QUD_E1){
+  Enumerate(function(){
+    var world = sample(prior)
+    var E1 = qudvalToPremises(world, prior, "state")
+    factor(speakerOptimality_E1 * E1.score([], premises))
+    return world
   })
 })
 
 
+// var speaker2 = function(premises, conclusion){
+//   var 
+// }
+var probs = [10,1,1,1,1,1,1,1]
+var n = 4
+var worldPrior = equivalenceTransform(probs, n)
 
-reasoner0(premises, worldPrior, "conclusion")
+var premises = [
+  { terms: [ 'A', 'B' ], quantifier: 'all' },
+  { terms: [ 'B', 'C' ], quantifier: 'all' }
+]
 
+// reasoner0(premises, worldPrior, "conclusion")
+// experimenter1({terms:["A","C"], quantifier: "all"}, worldPrior, "conclusion")
+
+
+var x1 = premisesToState_pragmatic(premises, worldPrior)
+
+x1
 // trueSentences
 // var fpath = "/Users/mht/Documents/research/syllogism/models/ripsdata/"
 
