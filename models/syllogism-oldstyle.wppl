@@ -1,0 +1,28 @@
+console.log('equivalent transform')
+var et0 = mht.getTime()
+var prior = equivalentTransform(["g1","g2","g3","g4"], 0.45, 10)
+var et1 = mht.getTime()
+
+console.log((et1-et0)/1000)
+
+var params =  {"speakerOptimality_E1":5,
+				"speakerOptimality_cL0":1,
+				"cost":1}
+
+var opts = {
+	pragmaticProduction:false,
+  pragmaticInterpretation:true,
+  QUD_E1:"conclusion",
+  QUD_cL0:"state"
+}
+console.log('rsa')
+var t0 = mht.getTime()
+var rs = syllogisticRSA([
+	[["B","A"],"all"],
+	[["C","B"],"all"]
+	], params, opts, prior)
+
+var t1 = mht.getTime()
+
+console.log((t1-t0)/1000)
+rs

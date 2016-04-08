@@ -23,3 +23,7 @@ models/_models/
 experiments/.gitbackup/
 experiments/00syllogism/commonJS/
 data
+*.csv
+*.png
+*.pdf
+.Rproj.user

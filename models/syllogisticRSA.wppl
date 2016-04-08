@@ -1,0 +1,124 @@
+//webppl syllogisticRSA.wppl --require syllUtils
+
+var prior = quantifierEquivalence({n_objects: 4, base_rate:0.25})
+
+var pragmaticProduction = true
+var pragmaticInterpretation = true
+var speakerOptimality_E1 = 2
+var speakerOptimality_cL0 = 1
+
+var conclusionListener = cache(function(conclusion, prior, QUD_cL0){
+  Enumerate(function(){
+    var equivalenceState = sample(prior)
+    var truePremises = subset(equivalenceState, "type", "premise")
+    var trueConclusions = subset(equivalenceState, "type", "conclusion")
+
+    var firstPremises = filter(function(x){
+      ((x["terms"][0]=="B" && x["terms"][1]=="A") || 
+      (x["terms"][0]=="A" && x["terms"][1]=="B"))
+    }, truePremises)
+
+    var secondPremises = filter(function(x){
+      ((x["terms"][0]=="B" && x["terms"][1]=="C") || 
+       (x["terms"][0]=="C" && x["terms"][1]=="B"))
+    }, truePremises)
+
+    var premise1 = uniformDraw(firstPremises)
+    var premise2 = uniformDraw(secondPremises)
+
+    condition(syllUtils.containsObject(conclusion, trueConclusions))
+
+    return QUD_cL0=="state" ? equivalenceState : [premise1, premise2]
+  })
+})
+
+
+var literalReasoner = cache(function(premises, prior, QUD_E1) {
+  Enumerate(function(){
+
+  var equivalenceState = sample(prior)
+  var truePremises = subset(equivalenceState, "type", "premise")
+
+  condition(all(function(x){
+          return syllUtils.containsObject(x, truePremises)
+            }, premises))
+
+  var trueConclusions = subset(equivalenceState, "type", "conclusion")
+  var conclusion = uniformDraw(trueConclusions)
+
+  return QUD_E1=="state" ? equivalenceState : conclusion 
+  })
+})
+
+// var experimenter1 = cache(function(QUDval, prior, QUD_E1) {
+//   Enumerate(function(){
+// //    var premises = uniformDraw(premiseDictionary[figure])
+//     var premises = uniformDraw(syllogisticPremises)
+//     var R0 = reasoner0(premises, prior, QUD_E1)
+//     factor(R0.score([],QUDval))
+//     return premises
+//   })
+// })
+
+var helpfulExperimenter = cache(function(QUDval, prior, QUD_E1) {
+  Enumerate(function(){
+    var premise1 = {
+      quantifier: uniformDraw(utterances),
+      terms: uniformDraw([["B","A"],["A","B"]]),
+      type: 'premise'
+    }
+    var premise2 = {
+      quantifier: uniformDraw(utterances),
+      terms: uniformDraw([["B","C"],["C","B"]]),
+      type: 'premise'
+    }
+    var premises = [premise1, premise2]
+
+    var R0 = literalReasoner(premises, prior, QUD_E1)
+
+    factor(R0.score([],QUDval))
+    
+    return premises
+  })
+})
+
+
+
+var pragmaticReasoner = function(premises, prior, QUD_E1, QUD_cL0) {
+  Enumerate(function(){
+    var equivalenceState = sample(prior)
+    var truePremises = subset(equivalenceState, "type", "premise")
+    var trueConclusions = subset(equivalenceState, "type", "conclusion")
+
+    var conclusion = uniformDraw(trueConclusions)
+
+    var qudVal_E1 = (QUD_E1=="state") ? equivalenceState : conclusion
+    var E1 = pragmaticInterpretation ? 
+              helpfulExperimenter(qudVal_E1, prior, QUD_E1) : 0
+
+    factor(pragmaticInterpretation ? 
+            speakerOptimality_E1*E1.score([],premises) : 
+            all(function(x){
+                  return syllUtils.containsObject(x, truePremises)
+                  }, premises)? 0 : -Infinity)
+
+    var qudVal_cL0 = (QUD_cL0=="state") ? equivalenceState : premises
+    var cL0 = pragmaticProduction ? 
+          conclusionListener(conclusion, prior, QUD_cL0) : 0
+    factor(pragmaticProduction ? 
+            speakerOptimality_cL0*cL0.score([], qudVal_cL0) : 0)
+
+    // return only quantifier
+    return conclusion["quantifier"]+conclusion["terms"] // what is the conclusion?
+    // return whichConclusions // which conclusions are true?
+  })
+}
+
+var premises = [ 
+  { quantifier: 'all', terms: [ 'B', 'A' ], type: 'premise' },
+  { quantifier: 'all', terms: [ 'C', 'B' ], type: 'premise' } 
+  ]
+
+pragmaticReasoner(premises, prior, "conclusion", "premises")
+
+

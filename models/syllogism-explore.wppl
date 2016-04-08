@@ -3,7 +3,6 @@
 
 var fpath = "/Users/mht/Documents/research/syllogism/models/ripsdata/"
 
-
 // Evans (1999) data
 var evansData = mht.readCSV(fpath+"evans-data-raw-boolean-fig1.csv").data
 var evansDF = dataFrame(evansData)
@@ -116,9 +115,7 @@ var equivalenceTransform = cache(function(probs, n){
 })
 
 
-
 // console.log(world)
-
 
 var argumentStrength_literal = cache(function(premises, prior) {
   Enumerate(function(){
@@ -154,7 +151,6 @@ var conclusionToState_literal = cache(function(conclusion, prior) {
     return world
   })
 })
-
 
 
 var conclusionToPremises_literal = cache(function(conclusion, prior) {
@@ -244,7 +240,6 @@ var argumentStrength_pragmatic_qudC= function(premises, prior, speakerOptimality
     return conclusion.quantifier
   })
 }
-
 
 var argumentStrength_pragmaticProduction = cache(function(premises, prior){
   Enumerate(function(){

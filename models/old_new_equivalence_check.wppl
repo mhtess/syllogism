@@ -1,0 +1,98 @@
+var hasProperty2 = function(props,term){
+	return props[["A","B","C"].indexOf(term)]
+}
+
+var allOverObjectVals2 = function(fn, obj){
+	return all(
+		function(kv){return fn(kv)}, 
+		obj)
+}
+
+var anyOverObjectVals2 = function(fn, obj){
+	return any(
+		function(kv){return fn(kv)}, 
+		obj)
+}
+
+var allSentence2 = function(propObject, termOne, termTwo){
+  return allOverObjectVals2(
+  	function(val){
+  		return hasProperty(val,termOne)? hasProperty(val,termTwo) : 1
+  	},propObject)
+}
+
+var someSentence2 = function(propObject, termOne, termTwo){
+  return anyOverObjectVals2(
+  	function(val){
+  		return hasProperty(val,termOne)? hasProperty(val,termTwo) : 0
+  	},propObject)
+}
+
+var notallSentence2 = function(propObject, termOne, termTwo){
+  return 1 - allSentence2(propObject,termOne,termTwo)
+}
+
+var noneSentence2 = function(propObject, termOne, termTwo){
+  return 1 - someSentence2(propObject,termOne,termTwo)
+}
+
+
+var meaning = function(quantifier) {
+  return quantifier=="all"? allSentence2 :
+         quantifier=="some"? someSentence2 :
+         quantifier=="none"? noneSentence2 :
+         quantifier=="not all"? notallSentence2 : 
+         true
+}
+
+var quantifiers = ["all","some","none", "not all"];
+var sentenceForms = [ ["A","B"],["B","A"],
+                      ["B","C"],["C","B"],
+                      ["A","C"],["C","A"]];
+
+
+var syllogisticSentences2 = _.flatten(map(
+	function(x){ 
+		return map(
+			function(y){ 
+				return {terms: y,
+						quantifier: x}
+			} ,sentenceForms)
+	}, quantifiers))
+
+
+var probs = [0.125,0.125,0.5,0.125,0.01,0.3,0.1,0.125]
+var n = 3
+
+var property_values = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
+		                  [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+
+var newERP = Enumerate(function(){
+	var objects = multinomial(probs, n)
+	var objects_w_values = _.zip(objects, property_values)
+	var world = map(second, filter(function(o){
+		return o[0]
+	}, objects_w_values))
+
+	return map(function(sentence){
+		return meaning(sentence.quantifier)(world, sentence.terms[0], sentence.terms[1])
+	}, syllogisticSentences2)
+
+})
+
+var oldERP = equivalentTransform(["o1","o2","o3"],probs, 0)
+
+var oldSupport = map(function(s){return s.join()}, oldERP.support())
+var newSupport = map(function(s){return s.join()}, newERP.support())
+
+// check the supports are the same
+console.log(filter(function(s){return !(newSupport.indexOf(s) > -1)}, oldSupport))
+console.log(filter(function(s){return !(oldSupport.indexOf(s) > -1)}, newSupport))
+
+// return the sum of the difference between the 2 ERPs
+sum(map(function(s){
+	var oldProb = Math.exp(oldERP.score([],s))
+	var newProb = Math.exp(newERP.score([], s))
+	return oldProb - newProb
+},oldERP.support()))
+

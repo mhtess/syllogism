@@ -1,0 +1,150 @@
+---
+title: "syllogism-belief"
+author: "mht"
+date: "October 28, 2015"
+output: html_document
+---
+
+
+```{r helders}
+library(coda)
+library(purrr)
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+HPDhi<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+HPDlo<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+options("scipen"=10)   
+```
+
+
+```{r data.load}
+
+d0<- read.csv("~/Documents/research/syllogism/data/03syllogism_reasoning/syllbelief-exp-mturk_all_n250.csv")
+d1<- read.csv("~/Documents/research/syllogism/data/04syllogism_reasoning/syllbelief-exp2-mturk.csv")
+
+d<- bind_rows(d0,d1)
+
+d.tidy <- d %>% 
+  filter(condition=='radio') %>%
+  select(starts_with("radio"), domain, syll) %>%
+  gather(conclusion, response, starts_with("radio")) %>%
+  group_by(domain, syll, conclusion) %>%
+  multi_boot_standard(column='response') %>%
+  rename(syllogism = syll) %>%
+  mutate(conclusion = factor(conclusion,
+                             levels = c("radio_A",
+                                       "radio_E",
+                                       "radio_O",
+                                       "radio_I"),
+                             labels = c("all",
+                                        "none",
+                                        "not all",
+                                        "some")))
+
+ggplot(d.tidy, aes(x=mean))+
+  geom_histogram()
+```
+
+
+# Model
+
+```{r model.load}
+fpath<- "~/Documents/research/syllogism/models/results/"
+#prefix<- "contentExpts-byConclusion-argStrStyle-16alts-pragProd-qudcL0premises_nObj4-phi-costMH"
+#prefix<- "contentExpts-byConclusion-argStrStyle-16alts-pragInt-qudE1conclusion_nObj4-phi-costMH"
+prefix<-"contentExpts-byConclusion-pragProd-qudcL0premises_nObj4-phi-costMH"
+prefix<-"contentExpts-conclusionPairs-pragInt-qudE1conclusion_n456789-phiMH"
+samples =10
+burn = 5 #samples /2
+m<-read.csv(paste(fpath, prefix, samples, "burn", burn,".csv", sep=''))
+m.samples <- m[rep(row.names(m), m$Probability*samples), 1:5]
+```
+
+
+# Posterior over parameters
+
+```{r posterior.parameters}
+
+m.params <- m.samples %>%
+  filter(Type=='parameter')
+
+ggplot(m.params, aes(x=Value))+
+  geom_histogram()+
+  facet_wrap(~Parameter, scales='free')
+
+```
+
+# Posterior predictive
+
+```{r posterior.predictives}
+
+m.pp <- m.samples %>%
+  filter(Type == 'predictive') %>%
+  group_by(Domain, Parameter, Item) %>%
+  summarize(MAP = estimate_mode(Value),
+            credHigh = HPDhi(Value),
+            credLow = HPDlo(Value)) %>%
+  rename(syllogism = Parameter,
+         conclusion=Item,
+         domain=Domain)
+
+
+m.d <-left_join(d.tidy, m.pp)
+
+
+with(m.d, cor(mean, MAP))
+
+ggplot(m.d, aes(x=MAP, y = mean, color=syllogism))+
+  geom_point()+
+  coord_fixed()+
+  geom_abline(intercept=0, slope=1, lty=2)+
+  xlim(0,1)+
+  ylim(0,1)#+
+  #geom_errorbarh(aes(xmin=credLow, xmax=credHigh))
+
+
+  #geom_errorbar(aes(ymin=ci_lower, ymax = ci_upper))+
+
+m.d<-m.d %>%
+  mutate(sqerr = (MAP-mean) ^2)
+```
+
+
+
+```{r postpred.items}
+
+
+#ofInterest<- c("AA1", "EA1", "IA1","OA1", "EE1", "EI1", "EO1")
+#ofInterest<- c("AA1", "EA1", "IA1","OA1", "EE1")
+
+md.tidy<-bind_rows(m.d %>% 
+  #filter(syllogism %in% ofInterest) %>%
+  select(-mean, -ci_lower, -ci_upper, -sqerr) %>%
+  mutate(src = 'model'),
+  m.d %>% 
+    filter(syllogism %in% ofInterest) %>%
+    select(-MAP, -credHigh, -credLow, -sqerr) %>%
+    mutate(src = 'data') %>%
+    rename(MAP = mean,
+           credHigh = ci_upper,
+           credLow = ci_lower)) %>%
+  mutate(conclusion = factor(conclusion, levels=c("all", "some", "not all", "none")))
+
+
+ggplot(md.tidy, aes(x=conclusion, y = MAP, fill=conclusion))+
+  geom_bar(stat='identity', position=position_dodge())+
+  geom_errorbar(aes(ymin=credLow, ymax=credHigh), position=position_dodge(), width=0.4)+
+  facet_grid(src~syllogism + domain)+
+  scale_fill_solarized()
+
+```
+
+

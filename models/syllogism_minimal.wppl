@@ -1,0 +1,214 @@
+// // time webppl syllogism.wppl --require syll2utils --require mht
+ 
+
+var fpath = "/Users/mht/Documents/research/syllogism/models/ripsdata/"
+
+// Evans (1999) data
+var evansData = mht.readCSV(fpath+"evans-data-raw-boolean-fig1.csv").data
+var evansDF = dataFrame(evansData)
+var syllogisms = _.uniq(_.pluck(evansDF, "syllogism"))
+
+var booleanDictionary = {
+  "TRUE":true,
+  "FALSE":false
+}
+
+var evansDF_justTrue = subset(evansDF, "response", "TRUE")
+
+var quantifiers = ["all","some","none", "not all"];
+var sentenceForms = [ ["A","B"],["B","A"],
+                      ["B","C"],["C","B"],
+                      ["A","C"],["C","A"]];
+
+var syllogisticSentences = _.flatten(map(
+  function(x){ 
+    return map(
+      function(y){ 
+        return {terms: y,
+            quantifier: x}
+      } ,sentenceForms)
+  }, quantifiers))
+
+var isPremise1 = function(s){
+  return ((s.terms[0]=="B") & (s.terms[1]=="A"))
+}
+
+var isPremise2 = function(s){
+  return ((s.terms[0]=="C") & (s.terms[1]=="B"))
+}
+
+var isConclusion = function(s){
+  return ((s.terms[0]=="C") & (s.terms[1]=="A"))
+}
+
+var premisesTrue = function(premises, trueSentences){
+  return filter(function(s){
+    return (
+      _.isEqual(_.omit(s, "truthValue"), premises[0]) || 
+      _.isEqual(_.omit(s, "truthValue"), premises[1])
+      )
+  }, trueSentences).length==2
+}
+
+
+var conclusionTrue = function(conclusion, trueSentences){
+  return filter(function(s){
+    return _.isEqual(_.omit(s, "truthValue"), conclusion) 
+  }, trueSentences).length==1
+}
+
+var first_premises = filter(isPremise1, syllogisticSentences)
+var second_premises = filter(isPremise2, syllogisticSentences)
+
+var property_values = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
+                       [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+
+// equivalence class transformation
+var equivalenceTransform = cache(function(probs, n){
+  Enumerate(function(){
+
+    var objects = multinomial(probs, n)
+    var objects_w_values = _.zip(objects, property_values)
+    var world = map(second, filter(function(o){
+      return o[0]
+    }, objects_w_values))
+
+    // returns list of sentence objects, with truthValue property
+    return map(function(sentence){
+      return _.extend(
+          _.clone(sentence),
+          {truthValue: meaning(sentence.quantifier)(world, sentence.terms[0], sentence.terms[1])}
+          )
+    }, syllogisticSentences)
+  })
+})
+
+
+// console.log(world)
+
+var argumentStrength_literal = cache(function(premises, prior) {
+  Enumerate(function(){
+    // console.log(premises)
+    var world = sample(prior)
+    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
+    var trueConclusions = filter(isConclusion, trueSentences) // grab the conclusions
+    var conclusion = uniformDraw(trueConclusions) // uniform draw from true conclusions
+    condition(premisesTrue(premises, trueSentences))
+    return _.omit(conclusion, "truthValue")
+  })
+})
+
+
+var qudvalToPremises = cache(function(QUDval, prior, qud) {
+  Enumerate(function(){
+    var premise_1 = uniformDraw(first_premises)
+    var premise_2 = uniformDraw(second_premises)
+    var premises = [premise_1, premise_2]
+    var R0 = qud=='conclusion' ? argumentStrength_literal(premises, prior) : 
+                                  premisesToState_literal(premises, prior)
+    factor(R0.score([],QUDval))
+    return premises
+  })
+})
+
+var argumentStrength_pragmatic = function(premises, prior, speakerOptimality_E1){
+  Enumerate(function(){
+    var world = sample(prior)
+    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
+    var trueConclusions = filter(isConclusion, trueSentences) // grab the conclusions
+    var conclusion = uniformDraw(trueConclusions) // uniform draw from true conclusions
+
+    var E1 = qudvalToPremises( _.omit(conclusion, "truthValue"), prior, "conclusion")
+    factor(speakerOptimality_E1 * E1.score([], premises))
+
+    // return  _.omit(conclusion, "truthValue")
+    return conclusion.quantifier
+  })
+}
+
+// // var baseRates = map(function(x){return x/20}, _.range(1, 20, 1))
+var baseRates = [0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65]
+var nObjects = [3,4,5]
+
+// var possiblePriors = allPriors(nObjects, baseRates)
+
+var modelAnalysis = function(){
+
+	var t0 = mht.getTime()
+
+	var phi= uniform(0,1)
+
+	var speakerOptimality_E1= uniform(0,20)
+
+	// var baseRate = uniform(0.05,0.95)
+	var baseRate = uniformDraw(baseRates)
+	var n_objects = uniformDraw(nObjects)
+  console.log(n_objects)
+
+  var probs = syll2utils.multinomialProbabilities(baseRate)
+
+  var worldPrior = equivalenceTransform(probs, n_objects)
+
+
+	foreach(syllogisms, function(syllogism){
+		// console.log(syllogism)
+
+		var syllogismData = subset(evansDF, "syllogism", syllogism)
+		var conclusions = _.uniq(_.pluck(syllogismData, "conclusion"))
+
+    var responseData = _.pluck(subset(evansDF_justTrue, "syllogism", syllogism), "conclusion")
+
+		var syll = scholasticCodeToPremises(syllogism)
+
+		var predictionERP = argumentStrength_pragmatic(syll, worldPrior, speakerOptimality_E1)
+    
+    var linkedERP = addGuessing(predictionERP, phi)
+
+    var scr = sum(map(function(d){
+      return linkedERP.score([],d)
+    }, responseData))
+
+    factor(scr)
+
+    foreach(quantifiers,
+     function(c){
+       query.add(["predictive",syllogism,c], Math.exp(linkedERP.score([], c)))
+    })
+
+	})
+
+  query.add(["parameter","NA","speakerOptimality_E1","global"], speakerOptimality_E1)
+	priorParams["baseRate"] != null ? 
+		query.add(["parameter","NA","baseRate","global"], priorParams["baseRate"]) : null
+
+	priorParams["n_objects"] != null ? 
+		query.add(["parameter","NA","n","global"], priorParams["n_objects"]) : null
+
+	query.add(["parameter","NA","phi","global"], phi)
+	var t1 = mht.getTime()
+	console.log((t1-t0)/1000)
+	return query
+
+}
+
+var inference ='MH'
+var samples = 25
+var burn = 25
+// var resultsERP = MCMC(modelAnalysis, {samples:samples, burn:burn, verbose:true})
+var resultsERP = MCMC(modelAnalysis, 
+  {
+    samples:samples, 
+    burn:burn, 
+    verbose:true,
+    // kernel: {HMC: {stepSize:0.1,steps:5}}
+  })
+
+
+console.log('inference complete... printing')
+
+var outfile = "results/evansData-argStr1-n4-9-br-phi"+ 
+                      inference + samples + "burn" + burn + ".csv"
+
+syllUtils.erpWriter(resultsERP, outfile)
+
+console.log('output written to ' + outfile)
