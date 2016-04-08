@@ -6,54 +6,44 @@
 // var syllogisms = _.uniq(_.pluck(ripsDF, "syllogism"))
 
 // for testing purposes, keep n_objects fixed
-var n_objects = 4
-var objects = ["g1","g2","g3", "g4"]
+// var objects = ["g1","g2","g3", "g4"]
 
-var RSAoptions ={pragmaticInterpretation: false,
+// var baseRates = map(function(x){return x/20}, _.range(1, 20, 1))
+var baseRates = [0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65]
+var nObjects = [4,5,6,7,8,9,10]
+
+var possiblePriors = allPriors(nObjects, baseRates)
+
+var RSAoptions ={pragmaticInterpretation: true,
                  QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
-                 pragmaticProduction: true,
+                 pragmaticProduction: false,
                  QUD_cL0: "state"}
 
-
-
 var RSAparams = {
- speakerOptimality_E1: 3,
+ speakerOptimality_E1: 2,
  speakerOptimality_cL0: 2,
- cost: 1
+ cost: 2
 }
-
-
-// var priorfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
-// var priordata = syllUtils.readCSV(priorfilepath + "prior-exp-mturk_collapsed_means_n71.csv").data
-// var priorDF = _.object(map(function(obj){return [obj["domain"], obj] }, dataFrame(priordata)))
-
-// var empiricalPrior = extractMultinomial(priorDF["lightbulbs"])
-
-// var empiricalPrior = [1,1,1,1,1,1,1,1]
 
 var priorParams = {
-	 baseRate: 0.4,
-	 // baseRate: null,
-	 objects: objects,
-	 // empiricalPrior: empiricalPrior
-	 empiricalPrior: [null]
+  baseRate: 0.4,
+  n_objects: 10,
+  empiricalPrior: [null]
 }
 
-var syllogism = 'IA1'
+var prior = possiblePriors[priorParams.n_objects][priorParams.baseRate]
 
-// var data = _.pluck(subset(ripsDF, "syllogism", syllogism), "conclusion")
+var syllogism = 'EE1'
 var syll = scholasticCodeToPremises(syllogism)
-
-// syllogisticRSA(syll, [["C","A"],"all"], RSAparams, RSAoptions)
-
-
 
 
 var predictionERP = syllogisticRSA(syll, 
-					 RSAparams, 
-					 RSAoptions,
-					 priorParams)
-predictionERP
+									 RSAparams, 
+									 RSAoptions,
+									 prior)
+
+
+// softmaxSpeaker(predictionERP,5)
 
 
 var marginalizeConclusions = function(reasonerERP, conclusion){
@@ -70,12 +60,5 @@ console.log("P(some) =" + Math.exp(marginalizeConclusions(predictionERP,[["C","A
 console.log("P(not all) = " + Math.exp(marginalizeConclusions(predictionERP,[["C","A"], "not all"]).score([], true)))
 console.log("P(none) =" + Math.exp(marginalizeConclusions(predictionERP,[["C","A"], "none"]).score([], true)))
 
-// var phi = 0
 
-// var linkedERP = addGuessing(predictionERP, phi)
-// linkedERP
-// var scr = sum(map(function(d){
-// 	return predictionERP.score([], d)
-// }, data))
-
-// priorDF
+// prior.support([]).length

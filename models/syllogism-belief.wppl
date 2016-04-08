@@ -6,7 +6,8 @@ var fpath = "/Users/mht/Documents/research/syllogism/models/ripsdata/"
 
 var priorfilepath = "/Users/mht/Documents/research/syllogism/data/03syllogism_prior_psychjs/";
 var priordata = syllUtils.readCSV(priorfilepath + "prior-exp-mturk_collapsed_means_n71.csv").data
-var priorDF = _.object(map(function(obj){return [obj["domain"], obj] }, dataFrame(priordata)))
+var priorDF = _.object(map(function(obj){return [obj["domain"], obj] }, dataFrame(priordata.slice(0,priordata.length-1))))
+var priorDomains = _.keys(priorDF)
 
 
 // reasoning data for models with content effects
@@ -21,12 +22,12 @@ var syllogisms = _.uniq(_.pluck(dataDF, "syll"))
 var domains = _.uniq(_.pluck(dataDF, "domain"))
 
  // for testing purposes, keep n_objects fixed
-var n_objects = 4
-var objects = ["g1","g2","g3", "g4"]
+// var n_objects = 6
+// var objects = ["g1","g2","g3", "g4", "g5", "g6"]
 
-var RSAoptions ={pragmaticInterpretation: false,
+var RSAoptions ={pragmaticInterpretation: true,
                  QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
-                 pragmaticProduction: true,
+                 pragmaticProduction: false,
                  QUD_cL0: "premises"}
 
 var pre1 = RSAoptions["pragmaticInterpretation"] ? 
@@ -50,8 +51,25 @@ var dataDictionary = {
 	"none":"radio_E"
 }
 
+var singularToPlural = {
+	strawberry: "strawberries",
+	cracker: "crackers",
+	knife: "knives",
+	lightbulb: "lightbulbs"
+}
 
 var conclusions = ["all", "some", "not all", "none"]
+var nObjects = [4, 5, 6, 7, 8, 9]
+var possiblePriors = contentPriors(nObjects, priorDomains)
+
+var marginalizeConclusions = function(reasonerERP, conclusion){
+	Enumerate(function(){
+	  var c = sample(reasonerERP)
+	  return _.isArray(c[1]) ? 
+	  	(conclusion==c[0][1] || conclusion==c[1][1]) : 
+	  	conclusion==c[1]
+	})
+}
 
 var modelAnalysis = function(){
 	// var t0 = syllUtils.getTime()
@@ -61,20 +79,22 @@ var modelAnalysis = function(){
 	var RSAparams = {
 	 speakerOptimality_E1: RSAoptions["pragmaticInterpretation"] ? uniform(0,20) : 0,
 	 speakerOptimality_cL0: RSAoptions["pragmaticProduction"] ? uniform(0,20) : 0,
-	 cost: uniform(0,5)
+	 // cost: uniform(0,5)
+	 cost: 0
+	}
+
+	var priorParams = {
+		baseRate: null,
+		n_objects: uniformDraw(nObjects)
 	}
 
 
-	foreach(domains, function(domain){
+	foreach(priorDomains, function(domain){
 
-		var empiricalPrior = extractMultinomial(priorDF[domain])
-		var domainData = subset(dataDF, "domain", domain)
+		// var empiricalPrior = extractMultinomial(priorDF[domain])
+		var domainData = subset(dataDF, "domain", singularToPlural[domain])
 
-		var priorParams = {
-			baseRate: null,
-			objects: objects,
-			empiricalPrior: empiricalPrior
-		}
+		var prior = possiblePriors[priorParams.n_objects][domain]
 
 		foreach(syllogisms, function(syllogism){
 
@@ -82,18 +102,20 @@ var modelAnalysis = function(){
 			var syllogismData = subset(domainData, "syll", syllogism)
 			var syll = scholasticCodeToPremises(syllogism)
 
+			var predictionERP = syllogisticRSA(syll, 
+												// [["C","A"], conclusion],
+												 RSAparams, 
+												 RSAoptions,
+												 prior)
+
 			foreach(conclusions, function(conclusion){
 
 				var responseData = _.pluck(syllogismData, dataDictionary[conclusion])
 
-				var predictionERP = syllogisticRSA(syll, 
-													[["C","A"], conclusion],
-													 RSAparams, 
-													 RSAoptions,
-													 priorParams)
-
-
-				var linkedERP = addGuessing(predictionERP, phi)
+				var marginalERP = marginalizeConclusions(predictionERP,
+															conclusion)
+		
+				var linkedERP = addGuessing(marginalERP, phi)
 
 				var scr = sum(map(function(d){
 					return linkedERP.score([], booleanDictionary2[d])
@@ -101,7 +123,7 @@ var modelAnalysis = function(){
 				// console.log(scr)
 				factor(scr)
 
-				query.add(["predictive",domain, syllogism,conclusion], 
+				query.add(["predictive",singularToPlural[domain], syllogism,conclusion], 
 							Math.exp(linkedERP.score([], true)))
 
 
@@ -117,25 +139,25 @@ var modelAnalysis = function(){
 		query.add(["parameter","NA","speakerOptimality_cL0","global"], RSAparams["speakerOptimality_cL0"]) : null
 	RSAoptions["pragmaticInterpretation"]  ?
 		query.add(["parameter","NA","speakerOptimality_E1","global"], RSAparams["speakerOptimality_E1"]) : null
-	RSAparams["baseRate"] != null ? 
-		query.add(["parameter","NA","baseRate","global"], RSAparams["baseRate"]) : null
 
 	query.add(["parameter","NA","phi","global"], phi)
-	query.add(["parameter","NA","cost","global"], RSAparams["cost"])
+	query.add(["parameter","NA","n","global"], priorParams.n_objects)
+	// query.add(["parameter","NA","cost","global"], RSAparams["cost"])
 	// var t1 = syllUtils.getTime()
 	// console.log(t1-t0)
 	return query
 
 }
 
-var inference ='IncrMH'
-var samples = 150
-var burn = 75
+var inference ='MH'
+var samples = 100
+var burn = 50
 
-var resultsERP = IncrementalMH(modelAnalysis, samples, {burn:burn, verbose:true})
+// var resultsERP = IncrementalMH(modelAnalysis, samples, {burn:burn, verbose:true})
+var resultsERP = MCMC(modelAnalysis, {samples:samples, burn:burn, verbose:true})
 
 console.log('inference complete... printing')
-var outfile = "results/contentExpts-byConclusion-"+optPrefix+"nObj" + n_objects + "-phi-cost"+ 
+var outfile = "results/contentExpts-conclusionPairs-"+optPrefix+"n456789-phi"+ 
 											inference + samples + "burn" + burn + ".csv"
 syllUtils.erpWriter(resultsERP, outfile)
 
