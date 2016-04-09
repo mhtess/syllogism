@@ -30,43 +30,6 @@ var syllogisticSentences = _.flatten(map(
       } ,sentenceForms)
   }, quantifiers))
 
-// var isPremise1 = function(s){
-//   return (_.contains(s.terms, "A") & _.contains(s.terms, "B"))
-// }
-
-// var isPremise2 = function(s){
-//   return (_.contains(s.terms, "B") & _.contains(s.terms, "C"))
-// }
-
-var isPremise1 = function(s){
-  return ((s.terms[0]=="B") & (s.terms[1]=="A"))
-}
-
-var isPremise2 = function(s){
-  return ((s.terms[0]=="C") & (s.terms[1]=="B"))
-}
-
-var isConclusion = function(s){
-  // return ((s.terms[0]=="A") & (s.terms[1]=="C"))
-  return ((s.terms[0]=="C") & (s.terms[1]=="A"))
-  // return (_.contains(s.terms, "A") & _.contains(s.terms, "C"))
-}
-
-var premisesTrue = function(premises, trueSentences){
-  return filter(function(s){
-    return (
-      _.isEqual(_.omit(s, "truthValue"), premises[0]) || 
-      _.isEqual(_.omit(s, "truthValue"), premises[1])
-      )
-  }, trueSentences).length==2
-}
-
-
-var conclusionTrue = function(conclusion, trueSentences){
-  return filter(function(s){
-    return _.isEqual(_.omit(s, "truthValue"), conclusion) 
-  }, trueSentences).length==1
-}
 
 var first_premises = filter(isPremise1, syllogisticSentences)
 var second_premises = filter(isPremise2, syllogisticSentences)
@@ -77,312 +40,23 @@ var syllogismPrior = Enumerate(function(){
     return [premise_1, premise_2]
 })
 
-// [0, 1, 1, 2, 1, 2, 2, 3]
-
-
-var property_values = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],
-                       [1,0,0],[1,0,1],[1,1,0],[1,1,1]]
-
-
-
-// equivalence class transformation
-var equivalenceTransform = cache(function(probs, n){
-  Enumerate(function(){
-
-    var objects = multinomial(probs, n)
-    var objects_w_values = _.zip(objects, property_values)
-    var world = map(second, filter(function(o){
-      return o[0]
-    }, objects_w_values))
-
-    ///////////////////////////////////////
-    // existential presupposition condition
-    // condition(plentifulWorlds(world))
-    ///////////////////////////////////////
-
-    // returns list of truth values
-    // return map(function(sentence){
-    //   return meaning(sentence.quantifier)(world, sentence.terms[0], sentence.terms[1])
-    // }, syllogisticSentences)
-
-    // returns list of sentence objects, with truthValue property
-    return map(function(sentence){
-      return _.extend(
-          _.clone(sentence),
-          {truthValue: meaning(sentence.quantifier)(world, sentence.terms[0], sentence.terms[1])}
-          )
-    }, syllogisticSentences)
-  })
-})
-
 
 
 // console.log(world)
 
 
-var argumentStrength_literal = cache(function(premises, prior) {
-  Enumerate(function(){
-    // console.log(premises)
-        // var t0 = mht.getTime()
-    var world = sample(prior)
-    //   var t1 = mht.getTime()
-    // console.log("sample(prior) = " + (t1-t0))
-
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    var trueConclusions = filter(isConclusion, trueSentences) // grab the conclusions
-    var conclusion = uniformDraw(trueConclusions) // uniform draw from true conclusions
-    condition(premisesTrue(premises, trueSentences))
-    return _.omit(conclusion, "truthValue")
-  })
-})
-
-var premisesToState_literal = cache(function(premises, prior) {
-  Enumerate(function(){
-    var world = sample(prior)
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    condition(premisesTrue(premises, trueSentences))
-    return world
-  })
-})
-
-
-var conclusionToState_literal = cache(function(conclusion, prior) {
-  Enumerate(function(){
-    var world = sample(prior)
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    condition(conclusion == "null" ? true : conclusionTrue(conclusion, trueSentences))
-    return world
-  })
-})
-
-
-
-var conclusionToPremises_literal = cache(function(conclusion, prior) {
-  Enumerate(function(){
-    var world = sample(prior)
-    var premises = sample(syllogismPrior)
-
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    condition(conclusion == "null" ? true : conclusionTrue(conclusion, trueSentences))
-    condition(premisesTrue(premises, trueSentences))
-
-    return premises
-  })
-})
-
-var stateToConclusion_speaker = cache(function(world, prior, conclusion) {
-  Enumerate(function(){
-    var utterance = uniformDraw([conclusion, "null"])
-    var cts_literal = conclusionToState_literal(utterance, prior)
-    factor(cts_literal.score([], world))
-    return utterance
-  })
-})
-
-var conclusionToState_pragmaticListener = cache(function(conclusion, prior, speakerOptimality_E1) {
-  Enumerate(function(){
-    var world = sample(prior)
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    var stc_speaker = stateToConclusion_speaker(world, prior, conclusion)
-    factor(speakerOptimality_E1*stc_speaker.score([], conclusion))
-    return world
-  })
-})
-
-var qudvalToPremises = cache(function(QUDval, prior, qud) {
-  Enumerate(function(){
-    // var premise_1 = uniformDraw(first_premises)
-    // var premise_2 = uniformDraw(second_premises)
-    var premises = sample(syllogismPrior)
-    var R0 = qud=='conclusion' ? argumentStrength_literal(premises, prior) : 
-                                  premisesToState_literal(premises, prior)
-
-    factor(R0.score([],QUDval))
-    return premises
-  })
-})
-
-var premisesToState_pragmatic = cache(function(premises, prior, speakerOptimality_E1){
-  Enumerate(function(){
-    var world = sample(prior)
-    var E1 = qudvalToPremises(world, prior, "state")
-    factor(speakerOptimality_E1 * E1.score([], premises))
-    return world
-  })
-})
-
-
-var argumentStrength_pragmatic = function(premises, prior, speakerOptimality_E1){
-  Enumerate(function(){
-    var world = sample(prior)
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    var trueConclusions = filter(isConclusion, trueSentences) // grab the conclusions
-    var conclusion = uniformDraw(trueConclusions) // uniform draw from true conclusions
-    var E1 = qudvalToPremises(world, prior, "state")
-    factor(speakerOptimality_E1 * E1.score([], premises))
-
-    // return  _.omit(conclusion, "truthValue")
-    return {quantifier: conclusion.quantifier,
-            state: world}
-  })
-}
-
-
-var argumentStrength_pragmatic_qudC= function(premises, prior, speakerOptimality_E1){
-  Enumerate(function(){
-    var world = sample(prior)
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    var trueConclusions = filter(isConclusion, trueSentences) // grab the conclusions
-    var conclusion = uniformDraw(trueConclusions) // uniform draw from true conclusions
-    var E1 = qudvalToPremises( _.omit(conclusion, "truthValue"), prior, "conclusion")
-    factor(speakerOptimality_E1 * E1.score([], premises))
-
-    // return  _.omit(conclusion, "truthValue")
-    // return {quantifier: conclusion.quantifier,
-    //         state: world}
-
-    return conclusion.quantifier
-  })
-}
-
-
-var argumentStrength_pragmaticProduction = cache(function(premises, prior){
-  Enumerate(function(){
-    var world = sample(prior)
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    condition(premisesTrue(premises, trueSentences))
-
-    var trueConclusions = filter(isConclusion, trueSentences) // grab the conclusions
-    var conclusion = uniformDraw(trueConclusions) // uniform draw from true conclusions
-
-    var l0 = conclusionToState_literal(_.omit(conclusion, "truthValue"), prior)
-    factor(l0.score([], world))
-
-    // return  _.omit(conclusion, "truthValue")
-    return {quantifier: conclusion.quantifier,
-            state: world}
-  })
-})
-
-var argumentStrength_pragmaticProduction_qudC =  cache(function(premises, prior){
-  Enumerate(function(){
-    var world = sample(prior)
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    condition(premisesTrue(premises, trueSentences))
-
-    var trueConclusions = filter(isConclusion, trueSentences) // grab the conclusions
-    var conclusion = uniformDraw(trueConclusions) // uniform draw from true conclusions
-
-    var l0 = conclusionToPremises_literal(_.omit(conclusion, "truthValue"), prior)
-    factor(l0.score([], premises))
-
-    // return  _.omit(conclusion, "truthValue")
-    return {quantifier: conclusion.quantifier,
-            state: world}
-  })
-})
-
-
-
-
-var speaker2 = function(premises, conclusion, prior, speakerOptimality_E1){
-  Enumerate(function(){
-    // could be a literal interpreter; also QUD could be conclusion
-    var worldPosterior = premisesToState_pragmatic(premises, prior, speakerOptimality_E1)
-
-    var world = sample(worldPosterior)
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    var conclusionIsTrue = conclusionTrue(conclusion, trueSentences)
-
-
-    var utterances = conclusionIsTrue ? ['null', conclusion] : ['null']
-    var utterance = uniformDraw(utterances)
-
-    // could be a literal interpreter
-    var l1 = conclusionToState_pragmaticListener(utterance, prior, speakerOptimality_E1)
-    factor(l1.score([], world))
-    return utterance
-    // return conclusionIsTrue
-  })
-}
-
-
-var speaker2_QUDpremises = function(premises, conclusion, prior, speakerOptimality_E1){
-  Enumerate(function(){
-    // QUD on premise interpretation is the conclusion
-    var worldPosterior = marginalize(argumentStrength_pragmatic(premises, prior, speakerOptimality_E1), "state")
-
-    var world = sample(worldPosterior)
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    var conclusionIsTrue = conclusionTrue(conclusion, trueSentences)
-
-
-    var utterances = conclusionIsTrue ? ['null', conclusion] : ['null']
-    var utterance = uniformDraw(utterances)
-
-    // could be a literal interpreter
-    var l1 = conclusionToState_pragmaticListener(utterance, prior, speakerOptimality_E1)
-    factor(l1.score([], world))
-    return utterance
-    // return conclusionIsTrue
-  })
-}
-
-
-var speaker2_QUDpremises_cL0 = function(premises, conclusion, prior, speakerOptimality_E1){
-  Enumerate(function(){
-    // QUD on premise interpretation is the conclusion
-    var worldPosterior = marginalize(argumentStrength_pragmatic(premises, prior, speakerOptimality_E1), "state")
-
-    var world = sample(worldPosterior)
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    var conclusionIsTrue = conclusionTrue(conclusion, trueSentences)
-
-
-    var utterances = conclusionIsTrue ? ['null', conclusion] : ['null']
-    var utterance = uniformDraw(utterances)
-
-    // could be a literal interpreter
-    var l1 = conclusionToState_literal(utterance, prior)
-    factor(l1.score([], world))
-    return utterance
-    // return conclusionIsTrue
-  })
-}
-
-var speaker2_pL0_cL0 = function(premises, conclusion, prior, speakerOptimality_E1){
-  Enumerate(function(){
-    // QUD on premise interpretation is the conclusion
-    var worldPosterior = premisesToState_literal(premises, prior)
-
-    var world = sample(worldPosterior)
-    var trueSentences = filter(function(w){return w.truthValue}, world) // remove false sentences
-    var conclusionIsTrue = conclusionTrue(conclusion, trueSentences)
-
-
-    var utterances = conclusionIsTrue ? ['null', conclusion] : ['null']
-    var utterance = uniformDraw(utterances)
-
-    // could be a literal interpreter
-    var l1 = conclusionToState_literal(utterance, prior)
-    factor(l1.score([], world))
-    return utterance
-    // return conclusionIsTrue
-  })
-}
-
-// var speakerOptimality_E1 = 5
-// var probs = [10,1,1,1,1,1,1,1]
-// var n = 6
+var speakerOptimality_E1 = 5
+var probs = [10,1,1,1,1,1,1,1]
+var n = 6
 // var t0 = mht.getTime()
-// var worldPrior = equivalenceTransform(probs, n)
+var worldPrior = equivalenceTransform(probs, n)
 // var t1 = mht.getTime()
 //  console.log((t1-t0)/1000)
 
-// var premises = [
-//   { terms: [ 'B', 'A' ], quantifier: 'all' },
-//   { terms: [ 'C', 'B' ], quantifier: 'all' }
-// ]
+var premises = [
+  { terms: [ 'B', 'A' ], quantifier: 'all' },
+  { terms: [ 'C', 'B' ], quantifier: 'all' }
+]
 
 // var c = {terms: ['C', 'A'], quantifier: 'some'}
 
@@ -392,371 +66,371 @@ var speaker2_pL0_cL0 = function(premises, conclusion, prior, speakerOptimality_E
 
 
 // var t2 = mht.getTime()
- // var x1 = argumentStrength_pragmatic(premises, worldPrior, speakerOptimality_E1)
+ var x1 = argumentStrength_pragmatic(premises, worldPrior, speakerOptimality_E1)
+
+x1
+
+// //  var cachedArgStr = argumentStrength_pragmatic_qudC([
+// //   { terms: [ 'B', 'A' ], quantifier: 'some' },
+// //   { terms: [ 'C', 'B' ], quantifier: 'all' }
+// // ], equivalenceTransform([10,1,1,1,1,1,1,1], 5), 5)
 
 
+// // var uncachedFnSameArgs = function(syll, worldPrior, speakerOptimality_E1){
+// //   return cachedArgStr
+// // }
 
-//  var cachedArgStr = argumentStrength_pragmatic_qudC([
-//   { terms: [ 'B', 'A' ], quantifier: 'some' },
-//   { terms: [ 'C', 'B' ], quantifier: 'all' }
-// ], equivalenceTransform([10,1,1,1,1,1,1,1], 5), 5)
-
-
-// var uncachedFnSameArgs = function(syll, worldPrior, speakerOptimality_E1){
-//   return cachedArgStr
-// }
-
-// //  // var x1 = qudvalToPremises(c, worldPrior, "conclusion")
-//  var t3 = mht.getTime()
-//  console.log((t3-t2)/1000)
-
-
-
-
-// // // var x1 = speaker2(premises, c,worldPrior, speakerOptimality_E1)
-// // x1.score([], {terms: ['C','A'], quantifier: 'some'})
-// // // trueSentences
-// x1
+// // //  // var x1 = qudvalToPremises(c, worldPrior, "conclusion")
+// //  var t3 = mht.getTime()
+// //  console.log((t3-t2)/1000)
 
 
 
 
-// first_premises
+// // // // var x1 = speaker2(premises, c,worldPrior, speakerOptimality_E1)
+// // // x1.score([], {terms: ['C','A'], quantifier: 'some'})
+// // // // trueSentences
+// // x1
 
 
 
 
-//  // for testing purposes, keep n_objects fixed
-// // var n_objects = 4
-// // var objects = ["g1","g2","g3", "g4"]
+// // first_premises
 
-// var RSAoptions ={pragmaticInterpretation: false,
-//                  QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
-//                  pragmaticProduction: true,
-//                  QUD_cL0: "state"}
 
-// var pre1 = RSAoptions["pragmaticInterpretation"] ? 
-// 				"pragInt-" + 'qudE1' + RSAoptions["QUD_E1"] + "_" : ""
-// var pre2 = RSAoptions["pragmaticProduction"] ? 
-// 				"pragProd-" + 'qudcL0' + RSAoptions["QUD_cL0"] +"_": ""
 
-// var optPrefix = pre1 + pre2
+
+// //  // for testing purposes, keep n_objects fixed
+// // // var n_objects = 4
+// // // var objects = ["g1","g2","g3", "g4"]
+
+// // var RSAoptions ={pragmaticInterpretation: false,
+// //                  QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
+// //                  pragmaticProduction: true,
+// //                  QUD_cL0: "state"}
+
+// // var pre1 = RSAoptions["pragmaticInterpretation"] ? 
+// // 				"pragInt-" + 'qudE1' + RSAoptions["QUD_E1"] + "_" : ""
+// // var pre2 = RSAoptions["pragmaticProduction"] ? 
+// // 				"pragProd-" + 'qudcL0' + RSAoptions["QUD_cL0"] +"_": ""
+
+// // var optPrefix = pre1 + pre2
 				
-// console.log("running " + optPrefix)
+// // console.log("running " + optPrefix)
 
-// var conclusions = ["all", "some", "not all", "none"]
-
-
-// var marginalizeConclusions = function(reasonerERP, conclusion){
-// 	Enumerate(function(){
-// 	  var c = sample(reasonerERP)
-// 	  return _.isArray(c[1]) ? 
-// 	  	(conclusion==c[0][1] || conclusion==c[1][1]) : 
-// 	  	conclusion==c[1]
-// 	})
-// }
+// // var conclusions = ["all", "some", "not all", "none"]
 
 
-// // var baseRates = map(function(x){return x/20}, _.range(1, 20, 1))
-// var baseRates = [0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65]
-// var nObjects = [3,4,5]
-
-// // var possiblePriors = allPriors(nObjects, baseRates)
-
-// var modelAnalysis = function(){
-
-// 	var t0 = mht.getTime()
-
-// 	var phi= uniform(0,1)
-
-// 	var speakerOptimality_E1= uniform(0,20)
-
-// 	// var baseRate = uniform(0.05,0.95)
-// 	var baseRate = uniformDraw(baseRates)
-// 	var n_objects = uniformDraw(nObjects)
-//   console.log(n_objects)
-
-//   var probs = syll2utils.multinomialProbabilities(baseRate)
-
-//   var worldPrior = equivalenceTransform(probs, n_objects)
+// // var marginalizeConclusions = function(reasonerERP, conclusion){
+// // 	Enumerate(function(){
+// // 	  var c = sample(reasonerERP)
+// // 	  return _.isArray(c[1]) ? 
+// // 	  	(conclusion==c[0][1] || conclusion==c[1][1]) : 
+// // 	  	conclusion==c[1]
+// // 	})
+// // }
 
 
-// 	foreach(syllogisms, function(syllogism){
-// 		// console.log(syllogism)
+// // // var baseRates = map(function(x){return x/20}, _.range(1, 20, 1))
+// // var baseRates = [0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65]
+// // var nObjects = [3,4,5]
 
-// 		var syllogismData = subset(evansDF, "syllogism", syllogism)
-// 		var conclusions = _.uniq(_.pluck(syllogismData, "conclusion"))
+// // // var possiblePriors = allPriors(nObjects, baseRates)
 
-//     var responseData = _.pluck(subset(evansDF_justTrue, "syllogism", syllogism), "conclusion")
+// // var modelAnalysis = function(){
 
-// 		var syll = scholasticCodeToPremises(syllogism)
+// // 	var t0 = mht.getTime()
 
-// 		var predictionERP = argumentStrength_pragmatic(syll, worldPrior, speakerOptimality_E1)
+// // 	var phi= uniform(0,1)
+
+// // 	var speakerOptimality_E1= uniform(0,20)
+
+// // 	// var baseRate = uniform(0.05,0.95)
+// // 	var baseRate = uniformDraw(baseRates)
+// // 	var n_objects = uniformDraw(nObjects)
+// //   console.log(n_objects)
+
+// //   var probs = syll2utils.multinomialProbabilities(baseRate)
+
+// //   var worldPrior = equivalenceTransform(probs, n_objects)
+
+
+// // 	foreach(syllogisms, function(syllogism){
+// // 		// console.log(syllogism)
+
+// // 		var syllogismData = subset(evansDF, "syllogism", syllogism)
+// // 		var conclusions = _.uniq(_.pluck(syllogismData, "conclusion"))
+
+// //     var responseData = _.pluck(subset(evansDF_justTrue, "syllogism", syllogism), "conclusion")
+
+// // 		var syll = scholasticCodeToPremises(syllogism)
+
+// // 		var predictionERP = argumentStrength_pragmatic(syll, worldPrior, speakerOptimality_E1)
     
-//     var linkedERP = addGuessing(predictionERP, phi)
+// //     var linkedERP = addGuessing(predictionERP, phi)
 
-//     var scr = sum(map(function(d){
-//       return linkedERP.score([],d)
-//     }, responseData))
+// //     var scr = sum(map(function(d){
+// //       return linkedERP.score([],d)
+// //     }, responseData))
 
-//     factor(scr)
+// //     factor(scr)
 
 
-//     foreach(quantifiers,
-//      function(c){
-//        query.add(["predictive",syllogism,c], Math.exp(linkedERP.score([], c)))
-//     })
+// //     foreach(quantifiers,
+// //      function(c){
+// //        query.add(["predictive",syllogism,c], Math.exp(linkedERP.score([], c)))
+// //     })
 
-// 		// foreach(conclusions, function(conclusion){
-// 		// 	var responseData = _.pluck(subset(syllogismData, 
-// 		// 										"conclusion", 
-// 		// 										conclusion), 
-// 		// 							"response")
+// // 		// foreach(conclusions, function(conclusion){
+// // 		// 	var responseData = _.pluck(subset(syllogismData, 
+// // 		// 										"conclusion", 
+// // 		// 										conclusion), 
+// // 		// 							"response")
 
-//   //     var responseData = filter(subset(syllogismData, 
-//   //                       "conclusion", 
-//   //                       conclusion), 
-//   //                 "response")
+// //   //     var responseData = filter(subset(syllogismData, 
+// //   //                       "conclusion", 
+// //   //                       conclusion), 
+// //   //                 "response")
 
-// 		// 	var marginalERP = marginalizeConclusions(predictionERP,
-// 		// 												conclusion)
+// // 		// 	var marginalERP = marginalizeConclusions(predictionERP,
+// // 		// 												conclusion)
 
-// 		// 	var softmaxedERP = softmaxSpeaker(marginalERP, softmax)
-// 		// 	var linkedERP = addGuessing(softmaxedERP, phi)
+// // 		// 	var softmaxedERP = softmaxSpeaker(marginalERP, softmax)
+// // 		// 	var linkedERP = addGuessing(softmaxedERP, phi)
 
-// 		// 	var scr = sum(map(function(d){
-// 		// 		return linkedERP.score([], booleanDictionary[d])
-// 		// 	}, responseData))
-// 		// 	// console.log(scr)
-// 		// 	factor(scr)
+// // 		// 	var scr = sum(map(function(d){
+// // 		// 		return linkedERP.score([], booleanDictionary[d])
+// // 		// 	}, responseData))
+// // 		// 	// console.log(scr)
+// // 		// 	factor(scr)
 
-// 		// 	query.add(["predictive","NA", syllogism,conclusion], 
-// 		// 				Math.exp(linkedERP.score([], true)))
+// // 		// 	query.add(["predictive","NA", syllogism,conclusion], 
+// // 		// 				Math.exp(linkedERP.score([], true)))
 
-// 		// })
-// 			// foreach(["all","some","not all","none"],
-// 			// 	function(c){
-// 			// 		query.add(["predictive",syllogism,c], Math.exp(linkedERP.score([], c)))
-// 			// })
-// 	})
+// // 		// })
+// // 			// foreach(["all","some","not all","none"],
+// // 			// 	function(c){
+// // 			// 		query.add(["predictive",syllogism,c], Math.exp(linkedERP.score([], c)))
+// // 			// })
+// // 	})
 
-// 	// RSAoptions["pragmaticProduction"]  ? 
-// 	// 	query.add(["parameter","NA","speakerOptimality_cL0","global"], RSAparams["speakerOptimality_cL0"]) : null
+// // 	// RSAoptions["pragmaticProduction"]  ? 
+// // 	// 	query.add(["parameter","NA","speakerOptimality_cL0","global"], RSAparams["speakerOptimality_cL0"]) : null
 	
 
-//   query.add(["parameter","NA","speakerOptimality_E1","global"], speakerOptimality_E1)
-// 	priorParams["baseRate"] != null ? 
-// 		query.add(["parameter","NA","baseRate","global"], priorParams["baseRate"]) : null
+// //   query.add(["parameter","NA","speakerOptimality_E1","global"], speakerOptimality_E1)
+// // 	priorParams["baseRate"] != null ? 
+// // 		query.add(["parameter","NA","baseRate","global"], priorParams["baseRate"]) : null
 
-// 	priorParams["n_objects"] != null ? 
-// 		query.add(["parameter","NA","n","global"], priorParams["n_objects"]) : null
+// // 	priorParams["n_objects"] != null ? 
+// // 		query.add(["parameter","NA","n","global"], priorParams["n_objects"]) : null
 
-// 	// query.add(["parameter","NA","softmax","global"], softmax)
+// // 	// query.add(["parameter","NA","softmax","global"], softmax)
 
-// 	// query.add(["parameter","NA","n","global"], n_objects)
+// // 	// query.add(["parameter","NA","n","global"], n_objects)
 
-// 	// baseRate != null ? 
-// 	// 	query.add(["parameter","NA","baseRate","global"], baseRate) : null
-
-
-// 	query.add(["parameter","NA","phi","global"], phi)
-// 	// query.add(["parameter","NA","cost","global"], RSAparams["cost"])
-// 	var t1 = mht.getTime()
-// 	console.log((t1-t0)/1000)
-// 	return query
-
-// }
-// var baseRate = 0.05
-// var n_objects = 10
-// var speakerOptimality_E1 = 3
-// var syllogism = 'IA1'
-// var probs = syll2utils.multinomialProbabilities(baseRate)
-// var worldPrior = equivalenceTransform(probs, n_objects)
-// var syll = scholasticCodeToPremises(syllogism)
-// var L1_qud_c = argumentStrength_pragmatic_qudC(syll, worldPrior, speakerOptimality_E1)
-
-// marginalize(L1_qud_c, "quantifier") 
-
-var outfile = "results/explore_L1c-AA-EE-IA-n6-10-symmdir1-5-10a.csv"
-
-var outfl = syll2utils.openFile(outfile)
-syll2utils.writeLine(outfl, ["model","syllogism", "conclusion", 
-          "p0", "p1", "p2", "p3", "n_objects", "speakerOptimality", "Value"].join(","))
-
-// var baseRates = [0.05,0.15,0.25,0.35, 0.45,0.65]
-var speakerOptimalities = [1, 3, 5, 10]
-var nObjects = [6,10]
-// var baseRates = [0.05, 0.25, 0.45, 0.65, 0.85]
-var baseRates = [1, 5, 10]
-
-// var probs = [1,1,1,1,1,1,1,1]
-// var possiblePriors = allPriors(nObjects, baseRates)
-
-// var exploreModels = function(){
-foreach([1, 5, 10], function(p0){
-  foreach([1, 5, 8, 10, 20], function(p1){
-    foreach([1,5], function(p2){
-      foreach([1], function(p3){
-        foreach(nObjects, function(n_objects){
+// // 	// baseRate != null ? 
+// // 	// 	query.add(["parameter","NA","baseRate","global"], baseRate) : null
 
 
-    var probs = [p0, p1, p1, p2, p1, p2, p2, p3]
-    var worldPrior = equivalenceTransform(probs, n_objects)
-      var t0 = mht.getTime()
+// // 	query.add(["parameter","NA","phi","global"], phi)
+// // 	// query.add(["parameter","NA","cost","global"], RSAparams["cost"])
+// // 	var t1 = mht.getTime()
+// // 	console.log((t1-t0)/1000)
+// // 	return query
+
+// // }
+// // var baseRate = 0.05
+// // var n_objects = 10
+// // var speakerOptimality_E1 = 3
+// // var syllogism = 'IA1'
+// // var probs = syll2utils.multinomialProbabilities(baseRate)
+// // var worldPrior = equivalenceTransform(probs, n_objects)
+// // var syll = scholasticCodeToPremises(syllogism)
+// // var L1_qud_c = argumentStrength_pragmatic_qudC(syll, worldPrior, speakerOptimality_E1)
+
+// // marginalize(L1_qud_c, "quantifier") 
+
+// var outfile = "results/explore_L1c-AA-EE-IA-n6-10-symmdir1-5-10a.csv"
+
+// var outfl = syll2utils.openFile(outfile)
+// syll2utils.writeLine(outfl, ["model","syllogism", "conclusion", 
+//           "p0", "p1", "p2", "p3", "n_objects", "speakerOptimality", "Value"].join(","))
+
+// // var baseRates = [0.05,0.15,0.25,0.35, 0.45,0.65]
+// var speakerOptimalities = [1, 3, 5, 10]
+// var nObjects = [6,10]
+// // var baseRates = [0.05, 0.25, 0.45, 0.65, 0.85]
+// var baseRates = [1, 5, 10]
+
+// // var probs = [1,1,1,1,1,1,1,1]
+// // var possiblePriors = allPriors(nObjects, baseRates)
+
+// // var exploreModels = function(){
+// foreach([1, 5, 10], function(p0){
+//   foreach([1, 5, 8, 10, 20], function(p1){
+//     foreach([1,5], function(p2){
+//       foreach([1], function(p3){
+//         foreach(nObjects, function(n_objects){
 
 
-    foreach(speakerOptimalities, function(speakerOptimality_E1){
+//     var probs = [p0, p1, p1, p2, p1, p2, p2, p3]
+//     var worldPrior = equivalenceTransform(probs, n_objects)
+//       var t0 = mht.getTime()
 
 
-
-      // var phi= uniform(0,1)
-
-      // var speakerOptimality_E1= uniformDraw(speakerOptimalities)
-      // var baseRate = uniformDraw(baseRates)
-      // var n_objects = uniformDraw(nObjects)
-
-      // var probs = syll2utils.multinomialProbabilities(baseRate)
+//     foreach(speakerOptimalities, function(speakerOptimality_E1){
 
 
 
-      foreach(["AA1","IA1","EE1"], function(syllogism){
-        // console.log(syllogism)
+//       // var phi= uniform(0,1)
 
-        // var syllogismData = subset(evansDF, "syllogism", syllogism)
-        // var conclusions = _.uniq(_.pluck(syllogismData, "conclusion"))
+//       // var speakerOptimality_E1= uniformDraw(speakerOptimalities)
+//       // var baseRate = uniformDraw(baseRates)
+//       // var n_objects = uniformDraw(nObjects)
 
-        // var responseData = _.pluck(subset(evansDF_justTrue, "syllogism", syllogism), "conclusion")
-
-        var syll = scholasticCodeToPremises(syllogism)
-
-        // var L1_qud_s = argumentStrength_pragmatic(syll, worldPrior, speakerOptimality_E1)
-
-        // var L1_qud_a = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
-        // var L1_qud_b = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
-        // var L1_qud_c = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
-
-        // var mL1_qud_a = marginalize(L1_qud_a, "quantifier")
-        // var mL1_qud_b = marginalize(L1_qud_b, "quantifier")
-        // var mL1_qud_c = marginalize(L1_qud_c, "quantifier")
-
-        var L1_qud_c = argumentStrength_pragmatic_qudC(syll, worldPrior, speakerOptimality_E1)
-        // var S1_qud_s = argumentStrength_pragmaticProduction(syll, worldPrior)
-        // var S1_qud_c = argumentStrength_pragmaticProduction_qudC(syll, worldPrior)
-
-        // var argstr_L1_qud_s = marginalize(L1_qud_s, "quantifier")
-
-        // var argstr_L1_qud_c = marginalize(L1_qud_c, "quantifier")
+//       // var probs = syll2utils.multinomialProbabilities(baseRate)
 
 
 
-        // var argstr_S1_qud_s = softmaxSpeaker(marginalize(S1_qud_s, "quantifier"), speakerOptimality_E1)
-        // var argstr_S1_qud_c = softmaxSpeaker(marginalize(S1_qud_c, "quantifier"), speakerOptimality_E1)
+//       foreach(["AA1","IA1","EE1"], function(syllogism){
+//         // console.log(syllogism)
+
+//         // var syllogismData = subset(evansDF, "syllogism", syllogism)
+//         // var conclusions = _.uniq(_.pluck(syllogismData, "conclusion"))
+
+//         // var responseData = _.pluck(subset(evansDF_justTrue, "syllogism", syllogism), "conclusion")
+
+//         var syll = scholasticCodeToPremises(syllogism)
+
+//         // var L1_qud_s = argumentStrength_pragmatic(syll, worldPrior, speakerOptimality_E1)
+
+//         // var L1_qud_a = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
+//         // var L1_qud_b = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
+//         // var L1_qud_c = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
+
+//         // var mL1_qud_a = marginalize(L1_qud_a, "quantifier")
+//         // var mL1_qud_b = marginalize(L1_qud_b, "quantifier")
+//         // var mL1_qud_c = marginalize(L1_qud_c, "quantifier")
+
+//         var L1_qud_c = argumentStrength_pragmatic_qudC(syll, worldPrior, speakerOptimality_E1)
+//         // var S1_qud_s = argumentStrength_pragmaticProduction(syll, worldPrior)
+//         // var S1_qud_c = argumentStrength_pragmaticProduction_qudC(syll, worldPrior)
+
+//         // var argstr_L1_qud_s = marginalize(L1_qud_s, "quantifier")
+
+//         // var argstr_L1_qud_c = marginalize(L1_qud_c, "quantifier")
+
+
+
+//         // var argstr_S1_qud_s = softmaxSpeaker(marginalize(S1_qud_s, "quantifier"), speakerOptimality_E1)
+//         // var argstr_S1_qud_c = softmaxSpeaker(marginalize(S1_qud_c, "quantifier"), speakerOptimality_E1)
         
-        // var linkedERP = addGuessing(predictionERP, phi)
+//         // var linkedERP = addGuessing(predictionERP, phi)
 
-        // var scr = sum(map(function(d){
-        //   return linkedERP.score([],d)
-        // }, responseData))
+//         // var scr = sum(map(function(d){
+//         //   return linkedERP.score([],d)
+//         // }, responseData))
 
-        // factor(scr)
+//         // factor(scr)
 
-      foreach(quantifiers,
-         function(c){
-           // var s2 = speaker2(syll, {terms: ['C', 'A'], quantifier: c}, worldPrior, speakerOptimality_E1)
+//       foreach(quantifiers,
+//          function(c){
+//            // var s2 = speaker2(syll, {terms: ['C', 'A'], quantifier: c}, worldPrior, speakerOptimality_E1)
 
-            // var s2 = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
+//             // var s2 = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
 
-            // commented below
-           // syll2utils.writeLine(outfl, ["s2_pL1_cL1",syllogism, c, 
-           //            p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(s2.score([], {terms: ['C', 'A'], quantifier: c}))].join(","))
+//             // commented below
+//            // syll2utils.writeLine(outfl, ["s2_pL1_cL1",syllogism, c, 
+//            //            p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(s2.score([], {terms: ['C', 'A'], quantifier: c}))].join(","))
 
-           // var s2_qudP = speaker2_QUDpremises(syll, {terms: ['C', 'A'], quantifier: c}, worldPrior, speakerOptimality_E1)
+//            // var s2_qudP = speaker2_QUDpremises(syll, {terms: ['C', 'A'], quantifier: c}, worldPrior, speakerOptimality_E1)
 
-           // syll2utils.writeLine(outfl, ["s2_pL1qud_cL1",syllogism, c, 
-           //            baseRate, n_objects, speakerOptimality_E1, Math.exp(s2_qudP.score([], {terms: ['C', 'A'], quantifier: c}))].join(','))
+//            // syll2utils.writeLine(outfl, ["s2_pL1qud_cL1",syllogism, c, 
+//            //            baseRate, n_objects, speakerOptimality_E1, Math.exp(s2_qudP.score([], {terms: ['C', 'A'], quantifier: c}))].join(','))
 
-           // var s2_qudP_cL0 = speaker2_QUDpremises_cL0(syll, {terms: ['C', 'A'], quantifier: c}, worldPrior, speakerOptimality_E1)
+//            // var s2_qudP_cL0 = speaker2_QUDpremises_cL0(syll, {terms: ['C', 'A'], quantifier: c}, worldPrior, speakerOptimality_E1)
 
-           // syll2utils.writeLine(outfl, ["s2_pL1qud_cL0",syllogism, c, 
-           //            baseRate, n_objects, speakerOptimality_E1, Math.exp(s2_qudP_cL0.score([], {terms: ['C', 'A'], quantifier: c}))].join(','))
+//            // syll2utils.writeLine(outfl, ["s2_pL1qud_cL0",syllogism, c, 
+//            //            baseRate, n_objects, speakerOptimality_E1, Math.exp(s2_qudP_cL0.score([], {terms: ['C', 'A'], quantifier: c}))].join(','))
 
 
-           // syll2utils.writeLine(outfl, ["L1_qud_s",syllogism,c, 
-           //            baseRate, n_objects, speakerOptimality_E1, Math.exp(argstr_L1_qud_s.score([], c))].join(','))
+//            // syll2utils.writeLine(outfl, ["L1_qud_s",syllogism,c, 
+//            //            baseRate, n_objects, speakerOptimality_E1, Math.exp(argstr_L1_qud_s.score([], c))].join(','))
 
-  //// commented below
-           syll2utils.writeLine(outfl, ["L1_qud_c",syllogism,c, 
-                      p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(L1_qud_c.score([], c))].join(','))
+//   //// commented below
+//            syll2utils.writeLine(outfl, ["L1_qud_c",syllogism,c, 
+//                       p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(L1_qud_c.score([], c))].join(','))
 
-           // syll2utils.writeLine(outfl, ["S1_qud_s",syllogism,c, 
-           //            p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(argstr_S1_qud_s.score([], c))].join(','))
+//            // syll2utils.writeLine(outfl, ["S1_qud_s",syllogism,c, 
+//            //            p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(argstr_S1_qud_s.score([], c))].join(','))
 
-           // syll2utils.writeLine(outfl, ["S1_qud_c",syllogism,c, 
-           //             p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(argstr_S1_qud_c.score([], c))].join(','))
+//            // syll2utils.writeLine(outfl, ["S1_qud_c",syllogism,c, 
+//            //             p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(argstr_S1_qud_c.score([], c))].join(','))
             
 
 
 
 
-        })
+//         })
 
-       // foreach(quantifiers,
-       //   function(c){
-
-
+//        // foreach(quantifiers,
+//        //   function(c){
 
 
-       //  })
 
 
-      })
+//        //  })
 
 
-    })
-      var t1 = mht.getTime()
-      // console.log("iteration with br " + baseRate + ", n  " + n_objects + ", so " + speakerOptimality_E1+" done in " +(t1-t0)/1000 + "s")
-      console.log("iteration with p0 " + p0 +" p1 " + p1 +" p2 " + p2+" p3 " + p3+  ", n  " + n_objects + ","+" done in " +(t1-t0)/1000 + "s")
-
-    })
-    })
-    })
-  })
-})
-
-syll2utils.closeFile(outfl)
+//       })
 
 
-//   return query
+//     })
+//       var t1 = mht.getTime()
+//       // console.log("iteration with br " + baseRate + ", n  " + n_objects + ", so " + speakerOptimality_E1+" done in " +(t1-t0)/1000 + "s")
+//       console.log("iteration with p0 " + p0 +" p1 " + p1 +" p2 " + p2+" p3 " + p3+  ", n  " + n_objects + ","+" done in " +(t1-t0)/1000 + "s")
 
-// }
-
-
-// // modelAnalysis()
-// var resultsERP = MCMC(modelAnalysis, {samples:samples, burn:burn, verbose:true})
-// var resultsERP = MCMC(modelAnalysis, 
-//   {
-//     samples:samples, 
-//     burn:burn, 
-//     verbose:true,
-//     // kernel: {HMC: {stepSize:0.1,steps:5}}
+//     })
+//     })
+//     })
 //   })
-// // // console.log(syllogisms)
-// // // possiblePriors
-// var inference ='Enumerate'
-// // exploreModels()
+// })
 
-// var resultsERP = Enumerate(exploreModels)
-// // // resultsERP
-// console.log('inference complete... printing')
+// syll2utils.closeFile(outfl)
 
 
+// //   return query
+
+// // }
 
 
-// // var outfile = "results/evansData-conclusionPairs-"+optPrefix+"n3456-br-phi"+ 
-// 											// inference + samples + "burn" + burn + ".csv"
+// // // modelAnalysis()
+// // var resultsERP = MCMC(modelAnalysis, {samples:samples, burn:burn, verbose:true})
+// // var resultsERP = MCMC(modelAnalysis, 
+// //   {
+// //     samples:samples, 
+// //     burn:burn, 
+// //     verbose:true,
+// //     // kernel: {HMC: {stepSize:0.1,steps:5}}
+// //   })
+// // // // console.log(syllogisms)
+// // // // possiblePriors
+// // var inference ='Enumerate'
+// // // exploreModels()
 
-// syll2utils.erpWriter(resultsERP, outfile)
+// // var resultsERP = Enumerate(exploreModels)
+// // // // resultsERP
+// // console.log('inference complete... printing')
 
-console.log('output written to ' + outfile)
+
+
+
+// // // var outfile = "results/evansData-conclusionPairs-"+optPrefix+"n3456-br-phi"+ 
+// // 											// inference + samples + "burn" + burn + ".csv"
+
+// // syll2utils.erpWriter(resultsERP, outfile)
+
+// console.log('output written to ' + outfile)
 
 // resultsERP
