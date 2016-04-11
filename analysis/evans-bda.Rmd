@@ -1,0 +1,93 @@
+---
+title: "evans-bda"
+author: "mht"
+date: "April 11, 2016"
+output: html_document
+---
+
+```{r helpers}
+histToSamples <- function(df, samples){
+  df[rep(row.names(df), df[,ncol(df)]*(samples)), 1:ncol(df)-1]
+}
+```
+
+```{r load.model}
+fpath <- "~/Documents/research/syllogism/models/"
+m<-read.csv(paste(fpath,
+                  "results/evansData-justT-n-p0123cts-c-so-phiMH1000burn500.csv",
+                  sep=""))
+
+
+m.samp<- histToSamples(m, 1000)
+
+```
+
+Parameters
+
+```{r parameters}
+m.param <- m.samp %>% filter(Parameter == "parameter") %>%
+  select(-Conclusion,
+         -Parameter) %>%
+  rename(Parameter = Syllogism)
+
+ggplot(m.param, aes(x=Value))+
+  geom_histogram()+
+  facet_wrap(~Parameter, scales='free')
+
+```
+
+Posterior predictive
+
+```{r load.data}
+d<-read.csv(paste(fpath, "ripsdata/evans-data-raw-boolean-fig1.csv",sep=""))
+
+d.stat<- d %>%
+  group_by(syllogism, conclusion) %>%
+  multi_boot_standard(column="response")
+
+```
+
+
+```{r}
+m.pred <- m.samp %>% filter(Parameter == "predictive") %>%
+  rename(syllogism = Syllogism,
+         conclusion = Conclusion) %>%
+  group_by(syllogism, conclusion) %>%
+  summarize(map = estimate_mode(Value),
+            cred_upper = hdi_upper(Value),
+            cred_lower = hdi_lower(Value))
+  
+md <- left_join(d.stat, m.pred)
+
+
+ggplot(md, aes(x=map, xmin=cred_lower, xmax=cred_upper,
+               y=mean, ymin=ci_lower, ymax=ci_upper, color=syllogism))+
+  geom_point()+
+  geom_errorbar(alpha=0.4)+
+  geom_errorbarh(alpha=0.4)+
+  xlim(0,1)+
+  ylim(0,1)
+
+with(md, cor(map, mean))
+```
+
+Syllogisms of interest
+```{r}
+target.sylls<- c("AA1", "EE1", "IA1", "EA1")
+
+md.tidy <- bind_rows(
+  md %>% select(-map, -cred_upper, -cred_lower) %>%
+    mutate(src = 'data'),
+  md %>% select(-mean, -ci_lower, -ci_upper) %>%
+    mutate(src = 'model') %>%
+    rename(mean = map,
+           ci_lower = cred_lower,
+           ci_upper = cred_upper)
+)
+
+ggplot(md.tidy %>% filter(syllogism %in% target.sylls), 
+       aes(x=conclusion, y=mean, ymin=ci_lower, ymax=ci_upper, alpha=src,
+           fill=conclusion))+
+  geom_bar(color='black', stat='identity', position=position_dodge())+
+  facet_wrap(~syllogism)
+```
