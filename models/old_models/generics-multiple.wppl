@@ -1,0 +1,66 @@
+///fold:
+// discretized range between 0 - 1
+var bins = map(function(x){
+  _.round(x, 2);
+},  _.range(0.01, 1, 0.1));
+
+var thresholdBins = map2(function(x,y){
+  var d = (y - x)/ 2;
+  return x + d
+}, bins.slice(0, bins.length - 1), bins.slice(1, bins.length))
+
+// function returns a discretized Beta distribution
+var DiscreteBeta = cache(function(g, d){
+  var a =  g * d, b = (1-g) * d;
+  var betaPDF = function(x){
+    return Math.pow(x, a-1)*Math.pow((1-x), b-1)
+  }
+  var probs = map(betaPDF, bins);
+  return Categorical({vs: bins, ps: probs})
+})
+
+var priorModel = function(params){
+  Infer({model: function(){
+
+    var potential = params["potential"]
+    var g = params["prevalenceWhenPresent"]
+    var d = params["concentrationWhenPresent"]
+
+    var StableDistribution = DiscreteBeta(g, d)
+    var UnstableDistribution = DiscreteBeta(0.01, 100)
+
+    var prevalence = flip(potential) ?
+        sample(StableDistribution) :
+    sample(UnstableDistribution)
+
+    return prevalence
+  }})
+}
+///
+
+var alpha = 2;
+var utterances = ["generic", "silence"];
+
+var thresholdPrior = function() { return uniformDraw(thresholdBins) };
+var utterancePrior = function() { return uniformDraw(utterances) }
+
+var meaning = function(utterance, prevalence, threshold) {
+  return (utterance == 'generic') ? prevalence > threshold : true
+}
+
+
+var listener = function(utterance, statePrior) {
+  Infer({model: function(){
+    var prevalence = sample(statePrior)
+    var threshold = thresholdPrior()
+    var m = meaning(utterance, prevalence, threshold)
+    condition(m)
+    return prevalence
+  }})
+}
+
+listener("generic", priorModel({
+  potential: 0.01,
+  prevalenceWhenPresent: 0.01,
+  concentrationWhenPresent: 5
+}))

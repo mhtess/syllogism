@@ -1,0 +1,409 @@
+// // time ~/webppl-paul/webppl syllogism.wppl --require syll2utils --require mht
+ 
+
+var fpath = "/Users/mht/Documents/research/syllogism/models/ripsdata/"
+
+
+// Evans (1999) data
+var evansData = mht.readCSV(fpath+"evans-data-raw-boolean-fig1.csv").data
+var evansDF = dataFrame(evansData)
+var syllogisms = _.uniq(_.pluck(evansDF, "syllogism"))
+var evansDF_justTrue = subset(evansDF, "response", "TRUE")
+
+var booleanDictionary = {
+  "TRUE":true,
+  "FALSE":false
+}
+
+
+var baseRates = _.range(0.1,1,0.1)
+
+var concentrations = [1, 2, 4, 8, 16]
+var nObjects = [4,5,6,7,8,9,10,11,12]
+
+var modelAnalysis = function(){
+
+  var t0 = mht.getTime()
+
+  var phi= uniform(0,1)
+
+  var speakerOptimality_E1= uniform(0,20)
+
+  // var baseRate = uniform(0.05,0.95)
+  var br = {
+    p0: uniformDraw(baseRates),
+    p1: uniformDraw(baseRates),
+    p2: uniformDraw(baseRates),
+    p3: uniformDraw(baseRates)
+  }
+  // var br = {
+  //   p0: uniform(0,1),
+  //   p1: uniform(0,1),
+  //   p2: uniform(0,1),
+  //   p3: uniform(0,1)
+  // }
+  var concentration = uniformDraw(concentrations)
+  // var concentration = uniform(1,10)
+
+  var n_objects = uniformDraw(nObjects)
+
+  var probs = map(function(p){return p*concentration}, 
+    [br.p0, br.p1, br.p1, br.p2, br.p1, br.p2, br.p2, br.p3])
+
+  var worldPrior = equivalenceTransform(probs, n_objects)
+
+  foreach(syllogisms, function(syllogism){
+    // console.log(syllogism)
+
+    var syllogismData = subset(evansDF, "syllogism", syllogism)
+    var conclusions = _.uniq(_.pluck(syllogismData, "conclusion"))
+
+    var responseData = _.pluck(subset(evansDF_justTrue, "syllogism", syllogism), "conclusion")
+
+    var syll = scholasticCodeToPremises(syllogism)
+
+    var predictionERP = argumentStrength_pragmatic(syll, worldPrior, speakerOptimality_E1)
+    
+    var linkedERP = addGuessing(predictionERP, phi)
+
+    var scr = sum(map(function(d){
+      return linkedERP.score([],d)
+    }, responseData))
+    // console.log(scr)
+    display(scr)
+    factor(scr)
+
+
+    foreach(quantifiers,
+     function(c){
+       query.add(["predictive",syllogism,c], Math.exp(linkedERP.score([], c)))
+       // query.add(["predictive",syllogism,c, _.values(br).join('_'), concentration, n_objects], Math.exp(linkedERP.score([], c)))
+    })
+
+
+  })
+
+
+  query.add(["parameter","speakerOptimality_E1","global"], speakerOptimality_E1)
+  query.add(["parameter","p0","global"], br.p0)
+  query.add(["parameter","p1","global"], br.p1)
+  query.add(["parameter","p2","global"], br.p2)
+  query.add(["parameter","p3","global"], br.p3)
+  query.add(["parameter","n","global"], n_objects)
+  query.add(["parameter","concentration","global"], concentration)
+
+  // query.add(["parameter","NA","softmax","global"], softmax)
+
+  // query.add(["parameter","NA","n","global"], n_objects)
+
+  // baseRate != null ? 
+  //  query.add(["parameter","NA","baseRate","global"], baseRate) : null
+
+
+  query.add(["parameter","phi","global"], phi)
+  // query.add(["parameter","NA","cost","global"], RSAparams["cost"])
+  var t1 = mht.getTime()
+  console.log((t1-t0)/1000)
+  return query
+
+}
+
+
+// modelAnalysis()
+
+var inference ='HMC'
+var samples = 10
+var burn = samples / 2
+// // // modelAnalysis()
+// var resultsERP = MCMC(modelAnalysis, {samples:samples, burn:burn, verbose:true})
+var resultsERP = MCMC(modelAnalysis, 
+  {
+    samples:samples, 
+    burn:burn, 
+    verbose:true,
+    kernel: {HMC: {stepSize:0.01,steps:5}}
+  }
+  )
+// // // // console.log(syllogisms)
+// // // // possiblePriors
+// // // exploreModels()
+
+// // var resultsERP = Enumerate(exploreModels)
+// // // // resultsERP
+// // console.log('inference complete... printing')
+
+
+
+
+// var outfile = "results/evansData-justT-n-p0123-c-so-phi"+ 
+//                       inference + samples + "burn" + burn + ".csv"
+resultsERP      
+
+// // syll2utils.erpWriter(resultsERP, outfile)
+
+// console.log('output written to ' + outfile)
+
+// resultsERP
+
+
+
+
+
+
+// console.log(world)
+
+
+// var speakerOptimality_E1 = 5
+// var probs = [10,1,1,1,1,1,1,1]
+// var n = 6
+// // var t0 = mht.getTime()
+// var worldPrior = equivalenceTransform(probs, n)
+// // var t1 = mht.getTime()
+// //  console.log((t1-t0)/1000)
+
+// var premises = [
+//   { terms: [ 'B', 'A' ], quantifier: 'all' },
+//   { terms: [ 'C', 'B' ], quantifier: 'all' }
+// ]
+
+// // var c = {terms: ['C', 'A'], quantifier: 'some'}
+
+// // // // reasoner0(premises, worldPrior, "conclusion")
+// // // // experimenter1({terms:["A","C"], quantifier: "all"}, worldPrior, "conclusion")
+// // // qudvalToPremises(c, worldPrior, "conclusion")
+
+
+// // var t2 = mht.getTime()
+//  var x1 = argumentStrength_pragmatic(premises, worldPrior, speakerOptimality_E1)
+
+// x1
+
+// //  var cachedArgStr = argumentStrength_pragmatic_qudC([
+// //   { terms: [ 'B', 'A' ], quantifier: 'some' },
+// //   { terms: [ 'C', 'B' ], quantifier: 'all' }
+// // ], equivalenceTransform([10,1,1,1,1,1,1,1], 5), 5)
+
+
+// // var uncachedFnSameArgs = function(syll, worldPrior, speakerOptimality_E1){
+// //   return cachedArgStr
+// // }
+
+// // //  // var x1 = qudvalToPremises(c, worldPrior, "conclusion")
+// //  var t3 = mht.getTime()
+// //  console.log((t3-t2)/1000)
+
+
+
+
+// // // // var x1 = speaker2(premises, c,worldPrior, speakerOptimality_E1)
+// // // x1.score([], {terms: ['C','A'], quantifier: 'some'})
+// // // // trueSentences
+// // x1
+
+
+
+
+// // first_premises
+
+
+
+
+// //  // for testing purposes, keep n_objects fixed
+// // // var n_objects = 4
+// // // var objects = ["g1","g2","g3", "g4"]
+
+// // var RSAoptions ={pragmaticInterpretation: false,
+// //                  QUD_E1: "conclusion", // if pragmaticInterpretation==false, this must be conclusion
+// //                  pragmaticProduction: true,
+// //                  QUD_cL0: "state"}
+
+// // var pre1 = RSAoptions["pragmaticInterpretation"] ? 
+// // 				"pragInt-" + 'qudE1' + RSAoptions["QUD_E1"] + "_" : ""
+// // var pre2 = RSAoptions["pragmaticProduction"] ? 
+// // 				"pragProd-" + 'qudcL0' + RSAoptions["QUD_cL0"] +"_": ""
+
+// // var optPrefix = pre1 + pre2
+				
+// // console.log("running " + optPrefix)
+
+// // var conclusions = ["all", "some", "not all", "none"]
+
+
+// // var marginalizeConclusions = function(reasonerERP, conclusion){
+// // 	Enumerate(function(){
+// // 	  var c = sample(reasonerERP)
+// // 	  return _.isArray(c[1]) ? 
+// // 	  	(conclusion==c[0][1] || conclusion==c[1][1]) : 
+// // 	  	conclusion==c[1]
+// // 	})
+// // }
+
+
+// // // var baseRates = map(function(x){return x/20}, _.range(1, 20, 1))
+// // var nObjects = [3,4,5]
+
+// // // var possiblePriors = allPriors(nObjects, baseRates)
+
+
+// // var baseRate = 0.05
+// // var n_objects = 10
+// // var speakerOptimality_E1 = 3
+// // var syllogism = 'IA1'
+// // var probs = syll2utils.multinomialProbabilities(baseRate)
+// // var worldPrior = equivalenceTransform(probs, n_objects)
+// // var syll = scholasticCodeToPremises(syllogism)
+// // var L1_qud_c = argumentStrength_pragmatic_qudC(syll, worldPrior, speakerOptimality_E1)
+
+// // marginalize(L1_qud_c, "quantifier") 
+
+// var outfile = "results/explore_L1c-AA-EE-IA-n6-10-symmdir1-5-10a.csv"
+
+// var outfl = syll2utils.openFile(outfile)
+// syll2utils.writeLine(outfl, ["model","syllogism", "conclusion", 
+//           "p0", "p1", "p2", "p3", "n_objects", "speakerOptimality", "Value"].join(","))
+
+// // var baseRates = [0.05,0.15,0.25,0.35, 0.45,0.65]
+// var speakerOptimalities = [1, 3, 5, 10]
+// var nObjects = [6,10]
+// // var baseRates = [0.05, 0.25, 0.45, 0.65, 0.85]
+// var baseRates = [1, 5, 10]
+
+// // var probs = [1,1,1,1,1,1,1,1]
+// // var possiblePriors = allPriors(nObjects, baseRates)
+
+// // var exploreModels = function(){
+// foreach([1, 5, 10], function(p0){
+//   foreach([1, 5, 8, 10, 20], function(p1){
+//     foreach([1,5], function(p2){
+//       foreach([1], function(p3){
+//         foreach(nObjects, function(n_objects){
+
+
+
+//       var t0 = mht.getTime()
+
+
+//     foreach(speakerOptimalities, function(speakerOptimality_E1){
+
+
+
+//       // var phi= uniform(0,1)
+
+//       // var speakerOptimality_E1= uniformDraw(speakerOptimalities)
+//       // var baseRate = uniformDraw(baseRates)
+//       // var n_objects = uniformDraw(nObjects)
+
+//       // var probs = syll2utils.multinomialProbabilities(baseRate)
+
+
+
+//       foreach(["AA1","IA1","EE1"], function(syllogism){
+//         // console.log(syllogism)
+
+//         // var syllogismData = subset(evansDF, "syllogism", syllogism)
+//         // var conclusions = _.uniq(_.pluck(syllogismData, "conclusion"))
+
+//         // var responseData = _.pluck(subset(evansDF_justTrue, "syllogism", syllogism), "conclusion")
+
+//         var syll = scholasticCodeToPremises(syllogism)
+
+//         // var L1_qud_s = argumentStrength_pragmatic(syll, worldPrior, speakerOptimality_E1)
+
+//         // var L1_qud_a = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
+//         // var L1_qud_b = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
+//         // var L1_qud_c = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
+
+//         // var mL1_qud_a = marginalize(L1_qud_a, "quantifier")
+//         // var mL1_qud_b = marginalize(L1_qud_b, "quantifier")
+//         // var mL1_qud_c = marginalize(L1_qud_c, "quantifier")
+
+//         var L1_qud_c = argumentStrength_pragmatic_qudC(syll, worldPrior, speakerOptimality_E1)
+//         // var S1_qud_s = argumentStrength_pragmaticProduction(syll, worldPrior)
+//         // var S1_qud_c = argumentStrength_pragmaticProduction_qudC(syll, worldPrior)
+
+//         // var argstr_L1_qud_s = marginalize(L1_qud_s, "quantifier")
+
+//         // var argstr_L1_qud_c = marginalize(L1_qud_c, "quantifier")
+
+
+
+//         // var argstr_S1_qud_s = softmaxSpeaker(marginalize(S1_qud_s, "quantifier"), speakerOptimality_E1)
+//         // var argstr_S1_qud_c = softmaxSpeaker(marginalize(S1_qud_c, "quantifier"), speakerOptimality_E1)
+        
+//         // var linkedERP = addGuessing(predictionERP, phi)
+
+//         // var scr = sum(map(function(d){
+//         //   return linkedERP.score([],d)
+//         // }, responseData))
+
+//         // factor(scr)
+
+//       foreach(quantifiers,
+//          function(c){
+//            // var s2 = speaker2(syll, {terms: ['C', 'A'], quantifier: c}, worldPrior, speakerOptimality_E1)
+
+//             // var s2 = uncachedFnSameArgs(syll, worldPrior, speakerOptimality_E1)
+
+//             // commented below
+//            // syll2utils.writeLine(outfl, ["s2_pL1_cL1",syllogism, c, 
+//            //            p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(s2.score([], {terms: ['C', 'A'], quantifier: c}))].join(","))
+
+//            // var s2_qudP = speaker2_QUDpremises(syll, {terms: ['C', 'A'], quantifier: c}, worldPrior, speakerOptimality_E1)
+
+//            // syll2utils.writeLine(outfl, ["s2_pL1qud_cL1",syllogism, c, 
+//            //            baseRate, n_objects, speakerOptimality_E1, Math.exp(s2_qudP.score([], {terms: ['C', 'A'], quantifier: c}))].join(','))
+
+//            // var s2_qudP_cL0 = speaker2_QUDpremises_cL0(syll, {terms: ['C', 'A'], quantifier: c}, worldPrior, speakerOptimality_E1)
+
+//            // syll2utils.writeLine(outfl, ["s2_pL1qud_cL0",syllogism, c, 
+//            //            baseRate, n_objects, speakerOptimality_E1, Math.exp(s2_qudP_cL0.score([], {terms: ['C', 'A'], quantifier: c}))].join(','))
+
+
+//            // syll2utils.writeLine(outfl, ["L1_qud_s",syllogism,c, 
+//            //            baseRate, n_objects, speakerOptimality_E1, Math.exp(argstr_L1_qud_s.score([], c))].join(','))
+
+//   //// commented below
+//            syll2utils.writeLine(outfl, ["L1_qud_c",syllogism,c, 
+//                       p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(L1_qud_c.score([], c))].join(','))
+
+//            // syll2utils.writeLine(outfl, ["S1_qud_s",syllogism,c, 
+//            //            p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(argstr_S1_qud_s.score([], c))].join(','))
+
+//            // syll2utils.writeLine(outfl, ["S1_qud_c",syllogism,c, 
+//            //             p0,p1,p2,p3, n_objects, speakerOptimality_E1, Math.exp(argstr_S1_qud_c.score([], c))].join(','))
+            
+
+
+
+
+//         })
+
+//        // foreach(quantifiers,
+//        //   function(c){
+
+
+
+
+//        //  })
+
+
+//       })
+
+
+//     })
+//       var t1 = mht.getTime()
+//       // console.log("iteration with br " + baseRate + ", n  " + n_objects + ", so " + speakerOptimality_E1+" done in " +(t1-t0)/1000 + "s")
+//       console.log("iteration with p0 " + p0 +" p1 " + p1 +" p2 " + p2+" p3 " + p3+  ", n  " + n_objects + ","+" done in " +(t1-t0)/1000 + "s")
+
+//     })
+//     })
+//     })
+//   })
+// })
+
+// syll2utils.closeFile(outfl)
+
+
+// //   return query
+
+// // }
