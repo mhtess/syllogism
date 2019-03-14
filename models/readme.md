@@ -1,0 +1,8 @@
+- generic-syllogism.wppl: Empirical prior for 4 domains, abstract vs. real world prior (ESSLLI 2015 student paper)
+- generics-multiple.wppl: currently, just a literal generics model
+- old_new_equivalence_check.wppl: seemingly, a test script testing 2 different ways of computing the equivalence class (bug? multinomial inside enumerate fails?)
+- phm: trying to formalize the probability heuristics model
+- syllogism_argstr.wppl: Full BDA model for various syllogism models (both pragmatic and with empirical priors)
+- syllogism_minimal.wppl: Full BDA with pragmatic model and iid priors
+- syllogism_pModel.wppl:  Full BDA for various empirical prior data sets
+- syllogism_rips.wppl: Same as previous ones, but for the Rips data set?
