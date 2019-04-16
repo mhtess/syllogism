@@ -157,9 +157,9 @@ var qudFns = {
 // var conclusionForm =  ["C", "A"]
 var conclusionForm =  "CA"
 
-var literalListener = cache(function(premises, qud, priorName) {
+var literalListener = cache(function(premises, qud, opts) {
   Infer({model: function(){
-    var state = sample(EquivalenceDistribution(priorName))
+    var state = sample(EquivalenceDistribution(opts.priorName))
 
 		if (premises != "silence"){
 			var state1 = _.find(state, premises[0])
@@ -181,7 +181,7 @@ var literalListener = cache(function(premises, qud, priorName) {
 }, 10000)
 
 // var alpha = 5;
-var speaker = cache(function(qudVal, qud, premsSpoken, priorName, alpha){
+var speaker = cache(function(qudVal, qud, premsSpoken, opts){
   Infer({model: function(){
     var premises = [
       uniformDraw(sentencesByPremise[premsSpoken[0]["terms"]]),
@@ -189,15 +189,18 @@ var speaker = cache(function(qudVal, qud, premsSpoken, priorName, alpha){
     ]
 		// var premises = flip() ? premsSpoken : "silence"
 
-    var L0 = literalListener(premises, qud, priorName)
-    factor(alpha * L0.score(qudVal))
+    var L0 = literalListener(premises, qud, opts)
+    factor(opts.alpha * L0.score(qudVal))
     // factor(1 * L0.score(qudVal))
     return premises
 
   }, method: "enumerate"})
 }, 10000)
 
-var pragmaticListener = function(premises, qud, priorName, alpha){
+var pragmaticListener = function(premises, qud, opts){
+	var priorName = opts.priorName, alpha = opts.alpha,
+			pragmatic_interpretation = opts.pragmatic_interpretation,
+			pragmatic_production = opts.pragmatic_production
   Infer({model: function(){
     var state = sample(EquivalenceDistribution(priorName))
     // var qudFn = qudFns[qud]
@@ -210,18 +213,33 @@ var pragmaticListener = function(premises, qud, priorName, alpha){
     // )).quantifier
     // condition(conclusion.truthValue == 1)
     // var qudVal = conclusion.quantifier
-		var conclusion = uniformDraw(trueConclusions).quantifier
-    var qudVal = qud == "state" ? state : conclusion
+
+		var conclusion = uniformDraw(trueConclusions)
+    var qudVal = qud == "state" ? state : conclusion.quantifier
 
     // var qudVal = uniformDraw(["all", "some", "not all", "none"])
-    var S1 = speaker(qudVal, qud, premises, priorName, alpha)
+		if (pragmatic_interpretation) {
+			var S1 = speaker(qudVal, qud, premises, opts)
+			observe(S1, premises)
+		} else {
+			var state1 = _.find(state, premises[0])
+			var state2 = _.find(state, premises[1])
+			condition(state1.truthValue && state2.truthValue)
+		}
+
+		// FIXME: WORK OUT how literal vs pragmatic // interpretation vs. production // QUD: state vs. relation
+		if (pragmatic_production) {
+			var L0 = conclusionInterpreter(conclusion, "state", opts)
+			factor(opts.alpha_2 * L0.score(state))
+		}
 
     // var state1 = _.find(state, premises[0])
     // var state2 = _.find(state, premises[1])
     // condition(state1.truthValue && state2.truthValue)
 
     // display(JSON.stringify(qudVal) + " " + S1.score(premises))
-    observe(S1, premises)
+
+
     // factor(alpha * S1.score(premises))
     // display(qudVal + " " + S1.score(premises))
     // var sp = sample(S1)
@@ -230,8 +248,17 @@ var pragmaticListener = function(premises, qud, priorName, alpha){
     // var conclusionQUD = qudFns["conclusion"]
     // return conclusionQUD(state)
     // return uniformDraw(qudVal).quantifier
-    return conclusion
+    return conclusion.quantifier
   }, method: "enumerate"})
+}
+
+var conclusionInterpreter = function(conclusion, qud, opts){
+	Infer({model: function(){
+		var state = sample(EquivalenceDistribution(opts.priorName))
+		var state1 = _.find(state, _.omit(conclusion, "truthValue"))
+		condition(state1.truthValue)
+		return state
+	}, method: "enumerate"})
 }
 
 var quantifierDictionary = {
@@ -253,21 +280,34 @@ _.flatten(map(function(opts){
 	  { quantifier: quantifierDictionary[opts.p2], terms: figureDictionary[opts.figure]["p2"] }
 	]
 
-	var priorPredictions = literalListener("silence", "conclusion", opts.priorName)
-	var L0pred = literalListener(syllogism, "conclusion", opts.priorName)
-	var L1pred_cnclQud = pragmaticListener(syllogism, "conclusion", opts.priorName, opts.alpha)
-	var L1pred_stateQud = pragmaticListener(syllogism, "state", opts.priorName, opts.alpha)
+	var priorPredictions = literalListener("silence", "relation", opts)
+	var L0pred = literalListener(syllogism, "relation", opts)
+
+	// pragmatic interpretation
+	var L1pred_cnclQud = pragmaticListener(syllogism, "relation", _.extend(opts, {pragmatic_production: false, pragmatic_interpretation: true}))
+	var L1pred_stateQud = pragmaticListener(syllogism, "state",  _.extend(opts, {pragmatic_production: false, pragmatic_interpretation: true}))
+
+	// pragmatic production
+	var L1_prodStateQUD = pragmaticListener(syllogism, "relation", _.extend(opts, {pragmatic_production: true, pragmatic_interpretation: false}))
+
+	// 2x pragmatics
+	var L1_prodStateQUD_intCnclQud = pragmaticListener(syllogism, "relation", _.extend(opts, {pragmatic_production: true, pragmatic_interpretation: true}))
+	var L1_prodStateQUD_intStateQud = pragmaticListener(syllogism, "state", _.extend(opts, {pragmatic_production: true, pragmatic_interpretation: true}))
 
 	map(function(q){
 		return {
 			syllogism: opts.p1 + opts.p2 + opts.figure,
 			conclusion: q,
 			priorName: opts.priorName,
-			speakerOptimality: opts.alpha,
+			speakerOptimality_int: opts.alpha,
+			speakerOptimality_prod: opts.alpha_2,
 			prior: Math.exp(priorPredictions.score(q)),
 			L0: Math.exp(L0pred.score(q)),
 			L1_state: Math.exp(L1pred_stateQud.score(q)),
-			L1_cncl: Math.exp(L1pred_cnclQud.score(q))
+			L1_cncl: Math.exp(L1pred_cnclQud.score(q)),
+			L1_prodState: Math.exp(L1_prodStateQUD.score(q)),
+			L1_prodStateQUD_intCnclQud: Math.exp(L1_prodStateQUD_intCnclQud.score(q)),
+			L1_prodStateQUD_intStateQud: Math.exp(L1_prodStateQUD_intStateQud.score(q))
 		}
 	}, quantifiers)
 
