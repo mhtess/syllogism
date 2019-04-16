@@ -1,3 +1,5 @@
+// time ~/tools/webppl-github/webppl syllogism.wppl
+
 var hasProperty = function(props, term){
 	return props[["A","B","C"].indexOf(term)]
   // return props[term]
@@ -37,11 +39,11 @@ var meaning = function(quantifier) {
 var quantifiers = ["all","some","none", "not all"];
 var sentenceForms = [
   ["A","B"],
-  // ["B","A"],
+  ["B","A"],
   ["B","C"],
-  // ["C","B"],
-  ["A","C"]//,
-  // ["C","A"]
+  ["C","B"],
+  ["A","C"],
+  ["C","A"]
 ];
 
 
@@ -49,15 +51,26 @@ var quantifierSentences = _.flatten(map(
 	function(x){
 		return map(
 			function(y){
-				return { quantifier: x, terms: y}
+				return { quantifier: x, //terms: y,
+          terms: y[0] + y[1] }
 			} ,sentenceForms)
 	}, quantifiers)
 )
 
+// var sentencesByPremise = {
+//   "AB": _.filter(quantifierSentences, {terms: ["A", "B"]}),
+//   "BC": _.filter(quantifierSentences, {terms: ["B", "C"]}),
+//   "BA": _.filter(quantifierSentences, {terms: ["B", "A"]}),
+//   "CB": _.filter(quantifierSentences, {terms: ["C", "B"]})
+// }
+
 var sentencesByPremise = {
-  "AB": _.filter(quantifierSentences, {terms: ["A", "B"]}),
-  "BC": _.filter(quantifierSentences, {terms: ["B", "C"]})
+  "AB": _.filter(quantifierSentences, {terms: "AB"}),
+  "BA": _.filter(quantifierSentences, {terms: "BA"}),
+  "BC": _.filter(quantifierSentences, {terms: "BC"}),
+  "CB": _.filter(quantifierSentences, {terms: "CB"})
 }
+
 
 var repeatFlip = function(br){
   return Infer({model: function(){
@@ -73,25 +86,62 @@ var n = 5
 
 var property_values = PropertyDist.support()
 var probs = map(function(s){return Math.exp(PropertyDist.score(s))}, property_values)
+// var probs = repeat(8, function(){ 1 })
 
-var EquivalenceDistribution = Infer({model: function(){
+var MultinomialObjectDistribution = Infer({model: function(){
 	var objects = multinomial(normalize(probs), n)
 	var objects_w_values = _.zip(objects, property_values)
   var situation = map(second, filter(first, objects_w_values))
-
-  // force nonempty sets
   condition(sum(map(first, situation)) > 0)
   condition(sum(map(second, situation)) > 0)
   condition(sum(map(third, situation)) > 0)
 
-	return map(function(sentence){
-		return extend(sentence, {truthValue: meaning(sentence.quantifier)(situation, sentence.terms)})
-	}, quantifierSentences)
-  // return situation
+	// condition(situation.length > 2) // minimum 3 objects
+	// map(function(s){
+	// 	condition(sum(s) > 0) // no empty object
+	// }, situation)
+
+	return situation
 }, method: "enumerate"})
 
-// EquivalenceDistribution
-///
+// var PoissonObjectDistribution = Categorical({
+// 	vs: UniqueObjectDistribution.support(),
+// 	ps: map(function(s){
+// 		Math.exp(Poisson({mu: 1}).score(s.length-1))
+// 	}, UniqueObjectDistribution.support())
+// })
+
+// cost to having more properties (i.e., properties are rare)
+var PoissonObjectDistribution = Categorical({
+	vs: MultinomialObjectDistribution.support(),
+	ps: map(function(s){
+		Math.exp(
+			Poisson({mu: 1}).score(s.length-1) + sum(map(function(si){
+				Poisson({mu: 1}).score(sum(si))
+				// sum(map(function(sii){
+				// 	return Binomial({p:0.25, n: 1}).score(sii)
+				// }, si))
+			}, s))
+		)
+	}, MultinomialObjectDistribution.support())
+})
+
+var possiblePriors = {
+	binomial: MultinomialObjectDistribution,
+	poisson: PoissonObjectDistribution
+}
+
+var EquivalenceDistribution = cache(function(priorName){
+	Infer({model: function(){
+	  var situation = sample(possiblePriors[priorName])
+		return map(function(sentence){
+			return extend(sentence, {
+				truthValue: meaning(sentence.quantifier)(situation, sentence.terms)
+			})
+		}, quantifierSentences)
+	}, method: "enumerate"})
+})
+
 
 var qudFns = {
   state: function(state) { return state },
@@ -104,47 +154,67 @@ var qudFns = {
   }
 }
 
-var conclusionForm =  ["A", "C"]
+// var conclusionForm =  ["C", "A"]
+var conclusionForm =  "CA"
 
-var literalListener = function(premises, qud) {
+var literalListener = cache(function(premises, qud, priorName) {
   Infer({model: function(){
-    var state = sample(EquivalenceDistribution)
+    var state = sample(EquivalenceDistribution(priorName))
 
-    var state1 = _.find(state, premises[0])
-    var state2 = _.find(state, premises[1])
+		if (premises != "silence"){
+			var state1 = _.find(state, premises[0])
+	    var state2 = _.find(state, premises[1])
 
-    condition(state1.truthValue && state2.truthValue)
+	    condition(state1.truthValue && state2.truthValue)
+		}
 
-    var qudFn = qudFns[qud]
-    var qudVal = qudFn(state)
+    var trueConclusions = _.filter(state,
+        {terms: conclusionForm, truthValue: 1}
+    )
+
+		var conclusion = uniformDraw(trueConclusions).quantifier
+    var qudVal = qud == "state" ? state : conclusion
+
     return qudVal
 
   }, method: "enumerate"})
-}
+}, 10000)
 
-var alpha = 10;
-var speaker = function(qudVal, qud){
+// var alpha = 5;
+var speaker = cache(function(qudVal, qud, premsSpoken, priorName, alpha){
   Infer({model: function(){
     var premises = [
-      uniformDraw(sentencesByPremise.AB),
-      uniformDraw(sentencesByPremise.BC)
+      uniformDraw(sentencesByPremise[premsSpoken[0]["terms"]]),
+      uniformDraw(sentencesByPremise[premsSpoken[1]["terms"]])
     ]
+		// var premises = flip() ? premsSpoken : "silence"
 
-    var L0 = literalListener(premises, qud)
+    var L0 = literalListener(premises, qud, priorName)
     factor(alpha * L0.score(qudVal))
     // factor(1 * L0.score(qudVal))
     return premises
 
   }, method: "enumerate"})
-}
+}, 10000)
 
-var pragmaticListener = function(premises, qud){
+var pragmaticListener = function(premises, qud, priorName, alpha){
   Infer({model: function(){
-    var state = sample(EquivalenceDistribution)
-    var qudFn = qudFns[qud]
-    var qudVal = qudFn(state)
+    var state = sample(EquivalenceDistribution(priorName))
+    // var qudFn = qudFns[qud]
+    // var qudVal = qudFn(state)
+    var trueConclusions = _.filter(state,
+        {terms: conclusionForm, truthValue: 1}
+    )
+    // var qudVal = uniformDraw(_.filter(state,
+        // {terms: conclusionForm}
+    // )).quantifier
+    // condition(conclusion.truthValue == 1)
+    // var qudVal = conclusion.quantifier
+		var conclusion = uniformDraw(trueConclusions).quantifier
+    var qudVal = qud == "state" ? state : conclusion
 
-    var S1 = speaker(qudVal, qud)
+    // var qudVal = uniformDraw(["all", "some", "not all", "none"])
+    var S1 = speaker(qudVal, qud, premises, priorName, alpha)
 
     // var state1 = _.find(state, premises[0])
     // var state2 = _.find(state, premises[1])
@@ -153,22 +223,75 @@ var pragmaticListener = function(premises, qud){
     // display(JSON.stringify(qudVal) + " " + S1.score(premises))
     observe(S1, premises)
     // factor(alpha * S1.score(premises))
-
+    // display(qudVal + " " + S1.score(premises))
     // var sp = sample(S1)
 
     // return [qudVal, S1.score(premises)] //score(premises)
     // var conclusionQUD = qudFns["conclusion"]
     // return conclusionQUD(state)
     // return uniformDraw(qudVal).quantifier
-    return qudVal
+    return conclusion
   }, method: "enumerate"})
 }
 
-pragmaticListener([
-  { quantifier: 'all', terms: [ 'A', 'B' ]},
-  { quantifier: 'all', terms: [ 'B', 'C' ]}
-], "conclusion")
+var quantifierDictionary = {
+	"A": "all", "E": "none", "I": "some", "O": "not all"
+}
 
-// speaker("all", "conclusion")
+var figureDictionary = {
+	1: {p1: "AB", p2: "BC"},
+	2: {p1: "BA", p2: "CB"},
+	3: {p1: "AB", p2: "CB"},
+	4: {p1: "BA", p2: "BC"}
+}
+
+
+_.flatten(map(function(opts){
+
+	var syllogism = [
+	  { quantifier: quantifierDictionary[opts.p1], terms: figureDictionary[opts.figure]["p1"] },
+	  { quantifier: quantifierDictionary[opts.p2], terms: figureDictionary[opts.figure]["p2"] }
+	]
+
+	var priorPredictions = literalListener("silence", "conclusion", opts.priorName)
+	var L0pred = literalListener(syllogism, "conclusion", opts.priorName)
+	var L1pred_cnclQud = pragmaticListener(syllogism, "conclusion", opts.priorName, opts.alpha)
+	var L1pred_stateQud = pragmaticListener(syllogism, "state", opts.priorName, opts.alpha)
+
+	map(function(q){
+		return {
+			syllogism: opts.p1 + opts.p2 + opts.figure,
+			conclusion: q,
+			priorName: opts.priorName,
+			speakerOptimality: opts.alpha,
+			prior: Math.exp(priorPredictions.score(q)),
+			L0: Math.exp(L0pred.score(q)),
+			L1_state: Math.exp(L1pred_stateQud.score(q)),
+			L1_cncl: Math.exp(L1pred_cnclQud.score(q))
+		}
+	}, quantifiers)
+
+}, simulationParams))
+
+
+
+// display(JSON.stringify()
+// speaker("none", "conclusion")
+// pragmaticListener(syllogism, "conclusion")
+
+// EquivalenceDistribution.support().length
+// .score(
+//   [
+//     { quantifier: 'all', terms: 'BA' },
+//     { quantifier: 'all', terms: 'CB' }
+//   ]
+// )
+
+
+// literalListener(syllogism, "state")
+
+// _.filter(sample(EquivalenceDistribution),
+// {terms: conclusionForm}
+// )
 // binomialProbabilities(0.25)
 // quantifierSentences

@@ -1,0 +1,220 @@
+---
+title: "syllogism models"
+author: "MH Tessler"
+date: "4/2/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rwebppl)
+```
+
+##
+
+```{r}
+simulation.parameters <- expand.grid(
+  p1 = c("A", "E", "I", "O"),
+  p2 = c("A", "E", "I", "O"),
+  figure = c(1, 2, 3, 4),
+  #figure = c(2),
+  #priorName = c("binomial", "poisson"),
+  priorName = c("binomial"),
+  alpha = c(3, 5)
+)
+
+rs.wp <- webppl(program_file = "syllogism.wppl",
+       data = simulation.parameters,
+       data_var = "simulationParams")
+
+rs.wp.tidy <- rs.wp %>% 
+  gather(src, prob, prior, L0, L1_state, L1_cncl) %>%
+  mutate(conclusion = factor(conclusion, levels = c( "none", "not all", "some", "all")))
+```
+
+Join with CO metaanlaysis data
+
+```{r}
+rs.wp.tidy.md <- rs.wp.tidy %>% 
+  bind_rows(., 
+             df.o.tidy.filtered %>%
+               select(-conclusion, -premise_codes) %>% 
+               rename(conclusion = conclusion_quantifier,
+                      prob = prop_norm) %>%
+               ungroup() %>%
+               mutate(syllogism = paste(
+                 substring(syllogism, 1, 2), kj_figure, sep = ""),
+                 priorName = 'data', speakerOptimality = 0, src = 'data')) %>%
+  mutate(conclusion = factor(conclusion, levels = c( "none", "not all", "some", "all")))
+
+```
+
+
+```{r}
+rs.wp.tidy %>% 
+  filter(syllogism == "AA2") %>%
+  #filter(speakerOptimality == 5 | src %in% c("prior", "L0")) %>%
+  filter(speakerOptimality == 3) %>%
+  ggplot(., aes( x = conclusion, y = prob, fill = conclusion))+
+  geom_col()+
+  facet_grid(src ~ priorName)
+```
+
+```{r}
+rs.wp.tidy %>% 
+  filter(syllogism == "AA2") %>%
+  #filter(speakerOptimality == 5 | src %in% c("prior", "L0")) %>%
+  filter(speakerOptimality == 5, src == "prior", priorName == "binomial") %>%
+  ggplot(., aes( x = conclusion, y = prob, fill = conclusion))+
+    geom_col(color = 'white')+
+  theme_black()+
+  scale_y_continuous(limits = c(0, 0.5), breaks = c(0, 0.5))+
+  guides(fill = F)+
+  labs(
+    y = "Model predicted probability",
+    x = "Conclusion"
+  )
+
+ggsave(
+  file = paste(fig.path, "prior_binomial_n5_br0.5.pdf", sep = ""), width = 4, height = 3
+)
+```
+
+
+## Prior only
+
+```{r}
+rs.wp.tidy.md.prior <- rs.wp.tidy %>% 
+  filter(speakerOptimality == 5, src == "prior", priorName == "binomial") %>%
+  right_join(., 
+             df.o.tidy.filtered %>%
+               select(-conclusion) %>% 
+               rename(conclusion = conclusion_quantifier) %>%
+               ungroup() %>%
+               mutate(syllogism = paste(
+                 substring(syllogism, 1, 2), kj_figure, sep = "") )) %>%
+  mutate(conclusion = factor(conclusion, levels = c( "none", "not all", "some", "all")))
+
+with(rs.wp.tidy.md.prior, cor(prob, prop_norm))
+
+ggplot(rs.wp.tidy.md.prior, aes( x = prob, y = prop_norm, color = conclusion))+
+  #geom_point()+
+  geom_jitter()+
+  theme_black()+
+  scale_y_continuous(limits = c(-0.05, 1.05), breaks = c(0, 0.5, 1))+
+  scale_x_continuous(limits = c(-0.05, 1.05), breaks = c(0, 0.5, 1))+
+  #guides(fill = F)+
+  labs(
+    x = "Model prediction",
+    y = "Empirical endorsement (meta-analysis)"
+  )+
+  guides(color = guide_legend(reverse = T))
+# 
+ggsave(
+  file = paste(fig.path, "scatter_OC_prior_binomial_n5_br0.5.pdf", sep = ""), width = 5, height = 3.5
+)
+```
+
+
+## Literal listener
+
+```{r}
+rs.wp.tidy.md.l0 <- rs.wp.tidy %>% 
+  filter(speakerOptimality == 5, src == "L0", priorName == "binomial") %>%
+  right_join(., 
+             df.o.tidy.filtered %>%
+               select(-conclusion) %>% 
+               rename(conclusion = conclusion_quantifier) %>%
+               ungroup() %>%
+               mutate(syllogism = paste(
+                 substring(syllogism, 1, 2), kj_figure, sep = "") )) %>%
+  mutate(conclusion = factor(conclusion, levels = c( "none", "not all", "some", "all")))
+
+with(rs.wp.tidy.md.l0, cor(prob, prop_norm))
+
+ggplot(rs.wp.tidy.md.l0, aes( x = prob, y = prop_norm, color = conclusion))+
+  #geom_point()+
+  geom_jitter()+
+  theme_black()+
+  scale_y_continuous(limits = c(-0.05, 1.05), breaks = c(0, 0.5, 1))+
+  scale_x_continuous(limits = c(-0.05, 1.05), breaks = c(0, 0.5, 1))+
+  #guides(fill = F)+
+  labs(
+    x = "Model prediction",
+    y = "Empirical endorsement (meta-analysis)"
+  )+
+  guides(color = guide_legend(reverse = T))
+
+ggsave(
+  file = paste(fig.path, "scatter_OC_L0_binomial_n5_br0.25.pdf", sep = ""), 
+  width = 5, height = 3.5
+)
+```
+
+AA2
+
+```{r}
+
+rs.wp.tidy.md %>%
+  filter(syllogism %in% c("AA2", "AI2", "EE2")) %>%
+  #filter(speakerOptimality == 5 | src %in% c("prior", "L0")) %>%
+  filter(speakerOptimality %in% c(0, 3), priorName %in% c("binomial", "data")) %>%
+  mutate(src = factor(src, levels = c("data", "prior", "L0", "L1_state", "L1_cncl"))) %>%
+  ggplot(., aes( x = conclusion, y = prob, fill = conclusion))+
+  geom_col(color = 'white')+
+  theme_black()+
+  facet_grid(syllogism~src)+
+  scale_y_continuous(limits = c(0, 1), breaks = c(0, 0.5, 1))+
+  #guides(fill = F)+
+  labs(
+    y = "Model predicted probability",
+    x = "Conclusion"
+  )+
+  theme(axis.text.x = element_blank(),
+        legend.position = 'bottom')
+
+
+
+ggsave(
+  file = paste(fig.path, "bars_OC_allModels_binomial_n5_br0.5.pdf", sep = ""), 
+  width = 6, height = 5
+)
+```
+
+## Pragmatic listener
+
+```{r}
+rs.wp.tidy.md.l1 <- rs.wp.tidy %>% 
+  filter(speakerOptimality == 3, src == "L1_cncl", priorName == "binomial") %>%
+  right_join(., 
+             df.o.tidy.filtered %>%
+               select(-conclusion) %>% 
+               rename(conclusion = conclusion_quantifier) %>%
+               ungroup() %>%
+               mutate(syllogism = paste(
+                 substring(syllogism, 1, 2), kj_figure, sep = "") )) %>%
+  mutate(conclusion = factor(conclusion, levels = c( "none", "not all", "some", "all")))
+
+with(rs.wp.tidy.md.l1, cor(prob, prop_norm))
+
+ggplot(rs.wp.tidy.md.l1, aes( x = prob, y = prop_norm, color = conclusion))+
+  #geom_point()+
+  geom_abline(intercept = 0, slope = 1, lty = 2, color = 'white', alpha = 0.3)+
+  coord_fixed()+
+  geom_point()+
+  theme_black()+
+  scale_y_continuous(limits = c(-0.05, 1.05), breaks = c(0, 0.5, 1))+
+  scale_x_continuous(limits = c(-0.05, 1.05), breaks = c(0, 0.5, 1))+
+  #guides(fill = F)+
+  labs(
+    x = "Model prediction",
+    y = "Empirical endorsement (meta-analysis)"
+  )+
+  guides(color = guide_legend(reverse = T))
+
+ggsave(
+  file = paste(fig.path, "scatter_OC_L1_binomial_n5_br0.25.pdf", sep = ""), 
+  width = 5, height = 3.5
+)
+```
