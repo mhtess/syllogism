@@ -162,7 +162,7 @@ var conclusionForm =  "CA"
 
 var literalListener = cache(function(premises, qud, opts, statePrior) {
   Infer({model: function(){
-    var state = sample(EquivalenceDistribution(opts.priorName))
+    var state = sample(statePrior)
 
 		if (premises != "silence"){
 			var state1 = _.find(state, premises[0])
@@ -200,7 +200,7 @@ var speaker = cache(function(qudVal, qud, premsSpoken, opts, statePrior){
   }, method: "enumerate"})
 }, 10000)
 
-var pragmaticListener = function(premises, qud, opts, statePrior){
+var pragmaticListener = function(premises, qud_int, qud_prod, opts, statePrior){
 	var priorName = opts.priorName, alpha = opts.alpha,
 			pragmatic_interpretation = opts.pragmatic_interpretation,
 			pragmatic_production = opts.pragmatic_production
@@ -218,11 +218,11 @@ var pragmaticListener = function(premises, qud, opts, statePrior){
     // var qudVal = conclusion.quantifier
 
 		var conclusion = uniformDraw(trueConclusions)
-    var qudVal = qud == "state" ? state : conclusion.quantifier
+    var qudVal = qud_int == "state" ? state : conclusion.quantifier
 
     // var qudVal = uniformDraw(["all", "some", "not all", "none"])
 		if (pragmatic_interpretation) {
-			var S1 = speaker(qudVal, qud, premises, opts, statePrior)
+			var S1 = speaker(qudVal, qud_int, premises, opts, statePrior)
 			observe(S1, premises)
 		} else {
 			var state1 = _.find(state, premises[0])
@@ -232,8 +232,10 @@ var pragmaticListener = function(premises, qud, opts, statePrior){
 
 		// FIXME: WORK OUT how literal vs pragmatic // interpretation vs. production // QUD: state vs. relation
 		if (pragmatic_production) {
-			var L0 = conclusionInterpreter(conclusion, "state", opts, statePrior)
-			factor(opts.alpha_2 * L0.score(state))
+			var qudProbVal = qud_prod == "state" ? state : premises
+			var premiseTerms = [premsSpoken[0]["terms"], premsSpoken[1]["terms"]]
+			var L0 = conclusionInterpreter(_.omit(conclusion, "truthValue"), qud_prod, statePrior, premiseTerms)
+			factor(opts.alpha_2 * L0.score(qudProbVal))
 		}
 
     // var state1 = _.find(state, premises[0])
@@ -255,12 +257,31 @@ var pragmaticListener = function(premises, qud, opts, statePrior){
   }, method: "enumerate"})
 }
 
-var conclusionInterpreter = function(conclusion, qud, opts, statePrior){
+var conclusionInterpreter = function(conclusion, qud, statePrior, premiseTerms){
 	Infer({model: function(){
-		var state = sample(EquivalenceDistribution(opts.priorName))
-		var state1 = _.find(state, _.omit(conclusion, "truthValue"))
+		var state = sample(statePrior)
+
+		// condition on conclusion
+		var state1 = _.find(state, conclusion)
 		condition(state1.truthValue)
-		return state
+
+		var truePremise1s = _.filter(state,
+        {terms: premiseTerms[0], truthValue: 1}
+    )
+
+		var truePremise2s = _.filter(state,
+        {terms: premiseTerms[1], truthValue: 1}
+    )
+
+		var premises = [
+			_.omit(uniformDraw(truePremise1s), "truthValue"),
+			_.omit(uniformDraw(truePremise2s), "truthValue")
+		]
+    var qudVal = qud == "state" ? state : premises
+
+    return qudVal
+
+		// return state
 	}, method: "enumerate"})
 }
 
@@ -318,7 +339,11 @@ _.flatten(map(function(opts){
 
 }, simulationParams))
 
-
+// var conclusion = {quantifier: "all", terms: "AC"}
+// var qud = 'state'
+// var statePrior = EquivalenceDistribution({n:5, base_rate: 0.75, priorName: "binomial"})
+// var premiseTerms = ["AB", "BC"]
+// conclusionInterpreter(conclusion, qud, statePrior, premiseTerms)
 
 // display(JSON.stringify()
 // speaker("none", "conclusion")
