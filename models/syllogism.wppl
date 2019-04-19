@@ -78,68 +78,71 @@ var repeatFlip = function(br){
   }})
 }
 
-var base_rate = 0.25
-var PropertyDist = repeatFlip(base_rate)
 
-// var probs = [0.125,0.125,0.5,0.125,0.01,0.3,0.1,0.125]
-var n = 5
 
-var property_values = PropertyDist.support()
-var probs = map(function(s){return Math.exp(PropertyDist.score(s))}, property_values)
-// var probs = repeat(8, function(){ 1 })
 
-var MultinomialObjectDistribution = Infer({model: function(){
-	var objects = multinomial(normalize(probs), n)
-	var objects_w_values = _.zip(objects, property_values)
-  var situation = map(second, filter(first, objects_w_values))
-  condition(sum(map(first, situation)) > 0)
-  condition(sum(map(second, situation)) > 0)
-  condition(sum(map(third, situation)) > 0)
+var EquivalenceDistribution = cache(function(opts){
 
-	// condition(situation.length > 2) // minimum 3 objects
-	// map(function(s){
-	// 	condition(sum(s) > 0) // no empty object
-	// }, situation)
+		// var base_rate = 0.25
+		var PropertyDist = repeatFlip(opts.base_rate)
+		// var probs = [0.125,0.125,0.5,0.125,0.01,0.3,0.1,0.125]
+		// var n = 5
+		var property_values = PropertyDist.support()
+		var probs = map(function(s){return Math.exp(PropertyDist.score(s))}, property_values)
+		// var probs = repeat(8, function(){ 1 })
 
-	return situation
-}, method: "enumerate"})
+		var MultinomialObjectDistribution = Infer({model: function(){
+			var objects = multinomial(normalize(probs), opts.n)
+			var objects_w_values = _.zip(objects, property_values)
+		  var situation = map(second, filter(first, objects_w_values))
+		  condition(sum(map(first, situation)) > 0)
+		  condition(sum(map(second, situation)) > 0)
+		  condition(sum(map(third, situation)) > 0)
 
-// var PoissonObjectDistribution = Categorical({
-// 	vs: UniqueObjectDistribution.support(),
-// 	ps: map(function(s){
-// 		Math.exp(Poisson({mu: 1}).score(s.length-1))
-// 	}, UniqueObjectDistribution.support())
-// })
+			// condition(situation.length > 2) // minimum 3 objects
+			// map(function(s){
+			// 	condition(sum(s) > 0) // no empty object
+			// }, situation)
 
-// cost to having more properties (i.e., properties are rare)
-var PoissonObjectDistribution = Categorical({
-	vs: MultinomialObjectDistribution.support(),
-	ps: map(function(s){
-		Math.exp(
-			Poisson({mu: 1}).score(s.length-1) + sum(map(function(si){
-				Poisson({mu: 1}).score(sum(si))
-				// sum(map(function(sii){
-				// 	return Binomial({p:0.25, n: 1}).score(sii)
-				// }, si))
-			}, s))
-		)
-	}, MultinomialObjectDistribution.support())
-})
+			return situation
+		}, method: "enumerate"})
 
-var possiblePriors = {
-	binomial: MultinomialObjectDistribution,
-	poisson: PoissonObjectDistribution
-}
+		// var PoissonObjectDistribution = Categorical({
+		// 	vs: UniqueObjectDistribution.support(),
+		// 	ps: map(function(s){
+		// 		Math.exp(Poisson({mu: 1}).score(s.length-1))
+		// 	}, UniqueObjectDistribution.support())
+		// })
 
-var EquivalenceDistribution = cache(function(priorName){
-	Infer({model: function(){
-	  var situation = sample(possiblePriors[priorName])
+		// cost to having more properties (i.e., properties are rare)
+		var PoissonObjectDistribution = Categorical({
+			vs: MultinomialObjectDistribution.support(),
+			ps: map(function(s){
+				Math.exp(
+					Poisson({mu: 1}).score(s.length-1) + sum(map(function(si){
+						Poisson({mu: 1}).score(sum(si))
+						// sum(map(function(sii){
+						// 	return Binomial({p:0.25, n: 1}).score(sii)
+						// }, si))
+					}, s))
+				)
+			}, MultinomialObjectDistribution.support())
+		})
+
+	var possiblePriors = {
+		binomial: MultinomialObjectDistribution,
+		poisson: PoissonObjectDistribution
+	}
+
+	return Infer({model: function(){
+	  var situation = sample(possiblePriors[opts.priorName])
 		return map(function(sentence){
 			return extend(sentence, {
 				truthValue: meaning(sentence.quantifier)(situation, sentence.terms)
 			})
 		}, quantifierSentences)
 	}, method: "enumerate"})
+
 })
 
 
@@ -157,7 +160,7 @@ var qudFns = {
 // var conclusionForm =  ["C", "A"]
 var conclusionForm =  "CA"
 
-var literalListener = cache(function(premises, qud, opts) {
+var literalListener = cache(function(premises, qud, opts, statePrior) {
   Infer({model: function(){
     var state = sample(EquivalenceDistribution(opts.priorName))
 
@@ -181,7 +184,7 @@ var literalListener = cache(function(premises, qud, opts) {
 }, 10000)
 
 // var alpha = 5;
-var speaker = cache(function(qudVal, qud, premsSpoken, opts){
+var speaker = cache(function(qudVal, qud, premsSpoken, opts, statePrior){
   Infer({model: function(){
     var premises = [
       uniformDraw(sentencesByPremise[premsSpoken[0]["terms"]]),
@@ -189,7 +192,7 @@ var speaker = cache(function(qudVal, qud, premsSpoken, opts){
     ]
 		// var premises = flip() ? premsSpoken : "silence"
 
-    var L0 = literalListener(premises, qud, opts)
+    var L0 = literalListener(premises, qud, opts, statePrior)
     factor(opts.alpha * L0.score(qudVal))
     // factor(1 * L0.score(qudVal))
     return premises
@@ -197,12 +200,12 @@ var speaker = cache(function(qudVal, qud, premsSpoken, opts){
   }, method: "enumerate"})
 }, 10000)
 
-var pragmaticListener = function(premises, qud, opts){
+var pragmaticListener = function(premises, qud, opts, statePrior){
 	var priorName = opts.priorName, alpha = opts.alpha,
 			pragmatic_interpretation = opts.pragmatic_interpretation,
 			pragmatic_production = opts.pragmatic_production
   Infer({model: function(){
-    var state = sample(EquivalenceDistribution(priorName))
+    var state = sample(statePrior)
     // var qudFn = qudFns[qud]
     // var qudVal = qudFn(state)
     var trueConclusions = _.filter(state,
@@ -219,7 +222,7 @@ var pragmaticListener = function(premises, qud, opts){
 
     // var qudVal = uniformDraw(["all", "some", "not all", "none"])
 		if (pragmatic_interpretation) {
-			var S1 = speaker(qudVal, qud, premises, opts)
+			var S1 = speaker(qudVal, qud, premises, opts, statePrior)
 			observe(S1, premises)
 		} else {
 			var state1 = _.find(state, premises[0])
@@ -229,7 +232,7 @@ var pragmaticListener = function(premises, qud, opts){
 
 		// FIXME: WORK OUT how literal vs pragmatic // interpretation vs. production // QUD: state vs. relation
 		if (pragmatic_production) {
-			var L0 = conclusionInterpreter(conclusion, "state", opts)
+			var L0 = conclusionInterpreter(conclusion, "state", opts, statePrior)
 			factor(opts.alpha_2 * L0.score(state))
 		}
 
@@ -252,7 +255,7 @@ var pragmaticListener = function(premises, qud, opts){
   }, method: "enumerate"})
 }
 
-var conclusionInterpreter = function(conclusion, qud, opts){
+var conclusionInterpreter = function(conclusion, qud, opts, statePrior){
 	Infer({model: function(){
 		var state = sample(EquivalenceDistribution(opts.priorName))
 		var state1 = _.find(state, _.omit(conclusion, "truthValue"))
@@ -274,6 +277,8 @@ var figureDictionary = {
 
 
 _.flatten(map(function(opts){
+
+	var statePrior = EquivalenceDistribution(opts)
 
 	var syllogism = [
 	  { quantifier: quantifierDictionary[opts.p1], terms: figureDictionary[opts.figure]["p1"] },
