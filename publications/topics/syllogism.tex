@@ -1,0 +1,181 @@
+\documentclass[floatsintext, man]{apa6}
+%\bibliography{references}
+\usepackage{apacite}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{xspace}
+\usepackage[utf8]{inputenc}
+%\usepackage[sc,osf]{mathpazo}
+\linespread{1.12}
+
+% these packages are needed to insert results 
+% obtained from R into the LaTeX document
+\usepackage{pgfplotstable}
+\usepackage{csvsimple}
+\usepackage{siunitx}
+
+% set the name of the folder in which the CSV files with 
+% information from R is stored
+\newcommand{\datafoldername}{csv_to_tex}
+
+
+%\makeatletter
+%    \let\@internalcite\cite
+%    \def\cite{\def\citeauthoryear##1##2{##1, ##2}\@internalcite}
+%    \def\shortcite{\def\citeauthoryear##1{##2}\@internalcite}
+%    \def\@biblabel#1{\def\citeauthoryear##1##2{##1, ##2}[#1]\hfill}
+%\makeatother
+
+
+% the following code defines the convenience functions
+% as described in the main text below
+
+% rlgetvalue returns whatever is the in cell of the CSV file
+% be it string or number; it does not format anything
+\newcommand{\rlgetvalue}[4]{\csvreader[filter strcmp={\mykey}{#3},
+             late after line = {{,}\ }, late after last line = {{}}]
+            {\datafoldername/#1}{#2=\mykey,#4=\myvalue}{\myvalue}}
+
+% rlgetvariable is a shortcut for a specific CSV file (myvars.csv) in which
+% individual variables that do not belong to a larger chunk can be stored
+\newcommand{\rlgetvariable}[1]{\csvreader[]{\datafoldername/myvars.csv}{#1=\myvar}{\myvar}\xspace}
+
+% rlnum format a decimal number
+\newcommand{\rlnum}[2]{\num[output-decimal-marker={.},
+                             exponent-product = \cdot,
+                             round-mode=places,
+                             round-precision=#2,
+                             group-digits=false]{#1}}
+
+\newcommand{\rlnumsci}[2]{\num[output-decimal-marker={.},
+                          scientific-notation = true,
+                             exponent-product = \cdot,
+                             round-mode=places,
+                             round-precision=#2,
+                             group-digits=false]{#1}}
+
+\newcommand{\rlgetnum}[5]{\csvreader[filter strcmp={\mykey}{#3},
+             late after line = {{,}\ }, late after last line = {{}}]
+            {\datafoldername/#1}{#2=\mykey,#4=\myvalue}{\rlnum{\myvalue}{#5}}}
+
+\newcommand{\rlgetnumsci}[5]{\csvreader[filter strcmp={\mykey}{#3},
+             late after line = {{,}\ }, late after last line = {{}}]
+            {\datafoldername/#1}{#2=\mykey,#4=\myvalue}{\rlnumsci{\myvalue}{#5}}}
+
+
+
+\makeatletter
+\patchcmd{\epigraph}{\@epitext{#1}}{\itshape\@epitext{#1}}{}{}
+\makeatother \def\signed
+#1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip2em
+\hbox{}\nobreak\hfil#1% \parfillskip=0pt \finalhyphendemerits=0
+\endgraf}} \newsavebox\mybox 
+
+\newenvironment{aquote}[1]
+{\savebox\mybox{#1}\begin{quote}} {\signed{\usebox\mybox}\end{quote}}
+
+%\newcommand{\HRule}{\rule{\linewidth}{0.2mm}}
+
+
+
+\title{Probabilistic Pragmatics in Syllogistic Reasoning}
+\shorttitle{Pragmatics in Syllogistic Reasoning}
+
+\author{Michael Henry Tessler\textsuperscript{1}\textsuperscript{,2}, Joshua B. Tenenbaum\textsuperscript{1}~\& Noah D. Goodman\textsuperscript{2}}
+\date{}
+  
+\affiliation{
+\vspace{0.5cm}
+\textsuperscript{1} Department of Brain and Cognitive Sciences, Massachusetts Institute of Technology \\
+\textsuperscript{2} Department of Psychology, Stanford University
+}
+%\authorsnames[{1,2},1,2]{Michael Henry Tessler, Joshua B. Tenenbaum, Noah D. Goodman}
+%\authorsaffiliations{{Department of Brain and Cognitive Sciences, MIT}, {Department of Psychology, Stanford University}}
+
+\date{}
+
+\usepackage{xcolor}
+\usepackage{bbm}
+
+\newcommand{\denote}[1]{\mbox{ $[\![ #1 ]\!]$}}
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+\definecolor{Red}{RGB}{255,0,0}
+\definecolor{Green}{RGB}{10,200,100}
+\definecolor{Blue}{RGB}{10,100,200}
+
+\newcommand{\mht}[1]{{\textcolor{Blue}{[mht: #1]}}}
+\newcommand{\ndg}[1]{{\textcolor{Green}{[ndg: #1]}}}
+\newcommand{\red}[1]{{\textcolor{Red}{#1}}}
+
+\authornote{Corresponding author: Michael Henry Tessler, 450 Serra Mall, Building 420, Department of Psychology, Room 316, Stanford University, Stanford, CA 94305, USA. E-mail: tessler@mit.edu Present address: Department of Brain and Cognitive Sciences, Building 46, Room 3027,	Massachusetts Institute of Technology, 77 Massachusetts Avenue, Cambridge, MA 02139-4307, USA}
+
+\abstract{\mht{abstract from 2014 cogsci paper}
+Syllogistic reasoning lies at the intriguing intersection of natural and formal reasoning, of language and logic. Syllogisms comprise a formal system of reasoning yet use natural language quantifiers, and invite natural language conclusions. How can we make sense of the interplay between logic and language? We develop a computational-level theory that con- siders reasoning over concrete situations, constructed probabilistically by sampling. The base model can be enriched to consider the pragmatics of natural language arguments. The model predictions are compared with behavioral data from a recent meta-analysis. The flexibility of the model is then explored in a data set of syllogisms using the generalized quantifiers most and few. We conclude by relating our model to two extant theories of syllogistic reasoning – Mental Models and Probability Heuristics.}
+
+
+\begin{document}
+\maketitle
+
+
+\begin{aquote}{\textbf{Walter J. Ong}, \emph{Orality and Literacy} (1982)}The syllogism is like a text: fixed, boxed-off, isolated... The riddle [by contrast] belongs in the oral world. To solve a riddle, canniness is needed: one draws on knowledge, often deeply subconscious, beyond the words themselves in the riddle. \end{aquote}
+
+%\HRule
+
+\section{Introduction}
+
+
+Consider for a moment that your friend tells you: “Everyone in my office has the flu and, you know, some people with this flu are out for weeks.” You might respond: “I hope your officemates are not out for weeks and I hope you don’t get sick either.” The form of this exchange resembles a syllogism: a two- sentence argument used to relate two properties (or terms: A, C) via a middle term (B); the relations used in syllogisms are quantifiers. Fit into a formal syllogistic form, this argument would read:
+
+All officemates are out with the flu (All A are B)
+
+Some out with the flu are out for weeks (Some B are C) 
+
+Therefore, some officemates are out for weeks (Some A are C)
+
+
+Unfortunately, the conclusion does not follow from the premises (i.e., there is no relation between A \& C which is true in every situation in which the premises are true). Faced with such an argument, however, people are perfectly comfortable drawing some conclusion. A meta-analysis of syllogistic reasoning showed that over the population, the proper production of no valid conclusion responses for invalid arguments ranged from 76\% to 12\%. Even for valid arguments, the accuracy of producing valid conclusions ranged from 90\% to 1\% \cite{Khemlani2012}: people do not seem to find drawing deductively valid conclusions particularly automatic.
+
+Many theories of syllogistic reasoning take deduction as a given and try to explain reasoning errors as a matter of noise during cognition. 
+Errors, then, may arise from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}. 
+Many other kinds of reasoning, however, can be well-explained as probabilistic inference under uncertainty \cite{tenenbaum2006theory}. 
+Probability theory provides a natural description of a world in which you don’t know exactly how many people are in your office are going to get the flu.
+
+A separate dimension of theories of human reasoning concerns the extent to which principles of natural language — semantics and pragmatics — are necessary for understanding reasoning tasks. 
+Natural language semantics plays a role in many such theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, though how issues of informativity or relevance impact syllogistic reasoning either remain unclear \cite{Roberts2001} or are posited in an ad-hoc manner \cite{Chater1999}. 
+
+In this paper, we explore the idea that the formalism of probabilistic pragmatics can provide insight into how people reason with syllogisms.
+We present a model in the Rational Speech Act framework (Frank \& Goodman, 2012; Goodman \& Frank, 2016) that reasons about multiple quantifier sentences to produce a distribution over conclusions that follow from those sentences. We present three sets of results, highlighting the influence of different components of the model on human reasoning: (1) the influence of prior beliefs; (2) flexibility in natural language semantics, incorporating generalized quantifiers (e.g., “most” and “few”); and (3) pragmatic rea- soning. Previous approaches to the pragmatics of syllogistic reasoning have reduced the interpretations of syllogistic arguments to the interpretations of the individual premises or quantifiers used in those premises \cite{Roberts2001}. For example, premises involving the quantifier “some” may be interpreted as implying some but not all. But that sort of reasoning will not produce the conclusion in the syllogism above. Instead, what is needed is a richer scope of pragmatic reasoning: Reasoning about why about the speaker constructed the argument as a whole. We formalize this notion as a Question Under Discussion (C. Roberts, 2004) in which a listener reasons about the most likely conclusion (i.e., A–C relation) given the premises heard. We find that this formulation of pragmatic reasoning is able to break critical symmetries that would result from logical reasoning (Figure 1). An early version of this model was presented by Tessler and Goodman (2014).
+
+
+
+
+%Cognitive theories of human reasoning turn along the critical dimension of whether the core ideal of reasoning is deductive validity or probabilistic support. 
+%
+%
+%This cartoon illustrates a critical dimension along which cognitive theories of reason- ing differ: whether the core and ideal of reasoning is deduc- tive validity or probabilistic support. 
+%
+%
+%An important extension to baseline CPT frameworks concerns incorporating pragmatics and language-like properties (such as compositionality) and representations in probabilistic inference. The probabilistic programming language (PPL) / probabilistic language of thought (PLoT) can more naturally apply to richer forms of reasoning, including everyday reasoning under uncertainty (e.g., Goodman et al., 2015). Furthermore, enriching these models with an understanding of natural language pragmatics can explain apparent fallacies in classical reasoning tasks (e.g., Tessler \& Goodman, 2014). Assuming a communicative context to a task involving language allows a reasoner in a PPL/PLoT model to incorporate the goals of a speaker (e.g., assuming the speaker intends to be informative), so providing a rational perspective on reasoning fallacies. We will also consider the way resource limitations guide practical models in PPL.
+%
+%
+%
+%
+%By formalizing syllogistic reasoning as a probabilistic pragmatics problem, there is a natural way to account for influence of background knowledge in the form of the prior distribution on possible situations. We construct domains where we expect correlations between properties (e.g., knives – being sharp – cut well) and investigate syllogistic reasoning over these content domains. By measuring the prior probability of the eight possible combinations of binary features, we are able to generate predictions for syllogistic reasoning problems that are influenced by this kind of prior knowledge. Such influence of background knowledge on reasoning, known as belief bias in the syllogistic reasoning domain, has been of interest to psychologists for quite some time (e.g., Evans, Handley, \& Pollard, 1983; Dube, Rotello, \& Heit, 2010). We formalize this “bias” as rational belief updating given prior knowledge and find that the pragmatics model is too influenced by these kind of prior beliefs (Figure 2).
+
+
+
+
+
+\section{Computational Model}
+
+\section{Experiments}
+
+\section{Discussion}
+
+
+\newpage
+
+\bibliographystyle{apacite}
+\bibliography{syllogism}
+
+\end{document}
