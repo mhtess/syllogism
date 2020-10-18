@@ -1,0 +1,286 @@
+// webbpl venn.wppl
+
+var foreach = function(lst, fn) {
+    var foreach_ = function(i) {
+        if (i < lst.length) {
+            fn(lst[i]);
+            foreach_(i + 1);
+        }
+    };
+    foreach_(0);
+};
+
+
+var displayDist = function(dist){
+	foreach(dist.support(), function(x){
+		display(x + ", " + Math.exp(dist.score(x)))
+	})
+}
+
+var regions = Enumerate(function(){
+	return {A: flip(), B: flip(), C: flip()}
+}).support()
+
+// var venn_space = Enumerate(function(){
+// 	map(function(region){ return {region: region, truth_val: flip() } }, regions)
+// })
+
+
+var parseVennDiagram = function(r){
+  map(function(i){ i[1] ? i[0] : "" }, _.toPairs(r)).join("")
+}
+
+var regionLabels = map(parseVennDiagram, regions)
+
+var iidProbs = {
+  "": 0.5,
+  "A": 0.5,
+  "B": 0.5,
+  "C": 0.5,
+  "AB": 0.25,
+  "BC": 0.25,
+  "AC": 0.25,
+  "ABC": 0.125
+}
+
+var correlatedProbs = {
+  "": 0.5,
+  "A": 0.25,
+  "B": 0.25,
+  "C": 0.25,
+  "AB": 0.50,
+  "BC": 0.50,
+  "AC": 0.50,
+  "ABC": 0.75
+}
+
+var flatProbs = {
+  "": 0.5,
+  "A": 0.5,
+  "B": 0.5,
+  "C": 0.5,
+  "AB": 0.5,
+  "BC": 0.5,
+  "AC": 0.5,
+  "ABC": 0.5
+}
+
+var regionProbs = flatProbs;
+
+var venn_space = Enumerate(function(){
+  map(function(region){
+    var regionLabel = parseVennDiagram(region)
+    var priorProb = regionProbs[regionLabel]
+    return {
+      region: region,
+      priorProb: priorProb,
+      truth_val: flip(priorProb) ,
+      label: parseVennDiagram(region)
+    }
+  }, regions)
+})
+
+
+var predicate_filter = function(x, y){
+	return function(r){ return _.fromPairs([[x, r.region[x]], [y, r.region[y]]]) }
+}
+
+
+// SHOULD BE PAIRED WITH all()
+// this DOES NOT includes an existential presupposition
+var all_filter = function(x, y){
+	return function(r){
+		return  r.region[x] ? // if its an A
+		!r.region[y] ? // and not B
+		!r.truth_val : // then it must be false
+		  true : // if it's an A and not a B, then it must be false
+		 true // if it's not an A, then it doesn't affect overall truthval (because we will use "all" to search that all are positive truth val)
+	}
+}
+
+// SHOULD BE PAIRED WITH any()
+// this includes an existential presupposition
+var some_filter = function(x, y){
+	return function(r){
+		return  r.region[x] ? // if its an A
+		r.region[y] ? // and a B
+		r.truth_val : // then this is the relevant region, and select its truthval
+		 false : // if it's an A and not a B, then it doesn't contribute a positive truth val (because we will use "any" to search for any positive truth val)
+		 false // if it's not an A, then it doesn't contribute a positive truth val (because we will use "any" to search for any positive truth val)
+	}
+}
+
+var lexicon = {
+	all: function(state, property1, property2){
+		return (all(all_filter(property1, property2), state) &&
+					 any(some_filter(property1, property2), state))
+	},
+	some: function(state, property1, property2){ return any(some_filter(property1, property2), state) },
+	none: function(state, property1, property2){ return !(any(some_filter(property1, property2), state)) },
+	some_not: function(state, property1, property2){
+		return !(all(all_filter(property1, property2), state) &&
+					 any(some_filter(property1, property2), state))
+	}
+}
+
+var predicate_filter = function(x, y){ return function(r){ return _.fromPairs([[x, r.region[x]], [y, r.region[y]]]) } }
+var predicate_filter = function(x, y){ return function(r){ return _.fromPairs([[x, r.region[x]], [y, r.region[y]]]) } }
+// var listener0 = Enumerate(function(){
+// 	var state = sample(venn_space)
+// 	var predicate_filter = function(x, y){
+// 		filter(function(r){return { region: }}, state)
+// 	}
+// 	condition(state.)
+// })
+
+var quantifiers = ["all", "some", "none", "some_not"]
+
+// var some_meaning = function(r){ return  r.region[x] ? r.region[y] : true }
+
+
+var venn_interpreter = cache(function(premises){
+	Infer({model: function(){
+		var venn = sample(venn_space)
+
+		foreach(premises, function(utterance){
+			var meaningFn = lexicon[utterance.quantifier]
+			condition(meaningFn(venn, utterance.p1, utterance.p2))
+		})
+
+		return venn
+	}, method: "enumerate"})
+})
+
+var literal_reasoner = cache(function(premises){
+	Infer({model: function(){
+		var venn = sample(venn_space)
+
+		foreach(premises, function(utterance){
+			var meaningFn = lexicon[utterance.quantifier]
+			condition(meaningFn(venn, utterance.p1, utterance.p2))
+		})
+
+
+		// return _.fromPairs(map(function(c){
+		// 	var conclusionMeaningFn = lexicon[c]
+		// 	return [c, conclusionMeaningFn(venn, "A", "C")]
+		// }, conclusions))
+
+
+		var conclusion = uniformDraw(quantifiers)
+		var conclusionMeaningFn = lexicon[conclusion]
+		condition(conclusionMeaningFn(venn, "A", "C"))
+
+		return conclusion
+	}, method: "enumerate"})
+})
+
+var alpha = 10
+
+var argument_speaker = cache(function(venn){
+	Infer({model: function(){
+
+		var premises = [
+			{p1: "A", p2: "B", quantifier: uniformDraw(quantifiers ) },
+			{p1: "B", p2: "C", quantifier: uniformDraw(quantifiers ) }
+		]
+		var LiteralDist = venn_interpreter(premises)
+
+		factor(alpha * LiteralDist.score(venn))
+
+		return premises
+
+	}, method: "enumerate"})
+})
+
+var pragmatic_reasoner = function(premises){
+	Infer({model: function(){
+		var venn = sample(venn_space)
+
+		var SpeakerDist = argument_speaker(venn)
+
+		observe(SpeakerDist, premises)
+
+		var conclusion = uniformDraw(quantifiers)
+		var conclusionMeaningFn = lexicon[conclusion]
+		condition(conclusionMeaningFn(venn, "A", "C"))
+
+		return conclusion
+	}})
+}
+
+displayDist(literal_reasoner([
+	{p1: "A", p2: "B", quantifier: "all"},
+	{p1: "B", p2: "C", quantifier: "some"}
+]))
+
+
+displayDist(pragmatic_reasoner([
+	{p1: "A", p2: "B", quantifier: "all"},
+	{p1: "B", p2: "C", quantifier: "some"}
+]))
+
+
+// var venn = [
+//   { region: { A: false, B: false, C: false }, truth_val: false },
+//   { region: { A: false, B: false, C: true }, truth_val: false },
+//   { region: { A: false, B: true, C: false }, truth_val: false },
+//   { region: { A: false, B: true, C: true }, truth_val: false },
+//   { region: { A: true, B: false, C: false }, truth_val: false },
+//   { region: { A: true, B: false, C: true }, truth_val: false },
+//   { region: { A: true, B: true, C: false }, truth_val: true },
+//   { region: { A: true, B: true, C: true }, truth_val: false }
+// ]
+//
+// displayDist(
+// 	argument_speaker(venn)
+// )
+
+
+// var utterance = {p1: "A", p2: "B", quantifier: "all"}
+// var myfn = lexicon[utterance.quantifier]
+// myfn()
+// repeat(2, function(){ uniformDraw(quantifiers )})
+
+
+
+// map(function(region){
+// 	map(function(r){r[1] ? r[0] : "" }, _.toPairs(region)).join("")
+// }, regions)
+
+// listener0.support().length
+
+// var venn = sample(venn_space)
+
+// // condition(any(some_filter("A", "B"), venn))
+// display(all(all_filter("A", "B"), venn))
+
+// map(all_filter("A", "B"), venn)
+// var f = all_filter("A", "B")
+// f(venn[7])
+// venn[7]
+// venn
+// var relevant_regions = filter(some_filter("A", "B"), venn)
+// venn_space.support().length
+// display(JSON.stringify())
+// display(any(function(r){ r.truth_val }, relevant_regions))
+// relevant_regions
+// regions
+// var shades_of_regions = Enumerate(function(){
+// 	var region = sample(regions)
+// 	var prob = uniformDraw([0, 0.5, 1])
+// 	return {region, prob}
+// })
+
+
+// var quantifier_meaning = {
+// 	"Some": function(x, y){ return }
+// }
+// shades_of_regions.support()
+
+// var some_meaning = function(x, y){ return function(r){ return r[x] && r[y] }}
+//
+// // var r = sample(regions)
+// var r = { A: true, B: true, C: true }
+// display(r)
+// some_meaning("A", "B")(r)
