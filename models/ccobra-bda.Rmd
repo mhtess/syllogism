@@ -1,0 +1,103 @@
+---
+title: "CCOBRA data set BDA"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(tidyboot)
+library(ggplot2)
+
+library(coda)
+library(purrr)
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+HPDhi<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+HPDlo<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+```
+
+## Load human data
+
+```{r}
+df <- read_csv("ccobra_data/ragni2016_collapse.csv")
+
+df %>%
+  group_by(premise_1, premise_2, conclusion) %>%
+  count() %>% 
+  ungroup() %>%
+  group_by(premise_1, premise_2) %>%
+  mutate(prop = n / sum(n),
+         N = sum(n)) %>%
+  ungroup() %>%
+  select(-n) %>%
+  pivot_wider(names_from = conclusion, values_from = prop, values_fill = 0) %>%
+  pivot_longer(c(-premise_1, -premise_2, -N), names_to = "conclusion", values_to = "proportion") %>%
+  rowwise() %>%
+  mutate(conclusion_quantifier = str_split(conclusion, ";")[[1]][1]) -> df.summ
+```
+
+## Load model results
+
+```{r}
+interpretation.models <- c("literal", "pragmatic")
+production.models <- c("literal", "pragmatic")
+model.path <- "results/"
+model.prefix <- "results-syllogisms-ragni2016_collapse_"
+
+m.preds <- map_dfr(interpretation.models, function(interpretation){
+  map_dfr(production.models, function(production){
+    
+    model.files <- list.files(
+      path = model.path,
+      pattern = paste(model.prefix, interpretation, "-interpretation_", 
+                      production, "-production", sep = "")
+    )
+    
+    map_dfr(model.files, function(model.file){
+     
+     read_csv(paste(model.path, model.file, sep = "")) %>%
+        mutate(
+          interpretation = interpretation,
+          production = production,
+          chain = which(model.file == model.files) 
+          )
+      
+    })
+
+  })
+})
+```
+
+
+```{r}
+m.summary <- m.preds %>%
+  filter(type == "prediction") %>%
+  rename(premise_1 = param, premise_2 = property, conclusion = category) %>%
+  group_by(interpretation, production, premise_1, premise_2, conclusion) %>%
+  summarize(MAP = estimate_mode(val),
+            cred_upper = HPDhi(val),
+            cred_lower = HPDlo(val))
+```
+
+```{r}
+left_join(m.summary, df.summ) %>%
+  ggplot(., aes( x = MAP, y = proportion, color = conclusion_quantifier,
+                 xmin = cred_lower, xmax = cred_upper))+
+  geom_point()+
+  ggstance::geom_linerangeh()+
+  facet_grid(interpretation ~ production)+
+  coord_fixed(ratio = 1)+
+  xlim(0, 1)+
+  ylim(0, 1)
+```
+
+
+
