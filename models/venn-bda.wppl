@@ -1,13 +1,21 @@
-// webppl venn.wppl --require webppl-csv
+// webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork literal literal 1
 
 var args = process.argv
 var chain = last(args) // load index as last command line index
 
-var pragmatics = {
-  interpretation: args[args.length - 3] == "literal" ? false : true,
-  production: args[args.length - 2] == "literal" ? false : true,
+var pragParams = {
+  interpretation: args[args.length - 3],
+  production: args[args.length - 2]
 }
 
+display(JSON.stringify(pragParams))
+
+var pragmatics = {
+  interpretation: !(pragParams.interpretation == "literal"),
+  production:  !(pragParams.production == "literal"),
+}
+
+display(JSON.stringify(pragmatics))
 var foreach = function(lst, fn) {
   var foreach_ = function(i) {
     if (i < lst.length) {
@@ -108,7 +116,7 @@ var flatProbs = {
 
 var regionProbs = iidProbs;
 
-var venn_space = Enumerate(function() {
+var full_venn_space = Enumerate(function() {
   map(function(region) {
     var regionLabel = parseVennDiagram(region)
     var priorProb = regionProbs[regionLabel]
@@ -120,6 +128,14 @@ var venn_space = Enumerate(function() {
     }
   }, regions)
 })
+
+var venn_space = Infer({model: function(){
+  var v = sample(full_venn_space)
+  condition(any(function(x){ x.truth_val }, v))
+  return v
+}})
+
+
 
 var predicate_filter = function(x, y) {
   return function(r) {
@@ -163,7 +179,7 @@ var lexicon = {
   some: function(state, property1, property2) {
     return any(some_filter(property1, property2), state)
   },
-  none: function(state, property1, property2) {
+  no: function(state, property1, property2) {
     return !(any(some_filter(property1, property2), state))
   },
   some_not: function(state, property1, property2) {
@@ -199,44 +215,44 @@ var predicate_filter = function(x, y) {
 // 	condition(state.)
 // })
 
-var quantifiers = ["all", "some", "none", "some_not"]
+var quantifiers = ["all", "some", "no", "some_not"]
 
 // var conclusions = ["all", "some", "none", "some_not", "nvc"]
 
 var conclusions = [{
+    quantifier: "all",
     p1: "A",
-    p2: "C",
-    quantifier: "all"
+    p2: "C"
   },
   {
+    quantifier: "some",
     p1: "A",
-    p2: "C",
-    quantifier: "some"
+    p2: "C"
   },
   {
+    quantifier: "no",
     p1: "A",
-    p2: "C",
-    quantifier: "none"
+    p2: "C"
   },
   {
+    quantifier: "some_not",
     p1: "A",
-    p2: "C",
-    quantifier: "some_not"
+    p2: "C"
   },
   {
+    quantifier: "all",
     p1: "C",
-    p2: "A",
-    quantifier: "all"
+    p2: "A"
   },
   {
+    quantifier: "some_not",
     p1: "C",
-    p2: "A",
-    quantifier: "some_not"
+    p2: "A"
   },
   {
+    quantifier: "nvc",
     p1: "A",
-    p2: "C",
-    quantifier: "nvc"
+    p2: "C"
   }
 ]
 
@@ -261,9 +277,9 @@ var alternative_quantifier_set = cache(function(observed_premises) {
   map(function(obs_prm) {
     MakeUniformDraw(map(function(q) {
       return {
+        quantifier: q,
         p1: obs_prm.p1,
-        p2: obs_prm.p2,
-        quantifier: q
+        p2: obs_prm.p2
       }
     }, quantifiers))
   }, observed_premises)
@@ -274,14 +290,14 @@ var alternative_quantifier_order_set = cache(function(observed_premises) {
   map(function(obs_prm) {
     MakeUniformDraw(map(function(q) {
       return {
+        quantifier: q,
         p1: obs_prm.p1,
-        p2: obs_prm.p2,
-        quantifier: q
+        p2: obs_prm.p2
       }
     }, quantifiers).concat({
-      p1: obs_prm.p2,
-      p2: obs_prm.p1,
-      quantifier: obs_prm.quantifier
+        quantifier: obs_prm.quantifier,
+        p1: obs_prm.p2,
+        p2: obs_prm.p1
     }))
   }, observed_premises)
 })
@@ -290,14 +306,14 @@ var alternative_set_maximal = cache(function(observed_premises) {
   map(function(obs_prm) {
     MakeUniformDraw(_.flatten(map(function(q) {
       return [{
+          quantifier: q,
           p1: obs_prm.p1,
-          p2: obs_prm.p2,
-          quantifier: q
+          p2: obs_prm.p2
         },
         {
+          quantifier: q,
           p1: obs_prm.p2,
-          p2: obs_prm.p1,
-          quantifier: q
+          p2: obs_prm.p1
         }
       ]
     }, quantifiers)))
@@ -310,21 +326,18 @@ var alternative_set_maximal = cache(function(observed_premises) {
 
 
 
-
-
-
-var syllogism = [{
-    p1: "A",
-    p2: "B",
-    quantifier: "all"
-  },
-  {
-    p1: "B",
-    p2: "C",
-    quantifier: "all"
-  }
-]
-
+// var syllogism = [{
+//     p1: "A",
+//     p2: "B",
+//     quantifier: "all"
+//   },
+//   {
+//     p1: "B",
+//     p2: "C",
+//     quantifier: "all"
+//   }
+// ]
+//
 
 // display("== literal reasoner v2 ==")
 // displayDist(full_pragmatic_reasoner(syllogism, { interpretation: false, production: false }))
@@ -343,6 +356,7 @@ var formatSentence = function(sentence) {
 
   var quantifier = (sentence.quantifier == "nvc") ? "NVC" :
   (sentence.quantifier == "some_not") ? "Some not" :
+  // (sentence.quantifier == "none") ? "No" :
    sentence.quantifier.charAt(0).toUpperCase() + sentence.quantifier.slice(1)
 
   return quantifier == "NVC" ? "NVC;" : quantifier + ";" + sentence.p1 + ";" + sentence.p2
@@ -382,8 +396,14 @@ var premise_2s = map(stringToSyllogism,
   }, levels(df, "premise_2"))
 )
 
-var premise_1s = levels(df_clean, "prem_1")
-var premise_2s = levels(df_clean, "prem_2")
+var premise_1s = map(stringToSyllogism, levels(df_clean, "premise_1"))
+var premise_2s = map(stringToSyllogism, levels(df_clean, "premise_2"))
+
+var addNoise = function(dist, noise_param){
+  Infer({ model: function(){
+    flip(noise_param) ? formatSentence(uniformDraw(conclusions)) : sample(dist)
+  }})
+}
 
 
 // premise_1s
@@ -391,13 +411,15 @@ var premise_2s = levels(df_clean, "prem_2")
 var bda_model = function(){
 
 	var speakerOptimality = {
-		alpha_1 : uniformDrift({a: 0, b: 20, width: 2}),
-		alpha_2 : uniformDrift({a: 0, b: 20, width: 2})
+		alpha_1 : pragmatics.interpretation ? uniformDrift({a: 0, b: 20, width: 2}) : -99,
+		alpha_2 : pragmatics.production ? uniformDrift({a: 0, b: 20, width: 2}) : -99
 	}
+
+  var noise = uniformDrift({a: 0, b: 0.1, width: 0.01})
 
   var regionProbs = repeat(8, function(){ return uniformDrift({a: 0, b: 1, width: 0.1}) })
 
-  var venn_space = Enumerate(function() {
+  var full_venn_space = Enumerate(function() {
     map2(function(region, priorProb) {
       var regionLabel = parseVennDiagram(region)
       return {
@@ -409,6 +431,12 @@ var bda_model = function(){
     }, regions, regionProbs)
   })
 
+  var venn_space = Infer({model: function(){
+    var v = sample(full_venn_space)
+    condition(any(function(x){ x.truth_val }, v))
+    return v
+  }})
+
   var venn_interpreter = cache(function(sentences) {
     Infer({
       model: function() {
@@ -416,7 +444,7 @@ var bda_model = function(){
 
         foreach(sentences, function(utterance) {
           var meaningFn = lexicon[utterance.quantifier]
-          condition(meaningFn(venn, utterance.p1, utterance.p2))
+          condition(flip(noise) ? true : meaningFn(venn, utterance.p1, utterance.p2))
         })
 
         return venn
@@ -455,6 +483,7 @@ var bda_model = function(){
         // ]
         // var premises = map(sample, alternative_quantifier_set(observed_premises))
         var premises = map(sample, alternative_quantifier_order_set(observed_premises))
+        // display(JSON.stringify(premises))
         // var premises = map(sample, alternative_set_maximal(observed_premises))
 
         var LiteralDist = venn_interpreter(premises)
@@ -469,14 +498,23 @@ var bda_model = function(){
   })
 
   var pragmatic_interpreter = cache(function(premises) {
-    display("pragmatic interpreter")
+    // display("pragmatic interpreter")
+
     Infer({
       model: function() {
+
+        // display(JSON.stringify(alternative_quantifier_order_set(premises)))
+
         var venn = sample(venn_space)
+        // display(JSON.stringify(premises))
         var SpeakerDist = argument_speaker(venn, premises)
+        // display(JSON.stringify(premises))
+        // display(JSON.stringify(SpeakerDist.support()))
+        // display(SpeakerDist.score(premises))
         observe(SpeakerDist, premises)
         return venn
-      }
+      },
+      method: "enumerate"
     })
   })
 
@@ -506,20 +544,20 @@ var bda_model = function(){
           pragmatic_interpreter(premises) :
           venn_interpreter(premises)
 
+          // display('after prag interpret')
 
         var conclusion = uniformDraw(conclusions)
-        var venn = sample(PremiseInterpretation)
 
         if (pragmatics.production) {
 
           var ConclusionInterpretation = venn_interpreter([conclusion])
 
-          // var _kl = KL(PremiseInterpretation, ConclusionInterpretation, ConclusionInterpretation.support())
-          // factor(alpha * -1 * _kl)
-          factor(speakerOptimality.alpha_2 * ConclusionInterpretation.score(venn))
+          var _kl = KL(PremiseInterpretation, ConclusionInterpretation, PremiseInterpretation.support())
+          factor(speakerOptimality.alpha_2 * -1 * _kl)
+          // factor(speakerOptimality.alpha_2 * ConclusionInterpretation.score(venn))
 
         } else {
-
+          var venn = sample(PremiseInterpretation)
           var conclusionMeaningFn = lexicon[conclusion.quantifier]
           condition(conclusionMeaningFn(venn, conclusion.p1, conclusion.p2))
 
@@ -531,36 +569,90 @@ var bda_model = function(){
     })
   }
 
-
-
-
 	foreach(premise_1s, function(prem_1){
 			foreach(premise_2s, function(prem_2){
-
-        // var data = _.filter(df, {premise_1: prem_1}),
-        //     interpretation: _.filter(data.interpretation, {distribution: itemName})//,
-        //     // observation: _.filter(data.observation, {property: item})
-        // };
+        // display(formatSentence(prem_1) + " _ " + formatSentence(prem_2))
+        var data_filtered = _.filter(df_clean, {prem_1, prem_2})
+        // display(data_filtered)
 
 				var syllogisticPremises = [prem_1, prem_2]
-
+        // display('before rsa')
+        // display(JSON.stringify(syllogisticPremises))
         var rsaPredictions = full_pragmatic_reasoner(syllogisticPremises, pragmatics)
+        // display('after rsa')
+
+
+        // var rsaNoise = addNoise(rsaPredictions, noise)
+        // display(JSON.stringify(rsaNoise))
+
+        mapData({data: _.map(data_filtered, "conclusion")}, function(d){
+          var scr = rsaPredictions.score(d)
+
+          scr == -Infinity ? display(formatSentence(prem_1) + " _ " + formatSentence(prem_2) + " _ " + d) : null
+
+          observe(rsaPredictions, d)
+        })
 
         foreach(rsaPredictions.support(), function(s){
 
-          query.add([formatSentence(prem_1), formatSentence(prem_2), s], Math.exp(rsaPredictions.score(s)))
+          query.add(
+            ["prediction", formatSentence(prem_1), formatSentence(prem_2), s],
+            Math.exp(rsaPredictions.score(s))
+          )
 
         })
-
-
 
 			})
 	})
 
+  query.add(["parameter", "speakerOptimality", "alpha_1", -99], speakerOptimality.alpha_1)
+  query.add(["parameter", "speakerOptimality", "alpha_2", -99], speakerOptimality.alpha_2)
+  query.add(["parameter", "noise", -99, -99], noise)
+
+
+  var xkh = map2(function(region, priorProb) {
+    var regionLabel = parseVennDiagram(region)
+    query.add(["parameter", "statePrior", regionLabel, -99], priorProb)
+  }, regions, regionProbs)
+
+  return query
+
+
 }
 
 
-df_clean
+var totalIterations = 1000, lag =  1;
+var samples = totalIterations/lag, burn = totalIterations / 2;
+
+var outfile = 'results-syllogisms-ragni2016_collapse_' +
+  pragParams.interpretation + '-interpretation_' +
+  pragParams.production + '-productionKL_' +
+  totalIterations+ '_burn' + burn +
+  '_lag' + lag + '_chain' + chain + '.csv'
+
+var header = "iter,type,premise_1,premise_2,conclusion,val,score"
+var callback = webpplSampleWriter.streamQueryCSV("results/" + outfile, header);
+
+Infer({model: bda_model,
+      samples: samples, burn: burn, lag: lag,
+       method: 'incrementalMH',
+       onlyMAP: true,
+       verbose: T,
+       verboseLag: totalIterations / 20,
+       callbacks: [callback]
+     });
+
+//
+
+// data.interpretation
+// d_interpretation
+"written to " + outfile;
+
+// display(premise_1s)
+// display(premise_2s)
+
+// data_filtered
+// premise_1s
 // regionLabels
 // formatQuantifier("Some not")
 // levels(df, "premise_1")
