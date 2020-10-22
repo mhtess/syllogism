@@ -171,6 +171,10 @@ We present a model in the Rational Speech Act framework (Frank \& Goodman, 2012;
 \section{Computational Model}
 
 %\section{Bayesian argument strength in syllogistic reasoning}
+Our probabilistic pragmatics approach to syllogistic reasoning involves two components: interpreting the premises of the syllogism and producing a conclusion.
+Each of these components could involve some kind of pragmatic reasoning.
+Each component uses recursive Bayesian reasoning that grounds out in a literal listener model who updates their beliefs about the state of the world given the literal (logical) meaning of the utterances. 
+We walk through our ontology of the state space and the literal meanings before describing the different models of premise interpretation and conclusion production. 
 
 
 \subsection{Ontology and semantics}
@@ -202,7 +206,7 @@ The model is based on an ontology of situations represented by Venn diagrams cor
 \caption{A state is represented by Boolean values over the regions of a Venn diagram, corresponding to the presence or absence of unique object types.}
 \end{figure}
 
-Each Venn diagram contains eight regions $i \in R$, corresponding to the presence or absence of each of the three properties: $\{\{A,B,C\}, \{A,B,\neg C\}, \{A,\neg B,C\}, \{\neg A, B, C\}, \{A, \neg B, \neg C\},...\}$. (For simplicity, when possible, we will refer to regions by the properties that are present, omitting the absent properties; for example, $\{A, B, \neg C\}$ will be referred to as $AB$.)
+Each Venn diagram contains eight regions $i \in R$, corresponding to the presence or absence of each of the three properties: $\{\{A,B,C\},$ $\{A,B,\neg C\},$ $\{A,\neg B,C\},$ $\{\neg A, B, C\},$ $\{A, \neg B, \neg C\},...\}$. (For simplicity, when possible, we will refer to regions by the properties that are present, omitting the absent properties; for example, $\{A, B, \neg C\}$ will be referred to as $AB$.)
 These regions can be thought of as unique object types (e.g., an object defined by having properties $A$ and $B$ but not $C$).\footnote{This diagram representation is analogous to a mental model in the style of \citeA{johnson1983mental} composed of object tokens (e.g., some objects which have properties $A$ or $B$, etc.) but where only unique object tokens are represented (e.g., there cannot be two objects which have the same set of properties).}
 Then, a situation (Venn diagram) $s \in S$ is composed of the set of object types (regions) that are present (e.g., $\{AB, BC, A\}$ is one state)
 The set of unique states has size $2^8 = 256$, though we exclude the state where all eight regions are empty (i.e., the state where there are no As, Bs, and Cs, but also no things that are not As, Bs, or Cs).
@@ -252,99 +256,70 @@ No As are Bs                                       & $\forall i \in R: A(i) \cen
 \label{tab:sem}
 \end{table}
 
+\subsection{Interpreting the premises}
 
-\subsection{Literal interpretation and argument strength}
+Given a representation and assignment of prior probabilities to different states (Venn diagrams), we now introduce models that update their beliefs about the states given the premises of the syllogism. 
+This interpretation process can occur at the level of a literal listener (who updates beliefs based on the truth-conditional meaning of the premises) or a pragmatic listener who interpreted the premises by reasoning about why a speaker chose to produce the premises that she did. 
 
-Our pragmatics model begins with submodal that performs a literal interpretation of the premises. 
-The model computes a 
+\subsubsection{Literal interpretation of premises}
 
-The strength of a syllogistic argument (two premises) for a conclusion is a real-valued number between 0 and 1 given by the $P(u_c \mid u_1, u_2)$, where $u_1$ and $u_2$ are the two premises of the syllogism.
+All our recursive reasoning modeling components ground out in model of literal interpretation.
+This model component is a Bayesian literal listener $L_0$ which updates its prior beliefs about the state via the literal, truth conditional meaning of the utterance (shown in Table \ref{tab:sem}):
+
+\begin{equation}
+L_0(s \mid u ) \propto P(s)\cdot \mathcal{L}(u, s) 
+\label{eq:L0}
+\end{equation}
+\noindent where $\mathcal{L}(u, s)$ is the lexicon that encodes the literal meanings of the quantified utterances used in syllogisms. 
+These meanings can resolve to deterministic outcomes (e.g., $\mathcal{L}(u, s) = 1$ if the utterance $u$ is true of $s$, and 0 otherwise). 
+In practice, however, we assume a small amount of noise $\phi$ in the semantics such that $\mathcal{L}(u, s) = 1$ with probability proportional to $(1-\phi)$ and if the utterance $u$ is true of $s$.
+In other words, we assume a continuously valued semantics such that $\mathcal{L}(u, s) \in [0, 1] \subset \mathbb{R}$ as introduced by \citeA{degen2020redundancy}.
+
+The model of literal interpretation can be used to update the prior distribution on states (Venn diagrams) into a posterior distribution given the meaning of the premises of the syllogism. 
+For the interpretation of a syllogism, $u$ is composed of two utterances (the two syllogistic sentences): $u_1$ and $u_2$. 
+Belief updating proceeds by assuming both utterances are true: 
+\begin{equation}
+L_0(s \mid u_1,  u_2) \propto P(s)\cdot \mathcal{L}(u_1, s) \cdot \mathcal{L}(u_2, s) 
+\label{eq:L0premises}
+\end{equation}
+
+\label{Pragmatic interpretation of premises}
+
+Understanding language often involves reasoning not only about the literal meaning of what was said but about why an interlocutor (the speaker) would bother to say what they said. 
+We can formalize this reasoning through a series of Bayesian models that recursively reason about one another, as developed in the Rational Speech Act (RSA) framework \cite{Frank2012a, goodman2016pragmatic, scontras2018probabilistic}.
+Concretely, we describe a pragmatic listener $L_1$ who reason about a speaker $S_1$ who produces utterances in order to convey information to the literal listener (Equation \ref{eq:L0premises}). 
+
+\begin{align}
+L_1(s \mid u_1,  u_2)& \propto  P(s)\cdot S_1(u_1, u_2 \mid s)  \label{eq:L1} \\ 
+S_1(u_1, u_2 \mid s) &\propto  \exp [ \alpha_1 \cdot \ln L_0(s \mid u_1,  u_2)]  \label{eq:S1}
+\end{align}
+
+The definition of the pragmatic listener (Equation \ref{eq:L1}) mirrors that of the literal listener (Equation \ref{eq:L0}) expect in that the likelihood is defined as the probability that a speaker $S_1$ would produce utterances $u_1$ and $u_2$ given a state $s$.
+Following standard practice in RSA modeling, the speaker is a soft-max rational agent (with degree of rationality $\alpha_1$) who produces utterances in order to convey information to the literal listener.
+The normalization in Equation \ref{eq:S1} implies a normalization over a set of alternative utterances (i.e., the set of sentences that the speaker can produce (but doesn't). 
+Here we assume that the alternative set is all syllogisms with the same ordering of terms (i.e., syllogisms of the same \emph{figure}). For example, if the speaker says \emph{All As are Bs. All Bs are Cs.}, the alternative set is the set of syllogisms of the form \emph{Q As are Bs}. \emph{Q Bs are Cs.} where $Q \in \{all, some, \emph{not all}, none\}$. 
+
+\subsection{Producing a conclusion}
+
+The pragmatic production of a conclusion is a model of a speaker who tries to produce the most informative utterance (conclusion) to convey information to a naive listener. 
+
+
+\subsubsection{Literal production of conclusion}
+
+% In a classical reasoning model, these 
+% lexical meanings such that
+% Our pragmatics model begins with submodal that performs a literal interpretation of the premises. 
+% The model computes a 
+Given a belief updating model based on the premises of a syllogism, we can define a literal production model $S_0$ that uses $L_0$'s posterior distribution on states to determine what conclusion is likely to be true given the premises. 
+
+%The strength of a syllogistic argument (two premises) for a conclusion is a real-valued number between 0 and 1 given by the $P(u_c \mid u_1, u_2)$, where $u_1$ and $u_2$ are the two premises of the syllogism.
 We compute this probability combining the prior distribution over situations with the literal meanings of the quantified statements: 
 
-$$
-P(u_3 \mid u_1, u_2) \propto \sum_s P(u_3\mid s) \cdot P(s \mid u_1, u_2)
-$$
-
-$$P(s \mid u_1, u_2) \propto P(s)\cdot \delta_{\denote{u_1}(s)} \cdot \delta_{\denote{u_2}(s)} $$
+\begin{equation}
+R_0(u_3 \mid u_1, u_2) \propto \sum_s P(u_3\mid s) \cdot L_0(s \mid u_1, u_2)
+\end{equation}
 
 
-Truth-functional meanings of quantifier expressions are useful here because an expression which assigns a Boolean value to a situation can be used for probabilisitic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over situations into a posterior belief distribution: 
-where $u_1, u_2$ are the two quantifier-utterances corresponding to the premises of a syllogism (e.g. $u_{\textrm{all  \emph{A} are \emph{B}}}, u_{\textrm{some  \emph{B} are not \emph{C}}}$).
-
-
-
-To compute this probability, we first sample a situation and then evaluate wh
-
-
-
-
-The truth conditions of the syllogistic sentences are determined by evaluating the object types that are present in a situation.
-
-
-For syllogistic reasoning, we are interested not in the posterior distribution over situations \emph{per se}, but the distribution on true conclusions that these situations entail: $P(u_3 \mid s)$, where $u_3$ is a quantifier-utterance corresponding to the conclusion of a syllogism (e.g. $u_{\textrm{some  \emph{A} are \emph{C}}}$). Hence,
-
-
-
-
-% For simplicity, we will refer to each region by the positive properties (i.e., properties which are present)
-% In each situation, a region may be ``on'' or ``off'', corresponding to the presence or absence of that kind of object (e.g., if region "
-
-% The set of unique situations (unique Venn diagrams) is $2^{3}$
-
-
-composed of objects with properties, similar to mental models \cite{JL1983}. 
-%
-A situation $s \in S$ is composed of $n$ objects: $s = \{o_1, o_2, ..., o_n\}$, each of which can have 3 properties:
-$$
-s = \{ \{A_{o_{1}}, B_{o_{1}} , C_{o_{1}}\},  \{A_{o_{2}}, B_{o_{2}} , C_{o_{2}}\}, ... , \{A_{o_{n}}, B_{o_{n}} , C_{o_{n}}\} \}
-$$
-
-Properties $A$, $B$, and $C$ of these objects are stochastic
-%but persistent\footnote{This is so a given object has the same value each time it is examined, even though that property-value is initially determined probabilistically} 
-and assumed to be Boolean for simplicity. 
-%
-Properties \emph{across} objects are assumed to be independent and identically distributed \emph{(iid)}; hence, 
-%\begin{align*}
-%P(A_{o_{1}}, B_{o_{1}}, C_{o_{1}})			&					= P(A_{o_{i}}, B_{o_{i}}, C_{o_{i}}) \\
-%			&					= P(a, b, c)
-%\end{align*}
-%and 
-%
-To account for syllogistic reasoning in \citeA{Chater1999}'s meta-analysis of 5 studies, which differed with respect to the materials used, the model assumed no \emph{a priori} information about the meaning of the properties; thus, properties  \emph{within} objects were determined independently and identically (\emph{i.i.d.}): $`$, with $p \sim \text{Bernoulli(}\theta\text{)}$.
-
-The number of objects in a situation $n$ is a parameter of the model, as is the base rate $\theta$ of properties. In fitting the model to the meta-analysis data, \citeA{Tessler2014} found $\theta \approx 0.25$, qualitatively consistent with the ``rarity assumption''---that properties are relatively rare of objects---first used by \citeA{Oaksford1994}. The best fitting $n$ was around 5, also consistent with the ``minimal model assumption'' of the Mental Models framework \cite{JL1983}.
-
-
-\subsection{A generative model of argument strength}
-
-The generative model of situations can be turned into a generative model of syllogistic reasoning by providing a semantics for the quantifier sentences of a syllogism. The model uses the interpretation of quantifier sentences as truth-functional operators, consistent with standard practice in formal semantics. 
-
-A quantifier utterance (e.g $u_{\textrm{all \emph{A} are \emph{B}}}$) maps two properties (e.g. \emph{A} and \emph{B}) to a truth value by consulting the properties of the objects in the situation $s$ and applying the usual literal meaning. For instance:
-\begin{align*}
-\denote{u_{\textrm{no  \emph{A} are \emph{B}}}}= \{s \in S : \| o_A \cap o_B \| = 0\}\\ 
-\denote{u_{\textrm{some  \emph{A} are \emph{B}}}}= \{s \in S: \| o_A \cap o_B \|> 0\}\\
-\denote{u_{\textrm{all  \emph{A} are \emph{B}}}}= \{s \in S: \| o_A \cap o_B \| = n\}\\
-\denote{u_{\textrm{not all  \emph{A} are \emph{B}}}}= \{s \in S: \| o_A \cap o_B \|< n\}
-\end{align*}
-%
-where $o_A = \{o_i | A_{o_{i}} = 1\} $ and $o_B = \{o_i | B_{o_{i}} = 1\} $ represent the objects in a situation that have the properties $A$ and $B$, respectively.
-Thus, the quantifier utterances pick out the situations $s$ where the truth-functional meaning of the utterance is satisfied. 
- 
-Truth-functional meanings of quantifier expressions are useful here because an expression which assigns a Boolean value to a situation can be used for probabilisitic conditioning. That is, these quantifier expressions can be used to update a prior belief distribution over situations into a posterior belief distribution: 
-$$P(s \mid u_1, u_2) \propto P(s)\cdot \delta_{\denote{u_1}(s)} \cdot \delta_{\denote{u_2}(s)} $$
-where $u_1, u_2$ are the two quantifier-utterances corresponding to the premises of a syllogism (e.g. $u_{\textrm{all  \emph{A} are \emph{B}}}, u_{\textrm{some  \emph{B} are not \emph{C}}}$).
-
-For syllogistic reasoning, we are interested not in the posterior distribution over situations \emph{per se}, but the distribution on true conclusions that these situations entail: $P(u_3 \mid s)$, where $u_3$ is a quantifier-utterance corresponding to the conclusion of a syllogism (e.g. $u_{\textrm{some  \emph{A} are \emph{C}}}$). Hence,
-
-$$
-P(u_3 \mid u_1, u_2) \propto P(u_3\mid s) \cdot P(s \mid u_1, u_2)
-$$
-
-
-This model, thus, returns a posterior distribution over conclusions conditioned on the premises of a syllogism being true.
-
-
-The Bayesian model has a natural way of accounting for the influence of prior beliefs in reasoning. Indeed, beliefs simply specify a prior distribution over situations. In particular, the assumption that properties in a situation are independent and identically distributed \emph{(i.i.d.)} must be relaxed if we are to consider real-world content. I generalize the model by considering that properties can have correlations; the representation of expectations about the presence or absence of properties will be generalized from one marginal distribution---$P(p)=P(a)=P(b)=P(c)$---to the joint distribution: $P(a, b, c)$.
 
 \section{Modeling the Ragni et al. (2016) data set}
 
