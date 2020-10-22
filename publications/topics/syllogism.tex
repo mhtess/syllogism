@@ -1,4 +1,4 @@
-\documentclass[floatsintext, man]{apa6}
+\documentclass[floatsintext, doc]{apa6}
 %\bibliography{references}
 \usepackage{apacite}
 \usepackage{subcaption}
@@ -9,7 +9,9 @@
 \usepackage{amssymb}
 \usepackage{tikz}
 %\usepackage[sc,osf]{mathpazo}
-\linespread{1.12}
+%\linespread{1.12}
+\usepackage{booktabs}
+\usepackage{centernot}
 
 % these packages are needed to insert results 
 % obtained from R into the LaTeX document
@@ -110,7 +112,7 @@
 \newcommand{\ndg}[1]{{\textcolor{Green}{[ndg: #1]}}}
 \newcommand{\red}[1]{{\textcolor{Red}{#1}}}
 
-\authornote{Corresponding author: Michael Henry Tessler, 450 Serra Mall, Building 420, Department of Psychology, Room 316, Stanford University, Stanford, CA 94305, USA. E-mail: tessler@mit.edu Present address: Department of Brain and Cognitive Sciences, Building 46, Room 3027,	Massachusetts Institute of Technology, 77 Massachusetts Avenue, Cambridge, MA 02139-4307, USA}
+\authornote{Corresponding author: Michael Henry Tessler,  Department of Brain and Cognitive Sciences, Building 46, Room 3027,	Massachusetts Institute of Technology, 77 Massachusetts Avenue, Cambridge, MA 02139-4307, USA; tessler@mit.edu}
 
 \abstract{\mht{abstract from 2014 cogsci paper}
 Syllogistic reasoning lies at the intriguing intersection of natural and formal reasoning, of language and logic. Syllogisms comprise a formal system of reasoning yet use natural language quantifiers, and invite natural language conclusions. How can we make sense of the interplay between logic and language? We develop a computational-level theory that con- siders reasoning over concrete situations, constructed probabilistically by sampling. The base model can be enriched to consider the pragmatics of natural language arguments. The model predictions are compared with behavioral data from a recent meta-analysis. The flexibility of the model is then explored in a data set of syllogisms using the generalized quantifiers most and few. We conclude by relating our model to two extant theories of syllogistic reasoning – Mental Models and Probability Heuristics.}
@@ -168,19 +170,14 @@ We present a model in the Rational Speech Act framework (Frank \& Goodman, 2012;
 
 \section{Computational Model}
 
+%\section{Bayesian argument strength in syllogistic reasoning}
 
 
+\subsection{Ontology and semantics}
 
+The model is based on an ontology of situations represented by Venn diagrams corresponding to all possible logical relations between the sets of three properties: A, B, C. 
 
-\section{Bayesian argument strength in syllogistic reasoning}
-
-A formal account of gradience in syllogistic reasoning was presented by \citeA{Tessler2014}. The computational model is a Bayesian model; as such, it is important to understand the implications of the prior for syllogistic reasoning. I review the model, highlighting along the way how I generalize the model to consider content effects.
-
-\subsection{Ontology}
-
-The model is based on an ontology of situations represented by Venn diagrams corresponding to all possible logical relations between the sets of three properties (A, B, C). 
-
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \begin{tikzpicture}[fill=gray]
 % left hand
@@ -202,27 +199,64 @@ The model is based on an ontology of situations represented by Venn diagrams cor
       (-1.5,-2.25) rectangle (2.5,1.25) node [text=black,above] {};
 \end{tikzpicture}
 \label{fig:venn}
-\caption{Here is a caption.}
+\caption{A state is represented by Boolean values over the regions of a Venn diagram, corresponding to the presence or absence of unique object types.}
 \end{figure}
 
-Each Venn diagram is composed of 8 regions, corresponding to the presence or absence of each of the three properties: $\{\{A,B,C\}, \{A,B,\neg C\}, \{A,\neg B,C\}, \{\neg A, B, C\}, \{A, \neg B, \neg C\},...\}$. (For simplicity, we will refer to regions by the properties that are present, omitting the absent properties; for example, $\{A, B, \neg C\}$ will be referred to as $AB$.)
+Each Venn diagram contains eight regions $i \in R$, corresponding to the presence or absence of each of the three properties: $\{\{A,B,C\}, \{A,B,\neg C\}, \{A,\neg B,C\}, \{\neg A, B, C\}, \{A, \neg B, \neg C\},...\}$. (For simplicity, when possible, we will refer to regions by the properties that are present, omitting the absent properties; for example, $\{A, B, \neg C\}$ will be referred to as $AB$.)
 These regions can be thought of as unique object types (e.g., an object defined by having properties $A$ and $B$ but not $C$).\footnote{This diagram representation is analogous to a mental model in the style of \citeA{johnson1983mental} composed of object tokens (e.g., some objects which have properties $A$ or $B$, etc.) but where only unique object tokens are represented (e.g., there cannot be two objects which have the same set of properties).}
-Then, a situation $s \in S$ is composed of the set of object types that are present.
-For example, one situation could be $\{AB, BC, A\}$.
-The set of unique situations (Venn diagrams) has size $2^8 = 256$, though we exclude the situation where all 8 regions are empty (i.e., there are no As, Bs, and Cs, but also no things that are not As, Bs, or Cs).
+Then, a situation (Venn diagram) $s \in S$ is composed of the set of object types (regions) that are present (e.g., $\{AB, BC, A\}$ is one state)
+The set of unique states has size $2^8 = 256$, though we exclude the state where all eight regions are empty (i.e., the state where there are no As, Bs, and Cs, but also no things that are not As, Bs, or Cs).
 
-Situations $s \in S$ are probabilistically generated by sampling a Bernoulli random variable for each of the 8 regions. 
+Our model probabilistically generates states $s \in S$ by sampling a Bernoulli random variable for each of the $i \in R$ regions. 
 
-$$P(s) = \prod_{1\leq i\leq  8} P(A_{i}, B_{i}, C_{i}) $$%= (P(a) \cdot P(b) \cdot P(c)) ^n$$
+$$P(s) = \prod_{i \in R} P(A_{i}, B_{i}, C_{i}) $$%= (P(a) \cdot P(b) \cdot P(c)) ^n$$
 
 %\subsection{Semantics}
 The classical syllogisms are comprised by two premise arguments where each premise relates two properties via a quantifier. 
 The quantifiers in classical syllogism are \emph{all}, \emph{some}, \emph{none}, and \emph{not all}.\footnote{
 These quantifiers are typically presented in sentences such that \emph{none} is rendered as \emph{no} (e.g., No As are Bs) and \emph{not all} is rendered as \emph{some are not} (e.g., Some As are not Bs).
 }
-We use the classic logical semantics of these quantifiers: \emph{All As are Bs} entails that $\nexists (A \& \neg B)$;  \emph{Some As are Bs} entails that $\exists (A \& B)$; \emph{Some As are not Bs} entails that $\exists (A \& \neg B)$; \emph{No As are Bs} entails that $\nexists (A \& B)$.
+We use the classic logical semantics of these quantifiers described in Table \ref{tab:sem}.
+We assume the statements involving \emph{all} and \emph{none} describe situations in which there exist objects that have the property, sometimes referred to as the ``existential presupposition'' (e.g., \emph{All A are B} is false if there are no As). 
 
-\subsection{Argument strength}
+%: \emph{All As are Bs} entails that $\nexists (A \& \neg B)$;  \emph{Some As are Bs} entails that $\exists (A \& B)$; \emph{Some As are not Bs} entails that $\exists (A \& \neg B)$; \emph{No As are Bs} entails that $\nexists (A \& B)$.
+
+
+% Please add the following required packages to your document preamble:
+%\begin{table}[]
+%\centering
+%\begin{tabular}{@{}lll@{}}
+%\toprule
+%Example syllogistic sentence & Consistent State & Inconsistent state \\ \midrule
+%All As are Bs                & \{AB, ABC\}      & \{A, ABC\}         \\
+%Some As are Bs               & \{A, AB\}        & \{A, AC\}          \\
+%Some As are not Bs           & \{A, AB\}        & \{AB, ABC\}        \\
+%No As are Bs                 & \{A, AC\}        & \{A, AB\}          \\ \bottomrule
+%\end{tabular}
+%\caption{cap}
+%\end{table}
+
+
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+\begin{table}[]
+\begin{tabular}{@{}llll@{}}
+\toprule
+Example syllogistic sentence & Literal Meaning                                                                       & Consistent State & Inconsistent state \\ \midrule
+All As are Bs                                      & $\forall i \in R: A(i) \implies B(i) $ & \{AB, ABC\}                           & \{A, ABC\}                              \\
+Some As are Bs                                     & $\exists i \in R: A(i) \implies B(i) $ & \{A, AB\}                             & \{A, AC\}                               \\
+Some As are not Bs                                 & $\exists i \in R: A(i)  \centernot \implies B(i) $ & \{A, AB\}                             & \{AB, ABC\}                             \\
+No As are Bs                                       & $\forall i \in R: A(i) \centernot \implies B(i) $  & \{A, AC\}                             & \{A, AB\} \\ \bottomrule
+\end{tabular}
+\caption{Literal meanings of example syllogistic sentences with examples of states that are consistent with the literal meanings and inconsistent with the literal meanings.}
+\label{tab:sem}
+\end{table}
+
+
+\subsection{Literal interpretation and argument strength}
+
+Our pragmatics model begins with submodal that performs a literal interpretation of the premises. 
+The model computes a 
 
 The strength of a syllogistic argument (two premises) for a conclusion is a real-valued number between 0 and 1 given by the $P(u_c \mid u_1, u_2)$, where $u_1$ and $u_2$ are the two premises of the syllogism.
 We compute this probability combining the prior distribution over situations with the literal meanings of the quantified statements: 
@@ -312,6 +346,14 @@ This model, thus, returns a posterior distribution over conclusions conditioned 
 
 The Bayesian model has a natural way of accounting for the influence of prior beliefs in reasoning. Indeed, beliefs simply specify a prior distribution over situations. In particular, the assumption that properties in a situation are independent and identically distributed \emph{(i.i.d.)} must be relaxed if we are to consider real-world content. I generalize the model by considering that properties can have correlations; the representation of expectations about the presence or absence of properties will be generalized from one marginal distribution---$P(p)=P(a)=P(b)=P(c)$---to the joint distribution: $P(a, b, c)$.
 
+\section{Modeling the Ragni et al. (2016) data set}
+
+We test our model using a dataset published by \citeA{ragni2019does}. The data set consists of the results of the results of web experiment in which participants ($n = 139$) provided conclusions to all 64 syllogisms. In the experiment, participants completed all syllogistic reasoning problems after a brief training phase. Participants responded by selecting one of the nine possible responses for the conclusion of the syllogism.
+
+
+\begin{enumerate}
+\item describe BDA, parameters, priors
+\end{enumerate}
 
 
 \section{Experiments}
