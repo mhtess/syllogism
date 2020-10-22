@@ -283,7 +283,7 @@ L_0(s \mid u_1,  u_2) \propto P(s)\cdot \mathcal{L}(u_1, s) \cdot \mathcal{L}(u_
 \label{eq:L0premises}
 \end{equation}
 
-\label{Pragmatic interpretation of premises}
+\subsubsection{Pragmatic interpretation of premises}
 
 Understanding language often involves reasoning not only about the literal meaning of what was said but about why an interlocutor (the speaker) would bother to say what they said. 
 We can formalize this reasoning through a series of Bayesian models that recursively reason about one another, as developed in the Rational Speech Act (RSA) framework \cite{Frank2012a, goodman2016pragmatic, scontras2018probabilistic}.
@@ -301,24 +301,65 @@ Here we assume that the alternative set is all syllogisms with the same ordering
 
 \subsection{Producing a conclusion}
 
-The pragmatic production of a conclusion is a model of a speaker who tries to produce the most informative utterance (conclusion) to convey information to a naive listener. 
+The second component of a syllogistic reasoning model is a model of conclusion production. 
+That is, given an a set of beliefs about the likely state of affairs (Venn diagram), what conclusion should be drawn?
+We formalize two models of conclusion production.
+The first is a literal speaker, who selects conclusions that are likely to be true given the speaker's beliefs about the state. 
+The second is a pragmatic speaker, who selects a conclusion that would best align a naive listener's beliefs with the speaker's beliefs. 
+Since these models produce a distribution over conclusions, we label these models as reasoner models $R$, so as to not confuse them with the speaker models $S$ that are used as part of the recursion in pragmatic interpretation. 
+%The pragmatic production of a conclusion is a model of a speaker who tries to produce the most informative utterance (conclusion) to convey information to a naive listener. 
 
-
-\subsubsection{Literal production of conclusion}
+\subsubsection{Literal production of conclusions}
 
 % In a classical reasoning model, these 
 % lexical meanings such that
 % Our pragmatics model begins with submodal that performs a literal interpretation of the premises. 
 % The model computes a 
-Given a belief updating model based on the premises of a syllogism, we can define a literal production model $S_0$ that uses $L_0$'s posterior distribution on states to determine what conclusion is likely to be true given the premises. 
+Given a belief updating model based on the premises of a syllogism, we can define a literal production model $S_0$ that uses the listener $L$'s posterior distribution on states to determine what conclusion is likely to be true given the premises. 
+This production model could be paired with either the literal interpretation model $L_0$ or the pragmatic interpretation model $L_1$. 
+This model $R_0$ can be viewed as one that is sampling states from the listener's posterior distribution on states and randomly choosing among the conclusions that are literally true of that state. 
+
+
 
 %The strength of a syllogistic argument (two premises) for a conclusion is a real-valued number between 0 and 1 given by the $P(u_c \mid u_1, u_2)$, where $u_1$ and $u_2$ are the two premises of the syllogism.
-We compute this probability combining the prior distribution over situations with the literal meanings of the quantified statements: 
 
 \begin{equation}
-R_0(u_3 \mid u_1, u_2) \propto \sum_s P(u_3\mid s) \cdot L_0(s \mid u_1, u_2)
+R_0(u_3 \mid u_1, u_2) \propto \sum_s \mathcal{L}(u_3, s) \cdot L_0(s \mid u_1, u_2) \label{eq:R0}
 \end{equation}
 
+\subsubsection{Informative production of conclusions}
+
+Just as with our submodel of premise interpretation, we can define a reasoner model who selects conclusions in order to convey information to a naive listener (who has not heard either premises or conclusion). 
+Since the reasoner does not know the state, we operationalize the informational utility of a conclusion by how well it would align the listener's beliefs with those of the reasoner. 
+Formally, we use the information-theoretic measure of Kullback-Leibler (KL) divergence as the measure of alignment of the naive listener and reasoner's belief distributions. 
+Again, this formalization is agnostic as to how we compute the reasoner's distribution (whether it be via a literal or a pragmatic interpretation of the premises), and so we denote the reasoner's distribution as $R$.
+
+
+\begin{align}
+  \label{eq:KL-divergence}
+  \text{KL}({R \mid \mid L_0}(u)) = - \sum_{s} R(s) \ \log \frac{R(s)}{{L_{0}}(s \mid u)}
+\end{align}
+
+\noindent Then, the reasoner model that selects conclusions an informative manner is given by: 
+
+\begin{equation}
+R_1(u_3 \mid u_1,  u_2) \propto  \exp [ \alpha_2 \cdot \text{KL}({R_1(s) \mid \mid L_0}(s \mid u)) ]  \label{eq:R1}
+\end{equation}
+
+\noindent where $L_0(s \mid u)$ is the literal listener model defined in Equation \ref{eq:L0}. 
+%prior distribution over situations with the literal meanings of the quantified statements: 
+
+
+
+
+
+
+%Using KL-divergence, we can then state a more general definition of utterance utilities, to
+%replace \eqref{U}:
+%\begin{align}
+%  \label{eq:Utils-KL-based}
+%  U_{S_1}(u; s) = \text{KL}(P_{S_{1}\text{-}Bel} \mid \mid P_{L_{0}\text{-}Bel}(u)) - C(u)
+%\end{align}
 
 
 \section{Modeling the Ragni et al. (2016) data set}
