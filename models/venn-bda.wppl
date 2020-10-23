@@ -1,11 +1,12 @@
-// webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork literal literal 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork literal pragmatic qud 1
 
 var args = process.argv
 var chain = last(args) // load index as last command line index
 
 var pragParams = {
-  interpretation: args[args.length - 3],
-  production: args[args.length - 2]
+  interpretation: args[args.length - 4],
+  production: args[args.length - 3],
+  qud: args[args.length - 2]
 }
 
 display(JSON.stringify(pragParams))
@@ -13,6 +14,7 @@ display(JSON.stringify(pragParams))
 var pragmatics = {
   interpretation: !(pragParams.interpretation == "literal"),
   production:  !(pragParams.production == "literal"),
+  qud:  !(pragParams.qud == "state")
 }
 
 display(JSON.stringify(pragmatics))
@@ -96,6 +98,28 @@ var parseVennDiagram = function(r) {
     i[1] ? i[0] : ""
   }, _.toPairs(r)).join("")
 }
+
+var vennToString = function(venn){
+  return filter(function(x){ x != null }, sort(map(function(v){
+    v.truth_val ? v.label : null
+  }, venn))).join(';')
+}
+
+var acQUDToString = function(venn){
+  var qudVal = map(function(v){
+      var label  = v.label
+      return v.truth_val ? label.replace("B", "") : null
+    }, venn)
+  // display(JSON.stringify(qudVal))
+  var filteredQudVal = filter(function(x){ x != null }, qudVal)
+  // display(JSON.stringify(filteredQudVal))
+  var uniqQudVal = _.uniq(filteredQudVal)
+  // display(JSON.stringify(uniqQudVal))
+  var sorted_uniqQudVal = sort(uniqQudVal)
+  // display(JSON.stringify(sorted_uniqQudVal))
+  return sorted_uniqQudVal.join(';')
+}
+
 
 var isChar = function(str, char){
   return str == char
@@ -226,9 +250,9 @@ var lexicon = {
     return !(any(some_filter(property1, property2), state))
   },
   some_not: function(state, property1, property2) {
-    // return !(all(all_filter(property1, property2), state) &&
-    //   any(some_filter(property1, property2), state))
-    return !(all(all_filter(property1, property2), state))
+    return !(all(all_filter(property1, property2), state) &&
+      any(some_filter(property1, property2), state))
+    // return !(all(all_filter(property1, property2), state))
   },
   nvc: function(state, property1, property2) {
     return true
@@ -447,62 +471,66 @@ var bda_model = function(){
     return v
   }})
 
-  var venn_interpreter = cache(function(sentences) {
+  var venn_interpreter = cache(function(sentences, qud) {
     Infer({
       model: function() {
         var venn = sample(venn_space)
-
         foreach(sentences, function(utterance) {
           var meaningFn = lexicon[utterance.quantifier]
           condition(flip(noise) ? true : meaningFn(venn, utterance.p1, utterance.p2))
         })
-
-        return venn
+        var qudVal = qud ? acQUDToString(venn) : vennToString(venn)
+        return qudVal
       },
       method: "enumerate"
     })
   })
 
-  var argument_speaker = cache(function(venn, observed_premises) {
+  var argument_speaker = cache(function(qudVal, observed_premises, qud) {
     Infer({
       model: function() {
         // var premises = map(sample, alternative_quantifier_set(observed_premises))
         var premises = map(sample, alternative_quantifier_order_set(observed_premises))
         // var premises = map(sample, alternative_set_maximal(observed_premises))
-        var LiteralDist = venn_interpreter(premises)
-        factor(speakerOptimality.alpha_1 * LiteralDist.score(venn))
+        var LiteralDist = venn_interpreter(premises, qud)
+        factor(speakerOptimality.alpha_1 * LiteralDist.score(qudVal))
         return premises
       },
       method: "enumerate"
     })
   })
 
-  var pragmatic_interpreter = cache(function(premises) {
+  var pragmatic_interpreter = cache(function(premises, pragmatics) {
     // display("pragmatic interpreter")
     Infer({
       model: function() {
         var venn = sample(venn_space)
-        var SpeakerDist = argument_speaker(venn, premises)
+        var qudVal = pragmatics.qud ? acQUDToString(venn) : vennToString(venn)
+
+        // display(JSON.stringify(vennToString(venn)))
+
+        var SpeakerDist = argument_speaker(qudVal, premises, pragmatics.qud)
+        // display(JSON.stringify(SpeakerDist))
         observe(SpeakerDist, premises)
-        return venn
+        return pragmatics.production ? vennToString(venn) : venn
       },
       method: "enumerate"
     })
   })
 
-  var full_pragmatic_reasoner = function(premises, pragmatics, first_term_preference) {
+  var modular_pragmatic_reasoner = function(premises, pragmatics, first_term_preference) {
     Infer({
       model: function() {
 
         var PremiseInterpretation = pragmatics.interpretation ?
-          pragmatic_interpreter(premises) :
-          venn_interpreter(premises)
+          pragmatic_interpreter(premises, pragmatics) :
+          venn_interpreter(premises, pragmatics)
 
-        var ConclusionPrior = makeConclusionPrior(conclusion, first_term_preference)
+        var ConclusionPrior = makeConclusionPrior(first_term_preference)
         var conclusion = sample(ConclusionPrior)
 
         if (pragmatics.production) {
-          var ConclusionInterpretation = venn_interpreter([conclusion])
+          var ConclusionInterpretation = venn_interpreter([conclusion], "state")
           var _kl = KL(PremiseInterpretation, ConclusionInterpretation, PremiseInterpretation.support())
           factor(speakerOptimality.alpha_2 * -1 * _kl)
           // factor(speakerOptimality.alpha_2 * ConclusionInterpretation.score(venn))
@@ -564,7 +592,7 @@ var bda_model = function(){
         var first_term_preference = firstTermPreference(syllogisticPremises) // A, C, or false
         // display('before rsa')
         // display(JSON.stringify(syllogisticPremises))
-        var rsaPredictions = full_pragmatic_reasoner(syllogisticPremises, pragmatics, first_term_preference)
+        var rsaPredictions = modular_pragmatic_reasoner(syllogisticPremises, pragmatics, first_term_preference)
         // display('after rsa')
 
 
@@ -608,12 +636,15 @@ var bda_model = function(){
 }
 
 
-var totalIterations = 1000, lag =  1;
-var samples = totalIterations/lag, burn = totalIterations / 2;
+// var totalIterations = 1000, lag =  1;
+var totalIterations = 10, lag =  0;
+
+var samples = totalIterations/(lag + 1), burn = totalIterations / 2;
 
 var outfile = 'results-syllogisms-ragni2016_full_' +
   pragParams.interpretation + '-interpretation_' +
-  pragParams.production + '-productionKL_' +
+  pragParams.production + '-production_' +
+  pragParams.qud + "-qud_"+
   totalIterations+ '_burn' + burn +
   '_lag' + lag + '_chain' + chain + '.csv'
 
