@@ -7,7 +7,7 @@ output: html_notebook
 library(tidyverse)
 library(tidyboot)
 library(ggplot2)
-
+library(knitr)
 library(coda)
 library(purrr)
 estimate_mode <- function(s) {
@@ -58,7 +58,7 @@ m.preds <- map_dfr(interpretation.models, function(interpretation){
     model.files <- list.files(
       path = model.path,
       pattern = paste(model.prefix, interpretation, "-interpretation_", 
-                      production, "-production", sep = "")
+                      production, "-productionKL", sep = "")
     )
     
     map_dfr(model.files, function(model.file){
@@ -76,11 +76,39 @@ m.preds <- map_dfr(interpretation.models, function(interpretation){
 })
 ```
 
+## Parameters
+
+```{r}
+m.preds %>% 
+  filter(type == "parameter", premise_1 != "statePrior") %>%
+  filter(val != -99) %>% 
+  unite(param, c(premise_1, premise_2)) %>%
+  unite(model, c(interpretation, production)) %>%
+  ggplot(., aes( x = val))+
+  geom_histogram()+
+  facet_grid(model~param, scales = 'free')
+```
+### State priors 
+```{r}
+m.preds %>% 
+  filter(type == "parameter", premise_1 == "statePrior") %>%
+  mutate(
+    premise_2 = ifelse(is.na(premise_2), "empty", premise_2),
+    region = factor(premise_2, levels = 
+                              c("empty", "A", "B", "C", "AB", "BC", "AC", "ABC"))) %>%
+  # filter(val != -99) %>% 
+  # unite(param, c(premise_1, premise_2)) %>%
+  unite(model, c(interpretation, production)) %>%
+  ggplot(., aes( x = val))+
+  geom_histogram()+
+  facet_grid(model~region, scales = 'free')+
+  scale_x_continuous(limits = c(0, 1))
+```
 
 ```{r}
 m.summary <- m.preds %>%
   filter(type == "prediction") %>%
-  rename(premise_1 = param, premise_2 = property, conclusion = category) %>%
+  #rename(premise_1 = param, premise_2 = property, conclusion = category) %>%
   group_by(interpretation, production, premise_1, premise_2, conclusion) %>%
   summarize(MAP = estimate_mode(val),
             cred_upper = HPDhi(val),
@@ -88,7 +116,10 @@ m.summary <- m.preds %>%
 ```
 
 ```{r}
-left_join(m.summary, df.summ) %>%
+md.summary <- left_join(m.summary, df.summ)
+
+
+md.summary %>%
   ggplot(., aes( x = MAP, y = proportion, color = conclusion_quantifier,
                  xmin = cred_lower, xmax = cred_upper))+
   geom_point()+
@@ -99,5 +130,40 @@ left_join(m.summary, df.summ) %>%
   ylim(0, 1)
 ```
 
+```{r}
+md.summary %>%
+  group_by(interpretation, production) %>%
+  summarize(
+    r = cor(MAP, proportion),
+    r2 = r^2,
+    mse = mean((MAP-proportion) ^2 )
+  ) %>%
+  kable(.)
+```
 
+### NVC
+
+```{r}
+md.summary  %>%
+  filter(conclusion_quantifier == "NVC") %>%
+  ggplot(., aes( x = MAP, y = proportion, color = conclusion_quantifier,
+                 xmin = cred_lower, xmax = cred_upper))+
+  geom_point()+
+  ggstance::geom_linerangeh()+
+  facet_grid(interpretation ~ production)+
+  coord_fixed(ratio = 1)+
+  xlim(0, 1)+
+  ylim(0, 1)
+```
+```{r}
+md.summary  %>%
+  filter(conclusion_quantifier == "NVC") %>%
+    group_by(interpretation, production) %>%
+  summarize(
+    r = cor(MAP, proportion),
+    r2 = r^2,
+    mse = mean((MAP-proportion) ^2 )
+  ) %>%
+  kable(.)
+```
 
