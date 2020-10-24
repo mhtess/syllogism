@@ -1,8 +1,9 @@
-// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular literal literal state 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular literal pragmatic state 1
 
 
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork integrated pragmatic literal conclusion 1
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork integrated pragmatic literal grounded 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork integrated pragmatic pragmatic grounded 1
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork integrated pragmatic pragmatic grounded 1
 
 //// CODEBOOK
@@ -543,7 +544,7 @@ var bda_model = function(){
         var SpeakerDist = argument_speaker(qudVal, premises, pragmatics)
         // display(JSON.stringify(SpeakerDist))
         observe(SpeakerDist, premises)
-        return venn
+        return pragmatics.production ? vennToString(venn) : venn
       },
       method: "enumerate"
     })
@@ -558,14 +559,14 @@ var bda_model = function(){
           pragmatic_interpreter(premises, pragmatics) :
           venn_interpreter(premises, pragmatics)
         // display('exit interpretation')
-
+        // {"modular":"modular","interpretation":"literal","production":"pragmatic","qud":"state"}
         // display(JSON.stringify(PremiseInterpretation.support().length))
         var ConclusionPrior = makeConclusionPrior(first_term_preference)
         var conclusion = sample(ConclusionPrior)
 
         if (pragmatics.production) {
 
-          var ConclusionInterpretation = venn_interpreter([conclusion], {qud: false, production: false})
+          var ConclusionInterpretation = venn_interpreter([conclusion], {qud: false, production: true})
           // display(JSON.stringify(ConclusionInterpretation.support().length))
           var _kl = KL(
             PremiseInterpretation,
@@ -687,7 +688,8 @@ var bda_model = function(){
           var ConclusionPrior = makeConclusionPrior(first_term_preference)
           var conclusion = sample(ConclusionPrior)
 
-          var ConclusionInterpretation = venn_interpreter([conclusion], true)
+          // var ConclusionInterpretation = venn_interpreter([conclusion], true)
+          var ConclusionInterpretation = venn_interpreter([conclusion], {qud: true, production: true})
           // display(JSON.stringify(sort(ConclusionInterpretation.support())))
           var _kl = KL(qudValDist, ConclusionInterpretation, qudValDist.support())
           // display(formatSentence(conclusion) + " _ " + _kl)
@@ -781,7 +783,7 @@ var bda_model = function(){
 
 
 // var totalIterations = 1000, lag =  1;
-var totalIterations = 10000, lag =  0;
+var totalIterations = 5000, lag =  0;
 // var totalIterations = 10, lag =  0;
 
 var samples = totalIterations/(lag + 1), burn = totalIterations / 2;
