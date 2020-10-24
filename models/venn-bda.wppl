@@ -493,6 +493,7 @@ var bda_model = function(){
         var premises = map(sample, alternative_quantifier_order_set(observed_premises))
         // var premises = map(sample, alternative_set_maximal(observed_premises))
         var LiteralDist = venn_interpreter(premises, qud)
+        // display(JSON.stringify(LiteralDist.support()))
         factor(speakerOptimality.alpha_1 * LiteralDist.score(qudVal))
         return premises
       },
@@ -506,7 +507,7 @@ var bda_model = function(){
       model: function() {
         var venn = sample(venn_space)
         var qudVal = pragmatics.qud ? acQUDToString(venn) : vennToString(venn)
-
+        // display(qudVal)
         // display(JSON.stringify(vennToString(venn)))
 
         var SpeakerDist = argument_speaker(qudVal, premises, pragmatics.qud)
@@ -525,12 +526,17 @@ var bda_model = function(){
         var PremiseInterpretation = pragmatics.interpretation ?
           pragmatic_interpreter(premises, pragmatics) :
           venn_interpreter(premises, pragmatics)
+        // display('exit interpretation')
 
+        // display(JSON.stringify(PremiseInterpretation.support().length))
         var ConclusionPrior = makeConclusionPrior(first_term_preference)
         var conclusion = sample(ConclusionPrior)
 
         if (pragmatics.production) {
-          var ConclusionInterpretation = venn_interpreter([conclusion], "state")
+
+          var ConclusionInterpretation = venn_interpreter([conclusion], false)
+          // display(JSON.stringify(ConclusionInterpretation.support().length))
+
           var _kl = KL(PremiseInterpretation, ConclusionInterpretation, PremiseInterpretation.support())
           factor(speakerOptimality.alpha_2 * -1 * _kl)
           // factor(speakerOptimality.alpha_2 * ConclusionInterpretation.score(venn))
