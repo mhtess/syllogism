@@ -1,3 +1,6 @@
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular literal literal state 1
+
+
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork integrated pragmatic literal conclusion 1
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork integrated pragmatic literal grounded 1
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork integrated pragmatic pragmatic grounded 1
@@ -489,7 +492,15 @@ var bda_model = function(){
     return v
   }})
 
-  var venn_interpreter = cache(function(sentences, qud) {
+
+  // var marginalizeVennToStr = cache(function(stateDist){
+  //   Infer({model: function(){
+  //     var state = sample(stateDist)
+  //     vennToString(state)
+  //   }})
+  // })
+
+  var venn_interpreter = cache(function(sentences, pragmatics) {
     Infer({
       model: function() {
         var venn = sample(venn_space)
@@ -497,27 +508,28 @@ var bda_model = function(){
           var meaningFn = lexicon[utterance.quantifier]
           condition(flip(noise) ? true : meaningFn(venn, utterance.p1, utterance.p2))
         })
-        var qudVal = qud ? acQUDToString(venn) : vennToString(venn)
-        return qudVal
+        var qudVal = pragmatics.qud ? acQUDToString(venn) : vennToString(venn)
+        return (pragmatics.interpretation || pragmatics.production) ? qudVal : venn
       },
       method: "enumerate"
     })
-  })
+  }, 20000)
 
-  var argument_speaker = cache(function(qudVal, observed_premises, qud) {
+  var argument_speaker = cache(function(qudVal, observed_premises, pragmatics) {
     Infer({
       model: function() {
         // var premises = map(sample, alternative_quantifier_set(observed_premises))
         var premises = map(sample, alternative_quantifier_order_set(observed_premises))
         // var premises = map(sample, alternative_set_maximal(observed_premises))
-        var LiteralDist = venn_interpreter(premises, qud)
-        // display(JSON.stringify(LiteralDist.support()))
+        // var LiteralDist = marginalizeVennToStr(venn_interpreter(premises, qud))
+        var LiteralDist = venn_interpreter(premises, pragmatics)
+        // display(JSON.stringify(LiteralDist.support().length))
         factor(speakerOptimality.alpha_1 * LiteralDist.score(qudVal))
         return premises
       },
       method: "enumerate"
     })
-  })
+  }, 20000)
 
   var pragmatic_interpreter = cache(function(premises, pragmatics) {
     // display("pragmatic interpreter")
@@ -528,16 +540,17 @@ var bda_model = function(){
         // display(qudVal)
         // display(JSON.stringify(vennToString(venn)))
 
-        var SpeakerDist = argument_speaker(qudVal, premises, pragmatics.qud)
+        var SpeakerDist = argument_speaker(qudVal, premises, pragmatics)
         // display(JSON.stringify(SpeakerDist))
         observe(SpeakerDist, premises)
-        return pragmatics.production ? vennToString(venn) : venn
+        return venn
       },
       method: "enumerate"
     })
-  })
+  }, 20000)
 
   var modular_pragmatic_reasoner = function(premises, pragmatics, first_term_preference) {
+    // display('enter modular')
     Infer({
       model: function() {
 
@@ -552,14 +565,19 @@ var bda_model = function(){
 
         if (pragmatics.production) {
 
-          var ConclusionInterpretation = venn_interpreter([conclusion], false)
+          var ConclusionInterpretation = venn_interpreter([conclusion], {qud: false, production: false})
           // display(JSON.stringify(ConclusionInterpretation.support().length))
-
-          var _kl = KL(PremiseInterpretation, ConclusionInterpretation, PremiseInterpretation.support())
+          var _kl = KL(
+            PremiseInterpretation,
+            ConclusionInterpretation,
+            PremiseInterpretation.support()
+          )
           factor(speakerOptimality.alpha_2 * -1 * _kl)
           // factor(speakerOptimality.alpha_2 * ConclusionInterpretation.score(venn))
         } else {
+          // display('enter literal production')
           var venn = sample(PremiseInterpretation)
+          // display(JSON.stringify(venn))
           var conclusionMeaningFn = lexicon[conclusion.quantifier]
           condition(conclusionMeaningFn(venn, conclusion.p1, conclusion.p2))
         }
@@ -763,7 +781,8 @@ var bda_model = function(){
 
 
 // var totalIterations = 1000, lag =  1;
-var totalIterations = 10, lag =  0;
+var totalIterations = 10000, lag =  0;
+// var totalIterations = 10, lag =  0;
 
 var samples = totalIterations/(lag + 1), burn = totalIterations / 2;
 
