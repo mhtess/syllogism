@@ -87,10 +87,10 @@ var iidProbs = {
   "A": 0.5,
   "B": 0.5,
   "C": 0.5,
-  "AB": 0.25,
-  "BC": 0.25,
-  "AC": 0.25,
-  "ABC": 0.125
+  "AB": 0.5,
+  "BC": 0.5,
+  "AC": 0.5,
+  "ABC": 0.5
 }
 
 var correlatedProbs = {
@@ -183,9 +183,9 @@ var lexicon = {
     return !(any(some_filter(property1, property2), state))
   },
   some_not: function(state, property1, property2) {
-    // return !(all(all_filter(property1, property2), state) &&
-    //   any(some_filter(property1, property2), state))
-    return !(all(all_filter(property1, property2), state))
+    return !(all(all_filter(property1, property2), state) &&
+      any(some_filter(property1, property2), state))
+    // return !(all(all_filter(property1, property2), state))
   },
   nvc: function(state, property1, property2) {
     return true
@@ -278,51 +278,56 @@ var MakeUniformDraw = function(lst) {
   })
 }
 
-var alternative_quantifier_set = cache(function(observed_premises) {
-  map(function(obs_prm) {
-    MakeUniformDraw(map(function(q) {
-      return {
-        p1: obs_prm.p1,
-        p2: obs_prm.p2,
-        quantifier: q
-      }
-    }, quantifiers))
-  }, observed_premises)
+var alternative_quantifier_set_fn = cache(function(obs_prm) {
+  MakeUniformDraw(map(function(q) {
+    return {
+      p1: obs_prm.p1,
+      p2: obs_prm.p2,
+      quantifier: q
+    }
+  }, quantifiers))
 })
 
+var alternative_quantifier_order_set_fn = cache(function(obs_prm) {
+  MakeUniformDraw(map(function(q) {
+    return {
+      p1: obs_prm.p1,
+      p2: obs_prm.p2,
+      quantifier: q
+    }
+  }, quantifiers).concat({
+    p1: obs_prm.p2,
+    p2: obs_prm.p1,
+    quantifier: obs_prm.quantifier
+  }))
+})
 
-var alternative_quantifier_order_set = cache(function(observed_premises) {
-  map(function(obs_prm) {
-    MakeUniformDraw(map(function(q) {
-      return {
+var alternative_set_maximal_fn = cache(function(obs_prm) {
+  MakeUniformDraw(_.flatten(map(function(q) {
+    return [{
         p1: obs_prm.p1,
         p2: obs_prm.p2,
         quantifier: q
+      },
+      {
+        p1: obs_prm.p2,
+        p2: obs_prm.p1,
+        quantifier: q
       }
-    }, quantifiers).concat({
-      p1: obs_prm.p2,
-      p2: obs_prm.p1,
-      quantifier: obs_prm.quantifier
-    }))
-  }, observed_premises)
+    ]
+  }, quantifiers)))
+})
+
+var alternative_quantifier_set = cache(function(observed_premises) {
+  map(alternative_quantifier_set_fn, observed_premises)
+})
+
+var alternative_quantifier_order_set = cache(function(observed_premises) {
+  map(alternative_quantifier_order_set_fn, observed_premises)
 })
 
 var alternative_set_maximal = cache(function(observed_premises) {
-  map(function(obs_prm) {
-    MakeUniformDraw(_.flatten(map(function(q) {
-      return [{
-          p1: obs_prm.p1,
-          p2: obs_prm.p2,
-          quantifier: q
-        },
-        {
-          p1: obs_prm.p2,
-          p2: obs_prm.p1,
-          quantifier: q
-        }
-      ]
-    }, quantifiers)))
-  }, observed_premises)
+  map(alternative_set_maximal_fn, observed_premises)
 })
 
 
@@ -334,7 +339,7 @@ var alternative_set_maximal = cache(function(observed_premises) {
 //   }, venn)
 // }
 
-var vennToStringArray = function(venn){
+var vennToString = function(venn){
   return filter(function(x){ x != null }, sort(map(function(v){
     v.truth_val ? v.label : null
   }, venn))).join(';')
@@ -354,6 +359,23 @@ var acQUDToStringArray = function(venn){
   // display(JSON.stringify(sorted_uniqQudVal))
   return sorted_uniqQudVal.join(';')
 }
+
+var qudToString = function(venn, qud){
+  var dimensionToOmit = "ABC".replace(qud.slice(0,1), "").replace(qud.slice(1,2), "")
+  var qudVal = map(function(v){
+      var label  = v.label
+      return v.truth_val ? label.replace(dimensionToOmit, "") : null
+    }, venn)
+  // display(JSON.stringify(qudVal))
+  var filteredQudVal = filter(function(x){ x != null }, qudVal)
+  // display(JSON.stringify(filteredQudVal))
+  var uniqQudVal = _.uniq(filteredQudVal)
+  // display(JSON.stringify(uniqQudVal))
+  var sorted_uniqQudVal = sort(uniqQudVal)
+  // display(JSON.stringify(sorted_uniqQudVal))
+  return sorted_uniqQudVal.join(';')
+}
+
 
 var conclusionQUDfn = function(venn){
   return map(function(utterance){
@@ -438,22 +460,49 @@ var premise_speaker = cache(function(qudVal, observed_premises, qud) {
   })
 })
 
+var venn_interpreter_custom_prior = cache(function(sentences, state_prior, qud) {
+  Infer({
+    model: function() {
+      var venn = sample(state_prior)
+      // display(venn)
+      foreach(sentences, function(utterance) {
+        var meaningFn = lexicon[utterance.quantifier]
+        condition(flip(0.01) ? true : meaningFn(venn, utterance.p1, utterance.p2))
+        // condition(meaningFn(venn, utterance.p1, utterance.p2))
+      })
+
+      var qudVal = qud == "state" ? vennToString(venn) :
+            qudToString(venn, qud)
+
+      return qudVal
+    },
+    method: "enumerate"
+  })
+})
+
+var single_premise_speaker = cache(function(qudVal, obs_premise, listener_prior, qud) {
+  Infer({
+    model: function() {
+      var premise = sample(alternative_quantifier_set_fn(obs_premise))
+      // display(JSON.stringify(premise))
+      // display(venn)
+      var LiteralDist = venn_interpreter_custom_prior([premise], listener_prior, qud)
+      // display(JSON.stringify(LiteralDist))
+      factor(alpha * LiteralDist.score(qudVal))
+      return premise
+    },
+    method: "enumerate"
+  })
+})
 
 
 var pragmatic_interpreter = cache(function(premises, qud) {
-  // display("pragmatic interpreter")
-  // display(JSON.stringify(premises))
   Infer({
     model: function() {
       var venn = sample(venn_space)
 
       var qudVal = qud == "AC" ? acQUDToStringArray(venn) : venn
-      // display(JSON.stringify(qudVal))
-      // display(JSON.stringify(vennToStringArray(venn)))
-      // +
-      // JSON.stringify(_.map(venn, "truth_val")))
       var SpeakerDist = premise_speaker(qudVal, premises, qud)
-      // display('after speak')
       observe(SpeakerDist, premises)
       return venn
     },
@@ -461,12 +510,38 @@ var pragmatic_interpreter = cache(function(premises, qud) {
   })
 })
 
+var sequential_pragmatic_interpreter = cache(function(premises) {
+
+  var posterior_one = Infer({model: function() {
+      var qud = "AB"
+      var venn = sample(venn_space)
+      var qudVal =  qud == "state" ? vennToString(venn) :
+            qudToString(venn, qud)
+      var SpeakerDist = single_premise_speaker(qudVal, premises[0], venn_space, qud)
+      observe(SpeakerDist, premises[0])
+      return venn
+    }, method: "enumerate"})
+
+    // var posterior_two = Infer({model: function() {
+    //     var qud = "BC"
+    //     var venn = sample(posterior_one)
+    //     var qudVal = qud == "state" ? vennToString(venn) :
+    //           qudToString(venn, qud)
+    //     var SpeakerDist = single_premise_speaker(qudVal, premises[1], posterior_one, qud)
+    //     observe(SpeakerDist, premises[1])
+    //     return venn
+    //   }, method: "enumerate"})
+
+    return posterior_one
+
+})
 
 
-var marginalizeQUDval = cache(function(stateDist){
+var marginalizeQUDval = cache(function(stateDist, qud){
   Infer({model: function(){
     var state = sample(stateDist)
-    acQUDToStringArray(state)
+    qud == "state" ? vennToString(state): qudToString(stateDist, qud)
+    // acQUDToStringArray(state)
   }})
 })
 
@@ -510,6 +585,7 @@ var conclusion_speaker = function(qudVal, qud) {
     method: "enumerate"
   })
 }
+
 var pragmatic_interpreter_conclusion = cache(function(conclusion, qud){
   Infer({model: function(){
     var venn = sample(venn_space)
@@ -520,22 +596,21 @@ var pragmatic_interpreter_conclusion = cache(function(conclusion, qud){
   }, method: "enumerate"})
 })
 
+var conclusion_speaker = function(premises) {
+  Infer({
+    model: function() {
+      var PremiseInterpretation = venn_interpreter(premises)
+      var venn = sample(PremiseInterpretation)
 
-// var conclusion_speaker = function(premises) {
-//   Infer({
-//     model: function() {
-//       var PremiseInterpretation = venn_interpreter(premises)
-//       var venn = sample(PremiseInterpretation)
-//
-//       var conclusion = uniformDraw(conclusions)
-//       var ConclusionInterpretation = venn_interpreter([conclusion])
-//
-//       factor(alpha * ConclusionInterpretation.score(venn))
-//
-//       return conclusion
-//     }
-//   })
-// }
+      var conclusion = uniformDraw(conclusions)
+      var ConclusionInterpretation = venn_interpreter([conclusion])
+
+      factor(alpha * ConclusionInterpretation.score(venn))
+
+      return conclusion
+    }
+  })
+}
 
 var literal_reasoner = cache(function(sentences) {
   Infer({
@@ -568,16 +643,15 @@ var arguer = cache(function(qudVal, observed_premises) {
   })
 })
 
-
 var integrated_pragmatic_reasoner = function(premises, interpretationOnly) {
   Infer({
     model: function() {
 
-      // var venn = sample(venn_space)
+      var venn = sample(venn_space)
       var conclusion = uniformDraw(conclusions)
       // var conclusion = sample(literal_speaker(venn))
-      // var conclusionMeaningFn = lexicon[conclusion.quantifier]
-      // condition(conclusionMeaningFn(venn, conclusion.p1, conclusion.p2))
+      var conclusionMeaningFn = lexicon[conclusion.quantifier]
+      condition(conclusionMeaningFn(venn, conclusion.p1, conclusion.p2))
       var ArgumentDist = arguer(formatSentence(conclusion), premises)
       observe(ArgumentDist, premises)
 
@@ -652,8 +726,6 @@ var integrated_pragmatic_reasoner_wProduction = function(premises, pragmatics) {
     }
   })
 }
-
-
 
 var rr_dist = cache(function(dist, n_samples){
   Infer({model: function(){
@@ -756,10 +828,65 @@ var firstTermPreference = function(syllogism){
 
 var syllogism = [
   {"p1":"A","p2":"B", "quantifier":"all"},
-  {"p1":"B","p2":"C", "quantifier":"none"}
+  {"p1":"B","p2":"C", "quantifier":"some"}
 ]
 
-firstTermPreference(syllogism) ? 'hi': 'bye'
+// displayDist(integrated_pragmatic_reasoner(syllogism))
+
+// display(syllogism)
+
+// var literalVennDist = venn_interpreter(syllogism, "state")
+// var vennDist = pragmatic_interpreter(syllogism, "state")
+var sequentialIntDist = sequential_pragmatic_interpreter(syllogism)
+
+
+// sequentialIntDist
+var marginalizeVennForR = function(dist){
+  Infer({model: function(){
+    var venn = sample(dist);
+    _.fromPairs(map(function(x){ return [x.label, x.truth_val] }, venn))
+  }})
+}
+var seqIntMarg = marginalizeVennForR(sequentialIntDist)
+
+var vennRegionLabels = _.keys(seqIntMarg.support()[0])
+
+var topNregions = _.keys(_.fromPairs(
+  sortOn(map(function(s){
+    return [s, expectation(Enumerate(function(){
+      var venn = sample(seqIntMarg)
+      return venn[s]
+    })) ]}, vennRegionLabels),
+    function(x){ -x[1] }
+  ).slice(0, 2)
+))
+
+var qudOmitRegions = function(state, region_vals){
+  return filter(function(s){ region_vals.indexOf(s.label) > -1 }, state)
+}
+
+var marginalizeQUD_omitRegions = function(dist, region_vals){
+  Enumerate(function(){
+    var state = sample(dist)
+    qudOmitRegions(state, region_vals)
+  })
+}
+
+displayDist(marginalizeVennForR(marginalizeQUD_omitRegions(sequentialIntDist, topNregions)))
+// //
+// var returnVal = {
+//   literal: marginalizeVennForR(literalVennDist),
+//   pragmatic: marginalizeVennForR(vennDist),
+//   sequential: marginalizeVennForR(sequentialIntDist)
+// }
+// //
+// returnVal;
+
+
+
+
+
+// sample(vennDist);
 
 // var conclusionObj = marginalizeConclusions(
 //   // displayDist(
@@ -778,7 +905,7 @@ firstTermPreference(syllogism) ? 'hi': 'bye'
 //   { interpretation: true, production: {depth: 0}, qud: "AC"}
 // ))
 
-// displayDist(integrated_pragmatic_reasoner(syllogism))
+
 // displayDist(
 //   integrated_pragmatic_reasoner_wProduction(syllogism,
 //   { production: {depth: 0} }
