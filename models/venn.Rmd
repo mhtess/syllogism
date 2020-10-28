@@ -11,37 +11,29 @@ library(tidyverse)
 library(ggVennDiagram)
 library(jsonlite)
 library(ggplot2)
-
-syllogism <- data.frame(
-  p1 = c("A", "B"),
-  p2 = c("B", "C"),
-  quantifier = c("all", "some")
-) 
-
-wp.rs <- webppl(
-  program_file = "venn.wppl",
-  data = syllogism,
-  data_var = "syllogism"
-)
-
-wp.rs %>%
-  gather(key, val, -prob) %>%
-  mutate(val = val*prob) %>%
-  group_by(key) %>%
-  summarize(prob = sum(val)) %>%
-  ungroup() %>%
-  mutate(key = ifelse(key == "Var.1", "empty", key)) %>%
-  rwebppl::get_samples(., num_samples = 1000) -> wp.rs.samples
+library(gridExtra)
+set.seed(20201027)
 ```
 
 
+Helper functions
+
 ```{r}
-set.seed(20201027)
+get_samples_from_df = function(df, field){
+  data.frame(df[[field]]) %>%
+    pivot_longer(-probs, names_to = "key", values_to = "val") %>%
+    group_by(key) %>%
+    summarize(prob = sum(val * probs),
+              src = field) %>%
+    rwebppl::get_samples(., num_samples = 1000)
+}
+
+genes <- paste("sample",1:100000,sep="")
 
 get_venn_samples <- function(df_samples){
-  genes <- paste("sample",1:100000,sep="")
   
   make_venn_sample <- function(region, i){
+    # print(i)
     samp = genes[i]
     A = ifelse(str_detect(region, "A"), samp, NA)
     B = ifelse(str_detect(region, "B"), samp, NA)
@@ -58,9 +50,59 @@ get_venn_samples <- function(df_samples){
   )
 }
 
-get_venn_samples(wp.rs.samples$key) %>%
-  ggVennDiagram(.)#, label = NULL) 
+make_venn_digram <- function(df, field){
+  ggVennDiagram(get_venn_samples(
+    df %>% filter(src == field) %>% pull(key)
+  ), label = "percent") +
+    ggtitle(field)
+}
+```
+
+Run Webppl Model
+
+```{r}
+syllogism <- data.frame(
+  p1 = c("A", "B"),
+  p2 = c("B", "C"),
+  quantifier = c("all", "some")
+) 
+
+wp.rs <- webppl(
+  program_file = "venn.wppl",
+  data = syllogism,
+  data_var = "syllogism"
+)
+
+
+wp.rs.samples <- bind_rows(
+  get_samples_from_df(wp.rs, "sequential"),
+  get_samples_from_df(wp.rs, "pragmatic"),
+  get_samples_from_df(wp.rs, "literal")
+)
+
+# Make Venn Diagram
+
+plot1 <- make_venn_digram(wp.rs.samples, "literal")
+plot2 <- make_venn_digram(wp.rs.samples, "pragmatic")
+plot3 <- make_venn_digram(wp.rs.samples, "sequential")
+
+grid.arrange(plot1, plot2, plot3, ncol=3)
+
+
 ```
 
 
+```{r}
+data.frame(wp.rs$sequential) %>%
+  rowwise() %>%
+  mutate(AB = support.AB || support.ABC) %>%
+  ungroup() %>%
+  group_by(AB) %>%
+  count(sum(probs))
+  # summarize(sum(!AB))
+
+data.frame(wp.rs$sequential) %>%
+  group_by(support.AB, support.ABC) %>%
+  count(sum(probs))
+```
 
