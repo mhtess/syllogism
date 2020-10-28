@@ -345,22 +345,24 @@ var vennToString = function(venn){
   }, venn))).join(';')
 }
 
-var acQUDToStringArray = function(venn){
-  var qudVal = map(function(v){
-      var label  = v.label
-      return v.truth_val ? label.replace("B", "") : null
-    }, venn)
-  // display(JSON.stringify(qudVal))
-  var filteredQudVal = filter(function(x){ x != null }, qudVal)
-  // display(JSON.stringify(filteredQudVal))
-  var uniqQudVal = _.uniq(filteredQudVal)
-  // display(JSON.stringify(uniqQudVal))
-  var sorted_uniqQudVal = sort(uniqQudVal)
-  // display(JSON.stringify(sorted_uniqQudVal))
-  return sorted_uniqQudVal.join(';')
-}
+// var acQUDToStringArray = function(venn){
+//   var qudVal = map(function(v){
+//       var label  = v.label
+//       return v.truth_val ? label.replace("B", "") : null
+//     }, venn)
+//   // display(JSON.stringify(qudVal))
+//   var filteredQudVal = filter(function(x){ x != null }, qudVal)
+//   // display(JSON.stringify(filteredQudVal))
+//   var uniqQudVal = _.uniq(filteredQudVal)
+//   // display(JSON.stringify(uniqQudVal))
+//   var sorted_uniqQudVal = sort(uniqQudVal)
+//   // display(JSON.stringify(sorted_uniqQudVal))
+//   return sorted_uniqQudVal.join(';')
+// }
 
 var qudToString = function(venn, qud){
+  // display(venn)
+  // display(venn)
   var dimensionToOmit = "ABC".replace(qud.slice(0,1), "").replace(qud.slice(1,2), "")
   var qudVal = map(function(v){
       var label  = v.label
@@ -376,6 +378,18 @@ var qudToString = function(venn, qud){
   return sorted_uniqQudVal.join(';')
 }
 
+var qudOmitRegions = function(state, region_vals){
+  return vennToString(filter(function(s){ region_vals.indexOf(s.label) > -1 }, state))
+}
+
+
+
+var qudFn = function(state, qud){
+  return qud == "state" ? vennToString(state) :
+        _.isArray(qud) ? qudOmitRegions(state, qud) :
+                        qudToString(state, qud)
+
+}
 
 var conclusionQUDfn = function(venn){
   return map(function(utterance){
@@ -393,19 +407,19 @@ var marginalizeVennForR = function(dist){
 }
 
 
-
 var venn_interpreter = cache(function(sentences, qud) {
-  // display(JSON.stringify(sentences))
+  display(JSON.stringify(sentences))
   Infer({
     model: function() {
       var venn = sample(venn_space)
 
       foreach(sentences, function(utterance) {
         var meaningFn = lexicon[utterance.quantifier]
-        condition(flip(0.01) ? true : meaningFn(venn, utterance.p1, utterance.p2))
+        condition(flip(0.03) ? true : meaningFn(venn, utterance.p1, utterance.p2))
       })
-
-      var qudVal = qud == "AC" ? acQUDToStringArray(venn) : venn
+      // display('literal interpreter pre qud')
+      var qudVal = qudFn(venn, qud)
+      // display('literal interpreter post qud')
 
       return qudVal
 
@@ -447,11 +461,8 @@ var conclusion_prior =  Infer({
 
 
 
-var alpha = 3
+var alpha = 2
 
-var qudOmitRegions = function(state, region_vals){
-  return vennToString(filter(function(s){ region_vals.indexOf(s.label) > -1 }, state))
-}
 
 
 var premise_speaker = cache(function(qudVal, observed_premises, qud) {
@@ -475,20 +486,19 @@ var premise_speaker = cache(function(qudVal, observed_premises, qud) {
 })
 
 var venn_interpreter_custom_prior = cache(function(sentences, state_prior, qud) {
+  display(JSON.stringify(sentences))
+
   Infer({
     model: function() {
       var venn = sample(state_prior)
       // display(venn)
       foreach(sentences, function(utterance) {
         var meaningFn = lexicon[utterance.quantifier]
-        condition(flip(0.01) ? true : meaningFn(venn, utterance.p1, utterance.p2))
+        condition(flip(0.03) ? true : meaningFn(venn, utterance.p1, utterance.p2))
         // condition(meaningFn(venn, utterance.p1, utterance.p2))
       })
-
-      var qudVal = qud == "state" ? vennToString(venn) :
-            _.isArray(qud) ? qudOmitRegions(venn, qud) :
-            qudToString(venn, qud)
-
+      // display(" in listener .. "+qud)
+      var qudVal = qudFn(venn, qud)
       return qudVal
     },
     method: "enumerate"
@@ -501,6 +511,7 @@ var single_premise_speaker = cache(function(qudVal, obs_premise, listener_prior,
       var premise = sample(alternative_quantifier_set_fn(obs_premise))
       // display(JSON.stringify(premise))
       // display(venn)
+      // display(qud)
       var LiteralDist = venn_interpreter_custom_prior([premise], listener_prior, qud)
       // display(JSON.stringify(LiteralDist))
       factor(alpha * LiteralDist.score(qudVal))
@@ -516,7 +527,7 @@ var pragmatic_interpreter = cache(function(premises, qud) {
     model: function() {
       var venn = sample(venn_space)
 
-      var qudVal = qud == "AC" ? acQUDToStringArray(venn) : venn
+      var qudVal = qudFn(venn, qud)
       var SpeakerDist = premise_speaker(qudVal, premises, qud)
       observe(SpeakerDist, premises)
       return venn
@@ -525,13 +536,14 @@ var pragmatic_interpreter = cache(function(premises, qud) {
   })
 })
 
+
 var sequential_pragmatic_interpreter = cache(function(premises) {
 
   var posterior_one = Infer({model: function() {
       var qud = "AB"
       var venn = sample(venn_space)
-      var qudVal =  qud == "state" ? vennToString(venn) :
-            qudToString(venn, qud)
+      var qudVal = qudFn(venn, qud)
+
       var SpeakerDist = single_premise_speaker(qudVal, premises[0], venn_space, qud)
       observe(SpeakerDist, premises[0])
       return venn
@@ -551,8 +563,6 @@ var sequential_pragmatic_interpreter = cache(function(premises) {
 
 })
 
-
-
 var marginalizeQUD_omitRegions = function(dist, region_vals){
   Enumerate(function(){
     var state = sample(dist)
@@ -560,17 +570,34 @@ var marginalizeQUD_omitRegions = function(dist, region_vals){
   })
 }
 
+var marginalizeQUDval = cache(function(stateDist, qud){
+  // display('marginalizedQudvl fn: qud = ' + qud)
+  Infer({model: function(){
+    var state = sample(stateDist)
+    qudFn(state, qud)
+    // qud == "state" ? vennToString(state): qudToString(stateDist, qud)
+    // acQUDToStringArray(state)
+  }})
+})
+
+// var qudFn = function(state, qud){
+//   return qud == "state" ? vennToString(state) :
+//         _.isArray(qud) ? qudOmitRegions(state, qud) :
+//                         qudToString(state, qud)
+//
+// }
+
 var sequential_pragmatic_interpreter_qudOmitRegions = cache(function(premises) {
 
   var posterior_one = Infer({model: function() {
       var qud = "AB"
       var venn = sample(venn_space)
-      var qudVal =  qud == "state" ? vennToString(venn) :
-            qudToString(venn, qud)
+      var qudVal = qudFn(venn, qud)
       var SpeakerDist = single_premise_speaker(qudVal, premises[0], venn_space, qud)
       observe(SpeakerDist, premises[0])
       return venn
     }, method: "enumerate"})
+    // display('exit first update')
 
     var seqIntMarg = marginalizeVennForR(posterior_one)
     var vennRegionLabels = _.keys(seqIntMarg.support()[0])
@@ -580,6 +607,8 @@ var sequential_pragmatic_interpreter_qudOmitRegions = cache(function(premises) {
         return venn[s]
       })) > 0.51
     }, vennRegionLabels)
+
+    // display(topNregions)
 
 
     // var topNregions = _.fromPairs(
@@ -594,25 +623,23 @@ var sequential_pragmatic_interpreter_qudOmitRegions = cache(function(premises) {
 
     var posterior_two = Infer({model: function() {
         // var qud = "BC"
+        // display('enter posterior two')
         var venn = sample(posterior_one)
         var qudVal = qudOmitRegions(venn, topNregions)
+        // display(qudVal)
         var SpeakerDist = single_premise_speaker(qudVal, premises[1], posterior_one, topNregions)
         observe(SpeakerDist, premises[1])
         return venn
       }, method: "enumerate"})
+
+    // display('exit second update')
     return posterior_two
     // return posterior_two
 
 })
 
 
-var marginalizeQUDval = cache(function(stateDist, qud){
-  Infer({model: function(){
-    var state = sample(stateDist)
-    qud == "state" ? vennToString(state): qudToString(stateDist, qud)
-    // acQUDToStringArray(state)
-  }})
-})
+
 
 var qud_pragmatic_reasonser = cache(function(premises) {
   // display("pragmatic interpreter")
@@ -658,7 +685,8 @@ var conclusion_speaker = function(qudVal, qud) {
 var pragmatic_interpreter_conclusion = cache(function(conclusion, qud){
   Infer({model: function(){
     var venn = sample(venn_space)
-    var qudVal = qud == "AC" ? acQUDToStringArray(venn) : venn
+    var qudVal = qudFn(venn, qud)
+
     var SpeakerDist = conclusion_speaker(qudVal, qud)
     observe(SpeakerDist, conclusion)
     return qudVal
@@ -688,7 +716,7 @@ var literal_reasoner = cache(function(sentences) {
 
       foreach(sentences, function(utterance) {
         var meaningFn = lexicon[utterance.quantifier]
-        condition(flip(0.01) ? true : meaningFn(venn, utterance.p1, utterance.p2))
+        condition(flip(0.03) ? true : meaningFn(venn, utterance.p1, utterance.p2))
       })
 
       var conclusion = sample(literal_speaker(venn))
@@ -736,17 +764,22 @@ var modular_pragmatic_reasoner = function(premises, pragmatics) {
     model: function() {
 
       var PremiseInterpretation = pragmatics.interpretation ?
-        pragmatic_interpreter(premises, pragmatics.qud) :
-        venn_interpreter(premises, pragmatics.qud)
+            pragmatics.interpretation == "sequential_qud" ?
+              sequential_pragmatic_interpreter_qudOmitRegions(premises) :
+              pragmatic_interpreter(premises, pragmatics.qud) :
+            venn_interpreter(premises, pragmatics.qud)
 
       // display('after interpretation')
       if (pragmatics.production) {
+        // display('enter pragmatic production')
         var conclusion = uniformDraw(conclusions)
-        var qudValDist = marginalizeQUDval(PremiseInterpretation)
-        // display(qud)
+        var qudValDist = marginalizeQUDval(PremiseInterpretation, "AC")
+        // display('enter listener in production')
         var ConclusionInterpretation = pragmatics.production.depth == 0 ?
                   venn_interpreter([conclusion], "AC") :
                   pragmatic_interpreter_conclusion(conclusion, "AC")
+
+        // display('exit listener in production')
 
         var _kl = KL(qudValDist, ConclusionInterpretation, qudValDist.support())
         factor(alpha * -1 * _kl)
@@ -893,34 +926,42 @@ var firstTermPreference = function(syllogism){
 }
 
 
-// var syllogism = [
-//   {"p1":"A","p2":"B", "quantifier":"some_not"},
-//   {"p1":"B","p2":"C", "quantifier":"some"}
-// ]
+var syllogism = [
+  {"p1":"A","p2":"B", "quantifier":"none"},
+  {"p1":"B","p2":"C", "quantifier":"none"}
+]
 
 // displayDist(integrated_pragmatic_reasoner(syllogism))
 
 // display(syllogism)
 
-var literalVennDist = venn_interpreter(syllogism, "state")
-var vennDist = pragmatic_interpreter(syllogism, "state")
-var sequentialIntDist = sequential_pragmatic_interpreter_qudOmitRegions(syllogism)
+// var literalVennDist = venn_interpreter(syllogism, "state")
+// var vennDist = pragmatic_interpreter(syllogism, "state")
+// var sequentialIntDist = sequential_pragmatic_interpreter_qudOmitRegions(syllogism)
 // sequentialIntDist
 
 // sequentialIntDist
+
+displayDist(modular_pragmatic_reasoner(syllogism,
+  // { interpretation: true, production: false, qud: "state"}
+  { interpretation: true, production: {depth: 0}, qud: "AC"}
+))
 
 // displayDist(marginalizeVennForR(sequentialIntDist))
-
+displayDist(modular_pragmatic_reasoner(syllogism,
+  // { interpretation: true, production: false, qud: "state"}
+  { interpretation: "sequential_qud", production: {depth: 0}, qud: "AC"}
+))
 
 // displayDist(marginalizeVennForR(marginalizeQUD_omitRegions(sequentialIntDist, topNregions)))
 // // //
-var returnVal = {
-  literal: marginalizeVennForR(literalVennDist),
-  pragmatic: marginalizeVennForR(vennDist),
-  sequential: marginalizeVennForR(sequentialIntDist)
-}
-// // //
-returnVal;
+// var returnVal = {
+//   literal: marginalizeVennForR(literalVennDist),
+//   pragmatic: marginalizeVennForR(vennDist),
+//   sequential: marginalizeVennForR(sequentialIntDist)
+// }
+// // // //
+// returnVal;
 
 
 
@@ -940,10 +981,7 @@ returnVal;
 // normalize(map(function(x){ return Math.exp(second(x)) } , _.toPairs(conclusionObj)))
 
 
-// displayDist(modular_pragmatic_reasoner(syllogism,
-//   // { interpretation: true, production: false, qud: "state"}
-//   { interpretation: true, production: {depth: 0}, qud: "AC"}
-// ))
+
 
 
 // displayDist(
