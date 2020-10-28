@@ -39,11 +39,11 @@ var formatQuantifier = function(q) {
 }
 
 var regions = Enumerate(function() {
-  return {
-    A: flip(),
-    B: flip(),
-    C: flip()
-  }
+  var A = flip(),
+      B = flip(),
+      C = flip()
+  condition(A + B + C > 0)
+  return {A, B, C}
 }).support()
 // display(JSON.stringify(all_regions))
 
@@ -385,6 +385,15 @@ var conclusionQUDfn = function(venn){
 }
 
 
+var marginalizeVennForR = function(dist){
+  Infer({model: function(){
+    var venn = sample(dist);
+    _.fromPairs(map(function(x){ return [x.label, x.truth_val] }, venn))
+  }})
+}
+
+
+
 var venn_interpreter = cache(function(sentences, qud) {
   // display(JSON.stringify(sentences))
   Infer({
@@ -440,6 +449,11 @@ var conclusion_prior =  Infer({
 
 var alpha = 3
 
+var qudOmitRegions = function(state, region_vals){
+  return vennToString(filter(function(s){ region_vals.indexOf(s.label) > -1 }, state))
+}
+
+
 var premise_speaker = cache(function(qudVal, observed_premises, qud) {
   Infer({
     model: function() {
@@ -472,6 +486,7 @@ var venn_interpreter_custom_prior = cache(function(sentences, state_prior, qud) 
       })
 
       var qudVal = qud == "state" ? vennToString(venn) :
+            _.isArray(qud) ? qudOmitRegions(venn, qud) :
             qudToString(venn, qud)
 
       return qudVal
@@ -533,6 +548,60 @@ var sequential_pragmatic_interpreter = cache(function(premises) {
     //   }, method: "enumerate"})
 
     return posterior_one
+
+})
+
+
+
+var marginalizeQUD_omitRegions = function(dist, region_vals){
+  Enumerate(function(){
+    var state = sample(dist)
+    qudOmitRegions(state, region_vals)
+  })
+}
+
+var sequential_pragmatic_interpreter_qudOmitRegions = cache(function(premises) {
+
+  var posterior_one = Infer({model: function() {
+      var qud = "AB"
+      var venn = sample(venn_space)
+      var qudVal =  qud == "state" ? vennToString(venn) :
+            qudToString(venn, qud)
+      var SpeakerDist = single_premise_speaker(qudVal, premises[0], venn_space, qud)
+      observe(SpeakerDist, premises[0])
+      return venn
+    }, method: "enumerate"})
+
+    var seqIntMarg = marginalizeVennForR(posterior_one)
+    var vennRegionLabels = _.keys(seqIntMarg.support()[0])
+    var topNregions = filter(function(s){
+      expectation(Enumerate(function(){
+        var venn = sample(seqIntMarg)
+        return venn[s]
+      })) > 0.51
+    }, vennRegionLabels)
+
+
+    // var topNregions = _.fromPairs(
+    //   sortOn(map(function(s){
+    //     return [s, expectation(Enumerate(function(){
+    //       var venn = sample(seqIntMarg)
+    //       return venn[s]
+    //     })) ]}, vennRegionLabels),
+    //     function(x){ -x[1] }
+    //   )//.slice(0, 2)
+    // )
+
+    var posterior_two = Infer({model: function() {
+        // var qud = "BC"
+        var venn = sample(posterior_one)
+        var qudVal = qudOmitRegions(venn, topNregions)
+        var SpeakerDist = single_premise_speaker(qudVal, premises[1], posterior_one, topNregions)
+        observe(SpeakerDist, premises[1])
+        return venn
+      }, method: "enumerate"})
+    return posterior_two
+    // return posterior_two
 
 })
 
@@ -813,8 +882,6 @@ var marginalizeConclusions = cache(function(rr_dist){
   }, conclusions))
 })
 
-
-
 var isChar = function(str, char){
   return str == char
 }
@@ -826,61 +893,34 @@ var firstTermPreference = function(syllogism){
 }
 
 
-var syllogism = [
-  {"p1":"A","p2":"B", "quantifier":"all"},
-  {"p1":"B","p2":"C", "quantifier":"some"}
-]
+// var syllogism = [
+//   {"p1":"A","p2":"B", "quantifier":"some_not"},
+//   {"p1":"B","p2":"C", "quantifier":"some"}
+// ]
 
 // displayDist(integrated_pragmatic_reasoner(syllogism))
 
 // display(syllogism)
 
-// var literalVennDist = venn_interpreter(syllogism, "state")
-// var vennDist = pragmatic_interpreter(syllogism, "state")
-var sequentialIntDist = sequential_pragmatic_interpreter(syllogism)
-
+var literalVennDist = venn_interpreter(syllogism, "state")
+var vennDist = pragmatic_interpreter(syllogism, "state")
+var sequentialIntDist = sequential_pragmatic_interpreter_qudOmitRegions(syllogism)
+// sequentialIntDist
 
 // sequentialIntDist
-var marginalizeVennForR = function(dist){
-  Infer({model: function(){
-    var venn = sample(dist);
-    _.fromPairs(map(function(x){ return [x.label, x.truth_val] }, venn))
-  }})
+
+// displayDist(marginalizeVennForR(sequentialIntDist))
+
+
+// displayDist(marginalizeVennForR(marginalizeQUD_omitRegions(sequentialIntDist, topNregions)))
+// // //
+var returnVal = {
+  literal: marginalizeVennForR(literalVennDist),
+  pragmatic: marginalizeVennForR(vennDist),
+  sequential: marginalizeVennForR(sequentialIntDist)
 }
-var seqIntMarg = marginalizeVennForR(sequentialIntDist)
-
-var vennRegionLabels = _.keys(seqIntMarg.support()[0])
-
-var topNregions = _.keys(_.fromPairs(
-  sortOn(map(function(s){
-    return [s, expectation(Enumerate(function(){
-      var venn = sample(seqIntMarg)
-      return venn[s]
-    })) ]}, vennRegionLabels),
-    function(x){ -x[1] }
-  ).slice(0, 2)
-))
-
-var qudOmitRegions = function(state, region_vals){
-  return filter(function(s){ region_vals.indexOf(s.label) > -1 }, state)
-}
-
-var marginalizeQUD_omitRegions = function(dist, region_vals){
-  Enumerate(function(){
-    var state = sample(dist)
-    qudOmitRegions(state, region_vals)
-  })
-}
-
-displayDist(marginalizeVennForR(marginalizeQUD_omitRegions(sequentialIntDist, topNregions)))
-// //
-// var returnVal = {
-//   literal: marginalizeVennForR(literalVennDist),
-//   pragmatic: marginalizeVennForR(vennDist),
-//   sequential: marginalizeVennForR(sequentialIntDist)
-// }
-// //
-// returnVal;
+// // //
+returnVal;
 
 
 
