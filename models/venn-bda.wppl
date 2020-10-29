@@ -606,7 +606,10 @@ var bda_model = function(){
         // var premises = sampleUtterance(observed_premises)
         var premises = observed_premises.length == 2 ?
           map(sample, alternative_quantifier_order_set(observed_premises)) :
-          [sample(alternative_quantifier_set_fn(observed_premises[0]))]
+          // [sample(alternative_quantifier_set_fn(observed_premises[0]))]
+          [sample(alternative_quantifier_order_set_fn(observed_premises[0]))]
+          // [sample(alternative_set_maximal(observed_premises[0]))]
+
         // display(premises)
         // display(qudVal)
         // display('enter l0')
@@ -929,10 +932,12 @@ var bda_model = function(){
 // var totalIterations = 1000, lag =  1;
 // var totalIterations = 5000, lag =  0;
 var totalIterations = 500, lag =  0;
+// var totalIterations = 2, lag =  0;
 
 var samples = totalIterations/(lag + 1), burn = totalIterations / 2;
 
 var outfile = 'bda-syllogisms-ragni2016_full_' +
+  'AltQO_' +
   pragParams.modular + '_' +
   pragParams.interpretation + '-interpretation_' +
   pragParams.production + '-production_' +
