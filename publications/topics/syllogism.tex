@@ -129,15 +129,21 @@ Syllogistic reasoning lies at the intriguing intersection of natural and formal 
 \section{Introduction}
 
 
-Consider for a moment that your friend tells you: “Everyone in my office has the flu and, you know, some people with this flu are out for weeks.” You might respond: “I hope your officemates are not out for weeks and I hope you don’t get sick either.” The form of this exchange resembles a syllogism: a two- sentence argument used to relate two properties (or terms: A, C) via a middle term (B); the relations used in syllogisms are quantifiers. Fit into a formal syllogistic form, this argument would read:
+Imagine that your friend tells you: ``Everyone in my office has the flu and, you know, some people with this flu are out for weeks.''
+You might respond: ``I hope your officemates are not out for weeks and I hope you don’t get sick either.''
+The form of this exchange resembles a syllogism: a two- sentence argument used to relate two properties (or terms: A, C) via a middle term (B); the relations used in syllogisms are quantifiers. Fit into a formal syllogistic form, this argument would read:
 
-All officemates are out with the flu (All A are B)
+\begin{enumerate}
+\item \emph{All} officemates are out with the flu (All A are B)
+\item \emph{Some} out with the flu are out for weeks (Some B are C) 
+\item Therefore, \emph{some} officemates are out for weeks (Some A are C)
+\end{enumerate}
 
-Some out with the flu are out for weeks (Some B are C) 
-
-Therefore, some officemates are out for weeks (Some A are C)
-
-Unfortunately, the conclusion does not follow from the premises (i.e., there is no relation between A \& C which is true in every situation in which the premises are true). Faced with such an argument, however, people are perfectly comfortable drawing some conclusion. A meta-analysis of syllogistic reasoning showed that over the population, the proper production of no valid conclusion responses for invalid arguments ranged from 76\% to 12\%. Even for valid arguments, the accuracy of producing valid conclusions ranged from 90\% to 1\% \cite{Khemlani2012}: people do not seem to find drawing deductively valid conclusions particularly automatic.
+Unfortunately, the conclusion does not follow from the premises.
+In fact, within the confines of the classical syllogism, there is no conclusion about the relation between A \& C that is true in every situation in which the premises are true. 
+Faced with such an argument, however, people are perfectly comfortable drawing some conclusion. 
+A meta-analysis of syllogistic reasoning showed that over the population, the proper production of no valid conclusion responses for invalid arguments ranged from 76\% to 12\%. 
+Even for valid arguments, the accuracy of producing valid conclusions ranged from 90\% to 1\% \cite{Khemlani2012}: people do not seem to find drawing deductively valid conclusions particularly automatic.
 
 Many theories of syllogistic reasoning take deduction as a given and try to explain reasoning errors as a matter of noise during cognition. 
 Errors, then, may arise from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}. 
@@ -171,9 +177,10 @@ We present a model in the Rational Speech Act framework (Frank \& Goodman, 2012;
 \section{Computational Model}
 
 %\section{Bayesian argument strength in syllogistic reasoning}
-Our probabilistic pragmatics approach to syllogistic reasoning involves two components: interpreting the premises of the syllogism and producing a conclusion.
+
+Syllogistic reasoning involves two language understanding tasks: interpreting the premises of the syllogism and producing a conclusion.
 Each of these components could involve some kind of pragmatic reasoning.
-Each component uses recursive Bayesian reasoning that grounds out in a literal listener model who updates their beliefs about the state of the world given the literal (logical) meaning of the utterances. 
+Our model uses recursive Bayesian reasoning that grounds out in a literal listener model who updates their beliefs about the state of the world given the literal (logical) meaning of the utterances. 
 We walk through our ontology of the state space and the literal meanings before describing the different models of premise interpretation and conclusion production. 
 
 
@@ -207,9 +214,11 @@ The model is based on an ontology of situations represented by Venn diagrams cor
 \end{figure}
 
 Each Venn diagram contains eight regions $i \in R$, corresponding to the presence or absence of each of the three properties: $\{\{A,B,C\},$ $\{A,B,\neg C\},$ $\{A,\neg B,C\},$ $\{\neg A, B, C\},$ $\{A, \neg B, \neg C\},...\}$. (For simplicity, when possible, we will refer to regions by the properties that are present, omitting the absent properties; for example, $\{A, B, \neg C\}$ will be referred to as $AB$.)
-These regions can be thought of as unique object types (e.g., an object defined by having properties $A$ and $B$ but not $C$).\footnote{This diagram representation is analogous to a mental model in the style of \citeA{johnson1983mental} composed of object tokens (e.g., some objects which have properties $A$ or $B$, etc.) but where only unique object tokens are represented (e.g., there cannot be two objects which have the same set of properties).}
-Then, a situation (Venn diagram) $s \in S$ is composed of the set of object types (regions) that are present (e.g., $\{AB, BC, A\}$ is one state)
-The set of unique states has size $2^8 = 256$, though we exclude the state where all eight regions are empty (i.e., the state where there are no As, Bs, and Cs, but also no things that are not As, Bs, or Cs).
+These regions can be thought of as unique object types (e.g., an object defined by having properties $A$ and $B$ but not $C$.\footnote{This diagram representation is analogous to a mental model in the style of \citeA{johnson1983mental} composed of object tokens (e.g., some objects which have properties $A$ or $B$, etc.) but where only unique object tokens are represented (e.g., there cannot be two objects which have the same set of properties).}
+The empty region (or, the object type which has neither of the three properties: $\{\neg A, \neg B, \neg C\}$) does not impact the truth conditions of the quantifier sentences used in syllogisms, and hence, we omit this region and model only seven regions.
+Then, a situation (Venn diagram) $s \in S$ is composed of the set of object types (regions) that are present (e.g., $\{AB, BC, A\}$ is one possible state).
+The set of unique states has size $2^7 = 128$.
+%, though we exclude the state where all eight regions are empty (i.e., the state where there are no As, Bs, and Cs, but also no things that are not As, Bs, or Cs).
 
 Our model probabilistically generates states $s \in S$ by sampling a Bernoulli random variable for each of the $i \in R$ regions. 
 
@@ -218,11 +227,12 @@ $$P(s) = \prod_{i \in R} P(A_{i}, B_{i}, C_{i}) $$%= (P(a) \cdot P(b) \cdot P(c)
 %\subsection{Semantics}
 The classical syllogisms are comprised by two premise arguments where each premise relates two properties via a quantifier. 
 The quantifiers in classical syllogism are \emph{all}, \emph{some}, \emph{none}, and \emph{not all}.\footnote{
-These quantifiers are typically presented in sentences such that \emph{none} is rendered as \emph{no} (e.g., No As are Bs) and \emph{not all} is rendered as \emph{some are not} (e.g., Some As are not Bs).
+These quantifiers are typically presented in sentences such that \emph{none} is rendered as \emph{no} (e.g., No As are Bs) and \emph{not all} is rendered as \emph{some \_\_ are not} (e.g., Some As are not Bs).
 }
 We use the classic logical semantics of these quantifiers described in Table \ref{tab:sem}.
+\mht{CHECK THIS:
 We assume the statements involving \emph{all} and \emph{none} describe situations in which there exist objects that have the property, sometimes referred to as the ``existential presupposition'' (e.g., \emph{All A are B} is false if there are no As). 
-
+}
 %: \emph{All As are Bs} entails that $\nexists (A \& \neg B)$;  \emph{Some As are Bs} entails that $\exists (A \& B)$; \emph{Some As are not Bs} entails that $\exists (A \& \neg B)$; \emph{No As are Bs} entails that $\nexists (A \& B)$.
 
 
@@ -258,12 +268,12 @@ No As are Bs                                       & $\forall i \in R: A(i) \cen
 
 \subsection{Interpreting the premises}
 
-Given a representation and assignment of prior probabilities to different states (Venn diagrams), we now introduce models that update their beliefs about the states given the premises of the syllogism. 
-This interpretation process can occur at the level of a literal listener (who updates beliefs based on the truth-conditional meaning of the premises) or a pragmatic listener who interpreted the premises by reasoning about why a speaker chose to produce the premises that she did. 
+Given a representation and assignment of prior probabilities to different states (Venn diagrams), we now introduce probabilistic listener models that update their beliefs about the states given the premises of the syllogism. 
+This interpretation process can occur at the level of a literal listener (who updates beliefs based on the truth-conditional meaning of the premises) or a pragmatic listener who interprets the premises by reasoning about why a speaker chose to produce the premises that she did. 
 
 \subsubsection{Literal interpretation of premises}
 
-All our recursive reasoning modeling components ground out in model of literal interpretation.
+All our recursive reasoning modeling components ground out in a model of literal interpretation.
 This model component is a Bayesian literal listener $L_0$ which updates its prior beliefs about the state via the literal, truth conditional meaning of the utterance (shown in Table \ref{tab:sem}):
 
 \begin{equation}
@@ -272,7 +282,7 @@ L_0(s \mid u ) \propto P(s)\cdot \mathcal{L}(u, s)
 \end{equation}
 \noindent where $\mathcal{L}(u, s)$ is the lexicon that encodes the literal meanings of the quantified utterances used in syllogisms. 
 These meanings can resolve to deterministic outcomes (e.g., $\mathcal{L}(u, s) = 1$ if the utterance $u$ is true of $s$, and 0 otherwise). 
-In practice, however, we assume a small amount of noise $\phi$ in the semantics such that $\mathcal{L}(u, s) = 1$ with probability proportional to $(1-\phi)$ and if the utterance $u$ is true of $s$.
+In practice, however, we assume a small amount of noise $\phi$ in the semantics such that $\mathcal{L}(u, s) = 1$ with probability proportional to $1-\phi$ and if the utterance $u$ is true of $s$.
 In other words, we assume a continuously valued semantics such that $\mathcal{L}(u, s) \in [0, 1] \subset \mathbb{R}$ as introduced by \citeA{degen2020redundancy}.
 
 The model of literal interpretation can be used to update the prior distribution on states (Venn diagrams) into a posterior distribution given the meaning of the premises of the syllogism. 
@@ -283,31 +293,71 @@ L_0(s \mid u_1,  u_2) \propto P(s)\cdot \mathcal{L}(u_1, s) \cdot \mathcal{L}(u_
 \label{eq:L0premises}
 \end{equation}
 
+Equation \ref{eq:L0premises} defines a probability distribution over states (Venn diagrams) given the premises of the syllogism. 
+Logically valid syllogisms given rise to a distribution over states where a quantifier relationship between the conclusion terms of the syllogism are true in all possible states given the premises. 
+For example, in the logically valid syllogism  \emph{All As are Bs}, \emph{All Bs are Cs} (the ``Barbara'' syllogism), the relationship \emph{All As are Cs} is true in every possible state in which the premises are true; in particular, the region \emph{ABC} (an object which has all three properties) is true in every possible state (Figure \ref{fig:AAvenns}).
+On the other hand, the premises of logically invalid syllogisms tend to give rise to many possible states in which no particular syllogistic conclusion is true in every state; some conclusions are true in more states, however, than other conclusions.
+For example, in the logically invalid \emph{No As are Bs}, \emph{Some Bs are Cs}, the conclusion \emph{All As are Cs} is logically possible though is true in fewer states than \emph{No As are Cs} (Figure \ref{fig:EIvenns}).
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width = \textwidth]{figs/diagrams_allAB_allBC.pdf}
+\caption{Set of Venn diagrams (states) literally compatible with the premises of the logically valid syllogism: \emph{All As are Bs}, \emph{All Bs are Cs}. The conclusion relation \emph{All As are Cs} is true in every compatible state.}
+\label{fig:AAvenns}
+\end{figure}
+
+
+
+\begin{figure}[b!]
+\centering
+\includegraphics[width = \textwidth]{figs/diagrams_noneAB_someBC.pdf}
+\caption{Set of Venn diagrams (states) literally compatible with the premises of the logically invalid syllogism: \emph{No As are Bs}, \emph{Some Bs are Cs}. No syllogistic conclusion is true in every compatible state.}
+\label{fig:EIvenns}
+\end{figure}
+
+
 \subsubsection{Pragmatic interpretation of premises}
 
 Understanding language often involves reasoning not only about the literal meaning of what was said but about why an interlocutor (the speaker) would bother to say what they said. 
 We can formalize this reasoning through a series of Bayesian models that recursively reason about one another, as developed in the Rational Speech Act (RSA) framework \cite{Frank2012a, goodman2016pragmatic, scontras2018probabilistic}.
-Concretely, we describe a pragmatic listener $L_1$ who reason about a speaker $S_1$ who produces utterances in order to convey information to the literal listener (Equation \ref{eq:L0premises}). 
+Concretely, we describe a pragmatic listener $L_1$ who reasons about a speaker $S_1$ who produces utterances in order to convey information to the literal listener (Equation \ref{eq:L0premises}):
 
 \begin{align}
 L_1(s \mid u_1,  u_2)& \propto  P(s)\cdot S_1(u_1, u_2 \mid s)  \label{eq:L1} \\ 
 S_1(u_1, u_2 \mid s) &\propto  \exp [ \alpha_1 \cdot \ln L_0(s \mid u_1,  u_2)]  \label{eq:S1}
 \end{align}
 
-The definition of the pragmatic listener (Equation \ref{eq:L1}) mirrors that of the literal listener (Equation \ref{eq:L0}) expect in that the likelihood is defined as the probability that a speaker $S_1$ would produce utterances $u_1$ and $u_2$ given a state $s$.
-Following standard practice in RSA modeling, the speaker is a soft-max rational agent (with degree of rationality $\alpha_1$) who produces utterances in order to convey information to the literal listener.
+The definition of the pragmatic listener (Equation \ref{eq:L1}) mirrors that of the literal listener (Equation \ref{eq:L0}) except in that the likelihood is defined as the probability that a speaker $S_1$ would produce utterances $u_1$ and $u_2$ given a state $s$.
+Following standard practice in RSA modeling, the speaker is a soft-max rational agent (with degree of rationality $\alpha_1$) who produces utterances in order to convey information about the state $s$ to the literal listener.
 The normalization in Equation \ref{eq:S1} implies a normalization over a set of alternative utterances (i.e., the set of sentences that the speaker can produce (but doesn't). 
+\mht{OPEN QUESTION being explored with modeling... what alternative utterances to use for the speaker:}
 Here we assume that the alternative set is all syllogisms with the same ordering of terms (i.e., syllogisms of the same \emph{figure}). For example, if the speaker says \emph{All As are Bs. All Bs are Cs.}, the alternative set is the set of syllogisms of the form \emph{Q As are Bs}. \emph{Q Bs are Cs.} where $Q \in \{all, some, \emph{not all}, none\}$. 
 
 \subsection{Producing a conclusion}
 
 The second component of a syllogistic reasoning model is a model of conclusion production. 
-That is, given an a set of beliefs about the likely state of affairs (Venn diagram), what conclusion should be drawn?
+That is, given an a set of beliefs about the likely state of affairs (Venn diagrams), what conclusion should be drawn?
 We formalize two models of conclusion production.
 The first is a literal speaker, who selects conclusions that are likely to be true given the speaker's beliefs about the state. 
-The second is a pragmatic speaker, who selects a conclusion that would best align a naive listener's beliefs with the speaker's beliefs. 
-Since these models produce a distribution over conclusions, we label these models as reasoner models $R$, so as to not confuse them with the speaker models $S$ that are used as part of the recursion in pragmatic interpretation. 
+The second is a pragmatic speaker, who selects a conclusion that would best align a naive listener's beliefs about the state with the beliefs of the speaker.
+Since these models produce a distribution over conclusions, we label these models as reasoner models $R$, so as to not confuse them with the speaker models $S$ that are used as part of the recursion in the pragmatic interpretation of premises.
 %The pragmatic production of a conclusion is a model of a speaker who tries to produce the most informative utterance (conclusion) to convey information to a naive listener. 
+
+\subsubsection{Space of conclusions}
+
+The syllogistic reasoning task presents participants with a set of options for the quantifier relationship between the two terms of the syllogisms that are not described explicitly in relation to each other in the premises (i.e., the terms \emph{A} and \emph{C} if the premises are of the form \emph{A -- B}, \emph{B -- C}.). 
+Particular tasks differ in the set of options that are given to participants, but the maximal includes the four quantifiers  (\emph{all}, \emph{some}, \emph{not all}, \emph{none}) crossed with the two orderings of the terms of the conclusion (i.e., \emph{A -- C} or \emph{C -- A}).
+Thus, there are eight contentful conclusion options. 
+
+A ninth unique option, however, is also available: the option that \emph{nothing follows} (sometimes described \emph{no valid conclusion}). 
+The \emph{nothing follows} conclusion is the logically correct answer for the logically invalid syllogisms and is produced to variable extents in both logically valid and invalid syllogisms \cite{Khemlani2012}.
+While the semantics of the quantifier conclusions are quite clear, the proper treatment of the \emph{nothing follows} conclusion is not obvious. 
+Extant theories treat this option indirectly, either as a byproduct or last resort of a reasoning process, when it is treated at all \cite{ragni2019does, riesterer2020modeling}.
+We approach the question of the meaning of \emph{nothing follows} from a language production standpoint, where the statement is tantamount to not saying anything at all. 
+Therefore, we model the \emph{nothing follows} statement as one that is true in every possible state of affairs, and hence does not update a listener's beliefs about the state. 
+% From a language production perspective, however, the
+
 
 \subsubsection{Literal production of conclusions}
 
@@ -315,25 +365,21 @@ Since these models produce a distribution over conclusions, we label these model
 % lexical meanings such that
 % Our pragmatics model begins with submodal that performs a literal interpretation of the premises. 
 % The model computes a 
-Given a belief updating model based on the premises of a syllogism, we can define a literal production model $S_0$ that uses the listener $L$'s posterior distribution on states to determine what conclusion is likely to be true given the premises. 
-This production model could be paired with either the literal interpretation model $L_0$ or the pragmatic interpretation model $L_1$. 
-This model $R_0$ can be viewed as one that is sampling states from the listener's posterior distribution on states and randomly choosing among the conclusions that are literally true of that state. 
-
-
+Given a belief updating model based on the premises of a syllogism $L$ (either literal $L_0$ or pragmatic $L_1$), we can define a literal production model $R_0$ that uses the listener $L$'s posterior distribution on states to determine what conclusion is likely to be true given the premises. 
+This model $R_0$ can be viewed as one that is sampling a state from the listener's posterior distribution on states and randomly choosing among the conclusions that are literally true of that state. 
 
 %The strength of a syllogistic argument (two premises) for a conclusion is a real-valued number between 0 and 1 given by the $P(u_c \mid u_1, u_2)$, where $u_1$ and $u_2$ are the two premises of the syllogism.
 
 \begin{equation}
-R_0(u_3 \mid u_1, u_2) \propto \sum_s \mathcal{L}(u_3, s) \cdot L_0(s \mid u_1, u_2) \label{eq:R0}
+R_0(u_3 \mid u_1, u_2) \propto \sum_s \mathcal{L}(u_3, s) \cdot L(s \mid u_1, u_2) \label{eq:R0}
 \end{equation}
 
 \subsubsection{Informative production of conclusions}
 
 Just as with our submodel of premise interpretation, we can define a reasoner model who selects conclusions in order to convey information to a naive listener (who has not heard either premises or conclusion). 
-Since the reasoner does not know the state, we operationalize the informational utility of a conclusion by how well it would align the listener's beliefs with those of the reasoner. 
+Since the reasoner does not know the state (but only has beliefs about the state given the premises of the syllogism), we operationalize the informational utility of a conclusion by how well it would align the listener's beliefs with those of the reasoner. 
 Formally, we use the information-theoretic measure of Kullback-Leibler (KL) divergence as the measure of alignment of the naive listener and reasoner's belief distributions. 
-Again, this formalization is agnostic as to how we compute the reasoner's distribution (whether it be via a literal or a pragmatic interpretation of the premises), and so we denote the reasoner's distribution as $R$.
-
+Again, this formalization is agnostic as to how we compute the reasoner's state distribution (whether it be via a literal or a pragmatic interpretation of the premises), and so we denote the reasoner's distribution as $R$.
 
 \begin{align}
   \label{eq:KL-divergence}
