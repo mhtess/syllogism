@@ -378,11 +378,14 @@ var qudToString = function(venn, qud){
   return sorted_uniqQudVal.join(';')
 }
 
-var qudOmitRegions = function(state, region_vals){
-  return vennToString(filter(function(s){ region_vals.indexOf(s.label) > -1 }, state))
+
+var omitRegions = function(state, region_vals){
+  return filter(function(s){ region_vals.indexOf(s.label) > -1 }, state)
 }
 
-
+var qudOmitRegions = function(state, region_vals){
+  return vennToString(omitRegions(state, region_vals))
+}
 
 var qudFn = function(state, qud){
   return qud == "state" ? vennToString(state) :
@@ -399,6 +402,40 @@ var conclusionQUDfn = function(venn){
 }
 
 
+var possiblePremiseOnes = [
+  {"p1":"A","p2":"B", "quantifier":"all"},
+  {"p1":"A","p2":"B", "quantifier":"some"},
+  {"p1":"A","p2":"B", "quantifier":"some_not"},
+  {"p1":"A","p2":"B", "quantifier":"none"},
+  {"p1":"B","p2":"A", "quantifier":"all"},
+  {"p1":"B","p2":"A", "quantifier":"some"},
+  {"p1":"B","p2":"A", "quantifier":"some_not"},
+  {"p1":"B","p2":"A", "quantifier":"none"}
+]
+
+
+var sequentialQUDS = {
+  'All;A;B': [ 'AB', 'ABC' ],
+  'Some;A;B': [ 'A', 'AB', 'ABC', 'AC' ],
+  'Some not;A;B': [ 'A', 'AB', 'ABC', 'AC' ],
+  'None;A;B': [ 'A', 'AC', 'B', 'BC', 'C' ],
+  'All;B;A': [ 'AB', 'ABC' ],
+  'Some;B;A': [ 'AB', 'ABC', 'B', 'BC' ],
+  'Some not;B;A': [ 'AB', 'ABC', 'B', 'BC' ],
+  'None;B;A': [ 'A', 'AC', 'B', 'BC', 'C' ]
+}
+
+
+var isChar = function(str, char){
+  return str == char
+}
+
+var firstTermPreference = function(syllogism){
+  return (isChar(syllogism[0].p1, "A") && !(isChar(syllogism[1].p1, "C"))) ? "A" :
+  (!isChar(syllogism[0].p1, "A") && (isChar(syllogism[1].p1, "C"))) ? "C" :
+  false
+}
+
 var marginalizeVennForR = function(dist){
   Infer({model: function(){
     var venn = sample(dist);
@@ -406,22 +443,68 @@ var marginalizeVennForR = function(dist){
   }})
 }
 
+var regionExpectationFromVennDist = function(venn_dist){
+  var seq_region_dist = Infer({model: function(){
+    var venn = sample(venn_dist);
+    _.fromPairs(map(function(x){ return [x.label, x.truth_val] }, venn))
+  }})
+  var vennRegionLabels = _.keys(seq_region_dist.support()[0])
 
-var venn_interpreter = cache(function(sentences, qud) {
-  display(JSON.stringify(sentences))
+  return map(function(s){
+    return [s, expectation(Enumerate(function(){
+      var venn = sample(seq_region_dist)
+      return venn[s]
+    })) ]
+  }, vennRegionLabels)
+}
+
+// var
+
+var marginalizeQUD_omitRegions = cache(function(dist, region_vals){
+  Enumerate(function(){
+    var state = sample(dist)
+    omitRegions(state, region_vals)
+  })
+})
+
+var marginalizeQUDval = cache(function(stateDist, qud){
+  // display('marginalizedQudvl fn: qud = ' + qud)
+  Infer({model: function(){
+    var state = sample(stateDist)
+    qudFn(state, qud)
+    // qud == "state" ? vennToString(state): qudToString(stateDist, qud)
+    // acQUDToStringArray(state)
+  }})
+})
+
+// var qudFn = function(state, qud){
+//   return qud == "state" ? vennToString(state) :
+//         _.isArray(qud) ? qudOmitRegions(state, qud) :
+//                         qudToString(state, qud)
+//
+// }
+
+var regionExpectations_prior = regionExpectationFromVennDist(venn_space)
+
+
+var alpha = 2
+var noise = 0.01
+
+var venn_interpreter = cache(function(sentences, pragmatics) {
+  // display(JSON.stringify(sentences))
   Infer({
     model: function() {
       var venn = sample(venn_space)
 
       foreach(sentences, function(utterance) {
         var meaningFn = lexicon[utterance.quantifier]
-        condition(flip(0.03) ? true : meaningFn(venn, utterance.p1, utterance.p2))
+        condition(flip(noise) ? true : meaningFn(venn, utterance.p1, utterance.p2))
       })
       // display('literal interpreter pre qud')
-      var qudVal = qudFn(venn, qud)
+      var qudVal = qudFn(venn, pragmatics.qud)
       // display('literal interpreter post qud')
 
-      return qudVal
+      return qudVal//pragmatics.production ? qudVal : venn
 
     },
     method: "enumerate"
@@ -439,7 +522,6 @@ var literal_speaker = cache(function(venn){
     return conclusion
   }})
 })
-
 
 var conclusion_prior =  Infer({
     model: function() {
@@ -459,13 +541,7 @@ var conclusion_prior =  Infer({
     method: "enumerate"
   })
 
-
-
-var alpha = 2
-
-
-
-var premise_speaker = cache(function(qudVal, observed_premises, qud) {
+var premise_speaker = cache(function(qudVal, observed_premises, pragmatics) {
   Infer({
     model: function() {
       var premises = map(sample, alternative_quantifier_set(observed_premises))
@@ -474,7 +550,7 @@ var premise_speaker = cache(function(qudVal, observed_premises, qud) {
       // display(JSON.stringify(venn))
       // var LiteralDist = qud.state ? venn_interpreter(premises, qud) :
       //   literal_reasoner(premises)
-      var LiteralDist = venn_interpreter(premises, qud)
+      var LiteralDist = venn_interpreter(premises, pragmatics)
 
       factor(alpha * LiteralDist.score(qudVal))
 
@@ -485,8 +561,49 @@ var premise_speaker = cache(function(qudVal, observed_premises, qud) {
   })
 })
 
+
+
+var pragmatic_interpreter = cache(function(premises, pragmatics) {
+  Infer({
+    model: function() {
+      var venn = sample(venn_space)
+      var qudVal = qudFn(venn, pragmatics.qud)
+      var SpeakerDist = premise_speaker(qudVal, premises, pragmatics)
+      observe(SpeakerDist, premises)
+      return pragmatics.production ? vennToString(venn) : venn
+    },
+    method: "enumerate"
+  })
+})
+
+var single_pragmatic_interpreter = cache(function(premises) {
+
+  var posterior_one = Infer({model: function() {
+      var qud = "AB"
+      var venn = sample(venn_space)
+      var qudVal = qudFn(venn, qud)
+      var SpeakerDist = single_premise_speaker(qudVal, premises[0], venn_space, qud)
+      observe(SpeakerDist, premises[0])
+      return venn
+    }, method: "enumerate"})
+
+    // var posterior_two = Infer({model: function() {
+    //     var qud = "BC"
+    //     var venn = sample(posterior_one)
+    //     var qudVal = qud == "state" ? vennToString(venn) :
+    //           qudToString(venn, qud)
+    //     var SpeakerDist = single_premise_speaker(qudVal, premises[1], posterior_one, qud)
+    //     observe(SpeakerDist, premises[1])
+    //     return venn
+    //   }, method: "enumerate"})
+
+    return posterior_one
+
+})
+
+
 var venn_interpreter_custom_prior = cache(function(sentences, state_prior, qud) {
-  display(JSON.stringify(sentences))
+  // display(JSON.stringify(sentences))
 
   Infer({
     model: function() {
@@ -494,7 +611,7 @@ var venn_interpreter_custom_prior = cache(function(sentences, state_prior, qud) 
       // display(venn)
       foreach(sentences, function(utterance) {
         var meaningFn = lexicon[utterance.quantifier]
-        condition(flip(0.03) ? true : meaningFn(venn, utterance.p1, utterance.p2))
+        condition(flip(noise) ? true : meaningFn(venn, utterance.p1, utterance.p2))
         // condition(meaningFn(venn, utterance.p1, utterance.p2))
       })
       // display(" in listener .. "+qud)
@@ -521,73 +638,7 @@ var single_premise_speaker = cache(function(qudVal, obs_premise, listener_prior,
   })
 })
 
-
-var pragmatic_interpreter = cache(function(premises, qud) {
-  Infer({
-    model: function() {
-      var venn = sample(venn_space)
-
-      var qudVal = qudFn(venn, qud)
-      var SpeakerDist = premise_speaker(qudVal, premises, qud)
-      observe(SpeakerDist, premises)
-      return venn
-    },
-    method: "enumerate"
-  })
-})
-
-
-var sequential_pragmatic_interpreter = cache(function(premises) {
-
-  var posterior_one = Infer({model: function() {
-      var qud = "AB"
-      var venn = sample(venn_space)
-      var qudVal = qudFn(venn, qud)
-
-      var SpeakerDist = single_premise_speaker(qudVal, premises[0], venn_space, qud)
-      observe(SpeakerDist, premises[0])
-      return venn
-    }, method: "enumerate"})
-
-    // var posterior_two = Infer({model: function() {
-    //     var qud = "BC"
-    //     var venn = sample(posterior_one)
-    //     var qudVal = qud == "state" ? vennToString(venn) :
-    //           qudToString(venn, qud)
-    //     var SpeakerDist = single_premise_speaker(qudVal, premises[1], posterior_one, qud)
-    //     observe(SpeakerDist, premises[1])
-    //     return venn
-    //   }, method: "enumerate"})
-
-    return posterior_one
-
-})
-
-var marginalizeQUD_omitRegions = function(dist, region_vals){
-  Enumerate(function(){
-    var state = sample(dist)
-    qudOmitRegions(state, region_vals)
-  })
-}
-
-var marginalizeQUDval = cache(function(stateDist, qud){
-  // display('marginalizedQudvl fn: qud = ' + qud)
-  Infer({model: function(){
-    var state = sample(stateDist)
-    qudFn(state, qud)
-    // qud == "state" ? vennToString(state): qudToString(stateDist, qud)
-    // acQUDToStringArray(state)
-  }})
-})
-
-// var qudFn = function(state, qud){
-//   return qud == "state" ? vennToString(state) :
-//         _.isArray(qud) ? qudOmitRegions(state, qud) :
-//                         qudToString(state, qud)
-//
-// }
-
-var sequential_pragmatic_interpreter_qudOmitRegions = cache(function(premises) {
+var sequential_pragmatic_interpreter_qudOmitRegions = cache(function(premises, pragmatics) {
 
   var posterior_one = Infer({model: function() {
       var qud = "AB"
@@ -597,49 +648,41 @@ var sequential_pragmatic_interpreter_qudOmitRegions = cache(function(premises) {
       observe(SpeakerDist, premises[0])
       return venn
     }, method: "enumerate"})
-    // display('exit first update')
 
-    var seqIntMarg = marginalizeVennForR(posterior_one)
-    var vennRegionLabels = _.keys(seqIntMarg.support()[0])
-    var topNregions = filter(function(s){
-      expectation(Enumerate(function(){
-        var venn = sample(seqIntMarg)
-        return venn[s]
-      })) > 0.51
-    }, vennRegionLabels)
+    var regionExpectations_posterior = regionExpectationFromVennDist(posterior_one)
+    var keys = map(first, regionExpectations_posterior)
+    var qud = filter(function(k){
+      _.fromPairs(regionExpectations_posterior)[k] >
+      _.fromPairs(regionExpectations_prior)[k]
+    }, keys)
 
-    // display(topNregions)
+  var qudDist = marginalizeQUD_omitRegions(posterior_one, qud)
 
+  var posterior_two = Infer({model: function() {
+      var qudVal = sample(qudDist) // ;
+      // var venn = sample(posterior_one)
+      // var qudVal = qudOmitRegions(venn, qud)
+      display(qudVal)
+      var prgmtics = {
+        modular: pragmatics.modular,
+        interpretation: pragmatics.interpretation,
+        production: pragmatics.production,
+        qud: qud
+      }
+      // var SpeakerDist = single_premise_speaker(qudVal, premises[1], qudDist, prgmtics.qud)
+      var SpeakerDist = single_premise_speaker(qudFn(qudVal, "state"),
+        premises[1], qudDist, "state")
+      // display(JSON.stringify(SpeakerDist))
+      // displayDist(SpeakerDist)
+      observe(SpeakerDist, premises[1])
+      // return qudVal
+      // return  qudVal // pragmatics.production ? vennToString(qudVal) : qudVal
+      return  pragmatics.production ? vennToString(qudVal) : qudVal
+    }, method: "enumerate"})
 
-    // var topNregions = _.fromPairs(
-    //   sortOn(map(function(s){
-    //     return [s, expectation(Enumerate(function(){
-    //       var venn = sample(seqIntMarg)
-    //       return venn[s]
-    //     })) ]}, vennRegionLabels),
-    //     function(x){ -x[1] }
-    //   )//.slice(0, 2)
-    // )
-
-    var posterior_two = Infer({model: function() {
-        // var qud = "BC"
-        // display('enter posterior two')
-        var venn = sample(posterior_one)
-        var qudVal = qudOmitRegions(venn, topNregions)
-        // display(qudVal)
-        var SpeakerDist = single_premise_speaker(qudVal, premises[1], posterior_one, topNregions)
-        observe(SpeakerDist, premises[1])
-        return venn
-      }, method: "enumerate"})
-
-    // display('exit second update')
-    return posterior_two
-    // return posterior_two
+    return {posterior_two, qud}
 
 })
-
-
-
 
 var qud_pragmatic_reasonser = cache(function(premises) {
   // display("pragmatic interpreter")
@@ -759,51 +802,6 @@ var integrated_pragmatic_reasoner = function(premises, interpretationOnly) {
 }
 
 
-var modular_pragmatic_reasoner = function(premises, pragmatics) {
-  Infer({
-    model: function() {
-
-      var PremiseInterpretation = pragmatics.interpretation ?
-            pragmatics.interpretation == "sequential_qud" ?
-              sequential_pragmatic_interpreter_qudOmitRegions(premises) :
-              pragmatic_interpreter(premises, pragmatics.qud) :
-            venn_interpreter(premises, pragmatics.qud)
-
-      // display('after interpretation')
-      if (pragmatics.production) {
-        // display('enter pragmatic production')
-        var conclusion = uniformDraw(conclusions)
-        var qudValDist = marginalizeQUDval(PremiseInterpretation, "AC")
-        // display('enter listener in production')
-        var ConclusionInterpretation = pragmatics.production.depth == 0 ?
-                  venn_interpreter([conclusion], "AC") :
-                  pragmatic_interpreter_conclusion(conclusion, "AC")
-
-        // display('exit listener in production')
-
-        var _kl = KL(qudValDist, ConclusionInterpretation, qudValDist.support())
-        factor(alpha * -1 * _kl)
-        // factor(alpha * ConclusionInterpretation.score(vennToStringArray(venn)))
-        return formatSentence(conclusion)
-
-      } else {
-        // display('lit production')
-        var venn = sample(PremiseInterpretation)
-        var conclusion = sample(literal_speaker(venn))
-        // display(JSON.stringify(venn))
-        // var conclusion = uniformDraw(conclusions)
-        // var conclusionMeaningFn = lexicon[conclusion.quantifier]
-        // condition(conclusionMeaningFn(venn, conclusion.p1, conclusion.p2))
-        return formatSentence(conclusion)
-
-      }
-
-
-    }
-  })
-}
-
-
 var integrated_pragmatic_reasoner_wProduction = function(premises, pragmatics) {
   Infer({
     model: function() {
@@ -915,21 +913,130 @@ var marginalizeConclusions = cache(function(rr_dist){
   }, conclusions))
 })
 
-var isChar = function(str, char){
-  return str == char
-}
+var modular_pragmatic_reasoner = function(premises, pragmatics) {
+  Infer({
+    model: function() {
 
-var firstTermPreference = function(syllogism){
-  return (isChar(syllogism[0].p1, "A") && !(isChar(syllogism[1].p1, "C"))) ? "A" :
-  (!isChar(syllogism[0].p1, "A") && (isChar(syllogism[1].p1, "C"))) ? "C" :
-  false
+      var PremiseInterpretation = pragmatics.interpretation ?
+            pragmatics.qud == "seq" ?
+              sequential_pragmatic_interpreter_qudOmitRegions(premises, pragmatics) :
+              pragmatic_interpreter(premises, pragmatics) :
+              venn_interpreter(premises, pragmatics)
+
+      var qudDist_prior = marginalizeQUD_omitRegions(venn_space, PremiseInterpretation.qud)
+      display('after interpretation')
+      if (pragmatics.production) {
+        display('enter pragmatic production')
+        var conclusion = uniformDraw(conclusions)
+        // var qudValDist = marginalizeQUDval(PremiseInterpretation, "AC")
+        // display(JSON.stringify())
+        display('enter listener in production')
+        // var ConclusionInterpretation = venn_interpreter([conclusion], {production: true, qud: "state"})
+        var ConclusionInterpretation = venn_interpreter_custom_prior([conclusion],
+          qudDist_prior, "state")
+
+// pragmatics.production.depth == 0 ?
+//                   venn_interpreter([conclusion], {production: true, qud: "state"}) :
+//                   pragmatic_interpreter_conclusion(conclusion, "AC")
+
+        display('exit listener in production')
+        var _kl = KL(PremiseInterpretation.posterior_two, ConclusionInterpretation, PremiseInterpretation.posterior_two.support())
+
+        // var _kl = KL(PremiseInterpretation, ConclusionInterpretation, PremiseInterpretation.support())
+        factor(alpha * -1 * _kl)
+        // factor(alpha * ConclusionInterpretation.score(vennToStringArray(venn)))
+        return formatSentence(conclusion)
+
+      } else {
+        // display('lit production')
+        var venn = sample(pragmatics.qud == "seq" ? PremiseInterpretation.posterior_two : PremiseInterpretation)
+        var conclusion = sample(literal_speaker(venn))
+        // display(JSON.stringify(venn))
+        // var conclusion = uniformDraw(conclusions)
+        // var conclusionMeaningFn = lexicon[conclusion.quantifier]
+        // condition(conclusionMeaningFn(venn, conclusion.p1, conclusion.p2))
+        return formatSentence(conclusion)
+
+      }
+
+
+    }
+  })
 }
 
 
 var syllogism = [
-  {"p1":"A","p2":"B", "quantifier":"none"},
-  {"p1":"B","p2":"C", "quantifier":"none"}
+  {"p1":"A","p2":"B", "quantifier":"all"},
+  {"p1":"B","p2":"C", "quantifier":"some"}
 ]
+
+
+// var returnVal = {
+//   literal: marginalizeVennForR(venn_interpreter(syllogism, "state")),
+//   pragmatic: marginalizeVennForR(pragmatic_interpreter(syllogism, "state")),
+//   sequential: marginalizeVennForR(sequential_pragmatic_interpreter_qudOmitRegions(syllogism))
+// }
+// returnVal;
+var pragmatics = {
+  modular: true,
+  interpretation: true,
+  production: true,// {
+    // depth: 0
+  // },
+  qud: "seq"
+}
+
+displayDist(
+  modular_pragmatic_reasoner(syllogism, pragmatics)
+)
+// var x = sequential_pragmatic_interpreter_qudOmitRegions(syllogism, pragmatics)
+// displayDist(x)
+// displayDist(x.posterior_two)
+// x.qud
+// FOR SINGLE PREMISE INTERPRETATIONS
+// _.fromPairs(map(function(u){
+//
+//   return [ formatSentence(u),  {
+//     literal: marginalizeVennForR( venn_interpreter([u], "state")  ),
+//     pragmatic: marginalizeVennForR( single_pragmatic_interpreter([u], "state")  )
+//   } ]
+//
+// }, possiblePremiseOnes))
+
+
+// FOR COMPUTING REGIONS WITH INCREASED PROBABILITY FOLLOWING PREMISE_1
+// FOR CACHEING QUD in SEQ QUD MODEL
+// _.fromPairs(map(function(u){
+//
+//   var regionExpectations_posterior = sort(regionExpectationFromVennDist(
+//     venn_interpreter([u], "state")
+//   ))
+//   var keys = map(first, regionExpectations_posterior)
+//   var qud = filter(function(k){
+//     _.fromPairs(regionExpectations_posterior)[k] >
+//     _.fromPairs(regionExpectations_prior)[k]
+//   }, keys)
+//
+//   return [formatSentence(u), qud]
+//
+// }, possiblePremiseOnes))
+
+
+
+
+
+// [ 'C', 'B', 'BC', 'A', 'AC' ]
+
+// venn_interpreter(syllogism, "state").support()
+// display()
+// var postOne = sequential_pragmatic_interpreter_qudOmitRegions(syllogism)
+// var regionExpectations_prior = regionExpectationFromVennDist(venn_space)
+// var regionExpectations_posterior = regionExpectationFromVennDist(postOne)
+// display(regionExpectations_prior)
+// display(regionExpectations_posterior)
+// var keys = map(first, regionExpectations_posterior)
+// display(keys)
+
 
 // displayDist(integrated_pragmatic_reasoner(syllogism))
 
@@ -942,26 +1049,24 @@ var syllogism = [
 
 // sequentialIntDist
 
-displayDist(modular_pragmatic_reasoner(syllogism,
-  // { interpretation: true, production: false, qud: "state"}
-  { interpretation: true, production: {depth: 0}, qud: "AC"}
-))
+// displayDist(modular_pragmatic_reasoner(syllogism,
+//   // { interpretation: true, production: false, qud: "state"}
+//   { interpretation: true, production: {depth: 0}, qud: "AC"}
+// ))
+//
+// // displayDist(marginalizeVennForR(sequentialIntDist))
+// displayDist(modular_pragmatic_reasoner(syllogism,
+//   // { interpretation: true, production: false, qud: "state"}
+//   { interpretation: "sequential_qud", production: {depth: 0}, qud: "AC"}
+// ))
 
-// displayDist(marginalizeVennForR(sequentialIntDist))
-displayDist(modular_pragmatic_reasoner(syllogism,
-  // { interpretation: true, production: false, qud: "state"}
-  { interpretation: "sequential_qud", production: {depth: 0}, qud: "AC"}
-))
 
+// sequential_pragmatic_interpreter_qudOmitRegions(
+//   syllogism
+// )
 // displayDist(marginalizeVennForR(marginalizeQUD_omitRegions(sequentialIntDist, topNregions)))
 // // //
-// var returnVal = {
-//   literal: marginalizeVennForR(literalVennDist),
-//   pragmatic: marginalizeVennForR(vennDist),
-//   sequential: marginalizeVennForR(sequentialIntDist)
-// }
-// // // //
-// returnVal;
+
 
 
 
