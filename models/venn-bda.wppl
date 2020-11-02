@@ -158,9 +158,20 @@ var qudToString = function(venn, qud){
   return filteredQudVal.join(';')
 }
 
-var qudOmitRegions = function(state, region_vals){
-  return vennToString(filter(function(s){ region_vals.indexOf(s.label) > -1 }, state))
+var omitRegions = function(state, region_vals){
+  return filter(function(s){ region_vals.indexOf(s.label) > -1 }, state)
 }
+
+var qudOmitRegions = function(state, region_vals){
+  return vennToString(omitRegions(state, region_vals))
+}
+
+var marginalizeQUD_omitRegions = cache(function(dist, region_vals){
+  Enumerate(function(){
+    var state = sample(dist)
+    omitRegions(state, region_vals)
+  })
+})
 
 var qudFn = function(state, qud){
   return qud == "state" ? vennToString(state) :
@@ -476,7 +487,29 @@ var regionExpectationFromVennDist = cache(function(venn_dist){
   }, vennRegionLabels)
 })
 
-// var
+// regions that increase in probability following the first premise
+var sequentialQUDs = {
+  'All;A;B': [ 'AB', 'ABC' ],
+  'Some;A;B': [ 'A', 'AB', 'ABC', 'AC' ],
+  'Some not;A;B': [ 'A', 'AB', 'ABC', 'AC' ], // this is the same as "some" because of pragmatics ("some" implies "not all", and visa versa)
+  'No;A;B': [ 'A', 'AC', 'B', 'BC', 'C' ],
+  'All;B;A': [ 'AB', 'ABC' ],
+  'Some;B;A': [ 'AB', 'ABC', 'B', 'BC' ],
+  'Some not;B;A': [ 'AB', 'ABC', 'B', 'BC' ],
+  'No;B;A': [ 'A', 'AC', 'B', 'BC', 'C' ]
+}
+
+// var sequentialQUDs_viaLiteral = {
+//   'All;A;B': [ 'AB', 'ABC' ],
+//   'Some;A;B': [ 'AB', 'ABC' ],
+//   'Some not;A;B': [ 'A', 'AC', 'B', 'BC', 'C' ],
+//   'None;A;B': [ 'A', 'AC', 'B', 'BC', 'C' ],
+//   'All;B;A': [ 'AB', 'ABC' ],
+//   'Some;B;A': [ 'AB', 'ABC' ],
+//   'Some not;B;A': [ 'A', 'AC', 'B', 'BC', 'C' ],
+//   'None;B;A': [ 'A', 'AC', 'B', 'BC', 'C' ]
+// }
+
 
 // var df = dataFrame(csv.read("ccobra_data/ragni2016_collapse.csv"))
 var df = dataFrame(csv.read("ccobra_data/ragni2016.csv"))
@@ -522,7 +555,7 @@ var bda_model = function(){
 	}
 
   var noise = uniformDrift({a: 0, b: 0.1, width: 0.01})
-
+  // TO DO: CHANGE TO 7 REGIONS
   var regionProbs = repeat(8, function(){ return uniformDrift({a: 0, b: 1, width: 0.1}) })
 
   var firstTermPrefWeight  = uniformDrift({a: 1, b: 10, width: 1})
@@ -658,21 +691,28 @@ var bda_model = function(){
         return venn
       }, method: "enumerate"})
 
-      var regionExpectations_posterior = regionExpectationFromVennDist(posterior_one)
-      var keys = map(first, regionExpectations_posterior)
-      // display(regionExpectations_prior)
-      // display(regionExpectations_posterior)
-      var qud = filter(function(k){
-        _.fromPairs(regionExpectations_posterior)[k] >
-        _.fromPairs(regionExpectations_prior)[k]
-      }, keys)
+      var qud = sequentialQUDs[formatSentence(premises[0])]
+      var qudDist = marginalizeQUD_omitRegions(posterior_one, qud)
+
+      // display(formatSentence(premises[0]))
+      // display(qud)
+      // var regionExpectations_posterior = regionExpectationFromVennDist(posterior_one)
+      // var keys = map(first, regionExpectations_posterior)
+      // // display(regionExpectations_prior)
+      // // display(regionExpectations_posterior)
+      // var qud = filter(function(k){
+      //   _.fromPairs(regionExpectations_posterior)[k] >
+      //   _.fromPairs(regionExpectations_prior)[k]
+      // }, keys)
       // display(premises[0])
       // display(qud)
 
       // display('enter posterior two')
       var posterior_two = Infer({model: function() {
-          var venn = sample(posterior_one)
-          var qudVal = qudOmitRegions(venn, qud)
+          var qudVal = sample(qudDist) // ;
+
+          // var venn = sample(posterior_one)
+          // var qudVal = qudOmitRegions(venn, qud)
           // display(qudVal)
           var prgmtics = {
             modular: pragmatics.modular,
@@ -680,9 +720,10 @@ var bda_model = function(){
             production: pragmatics.production,
             qud: qud
           }
-          var SpeakerDist = argument_speaker(qudVal, [premises[1]], prgmtics, posterior_one)
+          var SpeakerDist = argument_speaker(qudFn(qudVal, "state"),
+          [premises[1]], prgmtics, qudDist)
           observe(SpeakerDist, [premises[1]])
-          return pragmatics.production ? vennToString(venn) : venn
+          return pragmatics.production ? vennToString(qudVal) : qudVal
         }, method: "enumerate"})
 
       return posterior_two
@@ -690,6 +731,10 @@ var bda_model = function(){
   })
 
   var modular_pragmatic_reasoner = cache(function(premises, pragmatics, first_term_preference) {
+    var qud = sequentialQUDs[formatSentence(premises[0])]
+    var qudDist_prior = pragmatics.qud == "seq" ?
+      marginalizeQUD_omitRegions(venn_prior, qud) :
+      venn_prior
     // display('enter modular')
     Infer({
       model: function() {
@@ -699,6 +744,7 @@ var bda_model = function(){
             sequential_pragmatic_interpreter_qudOmitRegions(premises, pragmatics) :
             pragmatic_interpreter(premises, pragmatics) :
             venn_interpreter(premises, pragmatics, false)
+
         // display('exit interpretation')
         // {"modular":"modular","interpretation":"literal","production":"pragmatic","qud":"state"}
         // display(JSON.stringify(PremiseInterpretation.support().length))
@@ -707,7 +753,8 @@ var bda_model = function(){
         // display(JSON.stringify(PremiseInterpretation))
 
         if (pragmatics.production) {
-          var ConclusionInterpretation = venn_interpreter([conclusion], {qud: "state", production: true}, false)
+          // display('enter prag production')
+          var ConclusionInterpretation = venn_interpreter([conclusion], {qud: "state", production: true}, qudDist_prior)
           // display(JSON.stringify(ConclusionInterpretation.support().length))
           var _kl = KL(
             PremiseInterpretation,
@@ -715,6 +762,8 @@ var bda_model = function(){
             PremiseInterpretation.support()
           )
           factor(speakerOptimality.alpha_2 * -1 * _kl)
+          // display('exit prag production')
+
           // factor(speakerOptimality.alpha_2 * ConclusionInterpretation.score(venn))
         } else {
           // display('enter literal production')
@@ -931,12 +980,12 @@ var bda_model = function(){
 
 // var totalIterations = 1000, lag =  1;
 // var totalIterations = 5000, lag =  0;
-var totalIterations = 500, lag =  0;
-// var totalIterations = 2, lag =  0;
+// var totalIterations = 500, lag =  0;
+var totalIterations = 2, lag =  0;
 
 var samples = totalIterations/(lag + 1), burn = totalIterations / 2;
 
-var outfile = 'bda-syllogisms-ragni2016_full_' +
+var outfile = 'TESTbda-syllogisms-ragni2016_full_' +
   'AltQO_' +
   pragParams.modular + '_' +
   pragParams.interpretation + '-interpretation_' +
