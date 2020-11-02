@@ -114,8 +114,14 @@
 
 \authornote{Corresponding author: Michael Henry Tessler,  Department of Brain and Cognitive Sciences, Building 46, Room 3027,	Massachusetts Institute of Technology, 77 Massachusetts Avenue, Cambridge, MA 02139-4307, USA; tessler@mit.edu}
 
-\abstract{\mht{abstract from 2014 cogsci paper}
-Syllogistic reasoning lies at the intriguing intersection of natural and formal reasoning, of language and logic. Syllogisms comprise a formal system of reasoning yet use natural language quantifiers, and invite natural language conclusions. How can we make sense of the interplay between logic and language? We develop a computational-level theory that con- siders reasoning over concrete situations, constructed probabilistically by sampling. The base model can be enriched to consider the pragmatics of natural language arguments. The model predictions are compared with behavioral data from a recent meta-analysis. The flexibility of the model is then explored in a data set of syllogisms using the generalized quantifiers most and few. We conclude by relating our model to two extant theories of syllogistic reasoning – Mental Models and Probability Heuristics.}
+\abstract{
+Syllogistic reasoning lies at the intriguing intersection of natural and formal reasoning, of language and logic. 
+Syllogisms comprise a formal system of reasoning yet make use of natural language quantifiers (e.g., \emph{all}, \emph{some}), and invite natural language conclusions. 
+The conclusions people tend to draw from syllogisms deviate substantially from a purely logical perspective. 
+Is natural language to blame?
+%How can we make sense of the interplay between logic and language? 
+\mht{from old abstract:: 
+We develop a computational-level theory that considers reasoning over concrete situations, constructed probabilistically by sampling. The base model can be enriched to consider the pragmatics of natural language arguments. The model predictions are compared with behavioral data from a recent meta-analysis. The flexibility of the model is then explored in a data set of syllogisms using the generalized quantifiers most and few. We conclude by relating our model to two extant theories of syllogistic reasoning – Mental Models and Probability Heuristics.}}
 
 
 \begin{document}
@@ -131,19 +137,28 @@ Syllogistic reasoning lies at the intriguing intersection of natural and formal 
 
 Imagine that your friend tells you: ``Everyone in my office has the flu and, you know, some people with this flu are out for weeks.''
 You might respond: ``I hope your officemates are not out for weeks and I hope you don’t get sick either.''
-The form of this exchange resembles a syllogism: a two- sentence argument used to relate two properties (or terms: A, C) via a middle term (B); the relations used in syllogisms are quantifiers. Fit into a formal syllogistic form, this argument would read:
+The form of this exchange resembles a syllogism: a two-sentence argument used to relate two properties (or terms: A, C) via a middle term (B). 
+Fit into a formal syllogistic form, this argument would read:
 
 \begin{enumerate}
-\item \emph{All} officemates are out with the flu (All A are B)
-\item \emph{Some} out with the flu are out for weeks (Some B are C) 
-\item Therefore, \emph{some} officemates are out for weeks (Some A are C)
+\item \emph{All} officemates are out with the flu (All As are Bs)
+\item \emph{Some} people out with the flu are out for weeks (Some Bs are Cs) 
+\item Therefore, \emph{some} officemates are out for weeks (Some As are Cs)
 \end{enumerate}
 
-Unfortunately, the conclusion does not follow from the premises.
-In fact, within the confines of the classical syllogism, there is no conclusion about the relation between A \& C that is true in every situation in which the premises are true. 
-Faced with such an argument, however, people are perfectly comfortable drawing some conclusion. 
-A meta-analysis of syllogistic reasoning showed that over the population, the proper production of no valid conclusion responses for invalid arguments ranged from 76\% to 12\%. 
-Even for valid arguments, the accuracy of producing valid conclusions ranged from 90\% to 1\% \cite{Khemlani2012}: people do not seem to find drawing deductively valid conclusions particularly automatic.
+
+The relations used in classical Aristotelean syllogisms are quantifiers: \emph{all}, \emph{some}, \emph{some .... are not}, and \emph{none}. 
+The logical space defined by classical syllogisms is comprised of all combinations of quantifiers and term orders for the premises: \textsc{quantifier} \textsc{A} -- \textsc{B} vs. \textsc{quantifier} \textsc{B} -- \textsc{A}.
+In total, each premise can be appear with one of the four quantifiers and two term orders and there are two premises yielding:  $4$ quantifiers  $\times 2$ term orderings $\times 2$ premises = 64 syllogisms.
+Only 27 of the 64 unique syllogistic premises yield a logically valid conclusion (i.e., a conclusion that is true in every situation in which the premises are true).
+For logically invalid syllogisms, the appropriate logical response is to say \emph{nothing follows} from the premises (or, \emph{no valid conclusion}), yet participants readily endorse substantive conclusions for logically invalid syllogisms. 
+For example, the syllogism above is not logically valid.  (Consider that it could be only non-officemates with the flu that are out for weeks. In that case, the premises would be true and the conclusion false.)
+%In fact, within the confines of the classical syllogism, there is no conclusion about the relation between A \& C that is true in every situation in which the premises are true. 
+The conclusion above seems reasonable, however, and roughly 70\% of participants will assert that the \emph{Some As are Cs} conclusion follows from the premises  \cite{Khemlani2012}.
+Even for valid arguments, the accuracy of producing valid conclusions ranges from 90\% to 1\%: people do not seem to find drawing deductively valid conclusions particularly straightforward.
+
+%Faced with such an argument, however, people are perfectly comfortable drawing some conclusion. 
+%A meta-analysis of syllogistic reasoning showed that over the population, the proper production of no valid conclusion responses for invalid arguments ranged from 76\% to 12\%. 
 
 Many theories of syllogistic reasoning take deduction as a given and try to explain reasoning errors as a matter of noise during cognition. 
 Errors, then, may arise from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}. 
@@ -169,9 +184,6 @@ We present a model in the Rational Speech Act framework (Frank \& Goodman, 2012;
 %
 %
 %By formalizing syllogistic reasoning as a probabilistic pragmatics problem, there is a natural way to account for influence of background knowledge in the form of the prior distribution on possible situations. We construct domains where we expect correlations between properties (e.g., knives – being sharp – cut well) and investigate syllogistic reasoning over these content domains. By measuring the prior probability of the eight possible combinations of binary features, we are able to generate predictions for syllogistic reasoning problems that are influenced by this kind of prior knowledge. Such influence of background knowledge on reasoning, known as belief bias in the syllogistic reasoning domain, has been of interest to psychologists for quite some time (e.g., Evans, Handley, \& Pollard, 1983; Dube, Rotello, \& Heit, 2010). We formalize this “bias” as rational belief updating given prior knowledge and find that the pragmatics model is too influenced by these kind of prior beliefs (Figure 2).
-
-
-
 
 
 \section{Computational Model}
