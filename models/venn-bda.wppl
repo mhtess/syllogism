@@ -510,7 +510,7 @@ var sequentialQUDs = {
 //   'None;B;A': [ 'A', 'AC', 'B', 'BC', 'C' ]
 // }
 
-
+// display(regions)
 // var df = dataFrame(csv.read("ccobra_data/ragni2016_collapse.csv"))
 var df = dataFrame(csv.read("ccobra_data/ragni2016.csv"))
 
@@ -556,8 +556,8 @@ var bda_model = function(){
 
   var noise = uniformDrift({a: 0, b: 0.1, width: 0.01})
   // TO DO: CHANGE TO 7 REGIONS
-  var regionProbs = repeat(8, function(){ return uniformDrift({a: 0, b: 1, width: 0.1}) })
-
+  var regionProbs = repeat(7, function(){ return uniformDrift({a: 0, b: 1, width: 0.1}) })
+  // display(regionProbs)
   var firstTermPrefWeight  = uniformDrift({a: 1, b: 10, width: 1})
 
   var makeConclusionPrior = cache(function(preferred_first_term){
@@ -570,7 +570,8 @@ var bda_model = function(){
   })
 
 
-  var full_venn_space = Enumerate(function() {
+  // var full_venn_space = Enumerate(function() {
+  var venn_prior = Enumerate(function() {
     map2(function(region, priorProb) {
       var regionLabel = parseVennDiagram(region)
       return {
@@ -582,17 +583,23 @@ var bda_model = function(){
     }, regions, regionProbs)
   })
 
-  var venn_prior = Infer({model: function(){
-    var v = sample(full_venn_space)
-    condition(any(function(x){ x.truth_val }, v))
-    return v
-  }})
+  // display(JSON.stringify(full_venn_space.support()[0]))
+  // display(JSON.stringify(full_venn_space.support()[0]))
+  // display(full_venn_space.support().length)
+  // var venn_prior = full_venn_space;
+
+  // Infer({model: function(){
+  //   var v = sample(full_venn_space)
+  //   condition(any(function(x){ x.truth_val }, v))
+  //   return v
+  // }})
+  // display(venn_prior.support().length)
 
 
+  // DEPRACATED: NOW USING PRE-COMPUTED UPWEIGHTED REGIONS QUD (ABOVE ABOVE)
   // COMPARE REGION_PRIOR TO INCREMENTAL REGION_POSTERIOR
   // IF REGION_POSTERIOR > _PRIOR, KEEP REGION IN QUD (OTHERWISE REMOVE)
-
-  var regionExpectations_prior = regionExpectationFromVennDist(venn_prior)
+  // var regionExpectations_prior = regionExpectationFromVennDist(venn_prior)
 
 
   // var marginalizeVennToStr = cache(function(stateDist){
