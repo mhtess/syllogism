@@ -1,7 +1,49 @@
+// NEW SPACE OF MODELS: 11/3/2020
+
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular literal literal state NA 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular literal pragmatic state NA 1
+
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal state quantifier 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal state quantifierOrder 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal state maximal 1
+
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal AC quantifier 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal AC quantifierOrder 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal AC maximal 1
+
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal seq quantifier 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal seq quantifierOrder 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal seq maximal 1
+
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic pragmatic state quantifier 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic pragmatic state quantifierOrder 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic pragmatic state maximal 1
+
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic pragmatic AC quantifier 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic pragmatic AC quantifierOrder 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic pragmatic AC maximal 1
+
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic pragmatic seq quantifier 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic pragmatic seq quantifierOrder 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic pragmatic seq maximal 1
+
+
+
+
+
+
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal seq quantifier 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal seq quantifierOrder 1
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal seq maximal 1
+
+
+
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular literal pragmatic state 1
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal state 1
 
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal seq 1
+
+
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic pragmatic seq 1
 
 
@@ -11,6 +53,8 @@
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork integrated pragmatic pragmatic grounded 1
 
 //// CODEBOOK
+
+// can be paired with any of alternative sets: quantifier, quantifierOrder, maximal
 
 // modular literal literal state // Modular Reasoner: Literal Interpretation, Literal Production
 // modular literal pragmatic state // Modular Reasoner: Literal Interpretation, Pragmatic Production
@@ -32,10 +76,11 @@ var args = process.argv
 var chain = last(args) // load index as last command line index
 
 var pragParams = {
-  modular: args[args.length - 5],
-  interpretation: args[args.length - 4],
-  production: args[args.length - 3],
-  qud: args[args.length - 2]
+  modular: args[args.length - 6],
+  interpretation: args[args.length - 5],
+  production: args[args.length - 4],
+  qud: args[args.length - 3],
+  alternatives: args[args.length - 2]
 }
 
 display(JSON.stringify(pragParams))
@@ -45,7 +90,8 @@ var pragmatics = {
   modular: (pragParams.modular == "modular"),
   interpretation: !(pragParams.interpretation == "literal"),
   production:  !(pragParams.production == "literal"),
-  qud: pragParams.qud
+  qud: pragParams.qud,
+  alternatives: pragParams.alternatives
   // qud:  (pragParams.modular == "modular") ?
   // !(pragParams.qud == "state") : (pragParams.qud == "grounded")
   // grounded for integrated reasoner model means that pragReasoner conditions on conclusion being true of state
@@ -180,6 +226,7 @@ var qudFn = function(state, qud){
 
 }
 
+
 var firstTermPreference = function(syllogism){
   return (isChar(syllogism[0].p1, "A") && !(isChar(syllogism[1].p1, "C"))) ? "A" :
   (!isChar(syllogism[0].p1, "A") && (isChar(syllogism[1].p1, "C"))) ? "C" :
@@ -295,60 +342,60 @@ var regionLabels = map(parseVennDiagram, regions)
 //   "ABC": 0.5
 // }
 
-var iidProbs = {
-  // "": 0.5,
-  "": 0.5,
-  "A": 0.5,
-  "B": 0.3,
-  "C": 0.5,
-  "AB": 0.3,
-  "BC": 0.5,
-  "AC": 0.3,
-  "ABC": 0.5
-}
-
-var correlatedProbs = {
-  "": 0.5,
-  "A": 0.25,
-  "B": 0.25,
-  "C": 0.25,
-  "AB": 0.50,
-  "BC": 0.50,
-  "AC": 0.50,
-  "ABC": 0.75
-}
-
-var flatProbs = {
-  "": 0.5,
-  "A": 0.5,
-  "B": 0.5,
-  "C": 0.5,
-  "AB": 0.5,
-  "BC": 0.5,
-  "AC": 0.5,
-  "ABC": 0.5
-}
-
-var regionProbs = iidProbs;
-
-var full_venn_space = Enumerate(function() {
-  map(function(region) {
-    var regionLabel = parseVennDiagram(region)
-    var priorProb = regionProbs[regionLabel]
-    return {
-      region: region,
-      priorProb: priorProb,
-      truth_val: flip(priorProb),
-      label: parseVennDiagram(region)
-    }
-  }, regions)
-})
-
-var venn_prior = Infer({model: function(){
-  var v = sample(full_venn_space)
-  condition(any(function(x){ x.truth_val }, v))
-  return v
-}})
+// var iidProbs = {
+//   // "": 0.5,
+//   "": 0.5,
+//   "A": 0.5,
+//   "B": 0.3,
+//   "C": 0.5,
+//   "AB": 0.3,
+//   "BC": 0.5,
+//   "AC": 0.3,
+//   "ABC": 0.5
+// }
+//
+// var correlatedProbs = {
+//   "": 0.5,
+//   "A": 0.25,
+//   "B": 0.25,
+//   "C": 0.25,
+//   "AB": 0.50,
+//   "BC": 0.50,
+//   "AC": 0.50,
+//   "ABC": 0.75
+// }
+//
+// var flatProbs = {
+//   "": 0.5,
+//   "A": 0.5,
+//   "B": 0.5,
+//   "C": 0.5,
+//   "AB": 0.5,
+//   "BC": 0.5,
+//   "AC": 0.5,
+//   "ABC": 0.5
+// }
+//
+// var regionProbs = iidProbs;
+//
+// var full_venn_space = Enumerate(function() {
+//   map(function(region) {
+//     var regionLabel = parseVennDiagram(region)
+//     var priorProb = regionProbs[regionLabel]
+//     return {
+//       region: region,
+//       priorProb: priorProb,
+//       truth_val: flip(priorProb),
+//       label: parseVennDiagram(region)
+//     }
+//   }, regions)
+// })
+//
+// var venn_prior = Infer({model: function(){
+//   var v = sample(full_venn_space)
+//   condition(any(function(x){ x.truth_val }, v))
+//   return v
+// }})
 
 // var listener0 = Enumerate(function(){
 // 	var state = sample(venn_space)
@@ -362,7 +409,8 @@ var quantifiers = ["all", "some", "no", "some_not"]
 
 // var conclusions = ["all", "some", "none", "some_not", "nvc"]
 
-var conclusions = [{
+var conclusions = [
+  {
     quantifier: "all",
     p1: "A",
     p2: "C"
@@ -404,8 +452,8 @@ var conclusions = [{
   },
   {
     quantifier: "nvc",
-    p1: "A",
-    p2: "C"
+    p1: "",
+    p2: ""
   }
 ]
 
@@ -471,6 +519,22 @@ var alternative_quantifier_order_set = cache(function(observed_premises) {
 var alternative_set_maximal = cache(function(observed_premises) {
   map(alternative_set_maximal_fn, observed_premises)
 })
+
+var alternatives = {
+  quantifier: {
+    single: alternative_quantifier_set_fn,
+    double: alternative_quantifier_set
+  },
+  quantifierOrder: {
+    single: alternative_quantifier_order_set_fn,
+    double: alternative_quantifier_order_set,
+  },
+  maximal: {
+    single: alternative_set_maximal_fn,
+    double: alternative_set_maximal
+  }
+}
+var alternative_set = alternatives[pragmatics.alternatives]
 
 var regionExpectationFromVennDist = cache(function(venn_dist){
   var seq_region_dist = Infer({model: function(){
@@ -558,14 +622,21 @@ var bda_model = function(){
   // TO DO: CHANGE TO 7 REGIONS
   var regionProbs = repeat(7, function(){ return uniformDrift({a: 0, b: 1, width: 0.1}) })
   // display(regionProbs)
-  var firstTermPrefWeight  = uniformDrift({a: 1, b: 10, width: 1})
+  var firstTermPrefWeight  = 1 + exponential({a:1}) //uniformDrift({a: 1, b: 10, width: 1})
+  // display(firstTermPrefWeight)
+  var nvcWeight = exponential({a: 1})
+  // display(nvcWeight)
 
   var makeConclusionPrior = cache(function(preferred_first_term){
+    // display(preferred_first_term)
     // give preference to conclusions that start with a "first term"
     // "first term" = unique first term used in premises
     var weights = map(function(c){
+      c.quantifier == "nvc" ? nvcWeight :
       c.p1 == preferred_first_term ? firstTermPrefWeight : 1
     }, conclusions)
+    // display(conclusions)
+    // display(weights)
     return Categorical({vs: conclusions, ps: weights})
   })
 
@@ -637,6 +708,7 @@ var bda_model = function(){
   // }
 
   var argument_speaker = cache(function(qudVal, observed_premises, pragmatics, state_prior) {
+    // display("obs prem " + JSON.stringify(observed_premises))
     // display(qudVal)
     Infer({
       model: function() {
@@ -644,10 +716,17 @@ var bda_model = function(){
         // var premises = map(sample, alternative_quantifier_order_set(observed_premises))
         // var premises = map(sample, alternative_set_maximal(observed_premises))
         // var premises = sampleUtterance(observed_premises)
+        var alternative_fn_double = alternative_set.double
+        var alternative_fn_single = alternative_set.single
         var premises = observed_premises.length == 2 ?
-          map(sample, alternative_quantifier_order_set(observed_premises)) :
+          map(sample,  alternative_fn_double(observed_premises)) :
+          [sample(alternative_fn_single(observed_premises[0]))]
+
+        // display("alt prem " + JSON.stringify(premises))
+
+          // map(sample, alternative_quantifier_order_set(observed_premises)) :
           // [sample(alternative_quantifier_set_fn(observed_premises[0]))]
-          [sample(alternative_quantifier_order_set_fn(observed_premises[0]))]
+          // [sample(alternative_quantifier_order_set_fn(observed_premises[0]))]
           // [sample(alternative_set_maximal(observed_premises[0]))]
 
         // display(premises)
@@ -925,7 +1004,7 @@ var bda_model = function(){
         var data_filtered = _.filter(df_clean, {prem_1, prem_2})
         // display(data_filtered)
 				var syllogisticPremises = [prem_1, prem_2]
-
+        // display(syllogisticPremises)
         var first_term_preference = firstTermPreference(syllogisticPremises) // A, C, or false
         // display('before rsa')
         // display(pragmatics)
@@ -963,6 +1042,7 @@ var bda_model = function(){
   query.add(["parameter", "speakerOptimality", "alpha_2", -99], speakerOptimality.alpha_2)
   query.add(["parameter", "noise", -99, -99], noise)
   query.add(["parameter", "firstTermPreference", -99, -99], firstTermPrefWeight)
+  query.add(["parameter", "nvcWeight", -99, -99], nvcWeight)
 
 
   var xkh = map2(function(region, priorProb) {
@@ -971,7 +1051,6 @@ var bda_model = function(){
   }, regions, regionProbs)
 
   return query
-
 
 }
 
@@ -993,11 +1072,11 @@ var totalIterations = 2, lag =  0;
 var samples = totalIterations/(lag + 1), burn = totalIterations / 2;
 
 var outfile = 'TESTbda-syllogisms-ragni2016_full_' +
-  'AltQO_' +
   pragParams.modular + '_' +
   pragParams.interpretation + '-interpretation_' +
   pragParams.production + '-production_' +
-  pragParams.qud + "-qud_"+
+  pragParams.qud + "-qud_" +
+  pragParams.alternatives + "-alternatives_" +
   totalIterations+ '_burn' + burn +
   '_lag' + lag + '_chain' + chain + '.csv'
 
