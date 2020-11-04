@@ -30,8 +30,6 @@
 
 
 
-
-
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal seq quantifier 1
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal seq quantifierOrder 1
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal seq maximal 1
@@ -212,12 +210,12 @@ var qudOmitRegions = function(state, region_vals){
   return vennToString(omitRegions(state, region_vals))
 }
 
-var marginalizeQUD_omitRegions = cache(function(dist, region_vals){
+var marginalizeQUD_omitRegions = function(dist, region_vals){
   Enumerate(function(){
     var state = sample(dist)
     omitRegions(state, region_vals)
   })
-})
+}
 
 var qudFn = function(state, qud){
   return qud == "state" ? vennToString(state) :
@@ -622,9 +620,9 @@ var bda_model = function(){
   // TO DO: CHANGE TO 7 REGIONS
   var regionProbs = repeat(7, function(){ return uniformDrift({a: 0, b: 1, width: 0.1}) })
   // display(regionProbs)
-  var firstTermPrefWeight  = 1 + exponential({a:1}) //uniformDrift({a: 1, b: 10, width: 1})
+  var firstTermPrefWeight  =  uniformDrift({a: 1, b: 5, width: 0.5}) // 1 + exponential({a:1}) //uniformDrift({a: 1, b: 10, width: 1})
   // display(firstTermPrefWeight)
-  var nvcWeight = exponential({a: 1})
+  var nvcWeight = uniformDrift({a: 0, b: 2, width: 0.25}) //exponential({a: 1})
   // display(nvcWeight)
 
   var makeConclusionPrior = cache(function(preferred_first_term){
@@ -699,7 +697,7 @@ var bda_model = function(){
       },
       method: "enumerate"
     })
-  }, 20000)
+  }, 10000)
 
   // var sampleUtterance = function(observed_premises){
   //   return observed_premises.length == 2 ?
@@ -741,7 +739,7 @@ var bda_model = function(){
       },
       method: "enumerate"
     })
-  }, 20000)
+  }, 10000)
 
   var pragmatic_interpreter = cache(function(premises, pragmatics) {
     // display("pragmatic interpreter")
@@ -758,7 +756,7 @@ var bda_model = function(){
       },
       method: "enumerate"
     })
-  }, 20000)
+  }, 10000)
 
   var sequential_pragmatic_interpreter_qudOmitRegions = cache(function(premises, pragmatics) {
     // display(premises[0])
@@ -814,9 +812,9 @@ var bda_model = function(){
 
       return posterior_two
 
-  })
+  }, 10000)
 
-  var modular_pragmatic_reasoner = cache(function(premises, pragmatics, first_term_preference) {
+  var modular_pragmatic_reasoner =  function(premises, pragmatics, first_term_preference) {
     var qud = sequentialQUDs[formatSentence(premises[0])]
     var qudDist_prior = pragmatics.qud == "seq" ?
       marginalizeQUD_omitRegions(venn_prior, qud) :
@@ -863,7 +861,7 @@ var bda_model = function(){
 
       }
     })
-  }, 20000)
+  }
 
   // INTEGRATED REASONER MODELS
   var literal_speaker = cache(function(venn){
@@ -945,12 +943,12 @@ var bda_model = function(){
     })
   })
 
-  var marginalizeQUDval = cache(function(stateDist){
+  var marginalizeQUDval = function(stateDist){
     Infer({model: function(){
       var state = sample(stateDist)
       qudToString(state, "AC")
     }})
-  })
+  }
 
   var integrated_pragmatic_reasoner_wProduction = function(premises, pragmatics, first_term_preference) {
     Infer({
@@ -1067,11 +1065,11 @@ var bda_model = function(){
 // var totalIterations = 1000, lag =  1;
 // var totalIterations = 5000, lag =  0;
 // var totalIterations = 500, lag =  0;
-var totalIterations = 2, lag =  0;
+var totalIterations = 5000, lag =  0;
 
 var samples = totalIterations/(lag + 1), burn = totalIterations / 2;
 
-var outfile = 'TESTbda-syllogisms-ragni2016_full_' +
+var outfile = 'bda-syllogisms-ragni2016_full_' +
   pragParams.modular + '_' +
   pragParams.interpretation + '-interpretation_' +
   pragParams.production + '-production_' +
