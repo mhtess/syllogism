@@ -433,10 +433,29 @@ We test our model using a dataset published by \citeA{ragni2019does}. The data s
 
 \subsection{Bayesian data analysis}
 
+
+
 To see how well our models can accommodate the syllogistic reasoning data from \citeA{ragni2019does}, we embed each model variant within a Bayesian data analysis model to infer the credible values of the latent parameters and generate predictions given those parameters. 
 
+\subsubsection{Parameters and priors}
 
-\begin{figure}[ht]
+We parametrize the prior distribution over states (Venn diagrams) $P(x)$ in the pragmatic reasoner model via independent Bernoulli random variables $\theta_k$ corresponding to the prior probability of each of the seven regions of a Venn diagram; we put uniform priors over the unit interval for these parameters.
+We assume a small amount of noise in the literal semantics of the utterances such that with a small probability $\phi$, the literal listener disregards the utterance heard and does not update its beliefs via that utterance; we put a uniform prior over the limited range of (0, 0.1) over this parameter since we assume the noise to be a small quantity. 
+
+We assume two global variables that modulate the pragmatic reasoner's prior preferences for certain conclusions. 
+The conclusion prior is parameterized by unnormalized probability weights, where a uniform prior would have a weight of 1 for all conclusions. 
+The first parameter is a global preference or dispreference $\beta_0$ for the \emph{nothing follows} conclusion; we put a uniform prior between (0, 2) on this weight. 
+The second is a global preference  $\beta_1$ for conclusions whose order of the terms (A--C vs. C--A) matches the order of the terms in the premises; we put a uniform prior between (1, 5) on this weight since we assume it to be preference for producing conclusions that match the order of the terms of the syllogism. 
+This first term preferences works by checking whether either A or C appear in the subject position of the premise.
+If only one appears in the subject (e.g., the syllogistic frame \emph{A--B/B--C}), then conclusions where that same term appears in the subject (e.g., \emph{A--C}) will have a bias determined by $\beta_1$.
+If both or neither appear in the subject (e.g., \emph{A--B/C--B} or \emph{B--A/B--C}), then no preference is given in the conclusion prior, corresponding to an unnormalized probability weight of 1. 
+
+Finally, the Rational Speech Act modeling framework assumes speakers are approximately rational agents who produce utterances as actions whose utility is defined by conveying information to a listener. The degree of rationality of the speaker interpolates between probability matching behavior and utility maximizing behavior. 
+In our model, we have two speaker components: one involved in the pragmatic interpretation of the premises and one involved in the pragmatic production of conclusions; each of these carries with a speaker optimality parameter $\alpha$. 
+For these parameters, we assume uniform priors over the range of (0, 20), consistent with the prior literature on RSA models. 
+
+
+\begin{figure}[ht!]
 \begin{center}
 \begin{tabular}{cc}
 \begin{tikzpicture}
@@ -454,13 +473,13 @@ To see how well our models can accommodate the syllogistic reasoning data from \
 \node[latent, right=of L0](lex){$\mathcal{L}$};
 \node[latent, right=of lex](phi){$\phi$};
 
-\node[latent, right=of S1, xshift=1cm](alpha1){$\alpha_1$};
+\node[latent, right=of S1, xshift=1.74cm](alpha1){$\alpha_1$};
 
 \node[latent, right=of L1](c){$c$};
 \node[latent, right=of c, yshift = 0.5cm](b0){$\beta_0$};
 \node[latent, right=of c, yshift = -0.5cm](b1){$\beta_1$};
 
-\node[latent, right=of R1, xshift=1cm](alpha2){$\alpha_2$};
+\node[latent, right=of R1, xshift=1.2cm](alpha2){$\alpha_2$};
 
 \gate {RSAgate} {(R1)(L1)(S1)(L0)(lex)(x)(c)} {} ; %
 
@@ -495,8 +514,15 @@ To see how well our models can accommodate the syllogistic reasoning data from \
 
 \node[text width=1cm] at (-1.65,8.65) {\emph{\small{RSA}}};
 
+\node[draw, align=left, execute at begin node=\setlength{\baselineskip}{3ex}] at (6.5, 7.5) { 
+\text{\underline{Data-analysis Priors} } \\ 
+$ \theta_k  \sim \text{Uniform}(0, 1)$ \\
+$ \phi  \sim \text{Uniform}(0, 0.1)$ \\
+$ \beta_0  \sim \text{Uniform}(0, 2)$ \\
+$ \beta_1  \sim \text{Uniform}(1, 5)$ \\
+$ \alpha_{1, 2}  \sim \text{Uniform}(0, 20)$ 
+};
 
-%\node[draw, align=left, execute at begin node=\setlength{\baselineskip}{3ex}] at (7.5,5.75) { 
 %$\beta^\rho_0 ,\beta^\rho_1 \sim \text{Uniform}(-2,2)$ \\
 % $\rho_i = \text{logistic}(\beta^\rho_0  + i \cdot \beta^\alpha_1)$ \\
 % $d^{CG}_{i} \sim \text{Bernoulli}(\rho_i)$ \\
@@ -521,13 +547,21 @@ To see how well our models can accommodate the syllogistic reasoning data from \
 
     \end{tabular}
   \end{center}
-  \caption{Caption.}
+  \caption{\small Bayesian data analysis model. The conclusion choices for each $i$ participant on each $j$ syllogism $d_{ij}$ are generated via the pragmatic reasoner model $R_1$, which defines a conditional distribution on conclusions $c$ given premises $\vec{p}_j$. The reasoner model $R_1$ is a Rational Speech-Act (RSA) model that interprets premises according to a pragmatic listener model $L_1$, who reasons about a speaker $S_0$ who reasons about a literal listener $L_0$ which updates its beliefs according to the literal meaning $\mathcal{L}$ of the sentences it hears. Literal meanings are the standard, truth-functional meanings of the quantifiers (Table \label{tab:sem}) with a small amount of noise $\phi$. The prior distribution over states $P(x)$ is parameterized by independent Bernoulli weights $\theta_k$ for each of the 7 $k$ regions of a Venn diagram. The reasoner $R_1$'s prior distribution over conclusions includes a preference $\beta_1$ for term-orderings (A--C vs. C--A) that match the ordering of the terms in the premises; in addition, the prior includes a separate baseline weight for the \emph{nothing follows} conclusion $\beta_0$. Finally, the speaker components of the model---both the speaker $S_1$ which plays a role in the pragmatic interpretation of the premises and the reasoner $R_1$ that selects conclusions in a pragmatic fashion---have independent soft-max parameters $\alpha$.}
   \label{fig:bayesnet}
 \end{figure}
 
-\begin{enumerate}
-\item describe BDA, parameters, priors
-\end{enumerate}
+\subsubsection{Implementation and inference}
+
+\subsubsection{Results}
+
+\paragraph{Posterior predictive checks}
+
+\paragraph{Posterior on parameters}
+
+\paragraph{Model comparison}
+
+
 
 
 \section{Experiments}
