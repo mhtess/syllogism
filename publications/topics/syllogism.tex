@@ -13,6 +13,10 @@
 \usepackage{booktabs}
 \usepackage{centernot}
 
+\usepackage{tikz}
+%\usepackage{subfigure}
+\usetikzlibrary{bayesnet}
+
 % these packages are needed to insert results 
 % obtained from R into the LaTeX document
 \usepackage{pgfplotstable}
@@ -138,6 +142,7 @@ We develop a computational-level theory that considers reasoning over concrete s
 Imagine that your friend tells you: ``Everyone in my office has the flu and, you know, some people with this flu are out for weeks.''
 You might respond: ``I hope your officemates are not out for weeks and I hope you don’t get sick either.''
 The form of this exchange resembles a syllogism: a two-sentence argument used to relate two properties (or terms: A, C) via a middle term (B). 
+The relations used in classical Aristotelean syllogisms are quantifiers: \emph{all}, \emph{some}, \emph{some .... are not}, and \emph{none}. 
 Fit into a formal syllogistic form, this argument would read:
 
 \begin{enumerate}
@@ -147,15 +152,16 @@ Fit into a formal syllogistic form, this argument would read:
 \end{enumerate}
 
 
-The relations used in classical Aristotelean syllogisms are quantifiers: \emph{all}, \emph{some}, \emph{some .... are not}, and \emph{none}. 
-The logical space defined by classical syllogisms is comprised of all combinations of quantifiers and term orders for the premises: \textsc{quantifier} \textsc{A} -- \textsc{B} vs. \textsc{quantifier} \textsc{B} -- \textsc{A}.
-In total, each premise can be appear with one of the four quantifiers and two term orders and there are two premises yielding:  $4$ quantifiers  $\times 2$ term orderings $\times 2$ premises = 64 syllogisms.
-Only 27 of the 64 unique syllogistic premises yield a logically valid conclusion (i.e., a conclusion that is true in every situation in which the premises are true).
-For logically invalid syllogisms, the appropriate logical response is to say \emph{nothing follows} from the premises (or, \emph{no valid conclusion}), yet participants readily endorse substantive conclusions for logically invalid syllogisms. 
+The logical space defined by classical syllogisms is comprised of all combinations of quantifiers and term orders for the premises (e.g., \textsc{quantifier} \textsc{A} -- \textsc{B} vs. \textsc{quantifier} \textsc{B} -- \textsc{A}).
+In total, each of the two premises can be appear with one of the four quantifiers and two term orders yielding:  $4$ quantifiers  $\times 2$ term orderings $\times 2$ premises = 64 syllogisms.
+Of the 64 unique syllogistic premises, only 27 yield a logically valid conclusion (i.e., a conclusion that is true in every situation in which the premises are true).
+For logically invalid syllogisms, the logical response is to conclude that \emph{nothing follows} from the premises (or, \emph{no valid conclusion}), yet participants readily endorse substantive conclusions for logically invalid syllogisms. 
 For example, the syllogism above is not logically valid.  (Consider that it could be only non-officemates with the flu that are out for weeks. In that case, the premises would be true and the conclusion false.)
 %In fact, within the confines of the classical syllogism, there is no conclusion about the relation between A \& C that is true in every situation in which the premises are true. 
 The conclusion above seems reasonable, however, and roughly 70\% of participants will assert that the \emph{Some As are Cs} conclusion follows from the premises  \cite{Khemlani2012}.
-Even for valid arguments, the accuracy of producing valid conclusions ranges from 90\% to 1\%: people do not seem to find drawing deductively valid conclusions particularly straightforward.
+Even for valid arguments, the accuracy of producing valid conclusions ranges widely (from 90\% to 1\% per the \citeNP{Khemlani2012} meta-analysis).
+Something beyond logical validity is guiding participants' reasoning behavior. 
+%people do not seem to find drawing deductively valid conclusions particularly straightforward.
 
 %Faced with such an argument, however, people are perfectly comfortable drawing some conclusion. 
 %A meta-analysis of syllogistic reasoning showed that over the population, the proper production of no valid conclusion responses for invalid arguments ranged from 76\% to 12\%. 
@@ -169,7 +175,8 @@ A separate dimension of theories of human reasoning concerns the extent to which
 Natural language semantics plays a role in many such theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, though how issues of informativeness or relevance impact syllogistic reasoning either remain unclear \cite{Roberts2001} or are posited in an ad-hoc manner \cite{Chater1999}. 
 
 In this paper, we explore the idea that the formalism of probabilistic pragmatics can provide insight into how people reason with syllogisms.
-We present a model in the Rational Speech Act framework (Frank \& Goodman, 2012; Goodman \& Frank, 2016) that reasons about multiple quantifier sentences to produce a distribution over conclusions that follow from those sentences. We present three sets of results, highlighting the influence of different components of the model on human reasoning: (1) the influence of prior beliefs; (2) flexibility in natural language semantics, incorporating generalized quantifiers (e.g., “most” and “few”); and (3) pragmatic rea- soning. Previous approaches to the pragmatics of syllogistic reasoning have reduced the interpretations of syllogistic arguments to the interpretations of the individual premises or quantifiers used in those premises \cite{Roberts2001}. For example, premises involving the quantifier “some” may be interpreted as implying some but not all. But that sort of reasoning will not produce the conclusion in the syllogism above. Instead, what is needed is a richer scope of pragmatic reasoning: Reasoning about why about the speaker constructed the argument as a whole. We formalize this notion as a Question Under Discussion (C. Roberts, 2004) in which a listener reasons about the most likely conclusion (i.e., A–C relation) given the premises heard. We find that this formulation of pragmatic reasoning is able to break critical symmetries that would result from logical reasoning (Figure 1). An early version of this model was presented by Tessler and Goodman (2014).
+We present a model in the Rational Speech Act framework (Frank \& Goodman, 2012; Goodman \& Frank, 2016) that reasons about multiple quantifier sentences to produce a distribution over conclusions that follow from those sentences. 
+\mht{deprecated:: We present three sets of results, highlighting the influence of different components of the model on human reasoning: (1) the influence of prior beliefs; (2) flexibility in natural language semantics, incorporating generalized quantifiers (e.g., “most” and “few”); and (3) pragmatic rea- soning. Previous approaches to the pragmatics of syllogistic reasoning have reduced the interpretations of syllogistic arguments to the interpretations of the individual premises or quantifiers used in those premises \cite{Roberts2001}. For example, premises involving the quantifier “some” may be interpreted as implying some but not all. But that sort of reasoning will not produce the conclusion in the syllogism above. Instead, what is needed is a richer scope of pragmatic reasoning: Reasoning about why about the speaker constructed the argument as a whole. We formalize this notion as a Question Under Discussion (C. Roberts, 2004) in which a listener reasons about the most likely conclusion (i.e., A–C relation) given the premises heard. We find that this formulation of pragmatic reasoning is able to break critical symmetries that would result from logical reasoning (Figure 1). An early version of this model was presented by Tessler and Goodman (2014).}
 
 
 %Cognitive theories of human reasoning turn along the critical dimension of whether the core ideal of reasoning is deductive validity or probabilistic support. 
@@ -420,10 +427,103 @@ R_1(u_3 \mid u_1,  u_2) \propto  \exp [ \alpha_2 \cdot \text{KL}({R_1(s) \mid \m
 %\end{align}
 
 
-\section{Modeling the Ragni et al. (2016) data set}
+\section{Modeling the Ragni et al. (2019) data set}
 
-We test our model using a dataset published by \citeA{ragni2019does}. The data set consists of the results of the results of web experiment in which participants ($n = 139$) provided conclusions to all 64 syllogisms. In the experiment, participants completed all syllogistic reasoning problems after a brief training phase. Participants responded by selecting one of the nine possible responses for the conclusion of the syllogism.
+We test our model using a dataset published by \citeA{ragni2019does}. The data set consists of the results of web experiment in which participants ($n = 139$) provided conclusions to all 64 syllogisms. In the experiment, participants completed all syllogistic reasoning problems after a brief training phase. Participants responded by selecting one of the nine possible responses for the conclusion of the syllogism (4 quantifier choices x 2 term orders + 1 \emph{nothing follows}).
 
+\subsection{Bayesian data analysis}
+
+To see how well our models can accommodate the syllogistic reasoning data from \citeA{ragni2019does}, we embed each model variant within a Bayesian data analysis model to infer the credible values of the latent parameters and generate predictions given those parameters. 
+
+
+\begin{figure}[ht]
+\begin{center}
+\begin{tabular}{cc}
+\begin{tikzpicture}
+%% RSA nodes and data
+\node[obs](data){$d_{ij}$};
+
+\node[det, above=of data](R1){$R_{1}(c \mid \vec{p}_j)$};
+\node[det, above=of R1](L1){$L_{1}$};
+\node[det, above=of L1](S1){$S_{1}$};
+\node[det, above=of S1](L0){$L_{0}$};
+
+\node[latent, left=of S1](x){$x$};
+\node[latent, left=of x](theta){$\theta_k$};
+
+\node[latent, right=of L0](lex){$\mathcal{L}$};
+\node[latent, right=of lex](phi){$\phi$};
+
+\node[latent, right=of S1, xshift=1cm](alpha1){$\alpha_1$};
+
+\node[latent, right=of L1](c){$c$};
+\node[latent, right=of c, yshift = 0.5cm](b0){$\beta_0$};
+\node[latent, right=of c, yshift = -0.5cm](b1){$\beta_1$};
+
+\node[latent, right=of R1, xshift=1cm](alpha2){$\alpha_2$};
+
+\gate {RSAgate} {(R1)(L1)(S1)(L0)(lex)(x)(c)} {} ; %
+
+\plate{plate_region}{(theta)}{$k \in \text{region}$};
+\plate{plate_data}{(data)}{$i \in \text{subject}$};
+
+\plate{plate_syllogism}{
+ (R1)(data)(plate_data)
+}{$j \in \text{syllogism}$}
+
+
+\edge{R1}{data};
+\edge{L1}{R1};
+\edge{S1}{L1};
+\edge{L0}{S1};
+
+\edge{theta}{x};
+
+\edge{x}{L0};
+\edge{x}{L1};
+
+\edge{lex}{L0};
+\edge{phi}{lex};
+
+\edge{alpha1}{S1};
+
+\edge{c}{R1};
+\edge{b0}{c};
+\edge{b1}{c};
+
+\edge{alpha2}{R1};
+
+\node[text width=1cm] at (-1.65,8.65) {\emph{\small{RSA}}};
+
+
+%\node[draw, align=left, execute at begin node=\setlength{\baselineskip}{3ex}] at (7.5,5.75) { 
+%$\beta^\rho_0 ,\beta^\rho_1 \sim \text{Uniform}(-2,2)$ \\
+% $\rho_i = \text{logistic}(\beta^\rho_0  + i \cdot \beta^\alpha_1)$ \\
+% $d^{CG}_{i} \sim \text{Bernoulli}(\rho_i)$ \\
+% \\
+%$\beta^\alpha_0 \sim \text{Uniform}(-3,3); \beta^\alpha_1 \sim \text{Uniform}(-0,4)$ \\
+% $\alpha_i = \beta^\alpha_0  + i \cdot \beta^\alpha_1$ \\
+% \\
+% $\mu^\theta_0 \sim \text{Uniform}(-3,3); \mu^\theta_1 \sim \text{Uniform}(0,2)$ \\
+% $\sigma^\theta_0 \sim \text{Uniform}(0,2); \sigma^\theta_1 \sim \text{Uniform}(0,1)$ \\
+% $\beta^\theta_0 \sim \text{Gaussian}(\mu^\theta_0, \mu^\sigma_0); \beta^\theta_1 \sim \text{Gaussian}(\mu^\theta_1, \mu^\sigma_1)$  \\
+% $\theta_{ij} = \text{logistic}(\beta^\theta_{0,j}  + i \cdot \beta^\theta_{1,j})$ \\
+% $d^{ME}_{ij} \sim L'_{ij},  d^{CM}_{ij} \sim L_{ijk}$
+%};
+%
+%\node[draw, align=left, execute at begin node=\setlength{\baselineskip}{3ex}] at (8,0) {Integration model\\ $P_{L_{1}}(r \mid u; \{\rho_i, \alpha_i\, \theta_{ij}\})\propto P_{S}(u \mid r; \{\alpha_i, \theta_{ij}\}) \cdot P(r \mid \rho_i) $\\ 
+%$P_{S}(u \mid r; \{\alpha_i\, \theta_{ij}\})\propto P(r \mid u; \{\theta_{ij}\}) ^{\alpha_i} $\\
+%$P(r \mid u; \{\theta_{ij}\}) \propto \mathcal{L}(u, r \mid \theta_{ij})$
+%};
+
+
+\end{tikzpicture}
+
+    \end{tabular}
+  \end{center}
+  \caption{Caption.}
+  \label{fig:bayesnet}
+\end{figure}
 
 \begin{enumerate}
 \item describe BDA, parameters, priors
