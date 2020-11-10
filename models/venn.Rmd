@@ -19,12 +19,33 @@ set.seed(20201027)
 Helper functions
 
 ```{r}
-get_samples_from_df = function(df, field){
-  data.frame(df[[field]]) %>%
+get_samples_from_df = function(df){
+  data.frame(df) %>%
+    pivot_longer(-prob, names_to = "key", values_to = "val") %>%
+    group_by(key) %>%
+    summarize(prob = sum(val * prob)
+              ) %>%
+    rwebppl::get_samples(., num_samples = 1000)
+}
+
+get_samples_from_df = function(df, field1){
+  data.frame(df[[field1]]) %>%
     pivot_longer(-probs, names_to = "key", values_to = "val") %>%
     group_by(key) %>%
     summarize(prob = sum(val * probs),
-              src = field) %>%
+              src = field1
+              ) %>%
+    rwebppl::get_samples(., num_samples = 1000)
+}
+
+get_samples_from_df = function(df, field1, field2){
+  data.frame(df[[field1]][[field2]]) %>%
+    pivot_longer(-probs, names_to = "key", values_to = "val") %>%
+    group_by(key) %>%
+    summarize(prob = sum(val * probs),
+              utterance = field1,
+              src = field2
+              ) %>%
     rwebppl::get_samples(., num_samples = 1000)
 }
 
@@ -50,11 +71,35 @@ get_venn_samples <- function(df_samples){
   )
 }
 
-make_venn_digram <- function(df, field){
+format_sentence = function(sentence){
+  sentence_parts = str_split(sentence, ";")[[1]]
+  q1 = ifelse(sentence_parts[1] == "None", "No",
+        ifelse(sentence_parts[1] == "Some not", "Some",
+                     sentence_parts[1]))
+  q2 = ifelse(sentence_parts[1] == "Some not", "not ", "")
+  paste(
+    q1, " ",
+    paste(sentence_parts[2], "s", sep = ""),
+    " are ",
+    q2,
+    paste(sentence_parts[3], "s", sep = ""),
+    sep = ""
+  )
+
+}
+
+make_venn_digram <- function(df, utt){
   ggVennDiagram(get_venn_samples(
-    df %>% filter(src == field) %>% pull(key)
-  ), label = "percent") +
-    ggtitle(field)
+    df %>% filter(utterance == utt) %>% pull(key)
+  ), label = NULL, color = 'black') +
+    ggtitle(format_sentence(utt)) + 
+    scale_fill_gradient(low = "white", high = "grey20",
+                        limits = c(0, 1000),
+                        breaks = c(0, 500, 1000),
+                        labels = c(0, 0.5, 1),
+                        name = "Probability")+
+    guides(fill = F)+
+    theme(plot.title = element_text(hjust = 0.5))
 }
 ```
 
@@ -64,21 +109,74 @@ Run Webppl Model
 syllogism <- data.frame(
   p1 = c("A", "B"),
   p2 = c("B", "C"),
-  quantifier = c("all", "some")
+  quantifier = c("some", "some")
 ) 
 
 wp.rs <- webppl(
-  program_file = "venn.wppl",
+  program_file = "venn-r.wppl",
   data = syllogism,
   data_var = "syllogism"
 )
 
+# get_venn_samples(get_samples_from_df(wp.rs) %>% pull(key)) %>% ggVennDiagram(.)
+
+# get_samples_from_df
 
 wp.rs.samples <- bind_rows(
-  get_samples_from_df(wp.rs, "sequential"),
-  get_samples_from_df(wp.rs, "pragmatic"),
-  get_samples_from_df(wp.rs, "literal")
+  map(names(wp.rs), function(s){
+    map(names(wp.rs[[s]]), function(k){
+      return(get_samples_from_df(wp.rs, s, k))
+    })
+  })
 )
+
+# wp.rs.samples <- bind_rows(
+#   get_samples_from_df(wp.rs, "All;A;B", "literal"),
+#   get_samples_from_df(wp.rs, "All;A;B", "pragmatic"),
+#   # get_samples_from_df(wp.rs, "All;B;A"),
+#   get_samples_from_df(wp.rs, "Some;A;B", "literal"),
+#   get_samples_from_df(wp.rs, "Some;A;B", "pragmatic"),
+#   # get_samples_from_df(wp.rs, "Some;B;A"),
+#   get_samples_from_df(wp.rs, "Some not;A;B", "literal"),
+#   get_samples_from_df(wp.rs, "Some not;A;B", "pragmatic"),
+#   # get_samples_from_df(wp.rs, "Some not;B;A"),
+#   get_samples_from_df(wp.rs, "None;A;B", "literal"),#,
+#   get_samples_from_df(wp.rs, "None;A;B", "pragmatic")#,
+#   # get_samples_from_df(wp.rs, "None;B;A")
+# )
+
+
+all_plots <- map(unique(wp.rs.samples$utterance), 
+                 function(x){ make_venn_digram (
+                   wp.rs.samples %>% filter(src == "literal"), x 
+                   ) } )
+
+all_plots_prag <- map(unique(wp.rs.samples$utterance), 
+                 function(x){ make_venn_digram (
+                   wp.rs.samples %>% filter(src == "pragmatic"), x 
+                   ) } )
+
+cowplot::plot_grid(
+  cowplot::plot_grid(plotlist = all_plots, nrow = 1) + 
+    theme(plot.margin = unit(c(1.25,0,1,0), "lines")),
+  cowplot::plot_grid(plotlist = all_plots_prag, nrow = 1)+ 
+    theme(plot.margin = unit(c(1,0,0,0), "lines")),
+  nrow = 2, labels = c("literal", "pragmatic"),
+  label_size = 12,
+  label_x = 0, #label_y = 0,
+  hjust = -0.15#, #vjust = -0.2
+)
+
+ggsave("../publications/topics/figs/venn_premise1_lit_prag.pdf", width = 8, height = 4.5)
+
+```
+
+```{r}
+# wp.rs.samples <- bind_rows(
+#   get_samples_from_df(wp.rs, "sequential"),
+#   get_samples_from_df(wp.rs, "pragmatic"),
+#   get_samples_from_df(wp.rs, "literal")
+# )
 
 # Make Venn Diagram
 
@@ -95,9 +193,9 @@ grid.arrange(plot1, plot2, plot3, ncol=3)
 ```{r}
 data.frame(wp.rs$sequential) %>%
   rowwise() %>%
-  mutate(AB = support.AB || support.ABC) %>%
+  mutate(AC = support.AC || support.ABC) %>%
   ungroup() %>%
-  group_by(AB) %>%
+  group_by(AC) %>%
   count(sum(probs))
   # summarize(sum(!AB))
 

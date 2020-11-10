@@ -1,0 +1,859 @@
+
+// webppl venn-r.wppl
+// NEW SPACE OF MODELS: 11/3/2020
+
+// can be paired with any of alternative sets: quantifier, quantifierOrder, maximal
+
+// modular literal literal state // Modular Reasoner: Literal Interpretation, Literal Production
+// modular literal pragmatic state // Modular Reasoner: Literal Interpretation, Pragmatic Production
+
+// modular pragmatic literal state // Modular Reasoner: Pragmatic Interpretation, Literal Production
+// modular pragmatic pragmatic state // Modular Reasoner: Pragmatic Interpretation, Pragmatic Production
+
+// modular pragmatic literal ac // Modular Reasoner: Pragmatic QUD Interpretation, Literal Production
+// modular pragmatic pragmatic ac // Modular Reasoner: Pragmatic QUD Interpretation, Pragmatic Production
+
+// * modular pragmatic literal seq // Modular Reasoner: Pragmatic Sequential-QUD Interpretation, Literal Production
+// * modular pragmatic pragmatic seq // Modular Reasoner: Pragmatic Sequential-QUD Interpretation, Pragmatic Production
+
+// integrated pragmatic literal conclusion // Integrated Reasoner: Abstract (no state in pragmatic listener)
+// integrated pragmatic literal grounded // Integrated Reasoner: Grounded (consider only conclusions true of state)
+// integrated pragmatic pragmatic grounded // Integrated Reasoner (Grounded) with Pragmatic Production
+
+
+// HELPER FUNCTIONS
+var foreach = function(lst, fn) {
+  var foreach_ = function(i) {
+    if (i < lst.length) {
+      fn(lst[i]);
+      foreach_(i + 1);
+    }
+  };
+  foreach_(0);
+};
+
+
+var isChar = function(str, char){
+  return str == char
+}
+
+var dataFrame = function(rawCSV) {
+  return map(function(row) {
+    return _.fromPairs(_.zip(rawCSV[0], row))
+  }, rawCSV.slice(1))
+}
+
+var levels = function(df, label) {
+  return _.uniq(_.map(df, label));
+}
+
+var MakeUniformDraw = function(lst) {
+  return Categorical({
+    vs: lst,
+    ps: repeat(lst.length, function() {
+      1
+    })
+  })
+}
+
+var displayDist = function(dist) {
+  foreach(dist.support(), function(x) {
+    display(x + ", " + Math.exp(dist.score(x)))
+  })
+}
+
+
+var distProbs = function(dist, supp) {
+  return map(function(s) {
+    return Math.exp(dist.score(s))
+  }, supp)
+}
+
+var KL = function(p, q, supp) {
+  var P = distProbs(p, supp),
+    Q = distProbs(q, supp);
+  var diverge = function(xp, xq) {
+    return xp == 0 ? 0 : (xp * Math.log(xp / xq));
+  };
+  return sum(map2(diverge, P, Q));
+};
+
+
+// STATE AND UTTERANCE FORMATTING
+var formatSentence = function(sentence) {
+
+  var quantifier = (sentence.quantifier == "nvc") ? "NVC" :
+  (sentence.quantifier == "some_not") ? "Some not" :
+  // (sentence.quantifier == "none") ? "No" :
+   sentence.quantifier.charAt(0).toUpperCase() + sentence.quantifier.slice(1)
+
+  return quantifier == "NVC" ? "NVC;" : quantifier + ";" + sentence.p1 + ";" + sentence.p2
+}
+
+var formatQuantifier = function(q) {
+  q.toLowerCase().split(' ').join("_")
+}
+
+var stringToSyllogism = function(str) {
+  _.fromPairs(_.zip(["quantifier", "p1", "p2"],
+    mapIndexed(function(x, y) {
+      return x == 0 ? formatQuantifier(y) : y
+    }, str.split(';'))))
+}
+
+
+var parseVennDiagram = function(r) {
+  map(function(i) {
+    i[1] ? i[0] : ""
+  }, _.toPairs(r)).join("")
+}
+
+var vennToString = function(venn){
+  return filter(function(x){ x != null }, sort(map(function(v){
+    v.truth_val ? v.label : null
+  }, venn))).join(';')
+}
+
+var qudToString = function(venn, qud){
+  var dimensionToOmit = "ABC".replace(qud.slice(0,1), "").replace(qud.slice(1,2), "")
+  var qudVal = map(function(v){
+      var label  = v.label
+      return v.truth_val ? label.replace(dimensionToOmit, "") : null
+    }, venn)
+  var filteredQudVal = sort(_.uniq(
+    filter(function(x){ x != null }, qudVal)
+  ))
+  return filteredQudVal.join(';')
+}
+
+var omitRegions = function(state, region_vals){
+  return filter(function(s){ region_vals.indexOf(s.label) > -1 }, state)
+}
+
+var qudOmitRegions = function(state, region_vals){
+  return vennToString(omitRegions(state, region_vals))
+}
+
+var marginalizeQUD_omitRegions = function(dist, region_vals){
+  Enumerate(function(){
+    var state = sample(dist)
+    omitRegions(state, region_vals)
+  })
+}
+
+var marginalizeVennForR = function(dist){
+  Infer({model: function(){
+    var venn = sample(dist);
+    _.fromPairs(map(function(x){ return [x.label, x.truth_val] }, venn))
+  }})
+}
+
+var qudFn = function(state, qud){
+  return qud == "state" ? vennToString(state) :
+        _.isArray(qud) ? qudOmitRegions(state, qud) :
+                        qudToString(state, qud)
+
+}
+
+var firstTermPreference = function(syllogism){
+  return (isChar(syllogism[0].p1, "A") && !(isChar(syllogism[1].p1, "C"))) ? "A" :
+  (!isChar(syllogism[0].p1, "A") && (isChar(syllogism[1].p1, "C"))) ? "C" :
+  false
+}
+
+var predicate_filter = function(x, y) {
+  return function(r) {
+    return _.fromPairs([
+      [x, r.region[x]],
+      [y, r.region[y]]
+    ])
+  }
+}
+
+
+// SHOULD BE PAIRED WITH all()
+// this DOES NOT includes an existential presupposition
+var all_filter = function(x, y) {
+  return function(r) {
+    return r.region[x] ? // if its an A
+      !r.region[y] ? // and not B
+      !r.truth_val : // then it must be false
+      true : // if it's an A and not a B, then it must be false
+      true // if it's not an A, then it doesn't affect overall truthval (because we will use "all" to search that all are positive truth val)
+  }
+}
+
+// SHOULD BE PAIRED WITH any()
+// this includes an existential presupposition
+var some_filter = function(x, y) {
+  return function(r) {
+    return r.region[x] ? // if its an A
+      r.region[y] ? // and a B
+      r.truth_val : // then this is the relevant region, and select its truthval
+      false : // if it's an A and not a B, then it doesn't contribute a positive truth val (because we will use "any" to search for any positive truth val)
+      false // if it's not an A, then it doesn't contribute a positive truth val (because we will use "any" to search for any positive truth val)
+  }
+}
+
+var lexicon = {
+  all: function(state, property1, property2) {
+    return (all(all_filter(property1, property2), state) &&
+      any(some_filter(property1, property2), state))
+  },
+  some: function(state, property1, property2) {
+    return any(some_filter(property1, property2), state)
+  },
+  no: function(state, property1, property2) {
+    return !(any(some_filter(property1, property2), state))
+  },
+  some_not: function(state, property1, property2) {
+    return !(all(all_filter(property1, property2), state) &&
+      any(some_filter(property1, property2), state))
+    // return !(all(all_filter(property1, property2), state))
+  },
+  nvc: function(state, property1, property2) {
+    return true
+  }
+}
+
+var predicate_filter = function(x, y) {
+  return function(r) {
+    return _.fromPairs([
+      [x, r.region[x]],
+      [y, r.region[y]]
+    ])
+  }
+}
+var predicate_filter = function(x, y) {
+  return function(r) {
+    return _.fromPairs([
+      [x, r.region[x]],
+      [y, r.region[y]]
+    ])
+  }
+}
+
+///
+
+
+var regions = Enumerate(function() {
+  var A = flip(),
+      B = flip(),
+      C = flip()
+  condition(A + B + C > 0)
+  return {A, B, C}
+}).support()
+
+var regionLabels = map(parseVennDiagram, regions)
+
+var quantifiers = ["all", "some", "no", "some_not"]
+
+// var conclusions = ["all", "some", "none", "some_not", "nvc"]
+
+var conclusions = [
+  {
+    quantifier: "all",
+    p1: "A",
+    p2: "C"
+  },
+  {
+    quantifier: "all",
+    p1: "C",
+    p2: "A"
+  },
+  {
+    quantifier: "some",
+    p1: "A",
+    p2: "C"
+  },
+  {
+    quantifier: "some",
+    p1: "C",
+    p2: "A"
+  },
+  {
+    quantifier: "no",
+    p1: "A",
+    p2: "C"
+  },
+  {
+    quantifier: "no",
+    p1: "C",
+    p2: "A"
+  },
+  {
+    quantifier: "some_not",
+    p1: "A",
+    p2: "C"
+  },
+  {
+    quantifier: "some_not",
+    p1: "C",
+    p2: "A"
+  },
+  {
+    quantifier: "nvc",
+    p1: "",
+    p2: ""
+  }
+]
+
+
+
+var alternative_quantifier_set_fn = cache(function(obs_prm) {
+  MakeUniformDraw(map(function(q) {
+    return {
+      quantifier: q,
+      p1: obs_prm.p1,
+      p2: obs_prm.p2
+    }
+  }, quantifiers))
+})
+
+var alternative_quantifier_order_set_fn = cache(function(obs_prm) {
+  MakeUniformDraw(map(function(q) {
+    return {
+      quantifier: q,
+      p1: obs_prm.p1,
+      p2: obs_prm.p2
+    }
+  }, quantifiers).concat({
+    quantifier: obs_prm.quantifier,
+    p1: obs_prm.p2,
+    p2: obs_prm.p1
+  }))
+})
+
+var alternative_set_maximal_fn = cache(function(obs_prm) {
+  MakeUniformDraw(_.flatten(map(function(q) {
+    return [{
+        quantifier: q,
+        p1: obs_prm.p1,
+        p2: obs_prm.p2
+      },
+      {
+        quantifier: q,
+        p1: obs_prm.p2,
+        p2: obs_prm.p1
+      }
+    ]
+  }, quantifiers)))
+})
+
+var alternative_quantifier_set = cache(function(observed_premises) {
+  map(alternative_quantifier_set_fn, observed_premises)
+})
+
+var alternative_quantifier_order_set = cache(function(observed_premises) {
+  map(alternative_quantifier_order_set_fn, observed_premises)
+})
+
+var alternative_set_maximal = cache(function(observed_premises) {
+  map(alternative_set_maximal_fn, observed_premises)
+})
+
+var alternatives = {
+  quantifier: {
+    single: alternative_quantifier_set_fn,
+    double: alternative_quantifier_set
+  },
+  quantifierOrder: {
+    single: alternative_quantifier_order_set_fn,
+    double: alternative_quantifier_order_set,
+  },
+  maximal: {
+    single: alternative_set_maximal_fn,
+    double: alternative_set_maximal
+  }
+}
+
+var regionExpectationFromVennDist = cache(function(venn_dist){
+  var seq_region_dist = Infer({model: function(){
+    var venn = sample(venn_dist);
+    _.fromPairs(map(function(x){ return [x.label, x.truth_val] }, venn))
+  }})
+  var vennRegionLabels = _.keys(seq_region_dist.support()[0])
+
+  return map(function(s){
+    return [s, expectation(Enumerate(function(){
+      var venn = sample(seq_region_dist)
+      return venn[s]
+    })) ]
+  }, vennRegionLabels)
+})
+
+// regions that increase in probability following the first premise
+var sequentialQUDs = {
+  'All;A;B': [ 'AB', 'ABC' ],
+  'Some;A;B': [ 'A', 'AB', 'ABC', 'AC' ],
+  'Some not;A;B': [ 'A', 'AB', 'ABC', 'AC' ], // this is the same as "some" because of pragmatics ("some" implies "not all", and visa versa)
+  'No;A;B': [ 'A', 'AC', 'B', 'BC', 'C' ],
+  'All;B;A': [ 'AB', 'ABC' ],
+  'Some;B;A': [ 'AB', 'ABC', 'B', 'BC' ],
+  'Some not;B;A': [ 'AB', 'ABC', 'B', 'BC' ],
+  'No;B;A': [ 'A', 'AC', 'B', 'BC', 'C' ]
+}
+
+// var sequentialQUDs_viaLiteral = {
+//   'All;A;B': [ 'AB', 'ABC' ],
+//   'Some;A;B': [ 'AB', 'ABC' ],
+//   'Some not;A;B': [ 'A', 'AC', 'B', 'BC', 'C' ],
+//   'None;A;B': [ 'A', 'AC', 'B', 'BC', 'C' ],
+//   'All;B;A': [ 'AB', 'ABC' ],
+//   'Some;B;A': [ 'AB', 'ABC' ],
+//   'Some not;B;A': [ 'A', 'AC', 'B', 'BC', 'C' ],
+//   'None;B;A': [ 'A', 'AC', 'B', 'BC', 'C' ]
+// }
+
+
+var speakerOptimality = {
+	alpha_1 : 1.5,
+	alpha_2 : 1.5
+}
+
+var noise = 0.01
+
+var iidProbs = {
+  // "": 0.5,
+  // "": 0.5,
+  "A": 0.5,
+  "B": 0.5,
+  "C": 0.5,
+  "AB": 0.5,
+  "BC": 0.5,
+  "AC": 0.5,
+  "ABC": 0.5
+}
+
+var regionProbs = iidProbs;
+
+var firstTermPrefWeight  =  2 //uniformDrift({a: 1, b: 5, width: 0.5}) // 1 + exponential({a:1}) //uniformDrift({a: 1, b: 10, width: 1})
+var nvcWeight = 1
+
+var makeConclusionPrior = cache(function(preferred_first_term){
+  // display(preferred_first_term)
+  // give preference to conclusions that start with a "first term"
+  // "first term" = unique first term used in premises
+  var weights = map(function(c){
+    c.quantifier == "nvc" ? nvcWeight :
+    c.p1 == preferred_first_term ? firstTermPrefWeight : 1
+  }, conclusions)
+  // display(conclusions)
+  // display(weights)
+  return Categorical({vs: conclusions, ps: weights})
+})
+
+
+// var full_venn_space = Enumerate(function() {
+var venn_prior = Enumerate(function() {
+  map2(function(region, priorProb) {
+    var regionLabel = parseVennDiagram(region)
+    return {
+      region: region,
+      priorProb: priorProb,
+      truth_val: flip(priorProb),
+      label: parseVennDiagram(region)
+    }
+  }, regions, regionProbs)
+})
+
+// display(JSON.stringify(full_venn_space.support()[0]))
+// display(JSON.stringify(full_venn_space.support()[0]))
+// display(full_venn_space.support().length)
+// var venn_prior = full_venn_space;
+
+// Infer({model: function(){
+//   var v = sample(full_venn_space)
+//   condition(any(function(x){ x.truth_val }, v))
+//   return v
+// }})
+// display(venn_prior.support().length)
+
+
+// DEPRACATED: NOW USING PRE-COMPUTED UPWEIGHTED REGIONS QUD (ABOVE ABOVE)
+// COMPARE REGION_PRIOR TO INCREMENTAL REGION_POSTERIOR
+// IF REGION_POSTERIOR > _PRIOR, KEEP REGION IN QUD (OTHERWISE REMOVE)
+// var regionExpectations_prior = regionExpectationFromVennDist(venn_prior)
+
+
+// var marginalizeVennToStr = cache(function(stateDist){
+//   Infer({model: function(){
+//     var state = sample(stateDist)
+//     vennToString(state)
+//   }})
+// })
+
+var venn_interpreter = cache(function(sentences, pragmatics, state_prior) {
+  // display(JSON.stringify(sentences) + JSON.stringify(pragmatics))
+  Infer({
+    model: function() {
+      var venn = sample(state_prior ? state_prior : venn_prior)
+      // display(venn)
+      foreach(sentences, function(utterance) {
+        var meaningFn = lexicon[utterance.quantifier]
+        // display(meaningFn(venn, utterance.p1, utterance.p2))
+        condition(flip(noise) ? true : meaningFn(venn, utterance.p1, utterance.p2))
+        // condition(meaningFn(venn, utterance.p1, utterance.p2))
+      })
+
+      var qudVal = qudFn(venn, pragmatics.qud)
+      // display(qudVal)
+      return (pragmatics.interpretation || pragmatics.production) ? qudVal : venn
+    },
+    method: "enumerate"
+  })
+}, 10000)
+
+// var sampleUtterance = function(observed_premises){
+//   return observed_premises.length == 2 ?
+//     map(sample, alternative_quantifier_order_set(observed_premises)) :
+//     [sample(alternative_quantifier_set_fn(observed_premises[0]))]
+// }
+
+var argument_speaker = cache(function(qudVal, observed_premises, pragmatics, state_prior) {
+  // display("obs prem " + JSON.stringify(observed_premises))
+  // display(qudVal)
+  Infer({
+    model: function() {
+      var alternative_set = alternatives[pragmatics.alternatives]
+
+      // var premises = map(sample, alternative_quantifier_set(observed_premises))
+      // var premises = map(sample, alternative_quantifier_order_set(observed_premises))
+      // var premises = map(sample, alternative_set_maximal(observed_premises))
+      // var premises = sampleUtterance(observed_premises)
+      var alternative_fn_double = alternative_set.double
+      var alternative_fn_single = alternative_set.single
+      var premises = observed_premises.length == 2 ?
+        map(sample,  alternative_fn_double(observed_premises)) :
+        [sample(alternative_fn_single(observed_premises[0]))]
+
+      // display("alt prem " + JSON.stringify(premises))
+
+        // map(sample, alternative_quantifier_order_set(observed_premises)) :
+        // [sample(alternative_quantifier_set_fn(observed_premises[0]))]
+        // [sample(alternative_quantifier_order_set_fn(observed_premises[0]))]
+        // [sample(alternative_set_maximal(observed_premises[0]))]
+
+      // display(premises)
+      // display(qudVal)
+      // display('enter l0')
+      // var LiteralDist = marginalizeVennToStr(venn_interpreter(premises, qud))
+      var LiteralDist = venn_interpreter(premises, pragmatics, state_prior)
+      // display(JSON.stringify(LiteralDist))
+      // display('l0 score ' + LiteralDist.score(qudVal))
+      factor(speakerOptimality.alpha_1 * LiteralDist.score(qudVal))
+      return premises
+    },
+    method: "enumerate"
+  })
+}, 10000)
+
+var pragmatic_interpreter = cache(function(premises, pragmatics) {
+  // display(premises)
+  Infer({
+    model: function() {
+      var venn = sample(venn_prior)
+      var qudVal = qudFn(venn, pragmatics.qud)
+      // display(qudVal)
+      // display(JSON.stringify(vennToString(venn)))
+      var SpeakerDist = argument_speaker(qudVal, premises, pragmatics, false)
+      // display(JSON.stringify(SpeakerDist))
+      // display(SpeakerDist.score(premises))
+      observe(SpeakerDist, premises)
+      return pragmatics.production ? vennToString(venn) : venn
+    },
+    method: "enumerate"
+  })
+}, 10000)
+
+var sequential_pragmatic_interpreter_qudOmitRegions = cache(function(premises, pragmatics) {
+  // display(premises[0])
+  // display("enter posterior one")
+  var posterior_one = Infer({model: function() {
+      var qud = "AB"
+      var venn = sample(venn_prior)
+      var qudVal = qudFn(venn, qud)
+      // display(qudVal)
+      var SpeakerDist = argument_speaker(qudVal, [premises[0]], pragmatics, false)
+      // display(JSON.stringify(SpeakerDist))
+      // display(JSON.stringify(premises[0]))
+      // display('s1 score ' + SpeakerDist.score(premises[0]))
+
+      observe(SpeakerDist, [premises[0]])
+      return venn
+    }, method: "enumerate"})
+
+    var qud = sequentialQUDs[formatSentence(premises[0])]
+    var qudDist = marginalizeQUD_omitRegions(posterior_one, qud)
+
+    // display('enter posterior two')
+    var posterior_two = Infer({model: function() {
+        var qudVal = sample(qudDist) // ;
+
+        // var venn = sample(posterior_one)
+        // var qudVal = qudOmitRegions(venn, qud)
+        // display(qudVal)
+        var prgmtics = {
+          modular: pragmatics.modular,
+          interpretation: pragmatics.interpretation,
+          production: pragmatics.production,
+          qud: qud
+        }
+        var SpeakerDist = argument_speaker(qudFn(qudVal, "state"),
+        [premises[1]], prgmtics, qudDist)
+        observe(SpeakerDist, [premises[1]])
+        return pragmatics.production ? vennToString(qudVal) : qudVal
+      }, method: "enumerate"})
+
+    return posterior_two
+
+}, 10000)
+
+var modular_pragmatic_reasoner =  function(premises, pragmatics, first_term_preference) {
+  var qud = sequentialQUDs[formatSentence(premises[0])]
+  var qudDist_prior = pragmatics.qud == "seq" ?
+    marginalizeQUD_omitRegions(venn_prior, qud) :
+    venn_prior
+  // display('enter modular')
+  Infer({
+    model: function() {
+
+      var PremiseInterpretation = pragmatics.interpretation ?
+            pragmatics.qud == "seq" ?
+          sequential_pragmatic_interpreter_qudOmitRegions(premises, pragmatics) :
+          pragmatic_interpreter(premises, pragmatics) :
+          venn_interpreter(premises, pragmatics, false)
+
+      // display('exit interpretation')
+      // {"modular":"modular","interpretation":"literal","production":"pragmatic","qud":"state"}
+      // display(JSON.stringify(PremiseInterpretation.support().length))
+      var ConclusionPrior = makeConclusionPrior(first_term_preference)
+      var conclusion = sample(ConclusionPrior)
+      // display(JSON.stringify(PremiseInterpretation))
+
+      if (pragmatics.production) {
+        // display('enter prag production')
+        var ConclusionInterpretation = venn_interpreter([conclusion], {qud: "state", production: true}, qudDist_prior)
+        // display(JSON.stringify(ConclusionInterpretation.support().length))
+        var _kl = KL(
+          PremiseInterpretation,
+          ConclusionInterpretation,
+          PremiseInterpretation.support()
+        )
+        factor(speakerOptimality.alpha_2 * -1 * _kl)
+        // display('exit prag production')
+
+        // factor(speakerOptimality.alpha_2 * ConclusionInterpretation.score(venn))
+      } else {
+        // display('enter literal production')
+        var venn = sample(PremiseInterpretation)
+        // display(JSON.stringify(venn))
+        var conclusionMeaningFn = lexicon[conclusion.quantifier]
+        condition(conclusionMeaningFn(venn, conclusion.p1, conclusion.p2))
+      }
+      // display(formatSentence(conclusion))
+      return formatSentence(conclusion)
+
+    }
+  })
+}
+
+// INTEGRATED REASONER MODELS
+var literal_speaker = cache(function(venn){
+  Infer({model: function(){
+    var trueConclusions = filter(function(conclusion){
+      var conclusionMeaningFn = lexicon[conclusion.quantifier]
+      conclusionMeaningFn(venn, conclusion.p1, conclusion.p2)
+    }, conclusions)
+
+    var conclusion = uniformDraw(trueConclusions)
+    return conclusion
+  }})
+})
+
+var literal_reasoner = cache(function(sentences) {
+  Infer({
+    model: function() {
+      var venn = sample(venn_prior)
+
+      foreach(sentences, function(utterance) {
+        var meaningFn = lexicon[utterance.quantifier]
+        condition(flip(noise) ? true : meaningFn(venn, utterance.p1, utterance.p2))
+      })
+
+      // var ConclusionPrior = makeConclusionPrior(first_term_preference)
+      // var conclusion = sample(ConclusionPrior)
+
+      var conclusion = sample(literal_speaker(venn))
+      return formatSentence(conclusion)
+    },
+    method: "enumerate"
+  })
+})
+
+var arguer = cache(function(qudVal, observed_premises) {
+  Infer({
+    model: function() {
+      var premises = map(sample, alternative_quantifier_set(observed_premises))
+      // var premises = map(sample, alternative_quantifier_order_set(observed_premises))
+      // var premises = map(sample, alternative_set_maximal(observed_premises))
+      var LiteralDist = literal_reasoner(premises)
+      factor(speakerOptimality.alpha_1 * LiteralDist.score(qudVal))
+      return premises
+    },
+    method: "enumerate"
+  })
+})
+
+var integrated_pragmatic_reasoner = cache(function(premises, pragmatics, first_term_preference) {
+  Infer({
+    model: function() {
+      // firstTermPreference could be false if using the pragmatic production
+      // that way, the firstTermPreference would only enter in at the final production layer
+      // var ConclusionPrior = makeConclusionPrior(first_term_preference)
+      var ConclusionPrior = makeConclusionPrior(pragmatics.production ? false : first_term_preference)
+      var conclusion = sample(ConclusionPrior)
+
+      var ArgumentDist = arguer(formatSentence(conclusion), premises)
+      observe(ArgumentDist, premises)
+
+
+      if (pragmatics.qud == "grounded"){ // if grounded
+        var venn = sample(venn_prior)
+        var conclusionMeaningFn = lexicon[conclusion.quantifier]
+        condition(conclusionMeaningFn(venn, conclusion.p1, conclusion.p2))
+
+        if (pragmatics.production) {
+          return venn // if going to production layer, return venn
+        } else {
+          return formatSentence(conclusion)
+        }
+      } else { // if not grounded, return conclusion
+        return formatSentence(conclusion)
+      }
+
+      // return pragmatics.production ? venn : formatSentence(conclusion)
+
+    }
+  })
+})
+
+var marginalizeQUDval = function(stateDist){
+  Infer({model: function(){
+    var state = sample(stateDist)
+    qudToString(state, "AC")
+  }})
+}
+
+var integrated_pragmatic_reasoner_wProduction = function(premises, pragmatics, first_term_preference) {
+  Infer({
+    model: function() {
+
+      var PremiseInterpretation = integrated_pragmatic_reasoner(premises, pragmatics, first_term_preference)
+
+      if (pragmatics.production){
+        var qudValDist = marginalizeQUDval(PremiseInterpretation)
+        // display(JSON.stringify(qudValDist))
+        var ConclusionPrior = makeConclusionPrior(first_term_preference)
+        var conclusion = sample(ConclusionPrior)
+
+        // var ConclusionInterpretation = venn_interpreter([conclusion], true)
+        var ConclusionInterpretation = venn_interpreter([conclusion], {qud: true, production: true})
+        // display(JSON.stringify(sort(ConclusionInterpretation.support())))
+        var _kl = KL(qudValDist, ConclusionInterpretation, qudValDist.support())
+        // display(formatSentence(conclusion) + " _ " + _kl)
+        factor(speakerOptimality.alpha_2 * -1 * _kl)
+
+        return formatSentence(conclusion)
+
+      } else {
+
+        return sample(PremiseInterpretation)
+      }
+
+    }
+  })
+}
+
+var conclusion_speaker = function(premises) {
+  Infer({
+    model: function() {
+      var PremiseInterpretation = venn_interpreter(premises)
+      var venn = sample(PremiseInterpretation)
+
+      var conclusion = uniformDraw(conclusions)
+      var ConclusionInterpretation = venn_interpreter([conclusion])
+
+      factor(speakerOptimality.alpha_2 * ConclusionInterpretation.score(venn))
+
+      return conclusion
+    }
+  })
+}
+
+
+var pragParams = {
+  modular: "modular",
+  interpretation: "pragmatic",
+  production: "pragmatic",
+  qud: "AC",
+  alternatives: "quantifier"
+}
+
+
+var pragmatics = {
+  modular: (pragParams.modular == "modular"),
+  interpretation: !(pragParams.interpretation == "literal"),
+  production:  !(pragParams.production == "literal"),
+  qud: pragParams.qud,
+  alternatives: pragParams.alternatives
+  // qud:  (pragParams.modular == "modular") ?
+  // !(pragParams.qud == "state") : (pragParams.qud == "grounded")
+  // grounded for integrated reasoner model means that pragReasoner conditions on conclusion being true of state
+}
+
+
+var syllogisms = [
+  [
+    {"quantifier":"all", "p1":"A","p2":"B"},
+    { "quantifier":"all", "p1":"B","p2":"C"}
+  ],
+  [
+    {"quantifier":"all", "p1":"A","p2":"B"},
+    { "quantifier":"some", "p1":"B","p2":"C"}
+  ],
+  [
+    {"quantifier":"some", "p1":"A","p2":"B"},
+    { "quantifier":"some_not", "p1":"B","p2":"C"}
+  ]
+]
+var first_term_preference = firstTermPreference(syllogism) // A, C, or false
+
+// var rsaPredictions = modular_pragmatic_reasoner(syllogism, pragmatics, first_term_preference)
+// displayDist(rsaPredictions)
+
+var literal_pragmatics = {
+  modular: true,
+  interpretation: false,
+  production: false,
+  qud: "state",
+  alternatives: "NA"
+}
+
+_.fromPairs(map(function(syllogism){
+  var returnVal = {
+    literal: marginalizeVennForR(
+      venn_interpreter(syllogism, literal_pragmatics, false)
+    ),
+    pragmatic: marginalizeVennForR(pragmatic_interpreter(syllogism, {
+      modular: true,
+      interpretation: true,
+      production: false,
+      qud: "state",
+      alternatives: "quantifier"
+    }))
+  }
+
+  return [formatSentence(syllogism[0]) + "/" + formatSentence(syllogism[1]), returnVal]
+
+}, syllogisms))
