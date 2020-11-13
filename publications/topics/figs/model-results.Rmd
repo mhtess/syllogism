@@ -1,0 +1,84 @@
+---
+title: "model-results"
+author: "MH Tessler"
+date: "11/13/2020"
+output: pdf_document
+---
+
+```{r}
+library(tidyverse)
+library(tidyboot)
+library(ggplot2)
+library(ggthemes)
+library(knitr)
+library(coda)
+library(purrr)
+library(viridis)
+library(RColorBrewer)
+
+theme_set(theme_few())
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+HPDhi<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+HPDlo<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+```
+
+# PHM and mReasoner models
+```{r}
+df.ragni.altModel.full.summary <-read_csv(file = "../cached_results/phm-mReasoner-ragni-summary.csv")
+```
+
+```{r}
+df.ragni.altModel.full.summary %>%
+  mutate(model = factor(model,
+                        levels = c("mReasoner-Group", "PHM-Group",
+                                   "mReasoner-Indiv", "PHM-Indiv"),
+                        labels = c("mReasoner\n(group-level model)",
+                                   "Probability Heuristics\n(group-level model)",
+                                   "mReasoner\n(individual-level model)",
+                                   "Probability Heuristics\n(individual-level model)")),
+         conclusion_quantifier = factor(conclusion_quantifier,
+                                        levels = c("All", "Some", "Some not", "No", "NVC"),
+                                        labels = c("All", "Some", "Some...not", "None",
+                                                   "nothing follows"))) %>%
+  ggplot(., aes( x = model_mean, xmin = model_lower, xmax = model_upper, 
+                 fill = conclusion_quantifier,
+                 y = mean, ymin = ci_lower, ymax = ci_upper))+
+  geom_abline(intercept = 0, slope = 1, lty = 3, alpha = 0.3)+
+  geom_linerange(alpha = 0.4)+
+  ggstance::geom_linerangeh( alpha = 0.4 )+
+  geom_point(shape = 21, size = 1.5)+
+  scale_x_continuous(limits = c(0, 1), breaks = c(0, 1))+
+  scale_y_continuous(limits = c(0, 1), breaks = c(0, 1))+
+  #xlim(0, 1) + ylim(0, 1)+
+  coord_fixed()+
+  guides(fill = guide_legend(title = "Conclusion quantifier"))+
+  #scale_fill
+  #scale_fill_viridis(discrete = T, option = "E")+
+  facet_wrap(~model, nrow = 1)+
+  labs(
+    x = "Model Prediction (mean)",
+    y = "Human Conclusions\n(proportion)"
+  )
+
+ggsave("alternative_model_scatters.pdf", width = 9, height = 3)
+```
+
+```{r}
+df.ragni.altModel.full.summary %>%
+  group_by(model) %>%
+  summarize(
+    r = cor(mean, model_mean),
+    r2 = r^2,
+    mse = mean((model_mean-mean) ^2 )
+  ) %>%
+  kable(.)
+```
