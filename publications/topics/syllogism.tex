@@ -138,7 +138,7 @@ We develop a computational-level theory that considers reasoning over concrete s
 
 \section{Introduction}
 
-In a famous scientific expedition of the 1930s, the psychologist Alexander Luria set off into the remote areas of Uzbekistan and Kyrgyzstan in the former Soviet Union to understand the mind of the Russian peasant. Among his experiments, Luria would give the peasants verbal reasoning problems such as the following:
+In a famous scientific expedition of the 1930s, Russian psychologist Alexander Luria set off into the remote areas of Uzbekistan and Kyrgyzstan in the former Soviet Union to understand the mind of the Russian peasant. Among his experiments, Luria would give his participants verbal reasoning problems such as the following:
 
 \begin{quote}
 In the Far North, where there is snow, all bears are white. \\
@@ -146,7 +146,7 @@ Novaya Zembla is in the Far North and there is always snow there. \\
 What color are the bears?
 \end{quote}
 
-The kind of response Luria received depended in part on the literacy of his participant. 
+The kind of response Luria received to such a question depended in part on the literacy of his participant. 
 A person who knew how to read and write would respond: ``To go by your words, they should all be white.''
 An illiterate person, on the other hand, would say: ``I don't know. I've seen a black bear. I've never seen any others. Each locality has its own animals.''
 Obviously, this is not the answer that Luria had in mind, but what would lead a person to respond in the way that this person did?
@@ -207,15 +207,21 @@ Probability theory provides a natural description of a world in which you don’
 A separate dimension of theories of human reasoning concerns the extent to which principles of natural language — semantics and pragmatics — are necessary for understanding reasoning tasks. 
 Natural language semantics plays a role in many such theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, though how pragmatic reasoning impacts syllogistic reasoning either remains unclear \cite{Roberts2001} or are posited in an ad-hoc manner \cite{Chater1999}. 
 
-In this paper, we take seriously the idea that syllogistic reasoning involves 
+In this paper, we take seriously the idea that human syllogistic reasoning is  part logical reasoning and part riddle solving (as suggested by the Ong, 1982 quotation above).
+Concretely, we view syllogistic reasoning as involving two language understanding tasks \cite<cf.>{geurts2003reasoning}: interpreting the premises of the syllogism and producing a conclusion.
+Each of these component tasks could involve pragmatic reasoning beyond the words of the syllogism \cite{Grice1975, Clark1996, Levinson2000}. 
+We formalize this reasoning in a probabilistic model of pragmatic reasoning in the Rational Speech Act framework \cite{Frank2012a, goodman2016pragmatic}.
+We show that interpreting the premises of a syllogism offers multiple, distinct varieties of pragmatic reasoning.
+In particular, the structure of the syllogism could induce a kind of pragmatic reasoning that is distinct from standard, scalar-implicature type reasoning (as explored in \citeNP{Roberts2001}), reasoning that is more akin to riddle solving. 
+We formalize this notion as a Question Under Discussion \cite{Roberts2004QUD}, in which a listener reasons about the conclusion a speaker intended the listener (or, reasoner) to draw from the syllogism. 
+%This reasoning is more akin to riddle solving: Reasoning about what conclusion a speaker intended the listener (or, reasoner) to draw from the syllogism. 
+We formalize this hypothesis and alternative hypotheses in models that we test against a recently collected data set of human reasoning with syllogisms. 
 
-Syllogistic reasoning involves two language understanding tasks: interpreting the premises of the syllogism and producing a conclusion.
-
- the idea that pragmatic reasoning operating on top of probabilistically constructed models of situations can provide insight into how people reason with syllogisms.
-We develop a set of models in the Rational Speech Act framework \cite{Frank2012a, goodman2016pragmatic} that vary in how they interpret the premises of the syllogism and decide upon a conclusion that follows.
-In particular, we explore 
-reasons about multiple quantifier sentences to produce a distribution over conclusions that follow from those sentences. 
-\mht{deprecated:: We present three sets of results, highlighting the influence of different components of the model on human reasoning: (1) the influence of prior beliefs; (2) flexibility in natural language semantics, incorporating generalized quantifiers (e.g., “most” and “few”); and (3) pragmatic rea- soning. Previous approaches to the pragmatics of syllogistic reasoning have reduced the interpretations of syllogistic arguments to the interpretations of the individual premises or quantifiers used in those premises \cite{Roberts2001}. For example, premises involving the quantifier “some” may be interpreted as implying some but not all. But that sort of reasoning will not produce the conclusion in the syllogism above. Instead, what is needed is a richer scope of pragmatic reasoning: Reasoning about why about the speaker constructed the argument as a whole. We formalize this notion as a Question Under Discussion (C. Roberts, 2004) in which a listener reasons about the most likely conclusion (i.e., A–C relation) given the premises heard. We find that this formulation of pragmatic reasoning is able to break critical symmetries that would result from logical reasoning (Figure 1). An early version of this model was presented by Tessler and Goodman (2014).}
+% the idea that pragmatic reasoning operating on top of probabilistically constructed models of situations can provide insight into how people reason with syllogisms.
+%We develop a set of models that vary in how they interpret the premises of the syllogism and decide upon a conclusion that follows.
+%In particular, we explore 
+%reasons about multiple quantifier sentences to produce a distribution over conclusions that follow from those sentences. 
+%\mht{deprecated:: We present three sets of results, highlighting the influence of different components of the model on human reasoning: (1) the influence of prior beliefs; (2) flexibility in natural language semantics, incorporating generalized quantifiers (e.g., “most” and “few”); and (3) pragmatic rea- soning. Previous approaches to the pragmatics of syllogistic reasoning have reduced the interpretations of syllogistic arguments to the interpretations of the individual premises or quantifiers used in those premises \cite{Roberts2001}. For example, premises involving the quantifier “some” may be interpreted as implying some but not all. But that sort of reasoning will not produce the conclusion in the syllogism above. Instead, what is needed is a richer scope of pragmatic reasoning: Reasoning about why about the speaker constructed the argument as a whole. We formalize this notion as a Question Under Discussion (C. Roberts, 2004) in which a listener reasons about the most likely conclusion (i.e., A–C relation) given the premises heard. We find that this formulation of pragmatic reasoning is able to break critical symmetries that would result from logical reasoning (Figure 1). An early version of this model was presented by Tessler and Goodman (2014).}
 
 
 %Cognitive theories of human reasoning turn along the critical dimension of whether the core ideal of reasoning is deductive validity or probabilistic support. 
