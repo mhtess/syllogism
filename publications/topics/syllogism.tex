@@ -138,34 +138,67 @@ We develop a computational-level theory that considers reasoning over concrete s
 
 \section{Introduction}
 
+In a famous scientific expedition of the 1930s, the psychologist Alexander Luria set off into the remote areas of Uzbekistan and Kyrgyzstan in the former Soviet Union to understand the mind of the Russian peasant. Among his experiments, Luria would give the peasants verbal reasoning problems such as the following:
 
-Imagine that your friend tells you: ``Everyone in my office has the flu and, you know, some people with this flu are out for weeks.''
-You might respond: ``I hope your officemates are not out for weeks and I hope you don’t get sick either.''
-The form of this exchange resembles a syllogism: a two-sentence argument used to relate two properties (or terms: A, C) via a middle term (B). 
-The relations used in classical Aristotelean syllogisms are quantifiers: \emph{all}, \emph{some}, \emph{some .... are not}, and \emph{none}. 
-Fit into a formal syllogistic form, this argument would read:
+\begin{quote}
+In the Far North, where there is snow, all bears are white. \\
+Novaya Zembla is in the Far North and there is always snow there. \\
+What color are the bears?
+\end{quote}
 
-\begin{enumerate}
-\item \emph{All} officemates are out with the flu (All As are Bs)
-\item \emph{Some} people out with the flu are out for weeks (Some Bs are Cs) 
-\item Therefore, \emph{some} officemates are out for weeks (Some As are Cs)
-\end{enumerate}
+The kind of response Luria received depended in part on the literacy of his participant. 
+A person who knew how to read and write would respond: ``To go by your words, they should all be white.''
+An illiterate person, on the other hand, would say: ``I don't know. I've seen a black bear. I've never seen any others. Each locality has its own animals.''
+Obviously, this is not the answer that Luria had in mind, but what would lead a person to respond in the way that this person did?
 
+The problem Luria gave his participants resembles a syllogism: a two-sentence argument used to relate two properties (or terms: A, C) via a middle term (B). 
+The relations used in classical Aristotelean syllogisms are quantifiers: \emph{all}, \emph{some}, \emph{some .... are not}, and \emph{none}. \footnote{In Luria's syllogism, only one of the premise relations uses a quantifier, so it is not technically an Aristotelean syllogism.} 
+An example Aristotelean syllogism reads:
+
+\begin{quote}
+All artists are bakers. \\
+Some bakers are chemists. \\
+\_\_ \\
+Some artists are chemists.
+\end{quote}
 
 The logical space defined by classical syllogisms is comprised of all combinations of quantifiers and term orders for the premises (e.g., \textsc{quantifier} \textsc{A} -- \textsc{B} vs. \textsc{quantifier} \textsc{B} -- \textsc{A}).
 In total, each of the two premises can be appear with one of the four quantifiers and two term orders yielding:  $4$ quantifiers  $\times 2$ term orderings $\times 2$ premises = 64 syllogisms.
-Of the 64 unique syllogistic premises, only 27 yield a logically valid conclusion (i.e., a conclusion that is true in every situation in which the premises are true).
-For logically invalid syllogisms, the logical response is to conclude that \emph{nothing follows} from the premises (or, \emph{no valid conclusion}), yet participants readily endorse substantive conclusions for logically invalid syllogisms. 
-For example, the syllogism above is not logically valid.  (Consider that it could be only non-officemates with the flu that are out for weeks. In that case, the premises would be true and the conclusion false.)
-%In fact, within the confines of the classical syllogism, there is no conclusion about the relation between A \& C that is true in every situation in which the premises are true. 
+Of the 64 unique syllogistic premises, only 27 yield a logically valid conclusion: a conclusion that is true in every situation in which the premises are true.
+
+It is not only the illiterate Soviet peasants of Kyrgyzstan who struggle with reasoning logically with syllogisms.
+A recent meta-analysis of syllogistic reasoning tasks performed on American and Italian participants estimated the accuracy of producing a valid conclusion to a logically valid syllogism to range widely (from 90\% to 1\% accuracy) depending on the syllogism \cite{Khemlani2012}.
+Logically invalid syllogisms also pose a challenge: the logical response is to conclude that \emph{nothing follows} from the premises (or, report \emph{no valid conclusion}), yet participants readily endorse substantive conclusions for logically invalid syllogisms. 
+For example, the syllogism above is not logically valid.  (Consider that it could be only the non-artist bakers that are chemists. In that case, the premises would be true and the conclusion false.)
 The conclusion above seems reasonable, however, and roughly 70\% of participants will assert that the \emph{Some As are Cs} conclusion follows from the premises  \cite{Khemlani2012}.
-Even for valid arguments, the accuracy of producing valid conclusions ranges widely (from 90\% to 1\% per the \citeNP{Khemlani2012} meta-analysis).
 Something beyond logical validity is guiding participants' reasoning behavior. 
+
+% Luria was not the first to study how people reason with syllogisms, and he certainly was not the last. 
+% Psychologists have been trying to understand human reasoning with syllogisms for over one hundred years (the earliest experimental study is credited to \citeNP{Storring1908}). 
+
+
+%In fact, within the confines of the classical syllogism, there is no conclusion about the relation between A \& C that is true in every situation in which the premises are true. 
+
+%Fit into a formal syllogistic form, this argument would read:
+%
+%Imagine that your friend tells you: ``Everyone in my office has the flu and, you know, some people with this flu are out for weeks.''
+%You might respond: ``I hope your officemates are not out for weeks and I hope you don’t get sick either.''
+%The form of this exchange resembles a syllogism: 
+%
+%\begin{enumerate}
+%\item \emph{All} officemates are out with the flu (All As are Bs)
+%\item \emph{Some} people out with the flu are out for weeks (Some Bs are Cs) 
+%\item Therefore, \emph{some} officemates are out for weeks (Some As are Cs)
+%\end{enumerate}
+%
+
+
 %people do not seem to find drawing deductively valid conclusions particularly straightforward.
 
 %Faced with such an argument, however, people are perfectly comfortable drawing some conclusion. 
 %A meta-analysis of syllogistic reasoning showed that over the population, the proper production of no valid conclusion responses for invalid arguments ranged from 76\% to 12\%. 
 
+\mht{this is kind of weak, superficial...}
 Many theories of syllogistic reasoning take deduction as a given and try to explain reasoning errors as a matter of noise during cognition. 
 Errors, then, may arise from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}. 
 Many other kinds of reasoning, however, can be well-explained as probabilistic inference under uncertainty \cite{tenenbaum2006theory}. 
@@ -174,8 +207,14 @@ Probability theory provides a natural description of a world in which you don’
 A separate dimension of theories of human reasoning concerns the extent to which principles of natural language — semantics and pragmatics — are necessary for understanding reasoning tasks. 
 Natural language semantics plays a role in many such theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, though how pragmatic reasoning impacts syllogistic reasoning either remains unclear \cite{Roberts2001} or are posited in an ad-hoc manner \cite{Chater1999}. 
 
-In this paper, we explore the idea that the formalism of probabilistic pragmatics can provide insight into how people reason with syllogisms.
-We present a model in the Rational Speech Act framework (Frank \& Goodman, 2012; Goodman \& Frank, 2016) that reasons about multiple quantifier sentences to produce a distribution over conclusions that follow from those sentences. 
+In this paper, we take seriously the idea that syllogistic reasoning involves 
+
+Syllogistic reasoning involves two language understanding tasks: interpreting the premises of the syllogism and producing a conclusion.
+
+ the idea that pragmatic reasoning operating on top of probabilistically constructed models of situations can provide insight into how people reason with syllogisms.
+We develop a set of models in the Rational Speech Act framework \cite{Frank2012a, goodman2016pragmatic} that vary in how they interpret the premises of the syllogism and decide upon a conclusion that follows.
+In particular, we explore 
+reasons about multiple quantifier sentences to produce a distribution over conclusions that follow from those sentences. 
 \mht{deprecated:: We present three sets of results, highlighting the influence of different components of the model on human reasoning: (1) the influence of prior beliefs; (2) flexibility in natural language semantics, incorporating generalized quantifiers (e.g., “most” and “few”); and (3) pragmatic rea- soning. Previous approaches to the pragmatics of syllogistic reasoning have reduced the interpretations of syllogistic arguments to the interpretations of the individual premises or quantifiers used in those premises \cite{Roberts2001}. For example, premises involving the quantifier “some” may be interpreted as implying some but not all. But that sort of reasoning will not produce the conclusion in the syllogism above. Instead, what is needed is a richer scope of pragmatic reasoning: Reasoning about why about the speaker constructed the argument as a whole. We formalize this notion as a Question Under Discussion (C. Roberts, 2004) in which a listener reasons about the most likely conclusion (i.e., A–C relation) given the premises heard. We find that this formulation of pragmatic reasoning is able to break critical symmetries that would result from logical reasoning (Figure 1). An early version of this model was presented by Tessler and Goodman (2014).}
 
 
