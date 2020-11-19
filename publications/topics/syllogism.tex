@@ -282,8 +282,8 @@ As a Bayesian model, our approach also naturally extends to explain how the cont
 
 Syllogistic reasoning involves two language understanding tasks: interpreting the premises of the syllogism and producing a conclusion.
 Each of these components could involve some kind of pragmatic reasoning.
-Our model uses recursive Bayesian reasoning that grounds out in a literal listener model who updates their beliefs about the state of the world given the literal (logical) meaning of the utterances. 
-We walk through our ontology of the state space and the literal meanings before describing the different models of premise interpretation and conclusion production. 
+We model pragmatic reasoning as recursive Bayesian reasoning that grounds out in a model of a literal listener who updates their beliefs about the state of the world given the literal (logical) meaning of the utterances. 
+We walk through our ontology of the state space and the literal meanings before describing the different pragmatic models of premise interpretation and conclusion production. 
 
 
 \subsection{Ontology and semantics}
@@ -316,15 +316,12 @@ The model is based on an ontology of situations represented by Venn diagrams cor
 \end{figure}
 
 Each Venn diagram contains eight regions $i \in R$, corresponding to the presence or absence of each of the three properties: $\{\{A,B,C\},$ $\{A,B,\neg C\},$ $\{A,\neg B,C\},$ $\{\neg A, B, C\},$ $\{A, \neg B, \neg C\},...\}$. (For simplicity, when possible, we will refer to regions by the properties that are present, omitting the absent properties; for example, $\{A, B, \neg C\}$ will be referred to as $AB$.)
-These regions can be thought of as unique object types (e.g., an object defined by having properties $A$ and $B$ but not $C$.\footnote{This diagram representation is analogous to a mental model in the style of \citeA{johnson1983mental} composed of object tokens (e.g., some objects which have properties $A$ or $B$, etc.) but where only unique object tokens are represented (e.g., there cannot be two objects which have the same set of properties).}
+These regions can be thought of as unique object types (e.g., an object defined by having properties $A$ and $B$ but not $C$) that are present in a situation.\footnote{This diagram representation is analogous to a mental model in the style of \citeA{johnson1983mental} composed of object tokens (e.g., some objects which have properties $A$ or $B$, etc.) but where only unique object tokens are represented (e.g., there cannot be two objects which have the same set of properties).}
 The empty region (or, the object type which has neither of the three properties: $\{\neg A, \neg B, \neg C\}$) does not impact the truth conditions of the quantifier sentences used in syllogisms, and hence, we omit this region and model only seven regions.
-Then, a situation (Venn diagram) $s \in S$ is composed of the set of object types (regions) that are present (e.g., $\{AB, BC, A\}$ is one possible state).
+Then, a state or situation (Venn diagram) $s \in S$ is composed of the set of object types (regions) that are present (e.g., $\{AB, BC, A\}$ is one possible state).
 The set of unique states has size $2^7 = 128$.
 %, though we exclude the state where all eight regions are empty (i.e., the state where there are no As, Bs, and Cs, but also no things that are not As, Bs, or Cs).
-
-Our model probabilistically generates states $s \in S$ by sampling a Bernoulli random variable for each of the $i \in R$ regions. 
-
-$$P(s) = \prod_{i \in R} P(A_{i}, B_{i}, C_{i}) $$%= (P(a) \cdot P(b) \cdot P(c)) ^n$$
+Our model probabilistically generates states $s \in S$ by sampling a Bernoulli random variable for each of the $i \in R$ regions: $P(s) = \prod_{i \in R} P(A_{i}, B_{i}, C_{i})$. %= (P(a) \cdot P(b) \cdot P(c)) ^n$$
 
 %\subsection{Semantics}
 The classical syllogisms are comprised by two premise arguments where each premise relates two properties via a quantifier. 
@@ -332,9 +329,9 @@ The quantifiers in classical syllogism are \emph{all}, \emph{some}, \emph{none},
 These quantifiers are typically presented in sentences such that \emph{none} is rendered as \emph{no} (e.g., No As are Bs) and \emph{not all} is rendered as \emph{some \_\_ are not} (e.g., Some As are not Bs).
 }
 We use the classic logical semantics of these quantifiers described in Table \ref{tab:sem}.
-\mht{CHECK THIS:
-We assume the statements involving \emph{all} and \emph{none} describe situations in which there exist objects that have the property, sometimes referred to as the ``existential presupposition'' (e.g., \emph{All A are B} is false if there are no As). 
-}
+%\mht{CHECK THIS:
+We assume the semantics of \emph{All As are Bs} describes a situation in which there exist objects that have the first property, sometimes referred to as the ``existential presupposition'' (e.g., \emph{All As are Bs} is false if there are no As, and hence \emph{All As are Bs} entails \emph{Some As are Bs}). 
+%}
 %: \emph{All As are Bs} entails that $\nexists (A \& \neg B)$;  \emph{Some As are Bs} entails that $\exists (A \& B)$; \emph{Some As are not Bs} entails that $\exists (A \& \neg B)$; \emph{No As are Bs} entails that $\nexists (A \& B)$.
 
 
@@ -385,24 +382,17 @@ L_0(s \mid u ) \propto P(s)\cdot \mathcal{L}(u, s)
 \noindent where $\mathcal{L}(u, s)$ is the lexicon that encodes the literal meanings of the quantified utterances used in syllogisms. 
 These meanings can resolve to deterministic outcomes (e.g., $\mathcal{L}(u, s) = 1$ if the utterance $u$ is true of $s$, and 0 otherwise). 
 In practice, however, we assume a small amount of noise $\phi$ in the semantics such that $\mathcal{L}(u, s) = 1$ with probability proportional to $1-\phi$ and if the utterance $u$ is true of $s$.
-In other words, we assume a continuously valued semantics such that $\mathcal{L}(u, s) \in [0, 1] \subset \mathbb{R}$ as introduced by \citeA{degen2020redundancy}.
+In other words, we assume a continuously valued semantics such that $\mathcal{L}(u, s) \in [0, 1] \subset \mathbb{R}$ as introduced by \citeA{degen2020redundancy} (i.e., if the utterance $u$ is true of state $s$ then $\mathcal{L}(u, s) \approx 1$ and if $u$ is false of $s$ then $\mathcal{L}(u, s) \approx 0$).
 
 The model of literal interpretation can be used to update the prior distribution on states (Venn diagrams) into a posterior distribution given the meaning of the premises of the syllogism. 
-For the interpretation of a syllogism, $u$ is composed of two utterances (the two syllogistic sentences): $u_1$ and $u_2$. 
+For the interpretation of a syllogism, $u$ is composed of two utterances (the two syllogistic premises): $u_1$ and $u_2$. 
 Belief updating proceeds by assuming both utterances are true: 
 \begin{equation}
 L_0(s \mid u_1,  u_2) \propto P(s)\cdot \mathcal{L}(u_1, s) \cdot \mathcal{L}(u_2, s) 
 \label{eq:L0premises}
 \end{equation}
 
-Equation \ref{eq:L0premises} defines a probability distribution over states (Venn diagrams) given the premises of the syllogism. 
-Logically valid syllogisms given rise to a distribution over states where a quantifier relationship between the conclusion terms of the syllogism are true in all possible states given the premises. 
-For example, in the logically valid syllogism  \emph{All As are Bs}, \emph{All Bs are Cs} (the ``Barbara'' syllogism), the relationship \emph{All As are Cs} is true in every possible state in which the premises are true; in particular, the region \emph{ABC} (an object which has all three properties) is true in every possible state (Figure \ref{fig:AAvenns}).
-On the other hand, the premises of logically invalid syllogisms tend to give rise to many possible states in which no particular syllogistic conclusion is true in every state; some conclusions are true in more states, however, than other conclusions.
-For example, in the logically invalid \emph{No As are Bs}, \emph{Some Bs are Cs}, the conclusion \emph{All As are Cs} is logically possible though is true in fewer states than \emph{No As are Cs} (Figure \ref{fig:EIvenns}).
-
-
-\begin{figure}[t]
+\begin{figure}[b]
 \centering
 \includegraphics[width = \textwidth]{figs/diagrams_allAB_allBC.pdf}
 \caption{Set of Venn diagrams (states) literally compatible with the premises of the logically valid syllogism: \emph{All As are Bs}, \emph{All Bs are Cs}. The conclusion relation \emph{All As are Cs} is true in every compatible state.}
@@ -410,8 +400,14 @@ For example, in the logically invalid \emph{No As are Bs}, \emph{Some Bs are Cs}
 \end{figure}
 
 
+Equation \ref{eq:L0premises} defines a probability distribution over states (Venn diagrams) given the premises of the syllogism. 
+Logically valid syllogisms given rise to a distribution over states where a quantifier relationship between the conclusion terms of the syllogism is true in all possible states given the premises. 
+For example, in the logically valid syllogism  \emph{All As are Bs}, \emph{All Bs are Cs} (the ``Barbara'' syllogism), the relationship \emph{All As are Cs} is true in every possible state in which the premises are true; in particular, the region \emph{ABC} (an object which has all three properties) is true in every possible state (Figure \ref{fig:AAvenns}).
+On the other hand, the premises of logically invalid syllogisms tend to give rise to many possible states in which no particular syllogistic conclusion is true in every state; some conclusions are true in more states, however, than other conclusions.
+For example, in the logically invalid \emph{No As are Bs}, \emph{Some Bs are Cs}, the conclusion \emph{All As are Cs} is logically possible though is true in fewer states than \emph{No As are Cs} (Figure \ref{fig:EIvenns}).
 
-\begin{figure}[b!]
+
+\begin{figure}[t]
 \centering
 \includegraphics[width = \textwidth]{figs/diagrams_noneAB_someBC.pdf}
 \caption{Set of Venn diagrams (states) literally compatible with the premises of the logically invalid syllogism: \emph{No As are Bs}, \emph{Some Bs are Cs}. No syllogistic conclusion is true in every compatible state.}
@@ -423,7 +419,7 @@ For example, in the logically invalid \emph{No As are Bs}, \emph{Some Bs are Cs}
 
 Understanding language often involves reasoning not only about the literal meaning of what was said but about why an interlocutor (the speaker) would bother to say what they said, which can lead to enriched interpretations beyond the literal meanings. 
 We can formalize this reasoning through a series of Bayesian models that recursively reason about one another, as developed in the Rational Speech Act (RSA) framework \cite{Frank2012a, goodman2016pragmatic, scontras2018probabilistic}.
-Concretely, we describe a pragmatic listener $L_1$ who reasons about a speaker $S_1$ who produces utterances in order to convey information to the literal listener (Equation \ref{eq:L0premises}):
+Concretely, we can describe a pragmatic listener $L_1$ who reasons about a speaker $S_1$ who produces utterances in order to convey information to the literal listener (Equation \ref{eq:L0premises}):
 
 \begin{align}
 L_1(s \mid u_1,  u_2)& \propto  P(s)\cdot S_1(u_1, u_2 \mid s)  \label{eq:L1} \\ 
@@ -431,10 +427,26 @@ S_1(u_1, u_2 \mid s) &\propto  \exp [ \alpha_1 \cdot \ln L_0(s \mid u_1,  u_2)] 
 \end{align}
 
 The definition of the pragmatic listener (Equation \ref{eq:L1}) mirrors that of the literal listener (Equation \ref{eq:L0}) except in that the likelihood is defined as the probability that a speaker $S_1$ would produce utterances (premises) $u_1$ and $u_2$ given a state $s$.
-Following standard practice in RSA modeling, the speaker is a soft-max rational agent (with degree of rationality $\alpha_1$) who produces utterances in order to convey information about the state $s$ to the literal listener.
-The normalization in Equation \ref{eq:S1} implies a normalization over a set of alternative utterances (i.e., the set of sentences that the speaker could have, but didn't, produce); in order case, the set of alternative utterances amounts to a set of alternative syllogistic premises that a speaker could have produced. 
-There are at least three sets of alternative premises that are \emph{a priori} plausible and we test our models on all three: (1) alternative premises that have the same ordering of terms (i.e., syllogisms of the same \emph{figure}), but whose quantified relation between the terms could be different (e.g., if the speaker says \emph{All As are Bs. All Bs are Cs.}, the alternative set is the set of syllogisms of the form \emph{Q As are Bs}. \emph{Q Bs are Cs.} where $Q \in \{all, some, \emph{not all}, none\}$); (2) alternative premises that differ either in the quantified relation between terms or the ordering of the terms, but not both (i.e., utterances with an edit-distance of 1); (3) the maximal set of alternative premises in which the quantifier and the ordering of terms could be different.
+Following standard practice in RSA modeling, the speaker is a soft-max rational agent (with degree of rationality $\alpha_1$) who produces utterances in order to convey information about the state $s$ to the literal listener (formalized by the negative surprisal of state given the utterances: $\ln L_0(s \mid u_1,  u_2)$).
 
+\paragraph{Alternative utterances}
+The proportionality in Equation \ref{eq:S1} implies a normalization over a set of alternative utterances (i.e., the set of sentences that the speaker could have produced); in our case, the set of alternative utterances amounts to a set of alternative syllogistic premises that a speaker could have produced. 
+There are at least three sets of alternative premises that are \emph{a priori} plausible and we test our models on all three: (1) alternative premises that have the same ordering of terms (i.e., syllogisms of the same form, or ``figure''), but whose quantified relation between the terms could be different (e.g., if the speaker says \emph{All As are Bs / All Bs are Cs}, the alternative set is the set of syllogisms of the form \emph{Q As are Bs} / \emph{Q Bs are Cs} where $Q \in \{all, some, \emph{not all}, none\}$); (2) alternative premises that differ either in the quantified relation between terms or the ordering of the terms, but not both (i.e., utterances with an edit-distance of 1); (3) the maximal set of alternative premises in which the quantifier and the ordering of terms could be different.
+
+\paragraph{Question Under Discussion (QUD)}
+When deciding what to say, speakers may choose their utterances to convey information about a particular topic of relevance and listeners may assume that speakers had a particular topic of relevance in mind when interpreting the utterances heard. 
+We formalize this topic as a Question Under Discussion (or, QUD), which acts as a projection of the state space onto a lower-dimensional representation of the state space \cite{Roberts2004QUD, kao2014nonliteral}.
+In particular, we consider the QUD when interpreting the premises of a syllogism (\emph{As are Bs}, \emph{Bs are Cs}) to be about the relationship of the terms of the conclusion (As and Cs).
+Indeed, this relationship is the explicit question asked of participants (\emph{What relationship between As and Cs follows from the premises?}).
+In our model, this QUD function acts by transforming a three circle Venn diagram (A, B, C) into a two circle diagram (A, C): $Q(\{A,B,C\}) = \{A,C\} $.
+The pragmatic listener who interprets the premises relative to this QUD is given by a set of equations:
+
+\begin{align}
+L_1(s \mid u_1,  u_2, Q)& \propto  P(s)\cdot S_1(u_1, u_2 \mid s, Q)  \label{eq:L1q} \\ 
+S_1(u_1, u_2 \mid s, Q) &\propto  \exp [ \alpha_1 \cdot \ln L_0(Q(s) \mid u_1,  u_2, Q)]  \label{eq:S1q} \\
+L_0(Q(s) \mid u_1,  u_2) & = \sum_{s \in \mathcal{S}}  Q(s) * L_0(s\mid u_1,  u_2) \label{eq:L0q}
+\end{align} 
+\mht{is this the best way to write out the QUD model?}
 
 %\mht{OPEN QUESTION being explored with modeling... what alternative utterances to use for the speaker:}
 %Here we assume that the alternative set is all syllogisms with the same ordering of terms 
