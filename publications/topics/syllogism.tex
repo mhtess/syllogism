@@ -14,7 +14,7 @@
 \usepackage{centernot}
 
 \usepackage{tikz}
-%\usepackage{subfigure}
+% \usepackage{subfigure}
 \usetikzlibrary{bayesnet}
 
 % these packages are needed to insert results 
@@ -392,6 +392,23 @@ L_0(s \mid u_1,  u_2) \propto P(s)\cdot \mathcal{L}(u_1, s) \cdot \mathcal{L}(u_
 \label{eq:L0premises}
 \end{equation}
 
+
+%\begin{figure*}[b]
+%    \centering
+%    \begin{subfigure}[t]{0.75\textwidth}
+%        \centering
+%        \includegraphics[width = 1\textwidth]{figs/diagrams_allAB_allBC.pdf}
+%        \caption{Set of states literally compatible with the premises. The conclusion relation \emph{All As are Cs} is true in every compatible state.}
+%    \end{subfigure}%
+%    ~ 
+%    \begin{subfigure}[t]{0.25\textwidth}
+%        \centering
+%        \includegraphics[width = 0.8\textwidth]{figs/venn_AA1_exp.pdf}
+%        \caption{Literal interpreter's posterior expectation. }% over the regions of the Venn diagram implied by the premises.}
+%    \end{subfigure}
+%    \caption{States (Venn diagrams) implied by the logically valid syllogism: \emph{All As are Bs}, \emph{All Bs are Cs}. Opacity of region represents posterior probability.}
+%\end{figure*}
+
 \begin{figure}[b]
 \centering
 \includegraphics[width = \textwidth]{figs/diagrams_allAB_allBC.pdf}
@@ -413,6 +430,32 @@ For example, in the logically invalid \emph{No As are Bs}, \emph{Some Bs are Cs}
 \caption{Set of Venn diagrams (states) literally compatible with the premises of the logically invalid syllogism: \emph{No As are Bs}, \emph{Some Bs are Cs}. No syllogistic conclusion is true in every compatible state.}
 \label{fig:EIvenns}
 \end{figure}
+
+
+%\begin{figure*}[t]
+%    \centering
+%    \begin{subfigure}[t]{0.75\textwidth}
+%        \centering
+%        \includegraphics[width = 1\textwidth]{figs/diagrams_noneAB_someBC.pdf}
+%        \caption{Set of states literally compatible with the premises. No syllogistic conclusion is true in every compatible state.}
+%    \end{subfigure}%
+%    ~ 
+%    \begin{subfigure}[t]{0.25\textwidth}
+%        \centering
+%        \includegraphics[width = 0.8\textwidth]{figs/venn_EI1_exp.pdf}
+%        \caption{Literal interpreter's posterior expectation. }% over the regions of the Venn diagram implied by the premises.}
+%    \end{subfigure}
+%    \caption{States (Venn diagrams) implied by the logically invalid syllogism: \emph{No As are Bs}, \emph{Some Bs are Cs}. Opacity of region represents posterior probability.}
+%    \label{fig:EIvenns}
+%\end{figure*}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width = \textwidth]{figs/venn_literal_AA1_AI1_EI1_exp.pdf}
+\caption{Literal interpreter model's posterior expectation over the regions of the state (Venn diagram) implied by three syllogisms. Darker opacity denotes higher posterior probability.}
+\label{fig:EIvenns}
+\end{figure}
+
 
 
 \subsubsection{Pragmatic interpretation of premises}
