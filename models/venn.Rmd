@@ -91,7 +91,7 @@ format_sentence = function(sentence){
       )
     formatted_sentences <- c(formatted_sentences, formatted_sentence)
   }
-  paste(formatted_sentences, collapse = "/")
+  paste(formatted_sentences, collapse = "\n")
 }
 
 make_venn_digram <- function(df, utt){
@@ -104,7 +104,7 @@ make_venn_digram <- function(df, utt){
                         breaks = c(0, 500, 1000),
                         labels = c(0, 0.5, 1),
                         name = "Probability")+
-    guides(fill = F)+
+    # guides(fill = F)+
     theme(plot.title = element_text(hjust = 0.5))
 }
 ```
@@ -150,12 +150,48 @@ wp.rs.samples <- bind_rows(
 #   get_samples_from_df(wp.rs, "None;A;B", "pragmatic")#,
 #   # get_samples_from_df(wp.rs, "None;B;A")
 # )
+```
 
+Literal interpretations
 
+```{r}
 all_plots <- map(unique(wp.rs.samples$utterance), 
                  function(x){ make_venn_digram (
                    wp.rs.samples %>% filter(src == "literal"), x 
                    ) } )
+
+
+legend <- cowplot::get_legend(
+  # create some space to the left of the legend
+  all_plots[[1]] + theme(legend.box.margin = margin(0, 0, 0, 12))
+)
+
+all_plots[[1]] + ggtitle("")
+ggsave("../publications/topics/figs/venn_AA1_exp.pdf", width = 3, height = 2.5)
+
+all_plots[[3]] + ggtitle("")
+ggsave("../publications/topics/figs/venn_EI1_exp.pdf", width = 3, height = 2.5)
+# plot_grid(prow, legend, rel_widths = c(3, .4))
+cowplot::plot_grid(
+  cowplot::plot_grid(
+    all_plots[[1]] + theme(legend.position="none"),
+    all_plots[[2]] + theme(legend.position="none"),
+    all_plots[[3]] + theme(legend.position="none"), nrow = 1),
+  legend,
+  rel_widths = c(3, .4),
+  # cowplot::plot_grid(plotlist = all_plots_prag_head, nrow = 1)+ 
+  #   theme(plot.margin = unit(c(1,0,0,0), "lines")),
+  nrow = 1, #labels = c("literal", "pragmatic state", "pragmatic qud"),# "pragmatic head"),
+  label_size = 12,
+  label_x = 0, #label_y = 0,
+  hjust = -0.15#, #vjust = -0.2
+)
+
+ggsave("../publications/topics/figs/venn_literal_AA1_AI1_EI1_exp.pdf", width = 9, height = 2.5)
+
+```
+
+```{r}
 
 all_plots_prag_state <- map(unique(wp.rs.samples$utterance), 
                  function(x){ make_venn_digram (
@@ -245,6 +281,62 @@ wp.rs <- webppl(
   # data_var = "syllogism"
 )
 
-data.frame(wp.rs$`A;AC;C`)
+marginalize_speaker_dist = function(joint_dist, venn, qud){
+  return (bind_rows(
+  data.frame(wp.rs[[venn]][[qud]]) %>%
+    group_by(support.1) %>%
+    summarize(marginalProb = sum(probs),
+              premise_num = '1') %>%
+    ungroup() %>%
+    rename(premise = support.1),
+  data.frame(wp.rs[[venn]][[qud]]) %>%
+    group_by(support.2) %>%
+    summarize(marginalProb = sum(probs),
+              premise_num = '2') %>%
+    ungroup() %>%
+    rename(premise = support.2)
+  ) %>%
+  mutate(
+    venn = venn,
+    qud = qud
+  ))
+}
+
+
+venns = names(wp.rs)
+quds = names(wp.rs[[venns[1]]])
+
+wp.rs.s.marginals <- bind_rows(
+  map(venns, function(venn){
+    map(quds, function(qud){
+      return(marginalize_speaker_dist(wp.rs, venn, qud))
+    })
+  })
+)
+```
+
+
+Speaker marginals on premises
+
+```{r}
+wp.rs.s.marginals %>%
+  rowwise() %>%
+  mutate(quantifier = str_split(premise, ";")[[1]][1],
+         premise_num = factor(premise_num, levels = c("1", "2"),
+                              labels = c("As are Bs", "Bs are Cs")),
+         qud = factor(qud, levels = c("stateQud", "acQud"),
+                      labels = c("State QUD", "Conclusion QUD")),
+         quantifier = factor(quantifier, levels = c("All", "Some",
+                                                    "Some not", "No"))) %>%
+  ggplot(., aes( fill = quantifier, y = marginalProb,
+                               x = venn, group = quantifier))+
+  geom_col(position = position_dodge(), color = 'black')+
+  facet_grid(
+    qud ~ premise_num
+  )+
+  viridis::scale_fill_viridis(discrete = T)+
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)
+  )
 ```
 

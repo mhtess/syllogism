@@ -904,20 +904,20 @@ var literal_pragmatics = {
 //     literal: marginalizeVennForR(
 //       venn_interpreter(syllogism, literal_pragmatics, false)
 //     ),
-//     pragmatic_state: marginalizeVennForR(pragmatic_interpreter(syllogism, {
-//       modular: true,
-//       interpretation: true,
-//       production: false,
-//       qud: "state",
-//       alternatives: "quantifier"
-//     })),
-//     pragmatic_AC: marginalizeVennForR(pragmatic_interpreter(syllogism, {
-//       modular: true,
-//       interpretation: true,
-//       production: false,
-//       qud: "AC",
-//       alternatives: "quantifier"
-//     }))//,
+//     // pragmatic_state: marginalizeVennForR(pragmatic_interpreter(syllogism, {
+//     //   modular: true,
+//     //   interpretation: true,
+//     //   production: false,
+//     //   qud: "state",
+//     //   alternatives: "quantifier"
+//     // })),
+//     // pragmatic_AC: marginalizeVennForR(pragmatic_interpreter(syllogism, {
+//     //   modular: true,
+//     //   interpretation: true,
+//     //   production: false,
+//     //   qud: "AC",
+//     //   alternatives: "quantifier"
+//     // }))//,
 //     // pragmatic_head: marginalizeVennForR(pragmatic_interpreter(syllogism, {
 //     //   modular: true,
 //     //   interpretation: true,
@@ -940,35 +940,48 @@ var syllogism = [
     {"quantifier":"all", "p1":"A","p2":"B"},
     { "quantifier":"some", "p1":"B","p2":"C"}
   ]
-
-var L0 = venn_interpreter(syllogism, literal_pragmatics, false)
-
-
+//
+// var L0 = venn_interpreter(syllogism, literal_pragmatics, false)
+//
+//
 var vennsForS1 = [
   "A;AC;C",
   "AC",
   "A;AC",
   "AC;C"
 ]
-
+//
 var marginalizePremisesForR = function(dist){
   Infer({model: function(){
     var prems = sample(dist);
-    map(formatSentence, prems)
+    return map(formatSentence, prems)
     // _.fromPairs(map(function(x){ return [x.label, x.truth_val] }, venn))
   }})
 }
-
-// var qudVal = qudFn(L0.MAP().val, "state")
-//  qudFn(venn, pragmatics.qud)
-// var qudVal = vennsForS1[0]
+//
+// // var qudVal = qudFn(L0.MAP().val, "state")
+// //  qudFn(venn, pragmatics.qud)
+// // var qudVal = vennsForS1[0]
 _.fromPairs(map(function(qudVal){
   // display(qudVal)
-  return [qudVal, marginalizePremisesForR(argument_speaker(qudVal, syllogism, {
-    modular: true,
-    interpretation: true,
-    production: false,
-    qud: "state",
-    alternatives: "quantifier"
-  }, false)) ]
+
+  var returnVal = {
+    stateQud : marginalizePremisesForR(argument_speaker(qudVal, syllogism, {
+      modular: true,
+      interpretation: true,
+      production: false,
+      qud: "state",
+      alternatives: "quantifier"
+    }, false)),
+    acQud: marginalizePremisesForR(argument_speaker(qudVal, syllogism, {
+      modular: true,
+      interpretation: true,
+      production: false,
+      qud: "AC",
+      alternatives: "quantifier"
+    }, false))
+  }
+
+  return [qudVal, returnVal]
+
 }, vennsForS1))
