@@ -217,9 +217,14 @@ var marginalizeQUD_omitRegions = function(dist, region_vals){
   })
 }
 
+var headPropQUD = function(state, sentence){
+  return vennToString(filter(function(s){ s["label"].indexOf(sentence.p1) > -1 }, state))
+}
+
 var qudFn = function(state, qud){
   return qud == "state" ? vennToString(state) :
         _.isArray(qud) ? qudOmitRegions(state, qud) :
+        _.isObject(qud) ? headPropQUD(state, qud) :
                         qudToString(state, qud)
 
 }
@@ -620,7 +625,7 @@ var bda_model = function(){
   // TO DO: CHANGE TO 7 REGIONS
   var regionProbs = repeat(7, function(){ return uniformDrift({a: 0, b: 1, width: 0.1}) })
   // display(regionProbs)
-  var firstTermPrefWeight  =  uniformDrift({a: 1, b: 5, width: 0.5}) // 1 + exponential({a:1}) //uniformDrift({a: 1, b: 10, width: 1})
+  var firstTermPrefWeight  = uniformDrift({a: 1, b: 5, width: 0.5}) // 1 + exponential({a:1}) //uniformDrift({a: 1, b: 10, width: 1})
   // display(firstTermPrefWeight)
   var nvcWeight = uniformDrift({a: 0, b: 2, width: 0.25}) //exponential({a: 1})
   // display(nvcWeight)
@@ -732,7 +737,7 @@ var bda_model = function(){
         // display('enter l0')
         // var LiteralDist = marginalizeVennToStr(venn_interpreter(premises, qud))
         var LiteralDist = venn_interpreter(premises, pragmatics, state_prior)
-        // display(JSON.stringify(LiteralDist))
+        // display(JSON.stringify(LiteralDist.support()))
         // display('l0 score ' + LiteralDist.score(qudVal))
         factor(speakerOptimality.alpha_1 * LiteralDist.score(qudVal))
         return premises
@@ -765,11 +770,7 @@ var bda_model = function(){
         var qud = "AB"
         var venn = sample(venn_prior)
         var qudVal = qudFn(venn, qud)
-        // display(qudVal)
         var SpeakerDist = argument_speaker(qudVal, [premises[0]], pragmatics, false)
-        // display(JSON.stringify(SpeakerDist))
-        // display(JSON.stringify(premises[0]))
-        // display('s1 score ' + SpeakerDist.score(premises[0]))
 
         observe(SpeakerDist, [premises[0]])
         return venn
@@ -778,26 +779,10 @@ var bda_model = function(){
       var qud = sequentialQUDs[formatSentence(premises[0])]
       var qudDist = marginalizeQUD_omitRegions(posterior_one, qud)
 
-      // display(formatSentence(premises[0]))
-      // display(qud)
-      // var regionExpectations_posterior = regionExpectationFromVennDist(posterior_one)
-      // var keys = map(first, regionExpectations_posterior)
-      // // display(regionExpectations_prior)
-      // // display(regionExpectations_posterior)
-      // var qud = filter(function(k){
-      //   _.fromPairs(regionExpectations_posterior)[k] >
-      //   _.fromPairs(regionExpectations_prior)[k]
-      // }, keys)
-      // display(premises[0])
-      // display(qud)
-
       // display('enter posterior two')
       var posterior_two = Infer({model: function() {
           var qudVal = sample(qudDist) // ;
 
-          // var venn = sample(posterior_one)
-          // var qudVal = qudOmitRegions(venn, qud)
-          // display(qudVal)
           var prgmtics = {
             modular: pragmatics.modular,
             interpretation: pragmatics.interpretation,
@@ -814,6 +799,52 @@ var bda_model = function(){
 
   }, 10000)
 
+
+  var sequential_pragmatic_interpreter_headQUD = cache(function(premises, pragmatics) {
+
+    var posterior_one = Infer({model: function() {
+        var qud = premises[0]
+        var venn = sample(venn_prior)
+        var qudVal = qudFn(venn, qud)
+        var prgmtics = {
+          modular: pragmatics.modular,
+          interpretation: pragmatics.interpretation,
+          production: pragmatics.production,
+          qud: premises[0]
+        }
+        var SpeakerDist = argument_speaker(qudVal, [premises[0]], prgmtics, false)
+        // display(JSON.stringify(SpeakerDist))
+        observe(SpeakerDist, [premises[0]])
+        return venn
+      }, method: "enumerate"})
+
+    var posterior_two = Infer({model: function() {
+        // var qudVal = sample(qudDist) // ;
+        var qud = premises[1]
+        var venn = sample(posterior_one)
+        var qudVal = qudFn(venn, qud)
+        // var qudVal = qudOmitRegions(venn, qud)
+        // display(qudVal)
+        var prgmtics = {
+          modular: pragmatics.modular,
+          interpretation: pragmatics.interpretation,
+          production: pragmatics.production,
+          qud: premises[1]
+        }
+        // var SpeakerDist = single_premise_speaker(qudVal, premises[1], qudDist, prgmtics.qud)
+        var SpeakerDist = argument_speaker(qudVal, [premises[1]], prgmtics, false)
+        // display(JSON.stringify(SpeakerDist))
+        // displayDist(SpeakerDist)
+        observe(SpeakerDist,[premises[1]])
+        return  pragmatics.production ? vennToString(venn) : venn
+      }, method: "enumerate"})
+
+      return posterior_two
+
+  })
+
+
+
   var modular_pragmatic_reasoner =  function(premises, pragmatics, first_term_preference) {
     var qud = sequentialQUDs[formatSentence(premises[0])]
     var qudDist_prior = pragmatics.qud == "seq" ?
@@ -826,8 +857,10 @@ var bda_model = function(){
         var PremiseInterpretation = pragmatics.interpretation ?
               pragmatics.qud == "seq" ?
             sequential_pragmatic_interpreter_qudOmitRegions(premises, pragmatics) :
-            pragmatic_interpreter(premises, pragmatics) :
-            venn_interpreter(premises, pragmatics, false)
+              pragmatics.qud == "head" ?
+            sequential_pragmatic_interpreter_headQUD(premises, pragmatics) :
+              pragmatic_interpreter(premises, pragmatics) :
+              venn_interpreter(premises, pragmatics, false)
 
         // display('exit interpretation')
         // {"modular":"modular","interpretation":"literal","production":"pragmatic","qud":"state"}
@@ -1018,7 +1051,7 @@ var bda_model = function(){
 
         mapData({data: _.map(data_filtered, "conclusion")}, function(d){
           var scr = rsaPredictions.score(d)
-
+          // display(scr)
           scr == -Infinity ? display(formatSentence(prem_1) + " _ " + formatSentence(prem_2) + " _ " + d) : null
 
           observe(rsaPredictions, d)
@@ -1065,7 +1098,8 @@ var bda_model = function(){
 // var totalIterations = 1000, lag =  1;
 // var totalIterations = 5000, lag =  0;
 // var totalIterations = 500, lag =  0;
-var totalIterations = 5000, lag =  0;
+var totalIterations = 10000, lag =  1;
+// var totalIterations = 5, lag =  0;
 
 var samples = totalIterations/(lag + 1), burn = totalIterations / 2;
 
