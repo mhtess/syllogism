@@ -281,8 +281,10 @@ As a Bayesian model, our approach also naturally extends to explain how the cont
 %\section{Bayesian argument strength in syllogistic reasoning}
 
 Syllogistic reasoning involves two language understanding tasks: interpreting the premises of the syllogism and producing a conclusion.
-Each of these components could involve some kind of pragmatic reasoning.
-We model pragmatic reasoning as recursive Bayesian reasoning that grounds out in a model of a literal listener who updates their beliefs about the state of the world given the literal (logical) meaning of the utterances. 
+Each of these components could involve pragmatic reasoning.
+That is, human syllogistic reasoning could involve the literal interpretation of premises and the literal production of conclusions, pragmatic interpretation of premises and literal production of conclusions, literal interpretation and pragmatic production of conclusions, or pragmatic interpretation of premises and pragmatic production of conclusions. 
+As we will see, the pragmatic interpretation of premises further depends upon the implicit topic of relevance or Question Under Discussion \cite{Roberts2004QUD}.
+In all of our computational models, we model pragmatic reasoning as recursive Bayesian reasoning that grounds out in a model of a literal listener who updates their beliefs about the state of the world given the literal (logical) meaning of the utterances. 
 We walk through our ontology of the state space and the literal meanings before describing the different pragmatic models of premise interpretation and conclusion production. 
 
 
@@ -449,12 +451,30 @@ For example, in the logically invalid \emph{No As are Bs}, \emph{Some Bs are Cs}
 %    \label{fig:EIvenns}
 %\end{figure*}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width = \textwidth]{figs/venn_literal_AA1_AI1_EI1_exp.pdf}
-\caption{Literal interpreter model's posterior expectation over the regions of the state (Venn diagram) implied by three syllogisms. Darker opacity denotes higher posterior probability.}
-\label{fig:EIvenns}
-\end{figure}
+%\begin{figure}[t]
+%\centering
+%\includegraphics[width = \textwidth]{figs/venn_literal_AA1_AI1_EI1_exp_wQUD.pdf}
+%\caption{Literal interpreter model's posterior expectation over the regions of the (i) full state (Venn diagram) and (ii) Question Under Discussion (A-C) implied by three syllogisms. Darker opacity denotes higher posterior probability.}
+%\label{fig:EIvenns}
+%\end{figure}
+
+
+\begin{figure*}[b]
+    \centering
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width = 0.85\textwidth]{figs/venn_literal_AA1_AI1_EI1_exp.pdf}
+%        \caption{Set of states literally compatible with the premises. The conclusion relation \emph{All As are Cs} is true in every compatible state.}
+    \end{subfigure}
+    
+    \begin{subfigure}[t]{\textwidth}
+        \centering
+        \includegraphics[width = 0.85\textwidth]{figs/venn_literal_AA1_AI1_EI1_exp_qud.pdf}
+%        \caption{Literal interpreter's posterior expectation. }% over the regions of the Venn diagram implied by the premises.}
+    \end{subfigure}
+    \caption{\small Literal interpreter model's posterior expectation over the regions of the (i) Full State (Venn diagram) and (ii) Question Under Discussion (A-C) implied by three syllogisms. The A-C Question Under Discussion reduces the dimensionality of the state and blurs distinctions between different Venn diagrams. Darker opacity denotes higher posterior probability.}
+    \label{fig:lit_state_qud}
+\end{figure*}
 
 
 
@@ -478,10 +498,13 @@ There are at least three sets of alternative premises that are \emph{a priori} p
 
 \paragraph{Question Under Discussion (QUD)}
 When deciding what to say, speakers may choose their utterances to convey information about a particular topic of relevance and listeners may assume that speakers had a particular topic of relevance in mind when interpreting the utterances heard. 
-We formalize this topic as a Question Under Discussion (or, QUD), which acts as a projection of the state space onto a lower-dimensional representation of the state space \cite{Roberts2004QUD, kao2014nonliteral}.
-In particular, we consider the QUD when interpreting the premises of a syllogism (\emph{As are Bs}, \emph{Bs are Cs}) to be about the relationship of the terms of the conclusion (As and Cs).
-Indeed, this relationship is the explicit question asked of participants (\emph{What relationship between As and Cs follows from the premises?}).
-In our model, this QUD function acts by transforming a three circle Venn diagram (A, B, C) into a two circle diagram (A, C): $Q(\{A,B,C\}) = \{A,C\} $.
+We formalize this topic as a Question Under Discussion (or, QUD), which acts as a function that projects the state space onto a lower-dimensional representation of the state space \cite{Roberts2004QUD, kao2014nonliteral}.
+Though QUDs may not be the explicit question asked of a person \cite<e.g.,>{}, in the context of a syllogistic reasoning problem, the most natural QUD is the explicit question asked of participants: What relationship between As and Cs follows from the premises?
+In particular, we consider the QUD when interpreting the premises of a syllogism (\emph{As are Bs}, \emph{Bs are Cs}) to be about the
+In our model, this QUD function acts by transforming a three circle Venn diagram (A, B, C) into a two circle diagram (A, C): $Q(\{A,B,C\}) = \{A,C\}$.
+Example results of this transformation can be seen in Figure \ref{fig:lit_state_qud}(ii). 
+
+
 The pragmatic listener who interprets the premises relative to this QUD is given by a set of equations:
 
 \begin{align}
@@ -491,8 +514,8 @@ L_0(Q(s) \mid u_1,  u_2) & = \sum_{s \in \mathcal{S}}  Q(s) * L_0(s\mid u_1,  u_
 \end{align} 
 \mht{is this the best way to write out the QUD model?}
 
-%\mht{OPEN QUESTION being explored with modeling... what alternative utterances to use for the speaker:}
-%Here we assume that the alternative set is all syllogisms with the same ordering of terms 
+
+
 \subsection{Producing a conclusion}
 
 The second component of a syllogistic reasoning model is a model of conclusion production. 
@@ -569,7 +592,7 @@ R_1(u_3 \mid u_1,  u_2) \propto  \exp [ \alpha_2 \cdot \text{KL}({R_1(s) \mid \m
 
 \section{Modeling the Ragni et al. (2019) data set}
 
-We test our model using a dataset published by \citeA{ragni2019does}. The data set consists of the results of a web experiment in which participants ($n = 139$) provided conclusions to all 64 syllogisms. In the experiment, participants completed all syllogistic reasoning problems after a brief training phase. Participants responded by selecting one of the nine possible responses for the conclusion of the syllogism (4 quantifier choices x 2 term orders + 1 \emph{nothing follows}).
+We test our models using a dataset published by \citeA{ragni2019does}. The data set consists of the results of a web experiment in which participants ($n = 139$) provided conclusions to all 64 syllogisms. In the experiment, participants completed all syllogistic reasoning problems after a brief training phase. Participants responded by selecting one of the nine possible responses for the conclusion of the syllogism (4 quantifier choices x 2 term orders + 1 \emph{nothing follows}).
 Participants' responses to four example syllogisms are shown in Figure \ref{fig:ragniData}).
 
 %\begin{figure}[th]
@@ -579,6 +602,11 @@ Participants' responses to four example syllogisms are shown in Figure \ref{fig:
 %\label{fig:ragniData}
 %\end{figure}
 
+\subsection{Model space}
+
+We consider a space of six possible Rational Speech Act models of syllogistic reasoning, which vary in how the interpret premises and produce conclusions. 
+Premises could be interpreted literally (Eq.~\ref{eq:L0}), pragmatically with respect to a full state (Venn diagram) QUD (Eq.~\ref{eq:L1}), or pragmatically with respect to a Question Under Discussion that focuses on the relationship between the conclusion terms of the syllogism (Eq.~\ref{eq:L1q}).
+Conclusions can be produced either literally (Eq.~\ref{eq:R0}) or informatively (Eq.~\ref{eq:R1}).
 
 
 \subsection{Bayesian data analysis}
@@ -714,9 +742,26 @@ We assessed convergence through visual comparison of the posterior distributions
 \paragraph{Model comparison}
 
 
+\subsection{Comparison to other theories}
+
+We found the model that accommodated the human syllogistic reasoning data set with highest quantitative accuracy was that which interpreted the premises pragmatically with respect to a Question Under Discussion focused on the relationship between the conclusion terms and which produced conclusions in an informative manner. 
+Our modeling approach is a Computational or Rational Level of analysis model \cite{Anderson, Marr} that seeks to describe the computations that underly human syllogistic reasoning without stipulating a precise implementation of such a reasoning process. 
+Many other theories of syllogistic reasoning instead consider the process by which a human reasoner solves a syllogism.
+The two most influential theories of human syllogistic reasoning are the Mental Models Theory \cite{classicJL, mReasonerPaper} and the Probability Heuristics Model \cite{PHM}, each of which share features with our probabilistic pragmatics approach. 
+
+\subsubsection{Mental Models}
+
+The Mental Models Theory considers reasoning over a set of iconic models, in which individual entities are represented explicitly, not unlike our state space of Venn Diagrams. 
+A recent implementation of this theory (the mReasoner model) is also probabilistic in nature, in that the model determines the number of objects to represent in the model by sampling (e.g., from a Poisson distribution). 
+
+\subsubsection{Probability Heuristics} 
 
 
-\section{Experiments}
+\subsubsection{Quantitative comparison}
+
+
+
+% \section{Experiments}
 
 \section{Discussion}
 
