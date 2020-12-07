@@ -627,7 +627,7 @@ var bda_model = function(){
   // display(regionProbs)
   var firstTermPrefWeight  = uniformDrift({a: 1, b: 5, width: 0.5}) // 1 + exponential({a:1}) //uniformDrift({a: 1, b: 10, width: 1})
   // display(firstTermPrefWeight)
-  var nvcWeight = uniformDrift({a: 0, b: 2, width: 0.25}) //exponential({a: 1})
+  var nvcWeight = 1//uniformDrift({a: 0, b: 2, width: 0.25}) //exponential({a: 1})
   // display(nvcWeight)
 
   var makeConclusionPrior = cache(function(preferred_first_term){
@@ -1073,7 +1073,7 @@ var bda_model = function(){
   query.add(["parameter", "speakerOptimality", "alpha_2", -99], speakerOptimality.alpha_2)
   query.add(["parameter", "noise", -99, -99], noise)
   query.add(["parameter", "firstTermPreference", -99, -99], firstTermPrefWeight)
-  query.add(["parameter", "nvcWeight", -99, -99], nvcWeight)
+  // query.add(["parameter", "nvcWeight", -99, -99], nvcWeight)
 
 
   var xkh = map2(function(region, priorProb) {
