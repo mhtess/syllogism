@@ -752,9 +752,12 @@ The two most influential theories of human syllogistic reasoning are the Mental 
 \subsubsection{Mental Models}
 
 The Mental Models Theory considers reasoning over a set of iconic models, in which individual entities are represented explicitly, not unlike our state space of Venn Diagrams. 
-A recent implementation of this theory (the mReasoner model) is also probabilistic in nature, in that the model determines the number of objects to represent in the model by sampling (e.g., from a Poisson distribution). 
+The reasoning process under this theory proceeds by first constructing a the mental model, proposing a conclusion that can be drawn from such a model, and then engaging in a search for counterexamples to that conclusion; if a counterexample is found, either the mental model is revised and the search for a conclusion continues or the reasoner concludes \emph{nothing follows}. 
+Here we compare to a recent implementation of this theory (the mReasoner model), which is also probabilistic in nature (e.g., the model determines the number of objects to represent in the model by sampling  from a Poisson distribution). 
 
 \subsubsection{Probability Heuristics} 
+
+The Probability Heuristics model of \citeA{Chater1999} views human syllogistic reasoning as a process of determining probabilistically valid (``p-valid'') conclusions, which can be approximated through a number of heuristics. 
 
 
 \subsubsection{Quantitative comparison}
