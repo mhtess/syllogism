@@ -757,12 +757,29 @@ Here we compare to a recent implementation of this theory (the mReasoner model),
 
 \subsubsection{Probability Heuristics} 
 
-The Probability Heuristics model of \citeA{Chater1999} views human syllogistic reasoning as a process of determining probabilistically valid (``p-valid'') conclusions, which can be approximated through a number of heuristics. 
-
+The Probability Heuristics model of \citeA{Chater1999} seeks to account for human syllogistic reasoning as a process of determining probabilistically valid (``p-valid'') conclusions, which can be approximated through a number of heuristics. 
+Two heuristics generate candidate quantifiers for the conclusion, which use a notion of informativity for which \citeA{Chater1999} define a rank ordering: \emph{all} $>$ \emph{some} $>$ \emph{none} $>$ \emph{some...not}.  
+The ``min-heuristic'' takes the quantifier of the least informative premise to be a potential conclusion quantifier and the ``p-entailment heuristic'' further allows for a quantifier that is entailed by the ``min-heuristic'' quantifier to also be a candidate quantifier for the conclusion (e.g., is \emph{all} is generated from the ``min-heuristic'', \emph{some} will be generated from the ``p-entailment heuristic''). 
+A third heuristic (``attachment'') determines the ordering of the terms in the conclusion (A--C vs. C--A): this heuristic stipulates that the subject term of the conclusion should match the subject term of the least-informative premise, when allowable. 
+Two more parameters determine the confidence (or, probability) of each the candidate conclusions. 
+Foremost, the ``max-heuristic'' stipulates the the probability of a candidate conclusion is proportional to the informativity of the most informative premise (a free parameter is fit to define the quantitative informativity of each quantifier). 
+The ``O-heuristic'' additionally down weights conclusions that use the ``some...not'' quantifier.
 
 \subsubsection{Quantitative comparison}
 
+To compare the quantitative accuracy of these alternatives theories to our own, we analyze the results of a recent study of these theories which focused on modeling the behavior of individual participants in the syllogistic reasoning task \cite{riesterer2020models}.
+This study explored the predictive capabilities of the mReasoner and Probability Heuristics theories by analyzing the parameters of the models as individual-level parameters which could vary among participants (as well as the group-level version of the model, in which a single set of parameters governs the behavior of the population of participants). 
+The parameters of these models were fit to the same data set from \citeA{ragni2019does} that we modeled above with the Rational Speech Act models.\footnote{The predictions of these models were accessed via the companion repository to the paper: \url{https://github.com/nriesterer/cogsci-individualization}.}
 
+The individual-level parameterization of the models use a different set of parameters for each of the 139 participants in the task.
+The group-level version of the mReasoner model has 4 parameters and PHM has 5.
+Their corresponding individual-level models have 556 ($4\times 139$) and 695 ($5 \times 139$) parameters.\footnote{We discuss model complexity here in a coarse-grained manner. The PHM parameters in the \citeA{riesterer2020models} implementation are binary and thus do not add to model complexity in the same way as continuous parameters do. Still, we think that the approximate complexity of the models can be appreciated by their order-of-magnitude difference in the number of the parameters.}
+Our Rational Speech Act models have approximately 10 parameters.
+
+%For the : these models  and our Rational Speech Act models (~10 parameters).
+
+
+%  as models of individual reasoners 
 
 % \section{Experiments}
 
