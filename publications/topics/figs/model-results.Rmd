@@ -77,8 +77,19 @@ df.ragni.altModel.full.summary %>%
   group_by(model) %>%
   summarize(
     r = cor(mean, model_mean),
-    r2 = r^2,
+    #r2 = r^2,
     mse = mean((model_mean-mean) ^2 )
   ) %>%
-  kable(.)
+  ungroup() %>% 
+  mutate(model = factor(model,
+                        levels = c("mReasoner-Group", "PHM-Group",
+                                   "mReasoner-Indiv", "PHM-Indiv"),
+                        labels = c("mReasoner (group)",
+                                   "Probability Heuristics (group)",
+                                   "mReasoner (individual)",
+                                   "Probability Heuristics (individual)")),
+         nParameters = c(4,  556,5, 695)) %>%
+  select(model, nParameters, r, mse) %>%
+  write_csv("../csv_to_tex/altModels_stats.csv")
+  # kable(.)
 ```

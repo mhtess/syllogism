@@ -770,11 +770,45 @@ The ``O-heuristic'' additionally down weights conclusions that use the ``some...
 To compare the quantitative accuracy of these alternatives theories to our own, we analyze the results of a recent study of these theories which focused on modeling the behavior of individual participants in the syllogistic reasoning task \cite{riesterer2020models}.
 This study explored the predictive capabilities of the mReasoner and Probability Heuristics theories by analyzing the parameters of the models as individual-level parameters which could vary among participants (as well as the group-level version of the model, in which a single set of parameters governs the behavior of the population of participants). 
 The parameters of these models were fit to the same data set from \citeA{ragni2019does} that we modeled above with the Rational Speech Act models.\footnote{The predictions of these models were accessed via the companion repository to the paper: \url{https://github.com/nriesterer/cogsci-individualization}.}
+To examine the predictions of these theories in a manner comparable to our analysis of the Rational Speech Act models, we treated the predictions of these alternative models for individual participants similar to how we treated the behavioral responses of individual participants. 
+We constructed bootstrapped 95\% confidence intervals for the model predictions by resampling with replacement the predictions for each unique syllogism and conclusion. 
 
-The individual-level parameterization of the models use a different set of parameters for each of the 139 participants in the task.
-The group-level version of the mReasoner model has 4 parameters and PHM has 5.
-Their corresponding individual-level models have 556 ($4\times 139$) and 695 ($5 \times 139$) parameters.\footnote{We discuss model complexity here in a coarse-grained manner. The PHM parameters in the \citeA{riesterer2020models} implementation are binary and thus do not add to model complexity in the same way as continuous parameters do. Still, we think that the approximate complexity of the models can be appreciated by their order-of-magnitude difference in the number of the parameters.}
-Our Rational Speech Act models have approximately 10 parameters.
+\begin{figure}[t]
+\centering
+\includegraphics[width = \textwidth]{figs/alternative_model_scatters.pdf}
+\caption{Performance of alternative theories. Each point represents an individual premise and conclusion pair. Group-level models use parameters that are fit to the group-level data. Individual-level models use parameters specific to individual participants. }
+\label{fig:altModels}
+\end{figure}
+
+% The comparison of these model predictions to the behavioral data for each syllogsim and conclusion is shown in . 
+
+The mReasoner and Probability Heuristics models with parameters fit globally to the whole data set perform quite poorly overall (Figure \ref{fig:altModels}). 
+The models largely make categorical predictions (1s or 0s) whereas the aggregated human data is q	uite graded.
+With parameters fit to individual participants and predictions aggregated, the mReasoner and Probability Heuristics models perform quite a bit better and comparable to our Rational Speech Act models.
+The individual-level parameterization of the models use a different set of parameters for each of the 139 participants in the task, yielding a total number of parameters that is 1-to-2 orders of magnitude larger than the both the group-level versions of the model as well as our Rational Speech Act models (Figure \ref{fig:altModels}).\footnote{We discuss model complexity here in a coarse-grained manner. The PHM parameters in the \citeA{riesterer2020models} implementation are binary and thus do not add to model complexity in the same way as continuous parameters do. Still, we think that the approximate complexity of the models can be appreciated by their order-of-magnitude difference in the number of the parameters.}
+These results suggest that these alternative theories encode process-level hypotheses that may be well-suited to model an individual participant's reasoning behavior, but are insufficient to describe the computational problem that human reasoners are aiming to achieve. 
+
+%The group-level version of the mReasoner model has 4 parameters and PHM has 5.
+%Their corresponding individual-level models have 556 ($4\times 139$) and 695 ($5 \times 139$) parameters.
+%Our Rational Speech Act models have approximately 10 parameters.
+
+
+\begin{center}
+\begin{table}[h]
+\centering
+\pgfplotstabletypeset[sci zerofill,
+    col sep = comma,
+    every head row/.style={before row = \toprule, after row = \midrule},
+    every last row/.style={after row = \bottomrule},
+    columns/model/.style={string type, column name={Model}, column type = l},
+    columns/nParameters/.style={string type, column name={Number of Parameters}, column type = l,  sci sep align, precision=3},
+    columns/r/.style={string type, column name={$r$}, column type = l,  sci sep align, precision=3},
+   columns/mse/.style={fixed, column name={$MSE$}, column type = l, dec sep align, precision=4}
+     ]{csv_to_tex/altModels_stats.csv}\caption{Summary statistics for alternative models. Individual-level models use a new set of parameters for each individual participant in the data set ($n=139$).}\label{tab:altStats}
+\end{table}
+\end{center}
+
+
 
 %For the : these models  and our Rational Speech Act models (~10 parameters).
 
