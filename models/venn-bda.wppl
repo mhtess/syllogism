@@ -3,6 +3,10 @@
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular literal literal state NA 1
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular literal pragmatic state NA 1
 
+
+// time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular literal state state NA 1
+
+
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal state quantifier 1
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal state quantifierOrder 1
 // time webppl venn-bda.wppl --require webppl-csv --require ~/tools/webppl-sample-writer-fork modular pragmatic literal state maximal 1
@@ -108,6 +112,17 @@ var foreach = function(lst, fn) {
   foreach_(0);
 };
 
+
+var exponentiateRenormalize = function(dist, alpha){
+  var probs = normalize(map(function(s){
+    var p = Math.exp(dist.score(s))
+    return Math.pow(p, alpha)
+  }, dist.support()))
+  return Categorical({
+    vs: dist.support(),
+    ps: probs
+  })
+}
 
 var isChar = function(str, char){
   return str == char
@@ -618,7 +633,8 @@ var bda_model = function(){
 
 	var speakerOptimality = {
 		alpha_1 : pragmatics.interpretation ? uniformDrift({a: 0, b: 20, width: 2}) : -99,
-		alpha_2 : pragmatics.production ? uniformDrift({a: 0, b: 20, width: 2}) : -99
+		// alpha_2 : pragmatics.production ? uniformDrift({a: 0, b: 20, width: 2}) : -99
+    alpha_2 : uniformDrift({a: 0, b: 10, width: 1})
 	}
 
   var noise = uniformDrift({a: 0, b: 0.1, width: 0.01})
@@ -851,7 +867,7 @@ var bda_model = function(){
       marginalizeQUD_omitRegions(venn_prior, qud) :
       venn_prior
     // display('enter modular')
-    Infer({
+    var conclusion_dist = Infer({
       model: function() {
 
         var PremiseInterpretation = pragmatics.interpretation ?
@@ -870,15 +886,26 @@ var bda_model = function(){
         // display(JSON.stringify(PremiseInterpretation))
 
         if (pragmatics.production) {
-          // display('enter prag production')
-          var ConclusionInterpretation = venn_interpreter([conclusion], {qud: "state", production: true}, qudDist_prior)
-          // display(JSON.stringify(ConclusionInterpretation.support().length))
-          var _kl = KL(
-            PremiseInterpretation,
-            ConclusionInterpretation,
-            PremiseInterpretation.support()
-          )
-          factor(speakerOptimality.alpha_2 * -1 * _kl)
+          if (pragParams.production == "belief") {
+
+            // display('enter prag production')
+            var ConclusionInterpretation = venn_interpreter([conclusion], {qud: "state", production: true}, qudDist_prior)
+            // display(JSON.stringify(ConclusionInterpretation.support().length))
+            var _kl = KL(
+              PremiseInterpretation,
+              ConclusionInterpretation,
+              PremiseInterpretation.support()
+            )
+            factor(speakerOptimality.alpha_2 * -1 * _kl)
+
+          } else if (pragParams.production == "state") {
+
+            var ConclusionInterpretation = venn_interpreter([conclusion], {qud: "state", production: true}, qudDist_prior)
+            var venn = sample(PremiseInterpretation)
+            factor(speakerOptimality.alpha_2 * ConclusionInterpretation.score(venn))
+
+          }
+
           // display('exit prag production')
 
           // factor(speakerOptimality.alpha_2 * ConclusionInterpretation.score(venn))
@@ -894,6 +921,12 @@ var bda_model = function(){
 
       }
     })
+
+    if (pragmatics.production) {
+      return conclusion_dist
+    } else {
+      return exponentiateRenormalize(conclusion_dist, speakerOptimality.alpha_2)
+    }
   }
 
   // INTEGRATED REASONER MODELS
@@ -1097,9 +1130,9 @@ var bda_model = function(){
 
 // var totalIterations = 1000, lag =  1;
 // var totalIterations = 5000, lag =  0;
-// var totalIterations = 500, lag =  0;
+// var totalIterations = 100, lag =  0;
 var totalIterations = 10000, lag =  1;
-// var totalIterations = 5, lag =  0;
+// var totalIterations = 10, lag =  0;
 
 var samples = totalIterations/(lag + 1), burn = totalIterations / 2;
 
