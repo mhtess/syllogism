@@ -43,7 +43,8 @@ display(chain_num)
 var bda_model = modelObj[modelName]
 
 // var steps = 1000 // 2 hours per sample
-var steps = 2000 // 4 hours per sample
+// var steps = 2000 // 4 hours per sample
+var steps = 5000 // 10 hours per sample
 var samples = 10
 
 var outfile = 'refac-ais-syllogisms-ragni2016_full_' +
