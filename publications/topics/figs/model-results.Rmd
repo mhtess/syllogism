@@ -31,6 +31,54 @@ HPDlo<- function(s){
 }
 ```
 
+# RSA models
+
+```{r}
+
+md.summary <- read_csv("../cached_results/md_summary.csv")
+
+md.summary %>%
+    mutate(model = factor(model,
+                        levels = c("M00_LIT_LIT", "M02_LIT_PRAG_STATE",
+                                   "M01_LIT_PRAG_BELIEF"),
+                        labels = c("Literal Speaker",
+                                   "State Communication\n(Pragmatic Speaker)",
+                                   "Belief Alignment\n(Pragmatic Speaker)")),
+         conclusion_quantifier = factor(conclusion_quantifier,
+                                        levels = c("All", "Some", "Some not", "No", "NVC"),
+                                        labels = c("All", "Some", "Some...not", "None",
+                                                   "nothing follows"))) %>%
+  ggplot(., aes( x = MAP, y = mean, 
+                 fill = conclusion_quantifier,
+                 xmin = cred_lower, xmax = cred_upper,
+                 ymin = ci_lower, ymax = ci_upper))+
+  geom_abline(intercept = 0, slope = 1, lty = 3, alpha = 0.3)+
+  geom_linerange(alpha = 0.4)+
+  ggstance::geom_linerangeh( alpha = 0.4 )+
+  geom_point(shape = 21, size = 1.5)+
+  scale_x_continuous(limits = c(0, 1), breaks = c(0, 1))+
+  scale_y_continuous(limits = c(0, 1), breaks = c(0, 1))+
+  # facet_grid(interpretation ~ production)+
+  guides(fill = guide_legend(title = "Conclusion quantifier"))+
+  facet_wrap( ~ model, nrow = 1)+
+  coord_fixed(ratio = 1)+
+  labs(
+    x = "Model Prediction",
+    y = "Human Conclusions\n(proportion)"
+  )
+```
+
+
+```{r}
+md.summary %>%
+  group_by(model) %>%
+  summarize(
+    r = cor(MAP, mean),
+    r2 = r^2,
+    mse = mean((MAP-mean) ^2 )
+  )  -> md.summary.stats
+```
+
 # PHM and mReasoner models
 ```{r}
 df.ragni.altModel.full.summary <-read_csv(file = "../cached_results/phm-mReasoner-ragni-summary.csv")
@@ -80,16 +128,29 @@ df.ragni.altModel.full.summary %>%
     #r2 = r^2,
     mse = mean((model_mean-mean) ^2 )
   ) %>%
-  ungroup() %>% 
+  ungroup() -> df.altmodel.stats 
+
+
+bind_rows(md.summary.stats %>% select(-r2),
+  df.altmodel.stats) %>% 
   mutate(model = factor(model,
-                        levels = c("mReasoner-Group", "PHM-Group",
+                        levels = c("M01_LIT_PRAG_BELIEF",
+                                   "M02_LIT_PRAG_STATE",
+                                   "M00_LIT_LIT", 
+                                  "mReasoner-Group", "PHM-Group",
                                    "mReasoner-Indiv", "PHM-Indiv"),
-                        labels = c("mReasoner (group)",
+                        labels = c("Belief Alignment",
+                                   "State Communication",
+                                   "Literal Speaker",
+                                    "mReasoner (group)",
                                    "Probability Heuristics (group)",
                                    "mReasoner (individual)",
                                    "Probability Heuristics (individual)")),
-         nParameters = c(4,  556,5, 695)) %>%
-  select(model, nParameters, r, mse) %>%
-  write_csv("../csv_to_tex/altModels_stats.csv")
+         nParameters = c(10, 10, 10, 4,  556,5, 695)) %>%
+  select(model, nParameters, r, mse) -> allModels_table
+
+
+allModels_table[c(2, 3, 1, 4, 5, 6, 7), ]%>%
+  write_csv("../csv_to_tex/allModels_stats.csv")
   # kable(.)
 ```
