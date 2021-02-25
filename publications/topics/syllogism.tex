@@ -831,24 +831,29 @@ We estimated the marginal likelihoods of the data under each model using an Anne
 \subsubsection{Results}
 
 Overall, we found that the Belief Alignment pragmatic speaker model was the best fitting and most parsimonious model of the syllogistic reasoning data set. 
-This model performed several orders of magnitude at explaining the data, taking into the account model complexity (in comparison to the Literal Speaker model, $\log BF \approxeq 300$; in comparison to the State Communication pragmatic speaker $\log BF \approxeq 1200$).
+This model performed several orders of magnitude better at explaining the data, taking into the account model complexity (in comparison to the Literal Speaker model, $\log BF \approx 300$; in comparison to the State Communication pragmatic speaker $\log BF \approx 1200$).
 It also achieved the highest correlation coefficient and lowest mean squared error of the RSA model variants (Table \ref{tab:altStats}).
-
 
 \begin{figure}[t]
 \centering
 \includegraphics[width = \textwidth]{figs/bda_rsa_scatters.pdf}
-\caption{Model results.}
+\caption{Posterior predictive model fits for the literal speaker model and two versions of the pragmatic speaker model. Each dot represents 1 of 9 possible conclusions for 1 of the 64 possible syllogisms. Error bars denote bootstrapped 95\% confidence intervals for the empirical data and 95\% Bayesian credible intervals for the model predictions.}
 \label{fig:scatters}
 \end{figure}
 
+The Belief Alignment Pragmatic Speaker model captures a number of key patterns in human syllogistic reasoning behavior. 
+By incorporating a notion of informativeness into the selection of a conclusion, the model is able to prefer one conclusion that is equally as true as another. For example, in the \emph{All As are Bs. All Bs are Cs.} syllogism, the conclusion \emph{Some As are Cs} is true in every possible world that \emph{All As are Cs} is true. Nonetheless, \emph{All} is a more informative conclusion and is preferred by human participants (Figure \ref{fig:bars}, top-left facet).
+%The model can also 
 
+In the \emph{No As are Bs. No Bs are Cs.} syllogism, participants tend to respond either \emph{nothing follows} (the logically correct conclusion) or either \emph{No As are Cs} or \emph{No Cs are As} (Figure \ref{fig:bars}, second row, second column). We see the Belief Alignment able to capture this interesting pattern of responses, whereas the Literal Speaker model produces the weaker (but perhaps more likely to be true) conclusion \emph{Some As are not C} and the State Communication Pragmatic Speaker model tends to produce the stronger (and perhaps less likely) \emph{Some As are Cs}. 
+
+\mht{look at SomeNot/Some vs. SomeNot/SomeNot}
 
 
 \begin{figure}[t]
 \centering
 \includegraphics[width = \textwidth]{figs/bda_rsa_bars.pdf}
-\caption{Model results.}
+\caption{Model predictions and behavioral results for the 9 possible conclusions to 16 syllogisms. Syllogisms are of the form: \emph{\_\_ As are Bs. \_\_ Bs are Cs.}}
 \label{fig:bars}
 \end{figure}
 
