@@ -837,23 +837,31 @@ It also achieved the highest correlation coefficient and lowest mean squared err
 \begin{figure}[t]
 \centering
 \includegraphics[width = \textwidth]{figs/bda_rsa_scatters.pdf}
-\caption{Posterior predictive model fits for the literal speaker model and two versions of the pragmatic speaker model. Each dot represents 1 of 9 possible conclusions for 1 of the 64 possible syllogisms. Error bars denote bootstrapped 95\% confidence intervals for the empirical data and 95\% Bayesian credible intervals for the model predictions.}
+\caption{Posterior predictive model fits for the literal speaker model and two versions of the pragmatic speaker model. Each dot represents one of nine possible conclusions for one of the 64 possible syllogisms. Error bars denote bootstrapped 95\% confidence intervals for the empirical data and 95\% Bayesian credible intervals for the model predictions.}
 \label{fig:scatters}
 \end{figure}
 
-The Belief Alignment Pragmatic Speaker model captures a number of key patterns in human syllogistic reasoning behavior. 
-By incorporating a notion of informativeness into the selection of a conclusion, the model is able to prefer one conclusion that is equally as true as another. For example, in the \emph{All As are Bs. All Bs are Cs.} syllogism, the conclusion \emph{Some As are Cs} is true in every possible world that \emph{All As are Cs} is true. Nonetheless, \emph{All} is a more informative conclusion and is preferred by human participants (Figure \ref{fig:bars}, top-left facet).
+The Belief Alignment Pragmatic Speaker model captures a number of interesting patterns in human syllogistic reasoning behavior. 
+By incorporating a notion of informativeness into the selection of a conclusion, the model is able to  show a preference among equally true conclusions. For example, in the \emph{All As are Bs / All Bs are Cs} syllogism, the conclusion \emph{Some As are Cs} is true in every possible world that \emph{All As are Cs} is true, because \emph{all} entails \emph{some}. Nonetheless, the Belief Alignment pragmatic speaker model and human participants strongly prefer the \emph{all} conclusion (Figure \ref{fig:bars}, top-left facet); the model arrives at this preference because \emph{all} more informatively conveys the belief state of the speaker in comparison to \emph{some}.
 %The model can also 
 
-In the \emph{No As are Bs. No Bs are Cs.} syllogism, participants tend to respond either \emph{nothing follows} (the logically correct conclusion) or either \emph{No As are Cs} or \emph{No Cs are As} (Figure \ref{fig:bars}, second row, second column). We see the Belief Alignment able to capture this interesting pattern of responses, whereas the Literal Speaker model produces the weaker (but perhaps more likely to be true) conclusion \emph{Some As are not C} and the State Communication Pragmatic Speaker model tends to produce the stronger (and perhaps less likely) \emph{Some As are Cs}. 
+Syllogisms for which the premises provide little information about the conclusion also reveal interesting reasoning patterns in both participants and the models.
+In the \emph{No As are Bs / No Bs are Cs} syllogism, participants tend to respond either \emph{nothing follows} (the logically correct conclusion) or either \emph{No As are Cs} or \emph{No Cs are As} (Figure \ref{fig:bars}, second row, second column). 
+The Literal Speaker model reveals what is likely to be true given the premises: \emph{Some As are not Cs} is the most likely state of affairs. 
+The State Communication tries to be more informative, but because it only reasons about a particular state (Venn diagram) at a time, the more informative conclusion is to say \emph{Some As are Cs}, at the same time down-weighting the \emph{nothing follows} conclusion.
+The Belief Alignment model takes a different approach: By trying to convey its entire distribution of belief states, the more informative conclusion it draws is either to say \emph{No As are Cs} or \emph{nothing follows}, most closely matching the human data. 
+%We see the Belief Alignment able to capture this interesting pattern of responses, whereas the Literal Speaker model produces the weaker (but perhaps more likely to be true) conclusion \emph{Some As are not C} and the State Communication Pragmatic Speaker model tends to produce the stronger (and perhaps less likely) \emph{Some As are Cs}. 
 
-\mht{look at SomeNot/Some vs. SomeNot/SomeNot}
-
+The model is also able to adjust its conclusions based on the subtle shifts in the meaning of the premises. One interesting three-way comparison is the \emph{Some As are Bs / Some Bs are Cs} vs. \emph{Some As are Bs / Some Bs are not Cs} vs. \emph{Some As are not Bs / Some Bs are not Cs} syllogism  (Figure \ref{fig:bars}, bottom-right quadrant).
+For \emph{Some / Some}, the most likely and useful conclusion is \emph{Some}.
+By changing the second premise to \emph{Some Bs are not Cs} (\emph{Some / Some not} syllogism), the modal conclusion changes to \emph{Some not}.
+Yet changing the first premise also to \emph{Some As are not Bs} (\emph{Some not / Some not} syllogism) does not change the modal conclusion, which is also \emph{Some not}. 
+Both the Belief Alignment model and the Literal Speaker are able to capture these subtle changes, revealing that the literal meanings of the premises are shifting participants choice of conclusions. 
 
 \begin{figure}[t]
 \centering
 \includegraphics[width = \textwidth]{figs/bda_rsa_bars.pdf}
-\caption{Model predictions and behavioral results for the 9 possible conclusions to 16 syllogisms. Syllogisms are of the form: \emph{\_\_ As are Bs. \_\_ Bs are Cs.}}
+\caption{Model predictions and behavioral results for the 9 possible conclusions to 16 syllogisms. Syllogisms are of the form: \emph{\_\_ As are Bs. \_\_ Bs are Cs.} Error bars denote bootstrapped 95\% confidence intervals for the human data and 95\% Bayesian credible intervals for the model predictions.}
 \label{fig:bars}
 \end{figure}
 
@@ -870,7 +878,7 @@ In the \emph{No As are Bs. No Bs are Cs.} syllogism, participants tend to respon
     columns/r/.style={string type, column name={$r$}, column type = l,  sci sep align, precision=3},
    columns/mse/.style={fixed, column name={MSE}, column type = l, dec sep align, precision=3},	      
    columns/nParameters/.style={string type, column name={Number of Parameters}, column type = l,  sci sep align, precision=3},
-     ]{csv_to_tex/allModels_stats.csv}\caption{Summary statistics for RSA and alternative models. Alternative models were fitted to both group level data and individual level data. Individual-level variants use a new set of parameters for each individual participant in the data set ($n=139$).}\label{tab:altStats}
+     ]{csv_to_tex/allModels_stats.csv}\caption{Summary statistics for the RSA and alternative models. Alternative models were fitted to both group level data and individual level data. Individual-level variants use a new set of parameters for each individual participant in the data set ($n=139$).}\label{tab:altStats}
 \end{table}
 \end{center}
 
@@ -893,7 +901,7 @@ In the \emph{No As are Bs. No Bs are Cs.} syllogism, participants tend to respon
 
 \subsection{Comparison to other theories}
 
-We found the model that accommodated the human syllogistic reasoning data set with highest quantitative accuracy was that which interpreted the premises pragmatically with respect to a Question Under Discussion focused on the relationship between the conclusion terms and which produced conclusions in an informative manner. 
+We found the model that explained the human syllogistic reasoning data set the best was that which produced conclusions by aligning a listener's beliefs with those of a speaker (who had their beliefs updating from the literal meaning of the premises).
 Our modeling approach is a Computational or Rational Level of analysis model \cite{marr1982vision, anderson1990adaptive} that seeks to describe the computations that underly human syllogistic reasoning without stipulating a precise implementation of such a reasoning process. 
 Many other theories of syllogistic reasoning instead consider the process by which a human reasoner solves a syllogism.
 The two most influential theories of human syllogistic reasoning are the Mental Models Theory \cite{johnsonlaird2006we, khemlani2013processes} and the Probability Heuristics Model \cite{Chater1999}, each of which share features with our probabilistic pragmatics approach. 
@@ -919,7 +927,7 @@ The ``O-heuristic'' additionally down weights conclusions that use the ``some...
 \subsubsection{Quantitative comparison}
 
 To compare the quantitative accuracy of these alternatives theories to our own, we analyze the results of a recent study of these theories which focused on modeling the behavior of individual participants in the syllogistic reasoning task \cite{riesterer2020models}.
-This study explored the predictive capabilities of the mReasoner and Probability Heuristics theories by analyzing the parameters of the models as individual-level parameters which could vary among participants (as well as the group-level version of the model, in which a single set of parameters governs the behavior of the population of participants). 
+This study explored the predictive capabilities of the mReasoner and Probability Heuristics theories by treating the parameters of the models as individual-level parameters which could vary among participants (as well as the group-level version of the model, in which a single set of parameters governs the behavior of the population of participants). 
 The parameters of these models were fit to the same data set from \citeA{ragni2019does} that we modeled above with the Rational Speech Act models.\footnote{The predictions of these models were accessed via the companion repository to the paper: \url{https://github.com/nriesterer/cogsci-individualization}.}
 To examine the predictions of these theories in a manner comparable to our analysis of the Rational Speech Act models, we treated the predictions of these alternative models for individual participants similar to how we treated the behavioral responses of individual participants. 
 We constructed bootstrapped 95\% confidence intervals for the model predictions by resampling with replacement the predictions for each unique syllogism and conclusion. 
@@ -933,11 +941,11 @@ We constructed bootstrapped 95\% confidence intervals for the model predictions 
 
 % The comparison of these model predictions to the behavioral data for each syllogsim and conclusion is shown in . 
 
-The mReasoner and Probability Heuristics models with parameters fit globally to the whole data set perform quite poorly overall (Figure \ref{fig:altModels}). 
-The models largely make categorical predictions (1s or 0s) whereas the aggregated human data is q	uite graded.
-With parameters fit to individual participants and predictions aggregated, the mReasoner and Probability Heuristics models perform quite a bit better and comparable to our Rational Speech Act models.
-The individual-level parameterization of the models use a different set of parameters for each of the 139 participants in the task, yielding a total number of parameters that is 1-to-2 orders of magnitude larger than the both the group-level versions of the model as well as our Rational Speech Act models (Figure \ref{fig:altModels}).\footnote{We discuss model complexity here in a coarse-grained manner. The PHM parameters in the \citeA{riesterer2020models} implementation are binary and thus do not add to model complexity in the same way as continuous parameters do. Still, we think that the approximate complexity of the models can be appreciated by their order-of-magnitude difference in the number of the parameters.}
-These results suggest that these alternative theories encode process-level hypotheses that may be well-suited to model an individual participant's reasoning behavior, but are insufficient to describe the computational problem that human reasoners are aiming to achieve. 
+The mReasoner and Probability Heuristics models with parameters fit globally to the whole data set (group-level models) perform quite poorly overall (Figure \ref{fig:altModels}). 
+The models largely make categorical predictions (1s or 0s) whereas the aggregated human data is graded.
+With parameters fit to individual participants and predictions aggregated, the mReasoner and Probability Heuristics models perform quite a bit better and comparable to our Rational Speech Act models in terms of their correlation and mean squared errors.
+The individual-level parameterization of the models use a different set of parameters for each of the 139 participants in the task, however, yielding a total number of parameters that is 1-to-2 orders of magnitude larger than the both the group-level versions of the model as well as our Rational Speech Act models (Figure \ref{fig:altModels}).\footnote{We discuss model complexity here in a coarse-grained manner. The PHM parameters in the \citeA{riesterer2020models} implementation are binary and thus do not add to model complexity in the same way as continuous parameters do. Still, we think that the approximate complexity of the models can be appreciated by their order-of-magnitude difference in the number of the parameters.}
+These results suggest that these alternative theories encode process-level hypotheses that may be well-suited to model an individual participant's reasoning behavior, but are insufficient to adequately describe the computational problem that human reasoners are aiming to achieve. 
 
 %The group-level version of the mReasoner model has 4 parameters and PHM has 5.
 %Their corresponding individual-level models have 556 ($4\times 139$) and 695 ($5 \times 139$) parameters.
