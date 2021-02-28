@@ -170,13 +170,13 @@ Some artists are chemists.
 \end{quote}
 
 The logical space defined by classical syllogisms is comprised of all combinations of quantifiers and term orders for the premises (e.g., \textsc{quantifier} \textsc{A} -- \textsc{B} vs. \textsc{quantifier} \textsc{B} -- \textsc{A}).
-In total, each of the two premises can be appear with one of the four quantifiers and two term orders yielding:  $4$ quantifiers  $\times 2$ term orderings $\times 2$ premises = 64 syllogisms.
+In total, each of the two premises can be appear with one of the four quantifiers and two term orders yielding:  $4$ quantifiers  $\times$ 2 term orderings $\times$ 2 premises = 64 syllogisms.
 Of the 64 unique syllogistic premises, only 27  (42\%) yield a logically valid conclusion: a conclusion that is true in every situation in which the premises are true.
 For the remaining 37 (58\%), no conclusion follows from the premises; in terms of the syllogistic reasoning, the correct responses is ``nothing follows'' (or, ``No Valid Conclusion''; NVC). 
 
 It is not only the illiterate peasants of 1930s Kyrgyzstan who appear to struggle with reasoning logically with syllogisms.
-A recent meta-analysis of syllogistic reasoning tasks performed on American and Italian participants estimated the accuracy of producing a valid conclusion to a logically valid syllogism to range widely (from 90\% to 1\% accuracy) depending on the syllogism \cite{Khemlani2012}.
-Logically invalid syllogisms also pose a challenge: the logical response is to conclude that \emph{nothing follows}, yet participants readily endorse substantive conclusions for logically invalid syllogisms. 
+A meta-analysis of syllogistic reasoning tasks performed on American and Italian participants estimated the accuracy of producing a valid conclusion to a logically valid syllogism to range widely (from 90\% to 1\% accuracy) depending on the syllogism \cite{Khemlani2012}.
+Logically invalid syllogisms also pose a challenge: the logical response is to conclude that \emph{nothing follows} from the premises, yet participants readily endorse substantive conclusions (i.e., quantifier relations) for logically invalid syllogisms. 
 For example, the syllogism above is not logically valid.  (Consider that it could be only the non-artist bakers that are chemists. In that case, the premises would be true and the conclusion false.)
 The conclusion above seems reasonable, however, and roughly 70\% of participants will assert that the \emph{Some As are Cs} conclusion follows from the premises  \cite{Khemlani2012}.
 Something beyond logical validity is guiding participants' reasoning behavior. 
@@ -223,8 +223,8 @@ In particular, we view syllogistic reasoning through the lens of the language un
 % Syllogistic reasoning is then part logical reasoning and part riddle solving (as suggested by the Ong, 1982 quotation above).
 %Each of these component tasks could involve pragmatic reasoning beyond the words of the syllogism 
 We formalize this hypothesis in a probabilistic model of pragmatic reasoning in the Rational Speech Act framework \cite{Frank2012a, goodman2016pragmatic}.
-We show that pragmatic selection of conclusions --- that is, participants reflecting on what their choice of conclusion would convey to a naive listener --- yields important phenomena. 
-We leave open the question of whether premise interpretation may also be pragmatic in some important way.
+We show that pragmatics enter into the conclusion selection process by way of participants reflecting on how well their choice of conclusion would convey to a naive listener their own subjective beliefs. 
+We discuss the question of whether premise interpretation may also be pragmatic in some important way.
 As a Bayesian model, our approach also naturally extends to explain how the content of a syllogism can affect reasoning, otherwise known as \emph{belief bias}. 
 
 %We show that explaining human syllogistic reasoning behavior goes beyond standard, scalar implicature type reasoning  (as explored in \citeNP{Roberts2001}).
@@ -621,7 +621,7 @@ Thus, by producing a quantified conclusion the speaker would be conveying that a
 
 We test our models using a dataset published by \citeA{ragni2019does}. 
 The data set consists of the results of a web experiment in which participants ($n = 139$) provided conclusions to all 64 syllogisms. In the experiment, participants completed all syllogistic reasoning problems after a brief training phase. Participants responded by selecting one of the nine possible responses for the conclusion of the syllogism (4 quantifier choices x 2 term orders + 1 \emph{nothing follows}).
-Participants' responses to four example syllogisms are shown in Figure \ref{fig:ragniData}).
+%Participants' responses to four example syllogisms are shown in Figure \ref{fig:ragniData}).
 
 %\begin{figure}[th]
 %\centering
@@ -964,12 +964,37 @@ These results suggest that these alternative theories encode process-level hypot
 
 \section{Discussion}
 
-\citeA{Roberts2001} explore the predictions of logic-based accounts in which the quantifiers \emph{some} and \emph{some are not} are interpreted in a Gricean fashion (e.g., \emph{some} pragmatically entail $\neg \forall$) and found that this alone is not sufficient to explain human reasoning with syllogisms. 
-Our approach differs from their in a number of important respects.
-Foremost, in our model, scalar implicature as an all-or-nothing phenomenon; instead, implicatures emerge probabilistically via Bayesian social reasoning, wherein a listener reasons about what else an approximately rational speaker could have said. 
-This probabilistic treatment of pragmatic reasoning has two effects: (i) \emph{some} does not necessarily imply $\neg \forall$ and (ii) the interpretations of \emph{some A are B} and \emph{some A are not B} are not equivalent (contra the treatment in \citeNP{Roberts2001}).
-Second, we introduce the idea that the syllogistic reasoning task presents a particular Question Under Discussion (QUD) which can alter the pragmatic enrichments that alter the literal meaning of the premises in a syllogism; in particular, the syllogism introduces the \textsc{AC} QUD (``what is the relation between A and C?'' ), which invites the listener to weight the evidence for a particular conclusion from the current syllogism in the space of possible syllogisms. 
-Finally, our treatment of the pragmatic production of conclusions component of the model relies upon the idea that the reasoner is trying to select the conclusion that best conveys her belief distribution about the answer to the QUD (i.e., the AC part of the Venn diagram); in doing so, the reasoner is able to rationally produce \emph{nothing follows} in situations where her belief distribution is not substantially different than her prior beliefs about the QUD. 
+Reasoning with syllogisms sits at the intriguing intersection of language and logic. 
+Syllogisms are a logical system, but they are expressed using natural language quantifiers and invite natural language inferences. 
+We developed and tested a family of probabilistic models of pragmatic reasoning that formalized the meaning of natural language sentences and how the calculations of informativeness that reasoners could use in selecting their conclusions.
+We found that conclusions selected by participants were best explained by a model that chose its conclusion to a syllogism by reasoning about how well that conclusion would align a naive listener's beliefs with those of their own. 
+We discuss the implications of this finding in the context of other work on pragmatic reasoning with syllogisms and describe how the modeling approach we present here could naturally be extended to account for other phenomena in syllogistic reasoning.
+
+
+In our modeling, we contrasted two mechanisms by which pragmatic considerations can enter into the production of conclusions: one based on informatively describing a particular state (or, Venn diagram) and one based on conveying the reasoner's entire belief distribution over states (i.e., their distribution over possible Venn diagrams). 
+The results, both quantitatively and qualitatively, provide overwhelming evidence that it is the latter notion of belief alignment which most closely tracks human reasoning patterns. 
+This formalization of pragmatic considerations differs sharply from previous perspectives on pragmatics in syllogistic reasoning.
+Most notably, \citeA{Roberts2001} explored the predictions of logic-based accounts in which the quantifiers \emph{some} and \emph{some are not} are interpreted in a Gricean fashion (e.g., \emph{some} pragmatically implies \emph{not all}, $\neg \forall$) and analyzed when a reasoner would say each of these Gricean enriched quantifier conclusions for each of the possible states (Venn diagrams) implied by the premises. 
+Analyzing the states (diagrams) in isolation has a number of flaws.
+First, \mht{insert qualitative phenomenon that emerges from belief alignment}.
+
+Our modeling approach to pragmatic speakers also provides a clear, interpretable mechanism by which \emph{nothing follows} can be rationally produced. 
+In our formalization, \emph{nothing follows} is a semantically vacuous statement which does nothing to update the listener's beliefs. This kind of utterance is always true, in a sense, and thus speakers will produce this utterance with constant probability.\footnote{Technically, a literal speaker will produce this vacuous utterance with probability inversely proportional to the number of conclusions that are compatible (true) with the premises.}
+The Belief Alignment speaker, by contrast, selects utterances in order to convey their beliefs about the state to the listener. 
+Hence, when their beliefs are not substantially changed by hearing the premises (as is the case with logically invalid syllogisms), they will have more of a pressure to say \emph{nothing follows}, since it would also not substantially changed the listener's beliefs. 
+This model serves as a substantial contribution to the syllogistic reasoning literature, as the formalization and treatment of the \emph{nothing follows} conclusion is something that has been missed from extant proposals \cite{riesterer2020modeling}.
+
+
+%Our approach to pragmatics differs from theirs in a number of important respects.
+%Foremost, in our model, pragmatic enrichment of quantifier meanings is not an all-or-nothing phenomenon.
+%Instead, the implications of pragmatics emerge probabilistically via Bayesian social reasoning, where a speaker reasons about how their words will affect the beliefs of a naive listener; these beliefs are probabilistic in nature, and the resulting pragmatic enrichment is a gradient phenomenon. 
+%Second, we contrasted treatment of the pragmatic production of conclusions component of the model relies upon the idea that the reasoner is trying to select the conclusion that best conveys her belief distribution about the answer to the QUD (i.e., the AC part of the Venn diagram); in doing so, the reasoner is able to rationally produce \emph{nothing follows} in situations where her belief distribution is not substantially different than her prior beliefs about the QUD. 
+%
+%
+%This probabilistic treatment of pragmatic reasoning has two effects: (i) \emph{some} does not necessarily imply $\neg \forall$ and (ii) the interpretations of \emph{some A are B} and \emph{some A are not B} are not equivalent (contra the treatment in \citeNP{Roberts2001}).
+%
+%
+%Second, we introduce the idea that the syllogistic reasoning task presents a particular Question Under Discussion (QUD) which can alter the pragmatic enrichments that alter the literal meaning of the premises in a syllogism; in particular, the syllogism introduces the \textsc{AC} QUD (``what is the relation between A and C?'' ), which invites the listener to weight the evidence for a particular conclusion from the current syllogism in the space of possible syllogisms. 
 
 
 
