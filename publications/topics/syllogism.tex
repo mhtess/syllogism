@@ -968,7 +968,7 @@ Reasoning with syllogisms sits at the intriguing intersection of language and lo
 Syllogisms are a logical system, but they are expressed using natural language quantifiers and invite natural language inferences. 
 We developed and tested a family of probabilistic models of pragmatic reasoning that formalized the meaning of natural language sentences and how the calculations of informativeness that reasoners could use in selecting their conclusions.
 We found that conclusions selected by participants were best explained by a model that chose its conclusion to a syllogism by reasoning about how well that conclusion would align a naive listener's beliefs with those of their own. 
-We discuss the implications of this finding in the context of other work on pragmatic reasoning with syllogisms and describe how the modeling approach we present here could naturally be extended to account for other phenomena in syllogistic reasoning.
+We discuss the modeling approach in more detail, including how it can be extended to account for other phenomena in syllogistic reasoning, as well as implications of our findings in the context of other work on pragmatic reasoning with syllogisms.
 
 
 In our modeling, we contrasted two mechanisms by which pragmatic considerations can enter into the production of conclusions: one based on informatively describing a particular state (or, Venn diagram) and one based on conveying the reasoner's entire belief distribution over states (i.e., their distribution over possible Venn diagrams). 
@@ -977,12 +977,33 @@ This formalization of pragmatic considerations differs sharply from previous per
 Most notably, \citeA{Roberts2001} explored the predictions of logic-based accounts in which the quantifiers \emph{some} and \emph{some are not} are interpreted in a Gricean fashion (e.g., \emph{some} pragmatically implies \emph{not all}, $\neg \forall$) and analyzed when a reasoner would say each of these Gricean enriched quantifier conclusions for each of the possible states (Venn diagrams) implied by the premises. 
 Analyzing the states (diagrams) in isolation has a number of flaws.
 First, \mht{insert qualitative phenomenon that emerges from belief alignment}.
+\mht{loop in Guerts natural logic?}
 
-Our modeling approach to pragmatic speakers also provides a clear, interpretable mechanism by which \emph{nothing follows} can be rationally produced. 
+Our modeling approach to pragmatic speakers also provides a clear, interpretable mechanism by which the \emph{nothing follows} option can be rationally produced, a shortcoming of most approaches to syllogistic reasoning  \cite{riesterer2020modeling}. 
 In our formalization, \emph{nothing follows} is a semantically vacuous statement which does nothing to update the listener's beliefs. This kind of utterance is always true, in a sense, and thus speakers will produce this utterance with constant probability.\footnote{Technically, a literal speaker will produce this vacuous utterance with probability inversely proportional to the number of conclusions that are compatible (true) with the premises.}
 The Belief Alignment speaker, by contrast, selects utterances in order to convey their beliefs about the state to the listener. 
 Hence, when their beliefs are not substantially changed by hearing the premises (as is the case with logically invalid syllogisms), they will have more of a pressure to say \emph{nothing follows}, since it would also not substantially changed the listener's beliefs. 
-This model serves as a substantial contribution to the syllogistic reasoning literature, as the formalization and treatment of the \emph{nothing follows} conclusion is something that has been missed from extant proposals \cite{riesterer2020modeling}.
+\mht{change last sentence:: This model serves as a substantial contribution to the syllogistic reasoning literature, as the formalization and treatment of the \emph{nothing follows} conclusion is something that has been missed from extant proposals \cite{riesterer2020modeling}}.
+
+We presented a Bayesian model that uses the natural language semantics of the premises of the syllogism to updates its prior beliefs about the relationship between three properties. 
+These prior beliefs...
+
+
+We presented a Bayesian model that uses the natural language semantics of the premises of the syllogism to updates its prior beliefs. It is straight-forward to consider the implications of pragmatics on the interpretation of the premises. 
+Such a model could be constructed by a relatively standard Rational Speech Act pragmatic listener \cite{Frank2012a, goodman2016pragmatic, scontras2018probabilistic}; that is, treating the listener component of the model as a listener who reasons about why a speaker produced the utterances that they did, where the speaker is the kind of pragmatic speaker we have considered in this paper, who decides what utterance to produce in order to convey information about the state (or, belief distribution) to a naive literal listener. 
+Indeed, we have explored several versions of this kind of pragmatic model in the course of this project but found that no model extension we tried provided a substantially better quantitative fit to Ragni et al. (2019) data than the model we presented.
+That is not to say that pragmatics does not enter into the interpretation process of a syllogism. 
+We have only considered one particular experimental protocol and data set (from Ragni et al., 2019), where participants were presented with all 64 syllogisms, revealing the generative process of the syllogism (parametric recombination fo quantifiers and term orders) and perhaps inducing a more logical analysis of the syllogisms.
+As well, the participants were \mht{confirm the participants of Ragni et al. were WEIRD?}.
+Reasoning with syllogisms varies appreciably across individuals \mht{individual differences paper}, and substantially so in illiterate persons \mht{syllogisms and literacy paper},
+In other contexts or populations, we may see that reasoning with syllogisms as a special case of reasoning about an argument or a riddle \cite<cf.>{luria1976cognitive, Ong1982}. 
+Extending our modeling approach with a pragmatic interpretation component will be important for analyzing such behavior. 
+
+
+Our model is of a speaker who produces the conclusion to draw from the syllogism by reasoning about how a naive listener would interpret that conclusion, where the objective is to align the belief distribution of the listener to that of the speaker (formalized as a KL-divergence between distributions).
+
+
+ 
 
 
 %Our approach to pragmatics differs from theirs in a number of important respects.
