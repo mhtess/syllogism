@@ -646,14 +646,17 @@ To assess how well our models can accommodate the syllogistic reasoning data fro
 We parametrize the prior distribution over states (Venn diagrams) $P(x)$ in the reasoner models via independent Bernoulli random variables $\theta_k$ corresponding to the prior probability of each of the seven regions of a Venn diagram; we put uniform priors over the unit interval for these parameters.
 We assume a small amount of noise in the literal semantics of the utterances such that with a small probability $\phi$, the literal listener disregards the utterance heard and does not update its beliefs via that utterance; we put a uniform prior over the limited range of (0, 0.1) over this parameter since we assume the noise to be a small quantity. 
 
-We assume one global variable that modulates the pragmatic reasoner's prior preferences for certain conclusions. 
-The conclusion prior is parameterized by unnormalized probability weights, where a uniform prior would have a weight of 1 for all conclusions. 
+We assume one global variable that modulates the pragmatic reasoner's prior preferences for conclusions with a specific ordering of the terms (A--C vs. C--A) based on the ordering of the terms in the premises. 
+These preferences are sometimes referred to as ``figural effects'', tracing back to the ``figure'', or term orderings, of the premises \cite{Wetherick1990, rips1994}.
+Our goal is not to provide an explanation for these effects, but rather posit an effect in line with the observations of \citeA{JL1984, JL1978, geurts2003reasoning} that participants prefer conclusions whose subject term matches the subject of one of the premises.
+Formally, the conclusion prior is parameterized by unnormalized probability weights, where a uniform prior would have a weight of 1 for all conclusions. 
 % The first parameter is a global preference or dispreference $\beta_0$ for the \emph{nothing follows} conclusion; we put a uniform prior between (0, 2) on this weight. 
 We introduce a parameter that is global preference  $\beta$ for conclusions whose order of the terms (A--C vs. C--A) matches the order of the terms in the premises.
 This first-term preference works by checking whether either A or C appear in the subject position of the premise.
 If only one appears in the subject (e.g., the syllogistic frame \emph{A--B/B--C}), then conclusions where that same term appears in the subject (e.g., \emph{A--C}) will have a bias determined by $\beta_1$.
 If both or neither appear in the subject (e.g., \emph{A--B/C--B} or \emph{B--A/B--C}), then no preference is given in the conclusion prior, corresponding to an unnormalized probability weight of 1. 
 We put a uniform prior between (1, 5) on this preference weight since we assume it to be preference for producing conclusions that match the order of the terms of the syllogism. 
+
 
 Finally, the Rational Speech Act modeling framework assumes speakers are approximately rational agents who produce utterances as actions whose utility is defined by conveying information to a listener. The degree of rationality of the speaker interpolates between probability matching behavior and utility maximizing behavior. 
 For these parameters, we assume uniform priors over the range of (0, 20), consistent with the prior literature on RSA models. 
@@ -976,7 +979,8 @@ This formalization of pragmatic considerations differs sharply from previous per
 Most notably, \citeA{Roberts2001} explored the predictions of logic-based accounts in which the quantifiers \emph{some} and \emph{some are not} are interpreted in a Gricean fashion (e.g., \emph{some} pragmatically implies \emph{not all}, $\neg \forall$) and analyzed when a reasoner would say each of these Gricean enriched quantifier conclusions for each of the possible states (Venn diagrams) implied by the premises. 
 Analyzing the states (diagrams) in isolation has a number of flaws.
 First, \mht{insert qualitative phenomenon that emerges from belief alignment}.
-\mht{loop in Guerts natural logic?}
+Second, it does not provide any rational basis for a reasoner to produce the \emph{nothing follows} response.
+%\mht{loop in Guerts natural logic?}
 
 Our modeling approach to pragmatic speakers also provides a clear, interpretable mechanism by which the conclusion that \emph{nothing follows} option can be rationally produced, a shortcoming of extant approaches to syllogistic reasoning  \cite{riesterer2020modeling}. 
 In our formalization, \emph{nothing follows} is a semantically vacuous statement which does nothing to update the listener's beliefs. This kind of utterance is, in the semantic sense, always true and thus literal speakers will choose to produce this utterance with constant probability.\footnote{Technically, a literal speaker will produce this vacuous utterance with probability inversely proportional to the number of others conclusions that are semantically compatible with the premises.}
@@ -986,19 +990,21 @@ To our knowledge, this formalization is the first substantive hypothesis about h
 %\mht{change last sentence:: This model serves as a substantial contribution to the syllogistic reasoning literature, as the formalization and treatment of the \emph{nothing follows} conclusion is something that has been missed from extant proposals \cite{riesterer2020modeling}}.
 
 Our approach to syllogistic reasoning is at its core a Bayesian approach, where the premises of a syllogism update a reasoner's prior beliefs about the relationship between three properties. 
-In our modeling, we did not assume anything about these prior beliefs, except that they were constant across all syllogisms, and we used Bayesian data analysis to infer the prior beliefs used in the reasoner model, a kind of ``descriptive Bayesian'' approach \cite{Tauber2017}.
-These prior beliefs form the basis for formalizing hypotheses about how content of the syllogism (i.e., the content of the terms: A, B, C) affects reasoning, a topic known that ``belief bias'' that has been of interest to psychologist for decades \mht{CITE}.
-For example, \citeA{Tessler2015} found that content effects on reasoning could be captured by empirically measuring the relevant prior beliefs and plugging those into the Bayesian model. 
-Further work should look to the prior beliefs to formalize hypotheses about how priors rationally affect reasoning, which could speak to outstanding debates about whether these affects are indeed a form of ``bias' ' \mht{CITE}. 
+In our modeling, we did not assume anything about these prior beliefs, except that they were constant across all syllogisms, and we used Bayesian data analysis to infer the prior beliefs used in the reasoner model, a kind of ``descriptive Bayesian'' approach \cite{tauber2017bayesian}.
+These prior beliefs form the basis for formalizing hypotheses about how content of the syllogism (i.e., the content of the terms: A, B, C) affects reasoning, a topic known that ``belief bias'' that has been of interest to psychologist for decades \cite{Oakhill1989, Oakhill1993, Cherubini1998}.
+For example, \citeA{tessler2015understanding} found that content effects on reasoning could be captured by empirically measuring the relevant prior beliefs and plugging those into the Bayesian model. 
+Further work should look to the prior beliefs to formalize hypotheses about how priors rationally affect reasoning, which could speak to outstanding debates about whether these affects are indeed a form of ``bias'' \cite<e.g.,>{Klauer2000, Garnham2005, Dube2011}. 
 
 
-We presented a Bayesian model that uses the natural language semantics of the premises of the syllogism to updates its prior beliefs. It is straight-forward to consider the implications of pragmatics on the interpretation of the premises. 
-Such a model could be constructed by a relatively standard Rational Speech Act pragmatic listener \cite{Frank2012a, goodman2016pragmatic, scontras2018probabilistic}; that is, treating the listener component of the model as a listener who reasons about why a speaker produced the utterances that they did, where the speaker is the kind of pragmatic speaker we have considered in this paper, who decides what utterance to produce in order to convey information about the state (or, belief distribution) to a naive literal listener. 
+We presented a Bayesian model that uses the natural language semantics of the premises of the syllogism to updates its prior beliefs. 
+It is straight-forward to extend our approach to reasoning with other quantifiers (e.g., \emph{most} and \emph{few}; see e.g., \citeNP{tessler2014some}, cf., \citeNP{geurts2003reasoning}) as well as consider the implications of pragmatics on the interpretation of the premises. 
+Such a pragmatic interpretation model could be constructed as a standard Rational Speech Act pragmatic listener \cite{Frank2012a, goodman2016pragmatic, scontras2018probabilistic}; that is, treating the listener component of the model as a listener who reasons about why a speaker produced the utterances that they did, where the speaker is the kind of pragmatic speaker we have considered in this paper, who decides what utterance to produce in order to convey information about the state (or, belief distribution) to a naive literal listener. 
 Indeed, we have explored several versions of this kind of pragmatic model in the course of this project but found that no model extension we tried provided a substantially better quantitative fit to Ragni et al. (2019) data than the model we presented.
 That is not to say that pragmatics does not enter into the interpretation process of a syllogism. 
 We have only considered one particular experimental protocol and data set (from Ragni et al., 2019), where participants were presented with all 64 syllogisms, revealing the generative process of the syllogism (parametric recombination fo quantifiers and term orders) and perhaps inducing a more logical analysis of the syllogisms.
-As well, the participants were \mht{confirm the participants of Ragni et al. were WEIRD?}.
-Reasoning with syllogisms varies appreciably across individuals \mht{individual differences paper}, and substantially so in illiterate persons \mht{syllogisms and literacy paper},
+As well, the participants were from Western, educated, indutrialized, rich, democratic societies, a feature not shared with most other human beings \cite{henrich2010most}. 
+% \mht{confirm the participants of Ragni et al. were WEIRD?}.
+Reasoning with syllogisms varies appreciably across individuals \cite{galotti1986individual, bacon2003individual}, and substantially so in illiterate persons \cite{dias2005reasoning}.
 In other contexts or populations, we may see that reasoning with syllogisms as a special case of reasoning about an argument or a riddle \cite<cf.>{luria1976cognitive, Ong1982}. 
 Extending our modeling approach with a pragmatic interpretation component will be important for analyzing such behavior. 
 
