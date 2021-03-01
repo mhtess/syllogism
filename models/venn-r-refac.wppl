@@ -1,0 +1,217 @@
+
+var modelName = dataFromR[0]
+
+var modelObj = {
+  M00_LIT_LIT,
+	M01_LIT_PRAG_BELIEF,
+	M02_LIT_PRAG_STATE,
+	M10_PRAG_STATE_LIT,
+	M11_PRAG_STATE_PRAG_BELIEF,
+	M12_PRAG_STATE_PRAG_STATE,
+	M20_PRAG_QUD_LIT,
+	M21_PRAG_QUD_PRAG_BELIEF,
+	M22_PRAG_QUD_PRAG_STATE
+}
+
+
+var parameters = {
+	speakerOptimality: {
+		alpha_1 : 1.5,
+		alpha_2 : 1.5
+	},
+	noise: 0.01,
+	firstTermPrefWeight: 2,
+	nvcWeight: 1,
+	regionProbs: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+}
+
+var rsa_model = modelObj[modelName]
+
+
+var marginalizeVennForR = function(dist){
+  Infer({model: function(){
+    var venn = sample(dist);
+    _.fromPairs(map(function(x){ return [x.label, x.truth_val] }, venn))
+  }})
+}
+
+var marginalizePremisesForR = function(dist){
+  Infer({model: function(){
+    var prems = sample(dist);
+    return map(formatSentence, prems)
+    // _.fromPairs(map(function(x){ return [x.label, x.truth_val] }, venn))
+  }})
+}
+
+
+
+var syllogisms = [
+  // [
+  //   {"quantifier":"all", "p1":"A","p2":"B"},
+  //   { "quantifier":"all", "p1":"C", "p2":"B"}
+  // ],
+  // [
+  //   {"quantifier":"all", "p1":"A","p2":"B"},
+  //   { "quantifier":"no", "p1":"B","p2":"C"}
+  // ],
+  [
+    {"quantifier":"no", "p1":"A","p2":"B"},
+    { "quantifier":"no", "p1":"B","p2":"C"}
+  ]//,
+  // [
+  //   {"quantifier":"some", "p1":"A","p2":"B"},
+  //   { "quantifier":"all", "p1":"B","p2":"C"}
+  // ],
+  // [
+  //   {"quantifier":"some", "p1":"A","p2":"B"},
+  //   { "quantifier":"some", "p1":"B","p2":"C"}
+  // ],
+  // [
+  //   {"quantifier":"some", "p1":"A","p2":"B"},
+  //   { "quantifier":"some_not", "p1":"B","p2":"C"}
+  // ],
+  // [
+  //   {"quantifier":"some", "p1":"A","p2":"B"},
+  //   { "quantifier":"no", "p1":"B","p2":"C"}
+  // ]
+]
+
+
+// // // // // // STATE POSTERIORS // // // // // // // //
+
+// _.fromPairs(map(function(syllogism){
+//   var first_term_preference = firstTermPreference(syllogism) // A, C, or false
+//
+//   var returnVal = {
+//     literal: marginalizeVennForR(
+//       venn_interpreter(syllogism, literal_pragmatics, false)
+//     ),
+//     pragmatic_state: marginalizeVennForR(pragmatic_interpreter(syllogism, {
+//       modular: true,
+//       interpretation: true,
+//       production: false,
+//       qud: "state",
+//       alternatives: "quantifier"
+//     })),
+//     pragmatic_AC: marginalizeVennForR(pragmatic_interpreter(syllogism, {
+//       modular: true,
+//       interpretation: true,
+//       production: false,
+//       qud: "AC",
+//       alternatives: "quantifier"
+//     }))//,
+//     // pragmatic_head: marginalizeVennForR(pragmatic_interpreter(syllogism, {
+//     //   modular: true,
+//     //   interpretation: true,
+//     //   production: false,
+//     //   qud: "head",
+//     //   alternatives: "quantifier"
+//     // }))
+//   }
+//
+//   return [formatSentence(syllogism[0]) + "/" + formatSentence(syllogism[1]), returnVal]
+//
+// }, syllogisms))
+
+
+// // // // // // CONCLUSION POSTERIORS // // // // // // // //
+
+_.fromPairs(map(function(syllogism){
+  // var first_term_preference = firstTermPreference(syllogism) // A, C, or false
+
+  var returnVal = rsa_model(syllogism, parameters)
+
+
+	// {
+  //   literal: modular_pragmatic_reasoner(syllogism, literal_pragmatics, first_term_preference),
+  //   pragmatic_state_lit: modular_pragmatic_reasoner(syllogism, {
+  //     modular: true,
+  //     interpretation: true,
+  //     production: false,
+  //     qud: "state",
+  //     alternatives: "quantifier"
+  //   }, first_term_preference),
+  //   pragmatic_AC_lit: modular_pragmatic_reasoner(syllogism, {
+  //     modular: true,
+  //     interpretation: true,
+  //     production: false,
+  //     qud: "AC",
+  //     alternatives: "quantifier"
+  //   }, first_term_preference)//,
+  //   // pragmatic_head: marginalizeVennForR(pragmatic_interpreter(syllogism, {
+  //   //   modular: true,
+  //   //   interpretation: true,
+  //   //   production: false,
+  //   //   qud: "head",
+  //   //   alternatives: "quantifier"
+  //   // }))
+  // }
+
+  return [formatSentence(syllogism[0]) + "/" + formatSentence(syllogism[1]), returnVal]
+
+}, syllogisms))
+//
+
+// modular_pragmatic_reasoner(syllogisms[0],
+//   {
+//     modular: true,
+//     interpretation: true,
+//     production: false,
+//     qud: "AC",
+//     alternatives: "quantifier"
+//   }, "A")
+
+
+
+
+
+// // // // // // S1 for different venn diagrams // // // // // // // //
+///
+
+// var syllogism = [
+//     {"quantifier":"all", "p1":"A","p2":"B"},
+//     { "quantifier":"some", "p1":"B","p2":"C"}
+//   ]
+
+// var vennsForS1 = [
+//   "A;AB;AC;C",
+//   "AB;ABC;B;BC;C",
+//   "A;AC;C",
+//   "AC",
+//   "A;AC",
+//   "AC;C"
+// ]
+//
+//
+// _.fromPairs(map(function(qudVal){
+//   // display(qudVal)
+//
+//   var stateS1 = marginalizePremisesForR(argument_speaker(qudVal, syllogism, {
+//     modular: true,
+//     interpretation: true,
+//     production: false,
+//     qud: "state",
+//     alternatives: "quantifier"
+//   }, false))
+//   // display('qud model')
+//
+//   var ac_qud = sort(_.uniq(map(function(x){
+//     return x.replace("B", "")
+//   }, qudVal.split(';')))).join(';')
+//   // display(ac_qud)
+//   var qudS1 = marginalizePremisesForR(argument_speaker(ac_qud, syllogism, {
+//     modular: true,
+//     interpretation: true,
+//     production: false,
+//     qud: "AC",
+//     alternatives: "quantifier"
+//   }, false))
+//
+//   var returnVal = {
+//     stateQud : stateS1,
+//     acQud: qudS1
+//   }
+//
+//   return [qudVal, returnVal]
+//
+// }, vennsForS1))
