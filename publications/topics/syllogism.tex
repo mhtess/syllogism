@@ -208,15 +208,15 @@ Something beyond logical validity is guiding participants' reasoning behavior.
 %A meta-analysis of syllogistic reasoning showed that over the population, the proper production of no valid conclusion responses for invalid arguments ranged from 76\% to 12\%. 
 
 % \mht{this is kind of weak, superficial...}
-Many theories assume deductive reasoning is the ideal framework by which to evaluate human reasoning  and try to explain reasoning errors as a matter of noise during cognition. 
-Errors, then, may arise from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}. 
-Probability theory provides an alternative idealized framework by which to evaluate human reasoning, and many other kinds of reasoning are well-explained as probabilistic inference under uncertainty \cite{tenenbaum2006theory}. 
+A growing tradition views human logical reasoning as a special case of probabilistic inference \cite{oaksford2001probabilistic, oaksford2007bayesian, hahn2007rationality, tenenbaum2006theory}.
+Contra more traditional approaches that  assume deductive reasoning is the ideal framework by which to evaluate human reasoning  and try to explain reasoning errors as arising from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}, the probabilisitic lens assumes that human reasoners about logical reasoning tasks as they approach many other kinds of everyday reasoning, which often takes the form of probabilistic inference under uncertainty \cite{tenenbaum2006theory}. 
+The most prominent application of the probabilistic approach to syllogistic reasoning, however, falls short at fully articulating a probabilistic inferential logic and instead resorts to positing heuristics that are thought to approximate this probabilistic logic \cite{Chater1999}.
+Furthermore, a theory that integrates such a probabilistic logic with principles of natural language -- semantics and pragmatics -- which are intuitively at play for human reasoning as syllogisms are arguments expressed in natural language has not been attempted.
+Natural language semantics plays a role in many theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, though how those semantics interface with pragmatic reasoning  is either posited in an ad-hoc manner \cite{Chater1999} or has been limited to simple Gricean enrichment of the premises \cite{Roberts2001}.	
 
-The idealized logical and/or probabilistic framework in which thinking and reasoning unfolds is just part of process of syllogistic reasoning, however. 
-Syllogisms comprise a formal logical system, but they are expressed using the tools of natural language (e.g., natural language quantifiers).
-Reasoning through a syllogism, thus, involves interpreting and producing natural language sentences; understanding such a task requires a careful examination of the principles of natural language -- semantics and pragmatics -- that may be at play.
-Natural language semantics plays a role in many such theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, though how those semantics interface with pragmatic reasoning  is either posited in an ad-hoc manner \cite{Chater1999} or has been limited to simple Gricean enrichment of the premises \cite{Roberts2001}.
-
+%The idealized logical and/or probabilistic framework in which thinking and reasoning unfolds is just part of process of syllogistic reasoning, however. 
+%Syllogisms comprise a formal logical system, but they are expressed using the tools of natural language (e.g., natural language quantifiers).
+%Reasoning through a syllogism, thus, involves interpreting and producing natural language sentences; understanding such a task requires a careful examination of the  that may be at play.
 
 Inspired by Luria's experiments, we explore the idea that understanding human syllogistic reasoning requires a careful look at participants' understanding of the task \cite{henle1962relation}. 
 In particular, we view syllogistic reasoning through the lens of the language understanding processes that guide everyday reasoning with language, a process which involves reasoning about how an interlocutor would interpret a speaker's sentences \cite{Grice1975, Clark1996, Levinson2000}. 
@@ -522,7 +522,7 @@ The first is a literal speaker, who selects conclusions that are true given the 
 The second is a pragmatic speaker, who selects a conclusion that would best convey information about the likely state to a naive listener. 
 We show below that this pragmatic speaker model can also come in two varieties: A speaker who chooses utterances to convey information about a particular state (weighted by their probability) or a speaker who chooses utterance to convey information about her entire belief distribution over states. 
 %align a naive listener's beliefs about the state with the beliefs of the speaker.
-Since these models produce a distribution over conclusions, we label these models as reasoner models $R$, so as to not confuse them with the speaker models $S$ that are used as part of the recursion in the pragmatic interpretation of premises. \mht{switch to $S$ since no more pragmatic interpretation?}
+%Since these models produce a distribution over conclusions, we label these models as reasoner models $R$, so as to not confuse them with the speaker models $S$ that are used as part of the recursion in the pragmatic interpretation of premises. \mht{switch to $S$ since no more pragmatic interpretation?}
 %The pragmatic production of a conclusion is a model of a speaker who tries to produce the most informative utterance (conclusion) to convey information to a naive listener. 
 
 \subsubsection{Space of conclusions}
@@ -546,14 +546,14 @@ Therefore, we model the \emph{nothing follows} statement as a vacuous, or silent
 % lexical meanings such that
 % Our pragmatics model begins with submodal that performs a literal interpretation of the premises. 
 % The model computes a 
-Given a belief updating model based on the premises of a syllogism $L$, %(either literal $L_0$ or pragmatic $L_1$), 
-we can define a literal production model $R_0$ that uses the listener $L$'s posterior distribution on states to determine what conclusion is likely to be true given the premises. 
-This model $R_0$ can be viewed as one that is sampling a state from the listener's posterior distribution on states and randomly choosing among the conclusions that are literally true of that state. 
+Given a belief updating model based on the premises of a syllogism $L_0$, %(either literal $L_0$ or pragmatic $L_1$), 
+we can define a literal production model $S_0$ that uses the listener $L_0$'s posterior distribution on states to determine what conclusion is likely to be true given the premises. 
+This model $S_0$ can be viewed as one that is sampling a state from the listener's posterior distribution on states and randomly selecting among the conclusions that are literally true of that state. 
 
 %The strength of a syllogistic argument (two premises) for a conclusion is a real-valued number between 0 and 1 given by the $P(u_c \mid u_1, u_2)$, where $u_1$ and $u_2$ are the two premises of the syllogism.
 
 \begin{equation}
-R_0(u_3 \mid u_1, u_2) \propto \sum_s \mathcal{L}(u_3, s) \cdot L(s \mid u_1, u_2) \label{eq:R0}
+S_0(u_3 \mid u_1, u_2) \propto \sum_s \mathcal{L}(u_3, s) \cdot L_0(s \mid u_1, u_2) \label{eq:R0}
 \end{equation}
 
 \subsubsection{Informative production of conclusions: State communication}
@@ -565,10 +565,10 @@ Following standard practice in the Rational Speech Act modeling framework, the u
 The speaker then chooses utterances soft-max optimally with respect that utility function.
 
 \begin{equation}
-R_1(u_3 \mid u_1, u_2) \propto \exp{ [ \alpha \cdot  \sum_s  \ln L(s \mid u_3) \cdot L(s \mid u_1, u_2) ] } \label{eq:R1a}
+S_1(u_3 \mid u_1, u_2) \propto \exp{ [ \alpha \cdot  \sum_s  \ln L_0(s \mid u_3) \cdot L_0(s \mid u_1, u_2) ] } \label{eq:R1a}
 \end{equation}
 
-\mht{this sampling a state idea might be directly analogous to how mental models theory treats this conclusion selection process (with respect to a particular model)...}
+% \mht{this sampling a state idea might be directly analogous to how mental models theory treats this conclusion selection process (with respect to a particular model)...}
 
 \subsubsection{Informative production of conclusions: Belief alignment}
 
@@ -576,26 +576,27 @@ Rather than the reasoner first sampling a state and then selecting an utterance 
 The utility of a conclusion, then, is quantified by how well it would align the listener's beliefs with those of the reasoner. 
 Formally, we use the information-theoretic measure of Kullback-Leibler (KL) divergence as the measure of alignment of the naive listener and reasoner's belief distributions. 
 %Again, this formalization is agnostic as to how we compute the reasoner's state distribution (whether it be via a literal or a pragmatic interpretation of the premises), and so 
-We denote the reasoner's belief distribution over the state as $R$.
+We denote the reasoner's belief distribution over the state as $S$.
 
 \begin{align}
   \label{eq:KL-divergence}
-  \text{KL}({R \mid \mid L_0}(u)) = - \sum_{s} R(s) \ \log \frac{R(s)}{{L_{0}}(s \mid u)}
+  \text{KL}({R \mid \mid L_0}(u)) = - \sum_{s} S(s) \ \log \frac{S(s)}{{L_{0}}(s \mid u)}
 \end{align}
 
 \noindent Then, the reasoner model that selects conclusions an informative manner is given by: 
 
 \begin{equation}
-R_1(u_3 \mid u_1,  u_2) \propto  \exp [ \alpha_2 \cdot \text{KL}({R_1(s) \mid \mid L_0}(s \mid u)) ]  \label{eq:R1b}
+S_1(u_3 \mid u_1,  u_2) \propto  \exp [ \alpha_2 \cdot \text{KL}({S_1(s) \mid \mid L_0}(s \mid u_3)) ]  \label{eq:R1b}
 \end{equation}
 
 \noindent where $L_0(s \mid u)$ is the literal listener model defined in Equation \ref{eq:L0}. 
 
 We note that a critical ingredient to this Belief Alignment model of conclusion production is the noisy semantics we assume inside the literal listener $L_0$.
 Without it, the speaker would be required to say \emph{nothing follows} for any logically invalid syllogism. 
-The reason is that any quantified conclusion will deterministically rule out certain states (i.e., set their probability equal to 0). 
+The reason is that any quantifier conclusion will deterministically rule out certain states (i.e., set their probability equal to 0). 
 The definition of a logically invalid syllogism is one in which no conclusion is true in every state in which the premises are true.
-Thus, by producing a quantified conclusion the speaker would be conveying that a certain state has 0 probability when in the mind of the speaker it has non-0 probability. 
+Thus, by producing a quantified conclusion, the speaker would be conveying that a certain state has 0 probability, when in the mind of the speaker, the state has non-0 probability. 
+By adding a small amount of noise into the semantics, we avoid this boundary case.
 
 %Hearing any quantified statement; thus, the speaker's belief distribution will ascribe probability 0 to certain states.
 %Hearing \emph{nothing follows} rules out no states; thus, the naive listener's belief distribution will have no states with probability 0.
@@ -871,20 +872,7 @@ Both the Belief Alignment model and the Literal Speaker are able to capture thes
 
 
 
-\begin{center}
-\begin{table}[h]
-\centering
-\pgfplotstabletypeset[sci zerofill,
-    col sep = comma,
-    every head row/.style={before row = \toprule, after row = \midrule},
-    every last row/.style={after row = \bottomrule},
-    columns/model/.style={string type, column name={Model}, column type = l},
-    columns/r/.style={string type, column name={$r$}, column type = l,  sci sep align, precision=3},
-   columns/mse/.style={fixed, column name={MSE}, column type = l, dec sep align, precision=3},	      
-   columns/nParameters/.style={string type, column name={Number of Parameters}, column type = l,  sci sep align, precision=3},
-     ]{csv_to_tex/allModels_stats.csv}\caption{Summary statistics for the RSA and alternative models. Alternative models were fitted to both group level data and individual level data. Individual-level variants use a new set of parameters for each individual participant in the data set ($n=139$).}\label{tab:altStats}
-\end{table}
-\end{center}
+
 
 %\paragraph{Model comparison}
 %
@@ -909,6 +897,14 @@ We found the model that explained the human syllogistic reasoning data set the b
 Our modeling approach is a Computational or Rational Level of analysis model \cite{marr1982vision, anderson1990adaptive} that seeks to describe the computations that underly human syllogistic reasoning without stipulating a precise implementation of such a reasoning process. 
 Many other theories of syllogistic reasoning instead consider the process by which a human reasoner solves a syllogism.
 The two most influential theories of human syllogistic reasoning are the Mental Models Theory \cite{johnsonlaird2006we, khemlani2013processes} and the Probability Heuristics Model \cite{Chater1999}, each of which share features with our probabilistic pragmatics approach. 
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width = \textwidth]{figs/alternative_model_scatters.pdf}
+\caption{Performance of alternative theories. Each point represents an individual premise and conclusion pair. Group-level models use parameters that are fit to the group-level data. Individual-level models use parameters specific to individual participants. }
+\label{fig:altModels}
+\end{figure}
 
 \subsubsection{Alternative models}
 
@@ -936,12 +932,22 @@ The parameters of these models were fit to the same data set from \citeA{ragni20
 To examine the predictions of these theories in a manner comparable to our analysis of the Rational Speech Act models, we treated the predictions of these alternative models for individual participants similar to how we treated the behavioral responses of individual participants. 
 We constructed bootstrapped 95\% confidence intervals for the model predictions by resampling with replacement the predictions for each unique syllogism and conclusion. 
 
-\begin{figure}[t]
+
+
+\begin{center}
+\begin{table}[h]
 \centering
-\includegraphics[width = \textwidth]{figs/alternative_model_scatters.pdf}
-\caption{Performance of alternative theories. Each point represents an individual premise and conclusion pair. Group-level models use parameters that are fit to the group-level data. Individual-level models use parameters specific to individual participants. }
-\label{fig:altModels}
-\end{figure}
+\pgfplotstabletypeset[sci zerofill,
+    col sep = comma,
+    every head row/.style={before row = \toprule, after row = \midrule},
+    every last row/.style={after row = \bottomrule},
+    columns/model/.style={string type, column name={Model}, column type = l},
+    columns/r/.style={string type, column name={$r$}, column type = l,  sci sep align, precision=3},
+   columns/mse/.style={fixed, column name={MSE}, column type = l, dec sep align, precision=3},	      
+   columns/nParameters/.style={string type, column name={Number of Parameters}, column type = l,  sci sep align, precision=3},
+     ]{csv_to_tex/allModels_stats.csv}\caption{Summary statistics for the RSA and alternative models. Alternative models were fitted to both group level data and individual level data. Individual-level variants use a new set of parameters for each individual participant in the data set ($n=139$).}\label{tab:altStats}
+\end{table}
+\end{center}
 
 % The comparison of these model predictions to the behavioral data for each syllogsim and conclusion is shown in . 
 
@@ -973,6 +979,9 @@ Syllogisms are a logical system, but they are expressed using natural language q
 We developed and tested a family of probabilistic models of pragmatic reasoning that formalized the meaning of natural language sentences and how the calculations of informativeness that reasoners could use in selecting their conclusions.
 We found that conclusions selected by participants were best explained by a model that chose its conclusion to a syllogism by reasoning about how well that conclusion would align a naive listener's beliefs with those of their own. 
 We discuss the modeling approach in more detail, including how it can be extended to account for other phenomena in syllogistic reasoning, as well as implications of our findings in the context of other work on pragmatic reasoning with syllogisms.
+
+\mht{add connection to Oaksford \& Chater, mental models... tradition of probabilistic reasoning... }
+
 
 In our modeling, we contrasted two mechanisms by which pragmatic considerations can enter into the production of conclusions: one based on informatively describing a particular state (or, Venn diagram) and one based on conveying the reasoner's entire belief distribution over states (i.e., their distribution over possible Venn diagrams). 
 The results, both quantitatively and qualitatively, provide overwhelming evidence that it is the latter notion of belief alignment which most closely tracks human reasoning patterns. 
