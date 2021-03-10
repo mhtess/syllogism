@@ -8,13 +8,13 @@ var chain = last(args) // load index as last command line index
 var modelObj = {
   M00_LIT_LIT,
 	M01_LIT_PRAG_BELIEF,
-	M02_LIT_PRAG_STATE,
-	M10_PRAG_STATE_LIT,
-	M11_PRAG_STATE_PRAG_BELIEF,
-	M12_PRAG_STATE_PRAG_STATE,
-	M20_PRAG_QUD_LIT,
-	M21_PRAG_QUD_PRAG_BELIEF,
-	M22_PRAG_QUD_PRAG_STATE
+	M02_LIT_PRAG_STATE//,
+	// M10_PRAG_STATE_LIT,
+	// M11_PRAG_STATE_PRAG_BELIEF,
+	// M12_PRAG_STATE_PRAG_STATE,
+	// M20_PRAG_QUD_LIT,
+	// M21_PRAG_QUD_PRAG_BELIEF,
+	// M22_PRAG_QUD_PRAG_STATE
 }
 
 var pragmaticListenerModels = [
@@ -47,7 +47,7 @@ var bda_model = modelObj[modelName]
 var steps = 5000 // 10 hours per sample
 var samples = 10
 
-var outfile = 'refac-ais-syllogisms-ragni2016_full_' +
+var outfile = 'refac-ais-4paramPrior-syllogisms-ragni2016_full_' +
 	modelName + "_" +
   steps + '-steps_' +
   samples + '-samples_iter' + chain_num + '.csv'

@@ -10,13 +10,13 @@ var chain = last(args) // load index as last command line index
 var modelObj = {
   M00_LIT_LIT,
 	M01_LIT_PRAG_BELIEF,
-	M02_LIT_PRAG_STATE,
-	M10_PRAG_STATE_LIT,
-	M11_PRAG_STATE_PRAG_BELIEF,
-	M12_PRAG_STATE_PRAG_STATE,
-	M20_PRAG_QUD_LIT,
-	M21_PRAG_QUD_PRAG_BELIEF,
-	M22_PRAG_QUD_PRAG_STATE
+	M02_LIT_PRAG_STATE//,
+	// M10_PRAG_STATE_LIT,
+	// M11_PRAG_STATE_PRAG_BELIEF,
+	// M12_PRAG_STATE_PRAG_STATE,
+	// M20_PRAG_QUD_LIT,
+	// M21_PRAG_QUD_PRAG_BELIEF,
+	// M22_PRAG_QUD_PRAG_STATE
 }
 
 var pragmaticListenerModels = [
@@ -52,7 +52,7 @@ var totalIterations = 10000, lag =  1;
 
 var samples = totalIterations/(lag + 1), burn = totalIterations / 2;
 
-var outfile = 'refac-bda-syllogisms-ragni2016_full_' +
+var outfile = 'refac-bda-4paramPrior-syllogisms-ragni2016_full_' +
 	modelName + "_" +
   totalIterations+ '_burn' + burn +
   '_lag' + lag + '_chain' + chain_num + '.csv'
@@ -65,7 +65,7 @@ Infer({model: bda_model,
        method: 'incrementalMH',
        onlyMAP: true,
        verbose: T,
-       // verboseLag: totalIterations / 20,
+       verboseLag: totalIterations / 20,
        callbacks: [callback]
      });
 
