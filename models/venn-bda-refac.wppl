@@ -52,7 +52,7 @@ var totalIterations = 10000, lag =  1;
 
 var samples = totalIterations/(lag + 1), burn = totalIterations / 2;
 
-var outfile = 'refac-bda-2paramPrior-syllogisms-ragni2016_full_' +
+var outfile = 'refac-bda-1paramPrior-syllogisms-ragni2016_full_' +
 	modelName + "_" +
   totalIterations+ '_burn' + burn +
   '_lag' + lag + '_chain' + chain_num + '.csv'

@@ -47,7 +47,7 @@ var bda_model = modelObj[modelName]
 var steps = 5000 // 10 hours per sample
 var samples = 10
 
-var outfile = 'refac-ais-2paramPrior-syllogisms-ragni2016_full_' +
+var outfile = 'refac-ais-1paramPrior-syllogisms-ragni2016_full_' +
 	modelName + "_" +
   steps + '-steps_' +
   samples + '-samples_iter' + chain_num + '.csv'
