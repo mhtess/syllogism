@@ -12,10 +12,21 @@
 %\linespread{1.12}
 \usepackage{booktabs}
 \usepackage{centernot}
-
+\usepackage{tabularx}
 \usepackage{tikz}
 % \usepackage{subfigure}
 \usetikzlibrary{bayesnet}
+
+
+  \def\firstcircle{(90:1cm) circle (1.5cm)}
+  \def\secondcircle{(210:1cm) circle (1.5cm)}
+  \def\thirdcircle{(330:1cm) circle (1.5cm)}
+  
+  
+  %\draw (0,0) circle (1) (-0.5,0.25)  node [text=black,above] {$A$}
+%      (1,0) circle (1) (1.5, 0.25)  node [text=black,above] {$B$}
+%      (0.5,-1) circle (1) (0.5,-1.25)  node [text=black,below] {$C$}
+%      (-1.5,-2.25) rectangle (2.5,1.25) node [text=black,above] {};
 
 % these packages are needed to insert results 
 % obtained from R into the LaTeX document
@@ -87,10 +98,10 @@
 
 
 
-\title{Probabilistic Pragmatics in Syllogistic Reasoning}
+\title{Probability, logic, and pragmatics in syllogistic reasoning}
 \shorttitle{Pragmatics in Syllogistic Reasoning}
 
-\author{Michael Henry Tessler\textsuperscript{1}\textsuperscript{,2}, Joshua B. Tenenbaum\textsuperscript{1}~\& Noah D. Goodman\textsuperscript{2}}
+\author{Michael Henry Tessler\textsuperscript{1}\textsuperscript{,2}, Joshua B. Tenenbaum\textsuperscript{1},~and \\Noah D. Goodman\textsuperscript{2}}
 \date{}
   
 \affiliation{
@@ -174,6 +185,24 @@ The logical space defined by classical syllogisms is comprised of all combinatio
 In total, each of the two premises can be appear with one of the four quantifiers and two term orders yielding:  $4$ quantifiers  $\times$ 2 term orderings $\times$ 2 premises = 64 syllogisms.
 Of the 64 unique syllogistic premises, only 27  (42\%) yield a logically valid conclusion: a conclusion that is true in every situation in which the premises are true.
 For the remaining 37 (58\%), no conclusion follows from the premises; in terms of the syllogistic reasoning, the correct responses is ``nothing follows'' (or, ``No Valid Conclusion''; NVC). 
+
+\begin{figure}
+\begin{tabularx}{.8\textwidth}{XXXX}
+%\begin{quotation} 
+
+& & & \\
+\bf A \--- B & \bf B \--- A  & \bf A \--- B & \bf B \--- A \\
+\bf B \--- C & \bf C \--- B  & \bf C \--- B & \bf B \--- C \\
+\bf \textemdash & \textemdash & \textemdash & \textemdash \\
+\bf A \--- C & \bf A \--- C & \bf A \--- C & \bf A \--- C \\
+& & & \\
+%\end{quotation}
+\end{tabularx}
+
+\caption{The 4 unique term-orderings of syllogisms}
+\label{figures}
+\end{figure}
+
 
 It is not only the illiterate peasants of 1930s Kyrgyzstan who appear to struggle with reasoning logically with syllogisms.
 A meta-analysis of syllogistic reasoning tasks performed on American and Italian participants estimated the accuracy of producing a valid conclusion to a logically valid syllogism to range widely (from 90\% to 1\% accuracy) depending on the syllogism \cite{Khemlani2012}.
@@ -293,17 +322,23 @@ As a Bayesian model, our approach also naturally extends to explain how the cont
 
 %\section{Bayesian argument strength in syllogistic reasoning}
 
-Syllogisms are a logical system, but use the tools of natural language to convey their meanings. 
-Thus, when naive participants reason with syllogisms, they may be harnessing other aspects of their language understanding abilities beyond reporting the literal conclusions that follow from the premises.
-Below we formalize how pragmatics enters into the conclusion selection process. 
 
-To illustrate the process, we focus on the narrow goal of formalizing a model where a reasoner may rationally produce the conclusion \emph{nothing follows}. 
-%ecently noted that 
-The \emph{nothing follows} conclusion is often either omitted from theories of syllogistic reasoning or treated as a by-product of the reasoning process (e.g., a conclusion of last resort; \citeNP{riesterer2020modeling}).
-%We do so with the narrow 
-By addressing this problem, we provide insight into human syllogistic reasoning more broadly (i.e., other conclusions) by formalizing the mechanism by which pragmatic conclusion selection operates. 
-%This work raises the question of whether premise interpretation may also be pragmatic (as you said above)
-Before we get to the pragmatic production of conclusions, we first describe our ontology of the state space and the literal meanings with which the model operates.
+We developed a model of syllogism reasoning that uses the logic of the syllogism to update a probabilistically-generated distribution over world states and decides what pragmatically useful conclusion would best convey that distribution on states to a naive listener.
+Below, we formalize each of these three ingredients -- probability, logic, and pragmatics -- and show how they combine to form the foundation of a rational model of syllogistic reasoning. 
+%Our modeling approach makes use of three fundamental ingredients: logic, probability, and pragmatics. 
+
+%Syllogisms are a logical system, but use the tools of natural language to convey their meanings. 
+%Thus, when naive participants reason with syllogisms, they may be harnessing other aspects of their language understanding abilities beyond reporting the literal conclusions that follow from the premises.
+%Below we formalize how pragmatics enters into the conclusion selection process. 
+
+%\mht{cut or move this...}
+%To illustrate the process, we focus on the narrow goal of formalizing a model where a reasoner may rationally produce the conclusion \emph{nothing follows}. 
+%%ecently noted that 
+%The \emph{nothing follows} conclusion is often either omitted from theories of syllogistic reasoning or treated as a by-product of the reasoning process (e.g., a conclusion of last resort; \citeNP{riesterer2020modeling}).
+%%We do so with the narrow 
+%By addressing this problem, we provide insight into human syllogistic reasoning more broadly (i.e., other conclusions) by formalizing the mechanism by which pragmatic conclusion selection operates. 
+%%This work raises the question of whether premise interpretation may also be pragmatic (as you said above)
+%Before we get to the pragmatic production of conclusions, we first describe our ontology of the state space and the literal meanings with which the model operates.
 %
 %Syllogistic reasoning involves two language understanding tasks: interpreting the premises of the syllogism and producing a conclusion.
 %Each of these components could involve pragmatic reasoning.
@@ -315,40 +350,101 @@ Before we get to the pragmatic production of conclusions, we first describe our 
 
 \subsection{Ontology and semantics}
 
-The model is based on an ontology of situations represented by Venn diagrams corresponding to all possible logical relations between the sets of three properties: A, B, C. 
+Our model is built on top of an ontology of concrete situations about objects with properties. 
+Consider the syllogism from above:
+
+\begin{quote}
+All artists are bakers. \\
+Some bakers are chemists. \\
+\_\_ \\
+Some artists are chemists.
+\end{quote}
+
+A \emph{mental model} in the style of  \citeA{johnson1983mental} that is consistent with syllogism above would be:
+
+%\begin{figure}
+\begin{tabularx}{.8\textwidth}{XXXXX}
+%\begin{quotation} 
+& \\
+\tt artist baker \\
+\tt artist baker chemist \\
+\tt \hspace{1.23cm} baker chemist \\
+\tt artist baker \\
+& \\
+%\end{quotation}
+\end{tabularx}
+%\caption{The 4 unique term-orderings of syllogisms}
+%\label{figures}
+%\end{figure}
+
+\noindent where each row of the model denotes an individual entity that has the properties listed (e.g., the first row denotes an artist who is also a baker).
+In this model, there are two artist-bakers, one baker-chemist, and one artist-baker-chemist.
+The classical categorical syllogisms we model below involve the quantifiers \emph{all} and \emph{some} (and their logical negations); the truth conditions of these quantifiers (i.e., whether or not the quantifier is true) are not affected by the number of entities with a unique combination of properties (i.e., it is inconsequential that there are two artist-bakers in the model above).
+Hence, we can represent the model in a reduced format, in which only the unique object types are represented.\footnote{
+For generalized quantifiers (e.g., \emph{most}, \emph{few}), the number of objects that have unique combinations of properties will matter. We discuss how our approach can be generalized to handle reasoning with generalized quantifiers in the General Discussion.}
+Such a model would look like: 
+
+\begin{tabularx}{.8\textwidth}{XXXXX}
+%\begin{quotation} 
+& \\
+\tt artist baker \\
+\tt artist baker chemist \\
+\tt \hspace{1.23cm} baker chemist 
+& \\
+%\end{quotation}
+\end{tabularx}
+
+This kind of minimal model, in which only the unique object types are represented, can also be displayed as a Venn diagram: 
+
+%\begin{figure}[h]
+%\centering
+%\begin{tikzpicture}[fill=gray]
+%\draw (0,0) circle (1) (-0.5,0.25)  node [text=black,above] {$A$}
+%      (1,0) circle (1) (1.5, 0.25)  node [text=black,above] {$B$}
+%      (0.5,-1) circle (1) (0.5,-1.25)  node [text=black,below] {$C$}
+%      (-1.5,-2.25) rectangle (2.5,1.25) node [text=black,above] {};
+%\end{tikzpicture}
+%\label{fig:venn}
+%\caption{A state is represented by Boolean values over the regions of a Venn diagram, corresponding to the presence or absence of unique object types.}
+%\end{figure}
 
 \begin{figure}[h]
 \centering
-\begin{tikzpicture}[fill=gray]
-% left hand
-%\scope
-%\clip (-2,-2) rectangle (2,2)
-%      (1,0) circle (1);
-%\fill (0,0) circle (1);
-%\endscope
-% right hand
-%\scope
-%\clip (-2,-2) rectangle (2,2)
-%      (0,0) circle (1);
-%\fill (1,0) circle (1);
-%\endscope
-% outline
-\draw (0,0) circle (1) (-0.5,0.25)  node [text=black,above] {$A$}
-      (1,0) circle (1) (1.5, 0.25)  node [text=black,above] {$B$}
-      (0.5,-1) circle (1) (0.5,-1.25)  node [text=black,below] {$C$}
-      (-1.5,-2.25) rectangle (2.5,1.25) node [text=black,above] {};
-\end{tikzpicture}
+    \begin{tikzpicture}
+      \begin{scope}
+    \clip \firstcircle;
+    \fill[gray] \secondcircle;
+      \end{scope}
+      \begin{scope}
+    \clip \secondcircle;
+    \fill[gray] \thirdcircle;
+      \end{scope}
+      \draw \firstcircle node[text=black,above] {$A$};
+      \draw \secondcircle node [text=black,below left] {$B$};
+      \draw \thirdcircle node [text=black,below right] {$C$};
+    \end{tikzpicture}
 \label{fig:venn}
 \caption{A state is represented by Boolean values over the regions of a Venn diagram, corresponding to the presence or absence of unique object types.}
 \end{figure}
 
-Each Venn diagram contains eight regions $i \in R$, corresponding to the presence or absence of each of the three properties: $\{\{A,B,C\},$ $\{A,B,\neg C\},$ $\{A,\neg B,C\},$ $\{\neg A, B, C\},$ $\{A, \neg B, \neg C\},...\}$. (For simplicity, when possible, we will refer to regions by the properties that are present, omitting the absent properties; for example, $\{A, B, \neg C\}$ will be referred to as $AB$.)
-These regions can be thought of as unique object types (e.g., an object defined by having properties $A$ and $B$ but not $C$) that are present in a situation.\footnote{This diagram representation is analogous to a mental model in the style of \citeA{johnson1983mental} composed of object tokens (e.g., some objects which have properties $A$ or $B$, etc.) but where only unique object tokens are represented (e.g., there cannot be two objects which have the same set of properties).}
-The empty region (or, the object type which has neither of the three properties: $\{\neg A, \neg B, \neg C\}$) does not impact the truth conditions of the quantifier sentences used in syllogisms, and hence, we omit this region and model only seven regions.
-Then, a state or situation (Venn diagram) $s \in S$ is composed of the set of object types (regions) that are present (e.g., $\{AB, BC, A\}$ is one possible state).
-The set of unique states has size $2^7 = 128$.
+%Syllogisms are arguments that relate two terms (denoted \emph{A} and \emph{C}) via a third term (\emph{B}). 
+
+%The model is based on an ontology of situations represented by Venn diagrams corresponding to all possible logical relations between the sets of three properties: A, B, C. 
+
+%The choice of explicit representation of object~vs.~object types
+
+Hence, the Venn diagram contains eight regions $i \in R$, corresponding to the unique object types that could be referred to in the syllogism. 
+Each region corresponds to the presence or absence of each of the three properties: $\{\{A,B,C\},$ $\{A,B,\neg C\},$ $\{A,\neg B,C\},$ $\{\neg A, B, C\},$ $\{A, \neg B, \neg C\},...\}$. (For simplicity, when possible, we will refer to regions by the properties that are present, omitting the absent properties; for example, $\{A, B, \neg C\}$ will be referred to as $AB$.)
+%These regions can be thought of as unique object types (e.g., an object defined by having properties $A$ and $B$ but not $C$) that are present in a situation.\footnote{This diagram representation is analogous to a mental model in the style of \citeA{johnson1983mental} composed of object tokens (e.g., some objects which have properties $A$ or $B$, etc.) but where only unique object tokens are represented (e.g., there cannot be two objects which have the same set of properties).}
+Then, a state or situation (Venn diagram) $s \in S$ is composed of the set of object types (regions) that are present (e.g., $\{AB, BC, ABC\}$ is one possible state).
+The set of unique states that we consider has size $2^7 = 128$.\footnote{
+There are $2^7$ states and not $2^8$ states since the empty region (or, the object type which has neither of the three properties: $\{\neg A, \neg B, \neg C\}$) does not impact the truth conditions of the quantifier sentences used in syllogisms.
+}
 %, though we exclude the state where all eight regions are empty (i.e., the state where there are no As, Bs, and Cs, but also no things that are not As, Bs, or Cs).
 Our model probabilistically generates states $s \in S$ by sampling a Bernoulli random variable for each of the $i \in R$ regions: $P(s) = \prod_{i \in R} P(A_{i}, B_{i}, C_{i})$. %= (P(a) \cdot P(b) \cdot P(c)) ^n$$
+
+
+
 
 %\subsection{Semantics}
 The classical syllogisms are comprised by two premise arguments where each premise relates two properties via a quantifier. 
@@ -382,13 +478,13 @@ We assume the semantics of \emph{All As are Bs} describes a situation in which t
 \begin{table}[]
 \begin{tabular}{@{}llll@{}}
 \toprule
-Example syllogistic sentence & Literal Meaning                                                                       & Consistent State & Inconsistent state \\ \midrule
+Example syllogistic sentence & Logical Meaning                                                                       & Consistent State & Inconsistent state \\ \midrule
 All As are Bs                                      & $\forall i \in R: A(i) \implies B(i) $ & \{AB, ABC\}                           & \{A, ABC\}                              \\
 Some As are Bs                                     & $\exists i \in R: A(i) \implies B(i) $ & \{A, AB\}                             & \{A, AC\}                               \\
 Some As are not Bs                                 & $\exists i \in R: A(i)  \centernot \implies B(i) $ & \{A, AB\}                             & \{AB, ABC\}                             \\
 No As are Bs                                       & $\forall i \in R: A(i) \centernot \implies B(i) $  & \{A, AC\}                             & \{A, AB\} \\ \bottomrule
 \end{tabular}
-\caption{Literal meanings of example syllogistic sentences with examples of states that are consistent with the literal meanings and inconsistent with the literal meanings.}
+\caption{Logical meanings of example syllogistic sentences with examples of states that are consistent with the literal meanings and inconsistent with the literal meanings.}
 \label{tab:sem}
 \end{table}
 
@@ -1006,13 +1102,13 @@ For example, \citeA{tessler2015understanding} found that content effects on reas
 Further work should look to the prior beliefs to formalize hypotheses about how priors rationally affect reasoning, which could speak to outstanding debates about whether these affects are indeed a form of ``bias'' \cite<e.g.,>{Klauer2000, Garnham2005, Dube2011}. 
 
 
-We presented a Bayesian model that uses the natural language semantics of the premises of the syllogism to updates its prior beliefs. 
-It is straight-forward to extend our approach to reasoning with other quantifiers (e.g., \emph{most} and \emph{few}; see e.g., \citeNP{tessler2014some}, cf., \citeNP{geurts2003reasoning}) as well as consider the implications of pragmatics on the interpretation of the premises. 
+We presented a Bayesian model that uses the literal, natural language semantics of the premises of the syllogism to updates its prior beliefs. 
+It is straightforward to extend our approach to reasoning with other quantifiers (e.g., \emph{most} and \emph{few}; see e.g., \citeNP{tessler2014some}, cf., \citeNP{geurts2003reasoning}) as well as to consider the implications of pragmatics on the interpretation of the premises. 
 Such a pragmatic interpretation model could be constructed as a standard Rational Speech Act pragmatic listener \cite{Frank2012a, goodman2016pragmatic, scontras2018probabilistic}; that is, treating the listener component of the model as a listener who reasons about why a speaker produced the utterances that they did, where the speaker is the kind of pragmatic speaker we have considered in this paper, who decides what utterance to produce in order to convey information about the state (or, belief distribution) to a naive literal listener. 
 Indeed, we have explored several versions of this kind of pragmatic model in the course of this project but found that no model extension we tried provided a substantially better quantitative fit to Ragni et al. (2019) data than the model we presented.
 That is not to say that pragmatics does not enter into the interpretation process of a syllogism. 
-We have only considered one particular experimental protocol and data set (from Ragni et al., 2019), where participants were presented with all 64 syllogisms, revealing the generative process of the syllogism (parametric recombination fo quantifiers and term orders) and perhaps inducing a more logical analysis of the syllogisms.
-As well, the participants were from Western, educated, indutrialized, rich, democratic societies, a feature not shared with most other human beings \cite{henrich2010most}. 
+We have only considered one particular experimental protocol and data set (from Ragni et al., 2019), where participants were presented with all 64 syllogisms, revealing the generative process of the syllogism (parametric recombination of quantifiers and term orders) and perhaps inducing a more logical analysis of the syllogisms.
+As well, the participants were from Western, educated, industrialized, rich, democratic societies, a feature not shared with most other human beings \cite{henrich2010most}. 
 % \mht{confirm the participants of Ragni et al. were WEIRD?}.
 Reasoning with syllogisms varies appreciably across individuals \cite{galotti1986individual, bacon2003individual}, and substantially so in illiterate persons \cite{dias2005reasoning}.
 In other contexts or populations, we may see that reasoning with syllogisms as a special case of reasoning about an argument or a riddle \cite<cf.>{luria1976cognitive, Ong1982}. 
