@@ -98,7 +98,7 @@
 
 
 
-\title{Probability, logic, and pragmatics in syllogistic reasoning}
+\title{Logic, probability, and pragmatics in syllogistic reasoning}
 \shorttitle{Pragmatics in Syllogistic Reasoning}
 
 \author{Michael Henry Tessler\textsuperscript{1}\textsuperscript{,2}, Joshua B. Tenenbaum\textsuperscript{1},~and \\Noah D. Goodman\textsuperscript{2}}
@@ -150,18 +150,129 @@ Our approach is a first step towards a rational pragmatic view of human reasonin
 
 \section{Introduction}
 
-In a famous scientific expedition of the 1930s, Russian psychologist Alexander Luria set off into the remote areas of Uzbekistan and Kyrgyzstan in the former Soviet Union to understand the minds of the illiterate peoples of Russia. Among his experiments, Luria would give his participants verbal reasoning problems such as the following:
+
+
+Imagine discussing a sports competition with your friend, and your friend remarks: 
 
 \begin{quote}
-In the Far North, where there is snow, all bears are white. \\
-Novaya Zembla is in the Far North and there is always snow there. \\
-What color are the bears?
+\emph{
+All of the teams that made it to the semifinals were expected to advance. But also, did you notice that some of the teams expected to advance had favorable referees?
+}
 \end{quote}
 
-The literacy of Luria's participant was a large factor in the response he received.
-While a literate person responded logically (```...they should all be white''), a typical response from an illiterate participant would be: ``I don't know. I've seen a black bear. I've never seen any others. Each locality has its own animals'' \cite{luria1976cognitive}. 
-%Reasoning by appealing to experience or common knowledge, 
-Obviously, this is not the answer that Luria had in mind, but what would lead a person to respond in the way that this person did?
+You may conclude that probably some of the semifinalists had favorable referees.
+The argument seems reasonable, and yet the conclusion is not necessarily true given the premises. (Consider that there could be teams that were expected to advance that did not make it to the semifinals and that those teams were the ones with favorable referees.)
+If it is not logic that underlies our intuitions about what conclusions reasonably follow from an argument, then what does?
+
+At least in the Western tradition, for as long as humans having been thinking about thinking, they have been thinking about logical arguments like the one above, known as syllogisms.
+A syllogism is a formal logical argument that uses quantifiers (e.g. \emph{all}, \emph{some}) to relate two properties (e.g. being a \emph{semifinalist} and having \emph{favorable referees}) via a third (``middle'') property (e.g. being \emph{expected to advance}). 
+Aristotle developed syllogisms to articulate the conclusions which rationally follow from a set of premises, which cognitive psychologists took up to serve as a rational basis from which to evaluate human reasoning \cite{Storring1908}.
+% Syllogisms thus also became one of the first domains where cognitive psychology looked to evaluate human reasoning against a set of rational norms.
+After over one hundred years of research, there is no question that the conclusions that people think are reasonable given  information about premises differ from what classical rules of logic would suggest \cite<for a meta-analysis, see:>{Khemlani2012}.
+
+
+Many theoretical frameworks have been brought to bear on the problem of human reasoning with syllogisms.
+Logic or syntactic-based approaches have attempted to articulate the ``natural'' logical rules that humans bring to bear when evaluating syllogistic arguments \cite{braine1983logical, rips1994, geurts2003reasoning}.
+Semantic-based approaches have looked instead to diagram- or model-based representations of the situations implied by the premises and how these representations can be manipulated to arrive at a conclusion, the most prominent example being the Mental Models theory \cite{johnson1975models}.
+A growing tradition views human logical reasoning as a special case of probabilistic inference \cite{oaksford2001probabilistic, oaksford2007bayesian, hahn2007rationality, tenenbaum2006theory}.
+Contra more traditional approaches that  assume deductive reasoning is the ideal framework by which to evaluate human reasoning  and try to explain reasoning errors as arising from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}, the probabilisitic lens assumes that human reasoners about logical reasoning tasks as they approach many other kinds of everyday reasoning, which often takes the form of probabilistic inference under uncertainty \cite{tenenbaum2006theory}. 
+The most prominent application of the probabilistic approach to syllogistic reasoning, however, falls short at fully articulating a probabilistic inferential logic and instead resorts to positing heuristics that are thought to approximate this probabilistic logic \cite{Chater1999}.
+Furthermore, a theory that integrates such a probabilistic logic with principles of natural language -- semantics and pragmatics -- which are intuitively at play for human reasoning \cite{sperber1986relevance,mercier2017enigma} has not been attempted.
+Natural language semantics plays a role in many theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning} and have even been integrated with probabilities \cite{johnson2015logic}, but how those semantics interface with pragmatic reasoning  is either posited in an ad-hoc manner \cite{Chater1999} or has been limited to simple Gricean enrichment of the premises \cite{Roberts2001}.	
+
+
+
+
+%More recently, theorists have looked to a probability-based logic to develop hypotheses about how people reason with logic arguments \cite{Oaksford1994, oaksford2007bayesian, hahn2007rationality}, the flagship application of which is the Probability Heuristics model \cite{Chater1999}.
+%In the background of most of this theoretical work as well is a consensus that communicative factors <e.g., pragmatic reasoning; >{sperber1986relevance,mercier2017enigma} play some role in syllogistic reasoning \cite{Roberts2001}.
+%Still, a unified model for human reasoning with syllogisms remains out of reach \cite{Khemlani2012}.
+%Though attempts have been made to bring some of these factors together \cite{johnson2015logic}, integrating logic and probability into a rational model and formalizing how communicative factors could manifest in syllogistic reasoning has not yet been achieved. 
+
+
+
+%The idealized logical and/or probabilistic framework in which thinking and reasoning unfolds is just part of process of syllogistic reasoning, however. 
+%Syllogisms comprise a formal logical system, but they are expressed using the tools of natural language (e.g., natural language quantifiers).
+%Reasoning through a syllogism, thus, involves interpreting and producing natural language sentences; understanding such a task requires a careful examination of the  that may be at play.
+
+% Inspired by Luria's experiments, we explore the idea that understanding human syllogistic reasoning requires a careful look at participants' understanding of the task \cite{henle1962relation}. 
+Here, we take up the task of developing a model of syllogistic reasoning that integrates logic, probability, and pragmatics in a rational way.
+In particular, we view syllogistic reasoning through the lens of the language understanding processes that guide everyday reasoning with language, a process which involves reasoning about how an interlocutor would interpret a speaker's sentences \cite{Grice1975, Clark1996, Levinson2000}. 
+% interpreting the meanings of the sentences heard and social reasoning about why a speaker would bother to say those sentences 
+% Syllogistic reasoning is then part logical reasoning and part riddle solving (as suggested by the Ong, 1982 quotation above).
+%Each of these component tasks could involve pragmatic reasoning beyond the words of the syllogism 
+We formalize this hypothesis in a probabilistic model of pragmatic reasoning in the Rational Speech Act framework \cite{Frank2012a, goodman2016pragmatic}.
+We show that pragmatics enter into the conclusion selection process by way of participants reflecting on how well their choice of conclusion would convey to a naive listener their own subjective beliefs. 
+We discuss the question of whether premise interpretation may also be pragmatic in some important way.
+As a Bayesian model, our approach also naturally extends to explain how the content of a syllogism can affect reasoning, otherwise known as \emph{belief bias}. 
+
+
+
+% How are people understanding the logic and what other kinds of processes may be going on?
+
+%In all these cases, however, 
+%Others have looked to the rational probabilistic based ]
+%If people are not performing logical reasoning, however, then what they are doing when reasoning with syllogisms is not clear.
+
+% What people are doing, however, if they are not doing logical reasoning has been contentious. 
+%Syntactics, semantics of mental models, natural logic
+% [before OC]
+%There is no question that when people reason about syllogisms 
+%
+%
+%What is reasoning?
+%Dating back to at least Aristotle, humans have developed many different (formal) systems of reasoning.
+%Some systems rely on the application of logical rules and others on probabilistic computations.
+%On the other hand, human beings reason about concrete events that happen in the world.
+%How do the formal systems we have for understanding reasoning relate to the human capacity for reasoning?
+
+
+%Rationality debates 
+%One of the very first places where what was of interest where people depart from rational norms.
+%No question that people have a sense that when they reason about these problems, what seems the right conclusions is different from logicians.
+%What people have been doing when reasoning about syllogisms is contentious. 
+%
+%
+%Then we had the probabilistic turn.
+%Even when you think you're doing deduction, you're doing some kind of probabilistic reasoning. 
+%OC presents the climatic chapter.
+%But it is not really climatic. relies upon heuristics.
+%
+%What are people really doing here? What else might they be doing? Communicative reasoning (sperber).
+%What's likely to be true as well as what's actually true.
+%
+%We haven't had any models that bring these things together.
+%Unpacking what are the kinds of rationality in human syllogistic reasoning.
+%
+%We havent solved this problem
+%
+%underlying logical semantics, in a probabilistic inference framework embedded
+%
+%able to explain the data qualitivalety and quantitatively better than previous model.
+%the nothing follows thing.
+%show the importance of each of these factors.
+%
+%we think it's an important step forward because of how it elucidates the contributions of logical, probability and pragmatics in this classic domain of reasoning. 
+%
+%other factors might be explained by noisy channel (?) or just irrationality. 
+
+
+
+
+%A fundamental question in the study of human cognition is how the formal systems that humans have developed 
+%
+%
+%In a famous scientific expedition of the 1930s, Russian psychologist Alexander Luria set off into the remote areas of Uzbekistan and Kyrgyzstan in the former Soviet Union to understand the minds of the illiterate peoples of Russia. Among his experiments, Luria would give his participants verbal reasoning problems such as the following:
+%
+%\begin{quote}
+%In the Far North, where there is snow, all bears are white. \\
+%Novaya Zembla is in the Far North and there is always snow there. \\
+%What color are the bears?
+%\end{quote}
+
+%The literacy of Luria's participant was a large factor in the response he received.
+%While a literate person responded logically (```...they should all be white''), a typical response from an illiterate participant would be: ``I don't know. I've seen a black bear. I've never seen any others. Each locality has its own animals'' \cite{luria1976cognitive}. 
+%%Reasoning by appealing to experience or common knowledge, 
+%Obviously, this is not the answer that Luria had in mind, but what would lead a person to respond in the way that this person did?
 
 %The kind of response Luria received to such a question depended in part on the literacy of his participant. 
 %A person who knew how to read and write would respond: ``To go by your words, they should all be white.''
@@ -170,46 +281,32 @@ Obviously, this is not the answer that Luria had in mind, but what would lead a 
 %Similar flavors of responses -- appealing to experience or background knowledge -- were found in classic anthropological studies with the Kpelle of Liberia \cite{cole1971cultural, scribner1975recall}.
 % A study of American graduate students of the 1960s also uncovered erroneous judgments, and through an analysis of the written protocols of the participants, it was suggested that ``where error occurs, it need not involve faulty reasoning but may be a function of the individual's understanding of the task or materials presented to him'' \cite{henle1962relation}. 
 
-The problem Luria gave his participants resembles a syllogism: a two-sentence argument used to relate two properties (or terms: A, C) via a middle term (B). 
-The relations used in classical Aristotelean syllogisms are quantifiers: \emph{all}, \emph{some}, \emph{some .... are not}, and \emph{none}.\footnote{In Luria's syllogism, only one of the premise relations uses a quantifier, so it is not technically an Aristotelean syllogism.} 
-An example Aristotelean syllogism reads:
-
-\begin{quote}
-All artists are bakers. \\
-Some bakers are chemists. \\
-\_\_ \\
-Some artists are chemists.
-\end{quote}
-
-The logical space defined by classical syllogisms is comprised of all combinations of quantifiers and term orders for the premises (e.g., \textsc{quantifier} \textsc{A} -- \textsc{B} vs. \textsc{quantifier} \textsc{B} -- \textsc{A}).
-In total, each of the two premises can be appear with one of the four quantifiers and two term orders yielding:  $4$ quantifiers  $\times$ 2 term orderings $\times$ 2 premises = 64 syllogisms.
-Of the 64 unique syllogistic premises, only 27  (42\%) yield a logically valid conclusion: a conclusion that is true in every situation in which the premises are true.
-For the remaining 37 (58\%), no conclusion follows from the premises; in terms of the syllogistic reasoning, the correct responses is ``nothing follows'' (or, ``No Valid Conclusion''; NVC). 
-
-\begin{figure}
-\begin{tabularx}{.8\textwidth}{XXXX}
-%\begin{quotation} 
-
-& & & \\
-\bf A \--- B & \bf B \--- A  & \bf A \--- B & \bf B \--- A \\
-\bf B \--- C & \bf C \--- B  & \bf C \--- B & \bf B \--- C \\
-\bf \textemdash & \textemdash & \textemdash & \textemdash \\
-\bf A \--- C & \bf A \--- C & \bf A \--- C & \bf A \--- C \\
-& & & \\
-%\end{quotation}
-\end{tabularx}
-
-\caption{The 4 unique term-orderings of syllogisms}
-\label{figures}
-\end{figure}
-
-
-It is not only the illiterate peasants of 1930s Kyrgyzstan who appear to struggle with reasoning logically with syllogisms.
-A meta-analysis of syllogistic reasoning tasks performed on American and Italian participants estimated the accuracy of producing a valid conclusion to a logically valid syllogism to range widely (from 90\% to 1\% accuracy) depending on the syllogism \cite{Khemlani2012}.
-Logically invalid syllogisms also pose a challenge: the logical response is to conclude that \emph{nothing follows} from the premises, yet participants readily endorse substantive conclusions (i.e., quantifier relations) for logically invalid syllogisms. 
-For example, the syllogism above is not logically valid.  (Consider that it could be only the non-artist bakers that are chemists. In that case, the premises would be true and the conclusion false.)
-The conclusion above seems reasonable, however, and roughly 70\% of participants will assert that the \emph{Some As are Cs} conclusion follows from the premises  \cite{Khemlani2012}.
-Something beyond logical validity is guiding participants' reasoning behavior. 
+%The problem Luria gave his participants resembles a syllogism: a two-sentence argument used to relate two properties (or terms: A, C) via a middle term (B). 
+%
+%\begin{figure}
+%\begin{tabularx}{.8\textwidth}{XXXX}
+%%\begin{quotation} 
+%
+%& & & \\
+%\bf A \--- B & \bf B \--- A  & \bf A \--- B & \bf B \--- A \\
+%\bf B \--- C & \bf C \--- B  & \bf C \--- B & \bf B \--- C \\
+%\bf \textemdash & \textemdash & \textemdash & \textemdash \\
+%\bf A \--- C & \bf A \--- C & \bf A \--- C & \bf A \--- C \\
+%& & & \\
+%%\end{quotation}
+%\end{tabularx}
+%
+%\caption{The 4 unique term-orderings of syllogisms}
+%\label{figures}
+%\end{figure}
+%
+%
+%It is not only the illiterate peasants of 1930s Kyrgyzstan who appear to struggle with reasoning logically with syllogisms.
+%A meta-analysis of syllogistic reasoning tasks performed on American and Italian participants estimated the accuracy of producing a valid conclusion to a logically valid syllogism to range widely (from 90\% to 1\% accuracy) depending on the syllogism \cite{Khemlani2012}.
+%Logically invalid syllogisms also pose a challenge: the logical response is to conclude that \emph{nothing follows} from the premises, yet participants readily endorse substantive conclusions (i.e., quantifier relations) for logically invalid syllogisms. 
+%For example, the syllogism above is not logically valid.  (Consider that it could be only the non-artist bakers that are chemists. In that case, the premises would be true and the conclusion false.)
+%The conclusion above seems reasonable, however, and roughly 70\% of participants will assert that the \emph{Some As are Cs} conclusion follows from the premises  \cite{Khemlani2012}.
+%Something beyond logical validity is guiding participants' reasoning behavior. 
 
 % Luria was not the first to study how people reason with syllogisms, and he certainly was not the last. 
 % Psychologists have been trying to understand human reasoning with syllogisms for over one hundred years (the earliest experimental study is credited to \citeNP{Storring1908}). 
@@ -237,25 +334,7 @@ Something beyond logical validity is guiding participants' reasoning behavior.
 %A meta-analysis of syllogistic reasoning showed that over the population, the proper production of no valid conclusion responses for invalid arguments ranged from 76\% to 12\%. 
 
 % \mht{this is kind of weak, superficial...}
-A growing tradition views human logical reasoning as a special case of probabilistic inference \cite{oaksford2001probabilistic, oaksford2007bayesian, hahn2007rationality, tenenbaum2006theory}.
-Contra more traditional approaches that  assume deductive reasoning is the ideal framework by which to evaluate human reasoning  and try to explain reasoning errors as arising from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}, the probabilisitic lens assumes that human reasoners about logical reasoning tasks as they approach many other kinds of everyday reasoning, which often takes the form of probabilistic inference under uncertainty \cite{tenenbaum2006theory}. 
-The most prominent application of the probabilistic approach to syllogistic reasoning, however, falls short at fully articulating a probabilistic inferential logic and instead resorts to positing heuristics that are thought to approximate this probabilistic logic \cite{Chater1999}.
-Furthermore, a theory that integrates such a probabilistic logic with principles of natural language -- semantics and pragmatics -- which are intuitively at play for human reasoning as syllogisms are arguments expressed in natural language has not been attempted.
-Natural language semantics plays a role in many theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, though how those semantics interface with pragmatic reasoning  is either posited in an ad-hoc manner \cite{Chater1999} or has been limited to simple Gricean enrichment of the premises \cite{Roberts2001}.	
 
-%The idealized logical and/or probabilistic framework in which thinking and reasoning unfolds is just part of process of syllogistic reasoning, however. 
-%Syllogisms comprise a formal logical system, but they are expressed using the tools of natural language (e.g., natural language quantifiers).
-%Reasoning through a syllogism, thus, involves interpreting and producing natural language sentences; understanding such a task requires a careful examination of the  that may be at play.
-
-Inspired by Luria's experiments, we explore the idea that understanding human syllogistic reasoning requires a careful look at participants' understanding of the task \cite{henle1962relation}. 
-In particular, we view syllogistic reasoning through the lens of the language understanding processes that guide everyday reasoning with language, a process which involves reasoning about how an interlocutor would interpret a speaker's sentences \cite{Grice1975, Clark1996, Levinson2000}. 
-% interpreting the meanings of the sentences heard and social reasoning about why a speaker would bother to say those sentences 
-% Syllogistic reasoning is then part logical reasoning and part riddle solving (as suggested by the Ong, 1982 quotation above).
-%Each of these component tasks could involve pragmatic reasoning beyond the words of the syllogism 
-We formalize this hypothesis in a probabilistic model of pragmatic reasoning in the Rational Speech Act framework \cite{Frank2012a, goodman2016pragmatic}.
-We show that pragmatics enter into the conclusion selection process by way of participants reflecting on how well their choice of conclusion would convey to a naive listener their own subjective beliefs. 
-We discuss the question of whether premise interpretation may also be pragmatic in some important way.
-As a Bayesian model, our approach also naturally extends to explain how the content of a syllogism can affect reasoning, otherwise known as \emph{belief bias}. 
 
 %We show that explaining human syllogistic reasoning behavior goes beyond standard, scalar implicature type reasoning  (as explored in \citeNP{Roberts2001}).
 %Rather, human reasoners appear to be performing pragmatic reasoning by reasoning about the likely conclusion that a speaker intended the listener to draw from the syllogism, which we formalize as a Question Under Discussion \cite{Roberts2004QUD}.
@@ -319,6 +398,22 @@ As a Bayesian model, our approach also naturally extends to explain how the cont
 
 
 \section{Computational Model}
+
+
+The relations used in classical Aristotelean syllogisms are quantifiers: \emph{all}, \emph{some}, \emph{some .... are not}, and \emph{none}.\footnote{In Luria's syllogism, only one of the premise relations uses a quantifier, so it is not technically an Aristotelean syllogism.} 
+An example Aristotelean syllogism reads:
+
+\begin{quote}
+All artists are bakers. \\
+Some bakers are chemists. \\
+\_\_ \\
+Some artists are chemists.
+\end{quote}
+
+The logical space defined by classical syllogisms is comprised of all combinations of quantifiers and term orders for the premises (e.g., \textsc{quantifier} \textsc{A} -- \textsc{B} vs. \textsc{quantifier} \textsc{B} -- \textsc{A}).
+In total, each of the two premises can be appear with one of the four quantifiers and two term orders yielding:  $4$ quantifiers  $\times$ 2 term orderings $\times$ 2 premises = 64 syllogisms.
+Of the 64 unique syllogistic premises, only 27  (42\%) yield a logically valid conclusion: a conclusion that is true in every situation in which the premises are true.
+For the remaining 37 (58\%), no conclusion follows from the premises; in terms of the syllogistic reasoning, the correct responses is ``nothing follows'' (or, ``No Valid Conclusion''; NVC). 
 
 %\section{Bayesian argument strength in syllogistic reasoning}
 
