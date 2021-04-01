@@ -150,35 +150,44 @@ Our approach is a first step towards a rational pragmatic view of human reasonin
 
 \section{Introduction}
 
-
-
-Imagine discussing a sports competition with your friend, and your friend remarks: 
+Imagine discussing a recent tax proposal with a friend. Your friend remarks:
 
 \begin{quote}
-\emph{
-All of the teams that made it to the semifinals were expected to advance. But also, did you notice that some of the teams expected to advance had favorable referees?
-}
+Some of the taxes on the wealthy will be modified. \\
+All of the modifications will expire in 10 years.
 \end{quote}
 
-You may conclude that probably some of the semifinalists had favorable referees.
-The argument seems reasonable, and yet the conclusion is not necessarily true given the premises. (Consider that there could be teams that were expected to advance that did not make it to the semifinals and that those teams were the ones with favorable referees.)
-If it is not logic that underlies our intuitions about what conclusions reasonably follow from an argument, then what does?
+From these remarks, it follows -- logically, necessarily -- that \emph{Some of the taxes on the wealthy will expire in 10 years}.
+Now consider a superficially similar set of remarks: 
 
-At least in the Western tradition, for as long as humans having been thinking about thinking, they have been thinking about logical arguments like the one above, known as syllogisms.
-A syllogism is a formal logical argument that uses quantifiers (e.g. \emph{all}, \emph{some}) to relate two properties (e.g. being a \emph{semifinalist} and having \emph{favorable referees}) via a third (``middle'') property (e.g. being \emph{expected to advance}). 
+\begin{quote}
+All of the taxes on the wealthy will be modified. \\
+Some of the modifications will expire in 10 years.
+\end{quote}
+
+You may be tempted to draw a similar conclusion:  \emph{Some of the taxes on the wealthy will expire in 10 years}.
+The argument seems reasonable, and yet the conclusion is not necessarily true given the premises. (Consider that there could be tax modifications applied to the non-wealthy, and that those modifications are the ones that will expire in 10 years.)
+If it is not only logic that underlies our intuitions about what conclusions reasonably follow from an argument, then what does?
+
+For as long as humans having been thinking about thinking (at least in the Western tradition), they have been thinking about logical arguments like the one above, known as syllogisms.
+A syllogism is a formal logical argument that uses quantifiers (e.g. \emph{all}, \emph{some}) to relate two properties (e.g., \emph{taxes on the wealthy} and \emph{expiring in 10 years}) via a third (``middle'') property (e.g., \emph{being modified by the proposal}). 
 Aristotle developed syllogisms to articulate the conclusions which rationally follow from a set of premises, which cognitive psychologists took up to serve as a rational basis from which to evaluate human reasoning \cite{Storring1908}.
 % Syllogisms thus also became one of the first domains where cognitive psychology looked to evaluate human reasoning against a set of rational norms.
 After over one hundred years of research, there is no question that the conclusions that people think are reasonable given  information about premises differ from what classical rules of logic would suggest \cite<for a meta-analysis, see:>{Khemlani2012}.
 
 
 Many theoretical frameworks have been brought to bear on the problem of human reasoning with syllogisms.
-Logic or syntactic-based approaches have attempted to articulate the ``natural'' logical rules that humans bring to bear when evaluating syllogistic arguments \cite{braine1983logical, rips1994, geurts2003reasoning}.
-Semantic-based approaches have looked instead to diagram- or model-based representations of the situations implied by the premises and how these representations can be manipulated to arrive at a conclusion, the most prominent example being the Mental Models theory \cite{johnson1975models}.
-A growing tradition views human logical reasoning as a special case of probabilistic inference \cite{oaksford2001probabilistic, oaksford2007bayesian, hahn2007rationality, tenenbaum2006theory}.
-Contra more traditional approaches that  assume deductive reasoning is the ideal framework by which to evaluate human reasoning  and try to explain reasoning errors as arising from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}, the probabilisitic lens assumes that human reasoners about logical reasoning tasks as they approach many other kinds of everyday reasoning, which often takes the form of probabilistic inference under uncertainty \cite{tenenbaum2006theory}. 
-The most prominent application of the probabilistic approach to syllogistic reasoning, however, falls short at fully articulating a probabilistic inferential logic and instead resorts to positing heuristics that are thought to approximate this probabilistic logic \cite{Chater1999}.
+Logic or syntactic-based approaches have attempted to articulate the ``natural'' logical rules that humans deploy when evaluating syllogistic arguments \cite{braine1983logical, rips1994, geurts2003reasoning}.
+Semantic approaches have looked instead to model- or diagram-based representations of the situations implied by the premises and how those representations can be manipulated to arrive at a conclusion, the most prominent example being the Mental Models theory \cite{johnson1975models}.
+Still other approaches attempt to view human logical reasoning as a special case of probabilistic inference \cite{oaksford2001probabilistic, oaksford2007bayesian, hahn2007rationality, tenenbaum2006theory}, which was formalized in the Probability Heuristics Model of syllogistic reasoning \cite{Chater1999}.
+
+Though all this theoretical work provides insight into how humans reason with syllogisms, a theory that unifies and explains syllogistic reasoning is still outstanding. 
+The most promising application of the probabilistic approach to syllogistic reasoning, the Probability Heuristics Model, falls short at fully articulating a probabilistic inferential logic and instead resorts to positing ad-hoc heuristics that are thought to approximate some kind of probabilistic logic \cite{Chater1999}.
 Furthermore, a theory that integrates such a probabilistic logic with principles of natural language -- semantics and pragmatics -- which are intuitively at play for human reasoning \cite{sperber1986relevance,mercier2017enigma} has not been attempted.
 Natural language semantics plays a role in many theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning} and have even been integrated with probabilities \cite{johnson2015logic}, but how those semantics interface with pragmatic reasoning  is either posited in an ad-hoc manner \cite{Chater1999} or has been limited to simple Gricean enrichment of the premises \cite{Roberts2001}.	
+
+%Contra more traditional approaches that  assume deductive reasoning is the ideal framework by which to evaluate human reasoning  and try to explain reasoning errors as arising from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}, the probabilisitic lens assumes that human reasoners about logical reasoning tasks as they approach many other kinds of everyday reasoning, which often takes the form of probabilistic inference under uncertainty \cite{tenenbaum2006theory}. 
+
 
 
 
@@ -418,8 +427,8 @@ For the remaining 37 (58\%), no conclusion follows from the premises; in terms o
 %\section{Bayesian argument strength in syllogistic reasoning}
 
 
-We developed a model of syllogism reasoning that uses the logic of the syllogism to update a probabilistically-generated distribution over world states and decides what pragmatically useful conclusion would best convey that distribution on states to a naive listener.
-Below, we formalize each of these three ingredients -- probability, logic, and pragmatics -- and show how they combine to form the foundation of a rational model of syllogistic reasoning. 
+We developed a model of syllogism reasoning that uses the logic of the syllogism to update a probabilistically-generated distribution over world states and decide what pragmatically useful conclusion would best convey that distribution on states to a naive listener.
+Below, we formalize each of these three ingredients --  logic, probability, and pragmatics -- and show how they combine to form the foundation of a rational model of syllogistic reasoning. 
 %Our modeling approach makes use of three fundamental ingredients: logic, probability, and pragmatics. 
 
 %Syllogisms are a logical system, but use the tools of natural language to convey their meanings. 
