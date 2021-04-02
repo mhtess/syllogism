@@ -875,9 +875,9 @@ These preferences are sometimes referred to as ``figural effects'', tracing back
 Our goal is not to provide an explanation for these effects, but rather posit an effect in line with the observations of \citeA{JL1984, JL1978, geurts2003reasoning} that participants prefer conclusions whose subject term matches the subject of one of the premises.
 Formally, the conclusion prior is parameterized by unnormalized probability weights, where a uniform prior would have a weight of 1 for all conclusions. 
 % The first parameter is a global preference or dispreference $\beta_0$ for the \emph{nothing follows} conclusion; we put a uniform prior between (0, 2) on this weight. 
-We introduce a parameter that is global preference  $\beta$ for conclusions whose order of the terms (A--C vs. C--A) matches the order of the terms in the premises.
-This first-term preference works by checking whether either A or C appear in the subject position of the premise.
-If only one appears in the subject (e.g., the syllogistic frame \emph{A--B/B--C}), then conclusions where that same term appears in the subject (e.g., \emph{A--C}) will have a bias determined by $\beta_1$.
+We introduce a global preference  parameter $\beta$ for conclusions whose order of the terms (A--C vs. C--A) matches the order of the terms in the premises.
+This first-term preference works by checking whether either A or C appear in the subject position of one of the premises.
+If only one appears in the subject (e.g., the syllogistic frame \emph{A--B/B--C}), then conclusions where that same term appears in the subject (e.g., \emph{A--C}) will have a prior preference determined by $\beta$.
 If both or neither appear in the subject (e.g., \emph{A--B/C--B} or \emph{B--A/B--C}), then no preference is given in the conclusion prior, corresponding to an unnormalized probability weight of 1. 
 We put a uniform prior between (1, 5) on this preference weight since we assume it to be preference for producing conclusions that match the order of the terms of the syllogism. 
 
@@ -1117,7 +1117,7 @@ Both the Belief Alignment model and the Literal Speaker are able to capture thes
 We found the model that explained the human syllogistic reasoning data set the best was that which produced conclusions by aligning a listener's beliefs with those of a speaker (who had their beliefs updating from the literal meaning of the premises).
 Our modeling approach is a Computational or Rational Level of analysis model \cite{marr1982vision, anderson1990adaptive} that seeks to describe the computations that underly human syllogistic reasoning without stipulating a precise implementation of such a reasoning process. 
 Many other theories of syllogistic reasoning instead consider the process by which a human reasoner solves a syllogism.
-The two most influential theories of human syllogistic reasoning are the Mental Models Theory \cite{johnsonlaird2006we, khemlani2013processes} and the Probability Heuristics Model \cite{Chater1999}, each of which share features with our probabilistic pragmatics approach. 
+The two most influential theories of human syllogistic reasoning are the Mental Models Theory \cite{johnsonlaird2006we, khemlani2013processes} and the Probability Heuristics Model \cite{Chater1999}, each of which share features with our logic, probability, and pragmatics approach. 
 
 
 \begin{figure}[t]
@@ -1133,24 +1133,32 @@ The two most influential theories of human syllogistic reasoning are the Mental 
 
 The Mental Models Theory considers reasoning over a set of iconic models, in which individual entities are represented explicitly, not unlike our state space of Venn Diagrams. 
 The reasoning process under this theory proceeds by first constructing a the mental model, proposing a conclusion that can be drawn from such a model, and then engaging in a search for counterexamples to that conclusion; if a counterexample is found, either the mental model is revised and the search for a conclusion continues or the reasoner concludes \emph{nothing follows}. 
-Here we compare to a recent implementation of this theory (the mReasoner model), which is also probabilistic in nature (e.g., the model determines the number of objects to represent in the model by sampling  from a Poisson distribution). 
 
+Here we compare to a recent implementation of this theory \cite<the mReasoner model>{khemlani2013processes}, which is also probabilistic in nature (e.g., the model determines the number of objects to represent in the model by sampling  from a Poisson distribution). 
+The model has four free parameters (canonically denoted $\lambda$, $\epsilon$, $\sigma$, and $\omega$): 
+$\lambda$ determines the number of entities represented in the model, $\epsilon$ determines the kind of mental model constructed (either a canonical or non-canonical representation of the entities consistent with the syllogism; as described by \citeNP{bucciarelli1999strategies}), $\sigma$ denoted the probability of engaging in a search for counterexamples, and $\omega$ modulates the conclusion selection process that results when engaging in a search for counterexamples.  
+%σ denotes the propensity of mReasoner to engage its search for counterexamples and ω specifies how to continue after a counterexample is found. With the proba- bility of ω, the conclusion quantifier is weakened and a new search for counterexamples starts.
 \paragraph{Probability Heuristics} 
 
 The Probability Heuristics model of \citeA{Chater1999} seeks to account for human syllogistic reasoning as a process of determining probabilistically valid (``p-valid'') conclusions, which can be approximated through a number of heuristics. 
 Two heuristics generate candidate quantifiers for the conclusion, which use a notion of informativity for which \citeA{Chater1999} define a rank ordering: \emph{all} $>$ \emph{some} $>$ \emph{none} $>$ \emph{some...not}.  
 The ``min-heuristic'' takes the quantifier of the least informative premise to be a potential conclusion quantifier and the ``p-entailment heuristic'' further allows for a quantifier that is entailed by the ``min-heuristic'' quantifier to also be a candidate quantifier for the conclusion (e.g., is \emph{all} is generated from the ``min-heuristic'', \emph{some} will be generated from the ``p-entailment heuristic''). 
+A parameter (canonically referred to as $p_{ent}$) modulates which heuristic (min or p-entail) the reasoner uses to generate conclusions. 
 A third heuristic (``attachment'') determines the ordering of the terms in the conclusion (A--C vs. C--A): this heuristic stipulates that the subject term of the conclusion should match the subject term of the least-informative premise, when allowable. 
-Two more parameters determine the confidence (or, probability) of each the candidate conclusions. 
-Foremost, the ``max-heuristic'' stipulates the the probability of a candidate conclusion is proportional to the informativity of the most informative premise (a free parameter is fit to define the quantitative informativity of each quantifier). 
-The ``O-heuristic'' additionally down weights conclusions that use the ``some...not'' quantifier.
+
+Two more heuristics determine the confidence (or, probability) of each the candidate conclusions. 
+Foremost, the ``max-heuristic'' stipulates the the probability of a candidate conclusion is proportional to the informativity of the most informative premise.
+The ``O-heuristic'' additionally downweights conclusions that use the ``some...not'' quantifier.
+In the implementation of this model that we use, these heuristics are parameterized by 4 parameters, which govern the confidence placed in conclusions of each of the four quantifiers (all, some, some...not, and none).
 
 \subsubsection{Quantitative comparison}
 
 To compare the quantitative accuracy of these alternatives theories to our own, we analyze the results of a recent study of these theories which focused on modeling the behavior of individual participants in the syllogistic reasoning task \cite{riesterer2020models}.
-This study explored the predictive capabilities of the mReasoner and Probability Heuristics theories by treating the parameters of the models as individual-level parameters which could vary among participants (as well as the group-level version of the model, in which a single set of parameters governs the behavior of the population of participants). 
+This study explored the predictive capabilities of the mReasoner and Probability Heuristics theories by treating the parameters of the models as individual-level parameters which could vary among participants (as well as the group-level version of the model, in which a single set of parameters governs the behavior of the population of participants).
 The parameters of these models were fit to the same data set from \citeA{ragni2019does} that we modeled above with the Rational Speech Act models.\footnote{The predictions of these models were accessed via the companion repository to the paper: \url{https://github.com/nriesterer/cogsci-individualization}.}
-To examine the predictions of these theories in a manner comparable to our analysis of the Rational Speech Act models, we treated the predictions of these alternative models for individual participants similar to how we treated the behavioral responses of individual participants. 
+
+Since \citeA{riesterer2020models} focus on predictive accuracy of the models for individual behavior, their implementation of the Probability Heuristics model treats the five model parameters as binary (0 or 1). This focus on predictive accuracy means that if a participant uses a heuristic $<50\%$ of the time, the best predictions that could be made would result by setting the corresponding parameter to 0. 
+To examine the predictions of these theories in a manner more comparable to our analysis of the Rational Speech Act models, we treated the predictions of these alternative models for individual participants similar to how we treated the behavioral responses of individual participants. 
 We constructed bootstrapped 95\% confidence intervals for the model predictions by resampling with replacement the predictions for each unique syllogism and conclusion. 
 
 
