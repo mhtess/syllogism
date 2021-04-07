@@ -175,17 +175,29 @@ Aristotle developed syllogisms to articulate the conclusions which rationally fo
 % Syllogisms thus also became one of the first domains where cognitive psychology looked to evaluate human reasoning against a set of rational norms.
 After over one hundred years of research, there is no question that the conclusions that people think are reasonable given  information about premises differ from what classical rules of logic would suggest \cite<for a meta-analysis, see:>{Khemlani2012}.
 
+%We have a similar goal to PHM (rational analysis). 
+%MMT is trying to do something different. 
 
 Many theoretical frameworks have been brought to bear on the problem of human reasoning with syllogisms.
 Logic or syntactic-based approaches have attempted to articulate the ``natural'' logical rules that humans deploy when evaluating syllogistic arguments \cite{braine1983logical, rips1994, geurts2003reasoning}.
-Semantic approaches have looked instead to model- or diagram-based representations of the situations implied by the premises and how those representations can be manipulated to arrive at a conclusion, the most prominent example being the Mental Models theory \cite{johnson1975models}.
-Still other approaches attempt to view human logical reasoning as a special case of probabilistic inference \cite{oaksford2001probabilistic, oaksford2007bayesian, hahn2007rationality, tenenbaum2006theory}, which was formalized in the Probability Heuristics Model of syllogistic reasoning \cite{Chater1999}.
+Semantic approaches have theorized about the processes that manipulate  model- or diagram-based mental representations to arrive at a conclusion, the most prominent example being the Mental Models theory \cite{johnson1975models}.
+Still other approaches attempt to articulate the functional and rational basis of   human logical reasoning, interrogating deductive reasoning as a special case of probabilistic inference \cite{oaksford2001probabilistic, oaksford2007bayesian, hahn2007rationality, tenenbaum2006theory}, which was formalized in the Probability Heuristics Model of syllogistic reasoning \cite{Chater1999}.
 
-Though all this theoretical work provides insight into how humans reason with syllogisms, a rational model that unifies and explains syllogistic reasoning is still outstanding. 
+
+Though all this theoretical work provides insight into how humans reason with syllogisms, a model that unifies and explains syllogistic reasoning in terms of a rational computation is still outstanding.
 The most promising application of a rational approach to syllogistic reasoning, the Probability Heuristics Model, falls short at fully articulating a coherent probabilistic logic and instead resorts to positing ad-hoc heuristics that are thought to approximate that logic \cite{Chater1999}.
-The mental models approach provides a process-level account, recently enhance with probabilistic constructs and assumptions \cite{johnson2015logic}, but which falls short at fully articulating why mental reasoning works, what the function is, how it achieves that function,  and how errors might arise from gaps between the problem the mind is solving and what the context might require.
+The mental models approach provides a process-level account, recently enhanced with probabilistic constructs and assumptions \cite{johnson2015logic}, but not with the goal of providing a unified rational analysis. 
+% is still outstanding. 
+%In particular, a model that tries to explain how reasoning works and why it fails 
+% why mental reasoning works, what the function is, how it achieves that function, and how errors might arise from gaps between the problem the mind is solving and what the context might require.
+%PHM -- doesn't provide a 
+%
+%
+%-- rational analysis of syllogistic reasoning
+%- explains what its for and why it works
+%- the problem people are solving is communicating beliefs rather than deducing what is true
 Furthermore, a theory that integrates with principles of natural language -- semantics and pragmatics -- which are intuitively at play for human reasoning \cite{sperber1986relevance,mercier2017enigma} has not been attempted.
-Natural language semantics plays a role in many theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, but how those semantics interface with pragmatic reasoning  is either posited in an ad-hoc manner \cite{Chater1999} or has been limited to simple Gricean enrichment of the premises \cite{Roberts2001}.	
+Natural language semantics plays a role in many theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, but how those semantics interface with pragmatic reasoning is either posited in an ad-hoc manner \cite{Chater1999} or has been limited to simple Gricean enrichment of the premises \cite{Roberts2001}.	
 
 %Contra more traditional approaches that  assume deductive reasoning is the ideal framework by which to evaluate human reasoning  and try to explain reasoning errors as arising from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}, the probabilisitic lens assumes that human reasoners about logical reasoning tasks as they approach many other kinds of everyday reasoning, which often takes the form of probabilistic inference under uncertainty \cite{tenenbaum2006theory}. 
 
@@ -206,7 +218,7 @@ Natural language semantics plays a role in many theories of reasoning \cite{JL19
 
 % Inspired by Luria's experiments, we explore the idea that understanding human syllogistic reasoning requires a careful look at participants' understanding of the task \cite{henle1962relation}. 
 Here we take up the task of developing a theory of syllogistic reasoning that integrates logic, probability, and pragmatics in a rational model.
-\mht{should start with more about probabilistic models and logic}
+%\mht{should start with more about probabilistic models and logic}
 In particular, we view syllogistic reasoning through the lens of the language understanding processes that guide everyday reasoning with language, a process which involves reasoning about how an interlocutor would interpret a speaker's sentences \cite{Grice1975, Clark1996, Levinson2000}. 
 % interpreting the meanings of the sentences heard and social reasoning about why a speaker would bother to say those sentences 
 % Syllogistic reasoning is then part logical reasoning and part riddle solving (as suggested by the Ong, 1982 quotation above).
@@ -457,6 +469,11 @@ Below, we formalize each of these three ingredients --  logic, probability, and 
 
 
 \subsection{Ontology and semantics}
+
+
+The types of situations that can hold in the world.
+
+\mht{move Mental Model of JL to footnote and start with the minimal model of types}
 
 Our model is built on top of an ontology of concrete situations about objects with properties. 
 Consider the syllogism from above:
@@ -1062,7 +1079,7 @@ It also achieved the highest correlation coefficient and lowest mean squared err
 
 \begin{figure}[t]
 \centering
-\includegraphics[width = \textwidth]{figs/bda_rsa_scatters.pdf}
+\includegraphics[width = \textwidth]{figs/bda_rsa_scatters_0paramPrior.pdf}
 \caption{Posterior predictive model fits for the literal speaker model and two versions of the pragmatic speaker model. Each dot represents one of nine possible conclusions for one of the 64 possible syllogisms. Error bars denote bootstrapped 95\% confidence intervals for the empirical data and 95\% Bayesian credible intervals for the model predictions.}
 \label{fig:scatters}
 \end{figure}
@@ -1086,7 +1103,7 @@ Both the Belief Alignment model and the Literal Speaker are able to capture thes
 
 \begin{figure}[t]
 \centering
-\includegraphics[width = \textwidth]{figs/bda_rsa_bars.pdf}
+\includegraphics[width = \textwidth]{figs/bda_rsa_bars_0params.pdf}
 \caption{Model predictions and behavioral results for the 9 possible conclusions to 16 syllogisms. Syllogisms are of the form: \emph{\_\_ As are Bs. \_\_ Bs are Cs.} Error bars denote bootstrapped 95\% confidence intervals for the human data and 95\% Bayesian credible intervals for the model predictions.}
 \label{fig:bars}
 \end{figure}
@@ -1171,10 +1188,11 @@ We constructed bootstrapped 95\% confidence intervals for the model predictions 
     every head row/.style={before row = \toprule, after row = \midrule},
     every last row/.style={after row = \bottomrule},
     columns/model/.style={string type, column name={Model}, column type = l},
-    columns/r/.style={string type, column name={$r$}, column type = l,  sci sep align, precision=3},
+    columns/r/.style={string type, column name={$r$}, column type = l,  sci sep align, precision=2},
+        columns/r2/.style={string type, column name={$r^2$}, column type = l,  sci sep align, precision=2},
    columns/mse/.style={fixed, column name={MSE}, column type = l, dec sep align, precision=3},	      
-   columns/nParameters/.style={string type, column name={Number of Parameters}, column type = l,  sci sep align, precision=3},
-     ]{csv_to_tex/allModels_stats.csv}\caption{Summary statistics for the RSA and alternative models. Alternative models were fitted to both group level data and individual level data. Individual-level variants use a new set of parameters for each individual participant in the data set ($n=139$).}\label{tab:altStats}
+   columns/nParameters/.style={string type, column name={Parameters}, column type = l,  sci sep align, precision=3},
+     ]{csv_to_tex/allModels_stats_0paramPriors.csv}\caption{Summary statistics for the RSA and alternative models. Alternative models were fitted to both group level data and individual level data. Individual-level variants use a new set of parameters for each individual participant in the data set ($n=139$).}\label{tab:altStats}
 \end{table}
 \end{center}
 
@@ -1205,13 +1223,13 @@ These results suggest that these alternative theories encode process-level hypot
 
 Reasoning with syllogisms sits at the intriguing intersection of language and logic. 
 Syllogisms are a logical system, but they are expressed using natural language quantifiers and invite natural language inferences. 
-We developed and tested a family of probabilistic models of pragmatic reasoning that formalized the meaning of natural language sentences and how the calculations of informativeness that reasoners could use in selecting their conclusions.
+We developed and tested a family of probabilistic models of pragmatic reasoning that incorporate a logical semantics into a probabilistic generative model of states of affairs and formalize how the calculations of pragmatic informativeness could affect the selection of conclusions.
 We found that conclusions selected by participants were best explained by a model that chose its conclusion to a syllogism by reasoning about how well that conclusion would align a naive listener's beliefs with those of their own. 
 We discuss the modeling approach in more detail, including how it can be extended to account for other phenomena in syllogistic reasoning, as well as implications of our findings in the context of other work on pragmatic reasoning with syllogisms.
 
-\mht{add connection to Oaksford \& Chater, mental models... tradition of probabilistic reasoning... }
+Our proposal is that human syllogistic reasoning is part logical, part probabilistic, and part pragmatic. Our theory is a rational model that articulates the functional problem human syllogistic reasoning is aiming to solve, which is fundamentally a problem of communication. Our work thus builds on the goal articulated by \citeA{Chater1999} of building a rational model of syllogistic reasoning, and we do so without positing any heuristic solution to the inference problems. Our model is deeply connected to the Mental Models approach \cite{johnson1975models, johnson2015logic} in that the states of affairs that our model reasons over are mental models of the world. Typically, a Mental Models theory would reason about tokens or instances of categories whereas our model reasons about types. 
 
-
+%\mht{add connection to Oaksford \& Chater, mental models... tradition of probabilistic reasoning... }
 In our modeling, we contrasted two mechanisms by which pragmatic considerations can enter into the production of conclusions: one based on informatively describing a particular state (or, Venn diagram) and one based on conveying the reasoner's entire belief distribution over states (i.e., their distribution over possible Venn diagrams). 
 The results, both quantitatively and qualitatively, provide overwhelming evidence that it is the latter notion of belief alignment which most closely tracks human reasoning patterns. 
 This formalization of pragmatic considerations differs sharply from previous perspectives on pragmatics in syllogistic reasoning.
