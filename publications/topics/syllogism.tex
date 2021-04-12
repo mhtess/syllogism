@@ -484,12 +484,12 @@ Below, we formalize each of these three ingredients --  logic, probability, and 
 \subsection{Ontology and semantics}
 
 
-The types of situations that can hold in the world.
+% The types of situations that can hold in the world.
 
-\mht{move Mental Model of JL to footnote and start with the minimal model of types}
+% \mht{move Mental Model of JL to footnote and start with the minimal model of types}
 
-Our model is built on top of an ontology of concrete situations about objects with properties. 
-Consider the syllogism from above:
+Our model is built on top of an ontology of the types situations about objects with properties that can hold in the world.
+Consider the second syllogism from above, with more abstract content:
 
 \begin{quote}
 All artists are bakers. \\
@@ -498,7 +498,23 @@ Some bakers are chemists. \\
 Some artists are chemists.
 \end{quote}
 
-A \emph{mental model} in the style of  \citeA{johnson1983mental} that is consistent with syllogism above would be:
+The types of situations that are possible are composed of the unique types of objects that could appear in those situations. 
+For example, one such type of situation is:
+
+
+\begin{tabularx}{.8\textwidth}{XXXXX}
+%\begin{quotation} 
+& \\
+\tt artist baker \\
+\tt artist baker chemist \\
+\tt \hspace{1.23cm} baker chemist 
+& \\
+& \\
+%\end{quotation}
+\end{tabularx}
+
+\noindent In this situation, there are three unique types of entities: an artist who is also a baker, a baker who is also a chemist, and artist who is also a baker and chemist.\footnote{
+This formalism is different from a \emph{mental model} in the style of  \citeA{johnson1983mental}. In that formalism, you could have a mental model like:
 
 %\begin{figure}
 \begin{tabularx}{.8\textwidth}{XXXXX}
@@ -506,7 +522,7 @@ A \emph{mental model} in the style of  \citeA{johnson1983mental} that is consist
 & \\
 \tt artist baker \\
 \tt artist baker chemist \\
-\tt \hspace{1.23cm} baker chemist \\
+\tt \hspace{1cm} baker chemist \\
 \tt artist baker \\
 & \\
 %\end{quotation}
@@ -518,21 +534,9 @@ A \emph{mental model} in the style of  \citeA{johnson1983mental} that is consist
 \noindent where each row of the model denotes an individual entity that has the properties listed (e.g., the first row denotes an artist who is also a baker).
 In this model, there are two artist-bakers, one baker-chemist, and one artist-baker-chemist.
 The classical categorical syllogisms we model below involve the quantifiers \emph{all} and \emph{some} (and their logical negations); the truth conditions of these quantifiers (i.e., whether or not the quantifier is true) are not affected by the number of entities with a unique combination of properties (i.e., it is inconsequential that there are two artist-bakers in the model above).
-Hence, we can represent the model in a reduced format, in which only the unique object types are represented.\footnote{
-For generalized quantifiers (e.g., \emph{most}, \emph{few}), the number of objects that have unique combinations of properties will matter. We discuss how our approach can be generalized to handle reasoning with generalized quantifiers in the General Discussion.}
-Such a model would look like: 
-
-\begin{tabularx}{.8\textwidth}{XXXXX}
-%\begin{quotation} 
-& \\
-\tt artist baker \\
-\tt artist baker chemist \\
-\tt \hspace{1.23cm} baker chemist 
-& \\
-%\end{quotation}
-\end{tabularx}
-
-This kind of minimal model, in which only the unique object types are represented, can also be displayed as a Venn diagram: 
+Hence, we can represent the model in a reduced format, in which only the unique object types are represented.
+For generalized quantifiers (e.g., \emph{most}, \emph{few}), the number of objects that have unique combinations of properties will matter. We discuss how our approach can be generalized to handle reasoning with generalized quantifiers in the General Discussion.
+}
 
 %\begin{figure}[h]
 %\centering
@@ -565,13 +569,12 @@ This kind of minimal model, in which only the unique object types are represente
 \caption{A state is represented by Boolean values over the regions of a Venn diagram, corresponding to the presence or absence of unique object types.}
 \end{figure}
 
+
+This kind of situation model, in which only the unique object types are represented, can also be displayed as a Venn diagram (Figure 1).
 %Syllogisms are arguments that relate two terms (denoted \emph{A} and \emph{C}) via a third term (\emph{B}). 
-
 %The model is based on an ontology of situations represented by Venn diagrams corresponding to all possible logical relations between the sets of three properties: A, B, C. 
-
 %The choice of explicit representation of object~vs.~object types
-
-Hence, the Venn diagram contains eight regions $i \in R$, corresponding to the unique object types that could be referred to in the syllogism. 
+The Venn diagram contains eight regions $i \in R$, corresponding to the unique object types that could be referred to in the syllogism. 
 Each region corresponds to the presence or absence of each of the three properties: $\{\{A,B,C\},$ $\{A,B,\neg C\},$ $\{A,\neg B,C\},$ $\{\neg A, B, C\},$ $\{A, \neg B, \neg C\},...\}$. (For simplicity, when possible, we will refer to regions by the properties that are present, omitting the absent properties; for example, $\{A, B, \neg C\}$ will be referred to as $AB$.)
 %These regions can be thought of as unique object types (e.g., an object defined by having properties $A$ and $B$ but not $C$) that are present in a situation.\footnote{This diagram representation is analogous to a mental model in the style of \citeA{johnson1983mental} composed of object tokens (e.g., some objects which have properties $A$ or $B$, etc.) but where only unique object tokens are represented (e.g., there cannot be two objects which have the same set of properties).}
 Then, a state or situation (Venn diagram) $s \in S$ is composed of the set of object types (regions) that are present (e.g., $\{AB, BC, ABC\}$ is one possible state).
@@ -613,7 +616,7 @@ We assume the semantics of \emph{All As are Bs} describes a situation in which t
 
 % Please add the following required packages to your document preamble:
 % \usepackage{booktabs}
-\begin{table}[]
+\begin{table}[b]
 \begin{tabular}{@{}llll@{}}
 \toprule
 Example syllogistic sentence & Logical Meaning                                                                       & Consistent State & Inconsistent state \\ \midrule
@@ -1288,12 +1291,21 @@ Reasoning with syllogisms varies appreciably across individuals \cite{galotti198
 In other contexts or populations, we may see that reasoning with syllogisms as a special case of reasoning about an argument or a riddle \cite<cf.>{luria1976cognitive, Ong1982}. 
 Extending our modeling approach with a pragmatic interpretation component will be important for analyzing such behavior. 
 
-\mht{need a final punch}
+% Aristotle invented syllogisms in order to tame -- to make more precise -- the human capacities for reasoning.
+% Cognitive psychologists turned formalism back on itself and created a measuring stick by which to evaluate human reasoning. 
+
+We articulate the verbal reasoning machinery that underlies the human capacity to reason with deductive arguments. 
+This machinery is composed of three ingredients: logic, probability, and pragmatics. 
+The combination of logic and probability enables us to reason about situations we have not experienced, but could encounter in the future.
+The conclusions we draw are not just those that are plausible, however.
+An agent needs to be posited at the other end of the line so that a conclusion makes sense; so that an argument may convince!
+
+%\mht{need a final punch}
 %\mht{this is approximately a copy-paste job from our cogsci syllogism paper}
 %In our framework, a syllogism is seen as an argument given as a part of discourse between interlocutors. Indeed, this is how syllogisms were used in the time of Aristotle and in the long tradition of scholastic philosophers since. 
 %The results of the pragmatic Bayesian reasoner models recast the ancient idea that human reasoning behavior is as much reason as it is human. 
-%Gauging degrees of truth or plausibility alone is not sufficient. 
-%An agent needs to be posited at the other end of the line so that a conclusion makes sense; so that an argument may convince!
+%
+%
 
 %Our model is of a speaker who produces the conclusion to draw from the syllogism by reasoning about how a naive listener would interpret that conclusion, where the objective is to align the belief distribution of the listener to that of the speaker (formalized as a KL-divergence between distributions).
 
