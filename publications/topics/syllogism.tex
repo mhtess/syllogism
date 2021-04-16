@@ -134,10 +134,10 @@ Syllogistic reasoning lies at the intriguing intersection of natural and formal 
 Syllogisms comprise a formal system of reasoning yet make use of natural language quantifiers (e.g., \emph{all}, \emph{some}), and invite natural language conclusions. 
 The conclusions people tend to draw from syllogisms deviate substantially from a purely logical perspective. 
 Are principles of natural language understanding to blame?
-We develop a framework of probabilistic pragmatics models of syllogistic reasoning, couched within the Rational Speech Act framework, and explore the pressures that pragmatic reasoning place on the production of conclusions.
+We develop probabilistic pragmatics models of syllogistic reasoning, couched within the Rational Speech Act framework, and explore the pressures that pragmatic reasoning place on the production of conclusions.
 We test our models on a recent, large data set of syllogistic reasoning and find that reasoners select conclusions in a pragmatic manner with the goal of aligning the beliefs of a naive listener to those of their own. 
 We compare our model to previously published models that implement two alternative theories -- Mental Models and Probability Heuristics -- finding that our model accounts for the full distributions of responses in a manner slightly better than previous accounts but with an order-of-magnitude fewer parameters. 
-Our approach is a first step towards a rational pragmatic view of human reasoning with syllogisms.}
+Our approach represents a view of human syllogistic reasoning as natural communication.}
 
 
 \begin{document}
@@ -176,7 +176,7 @@ Consider, for instance, that there could be tax modifications applied to the non
 
 
 Human intuitions about what conclusions reasonably follow from a set of premises are seemingly supported by something other than pure logical necessity. %, then what is that?
-Aristotle's invention of syllogisms -- the kinds of two premise arguments shown above --  can be thought about, in fact, as an attempt to tame the irrationality of the human mind.
+Aristotle's invention of syllogisms -- the kinds of two premise arguments shown above --  can be interpreted, in fact, as an attempt to tame the irrationality of the human mind.
 % Syllogisms are the foundation of modern logic.
 In recent centuries, cognitive psychologists have turned the syllogism back on the human mind, as a rational basis from which to evaluate human reasoning \cite{Storring1908}.
 Perhaps unsurprisingly, how everyday human beings reason with syllogisms differs from what classical rules of logic would dictate \cite<for a meta-analysis, see:>{Khemlani2012}.
@@ -197,7 +197,7 @@ Process accounts have been developed to describe how we manipulate  model- or di
 Still other approaches attempt to articulate the rational or functional basis of human logical reasoning, interrogating deductive reasoning as a special case of probabilistic inference \cite{oaksford2001probabilistic, oaksford2007bayesian, hahn2007rationality, tenenbaum2006theory},  formalized in the Probability Heuristics Model of syllogistic reasoning \cite{Chater1999}.
 
 
-Though the substantial prior work provides insight into how humans reason with syllogisms, what is still outstanding is a model that unifies and explains syllogistic reasoning in terms of a rational computation.
+Though the substantial prior work provides insight into how humans reason with syllogisms, what is still outstanding is a model that unifies and explains syllogistic reasoning in terms of a rational computation.\ndg{i don;t think we want to say that...}
 The most promising application of a rational approach to syllogistic reasoning, the Probability Heuristics Model, falls short at fully articulating a coherent probabilistic logic and instead resorts to positing ad-hoc heuristics thought to approximate that logic \cite{Chater1999}.
 The mental models approach provides a process-level account, which can be enhanced with probabilistic constructs and assumptions \cite{johnson2015logic}, but which does not have the goal of providing a unified rational analysis. 
 % is still outstanding. 
@@ -209,7 +209,7 @@ The mental models approach provides a process-level account, which can be enhanc
 %-- rational analysis of syllogistic reasoning
 %- explains what its for and why it works
 %- the problem people are solving is communicating beliefs rather than deducing what is true
-Furthermore, the fact that syllogisms involve natural language demands a theory that can be integrated with principles of natural language -- semantics and pragmatics -- which are intuitively at play for human reasoning \cite{sperber1986relevance,mercier2017enigma} but which has not been attempted.
+Furthermore, the fact that syllogisms involve natural language demands a theory that can be integrated with principles of natural language -- semantics and pragmatics -- which are intuitively at play for human reasoning \cite{sperber1986relevance,mercier2017enigma}.
 Natural language semantics plays a role in many theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, but how those semantics interface with pragmatic reasoning is either posited in an ad-hoc manner \cite{Chater1999} or has been limited to simple Gricean enrichment of the premises \cite{Roberts2001}.	
 
 %Contra more traditional approaches that  assume deductive reasoning is the ideal framework by which to evaluate human reasoning  and try to explain reasoning errors as arising from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}, the probabilisitic lens assumes that human reasoners about logical reasoning tasks as they approach many other kinds of everyday reasoning, which often takes the form of probabilistic inference under uncertainty \cite{tenenbaum2006theory}. 
@@ -239,11 +239,11 @@ In particular, we view syllogistic reasoning through the lens of the language un
 We formalize this hypothesis in a probabilistic model of pragmatic reasoning in the Rational Speech Act framework \cite{Frank2012a, goodman2016pragmatic}.
 Our model is able to explain a number of qualitative phenomena in syllogistic reasoning, including articulating a rational mechanism by which a reasoner could respond \emph{nothing follows}, an outstanding problem in theories of syllogistic reasoning \cite{riesterer2020modeling}.
 We additionally show that pragmatics enters into the conclusion selection process by way of participants reflecting on how well their choice of conclusion would convey their own beliefs to a naive listener. 
-Though we do not explain all of the variance in human syllogistic data, the model provides a path forward for addressing several outstanding issues in syllogistic including including how pragmatics might enter into the interpretation of premises and  how the content of a syllogism can affect reasoning (known as \emph{belief bias}).
+Though we do not explain all of the variance in human data, the model provides a path forward for addressing several outstanding issues including including how pragmatics might enter into the interpretation of premises and  how the content of a syllogism can affect reasoning (known as \emph{belief bias}).
 %We discuss the question of whether premise interpretation may also be pragmatic in some important way.
 %As a Bayesian model, our approach also naturally extends to explain
 
-
+\ndg{say "rational" a lot less i this section.}
 
 % How are people understanding the logic and what other kinds of processes may be going on?
 
@@ -488,8 +488,8 @@ Below, we formalize each of these three ingredients --  logic, probability, and 
 
 % \mht{move Mental Model of JL to footnote and start with the minimal model of types}
 
-Our model is built on top of an ontology of the types situations about objects with properties that can hold in the world.
-Consider the second syllogism from above, with more abstract content:
+Our model is built on top of an ontology of the \ndg{typo} types situations about objects with properties that can hold in the world.
+Consider the second syllogism from above:
 
 \begin{quote}
 All artists are bakers. \\
@@ -582,7 +582,9 @@ The set of unique states that we consider has size $2^7 = 128$.\footnote{
 There are $2^7$ states and not $2^8$ states since the empty region (or, the object type which has neither of the three properties: $\{\neg A, \neg B, \neg C\}$) does not impact the truth conditions of the quantifier sentences used in syllogisms.
 }
 %, though we exclude the state where all eight regions are empty (i.e., the state where there are no As, Bs, and Cs, but also no things that are not As, Bs, or Cs).
+\ndg{it'd be good to first say here that our model has a prior over these possible situations...}
 Our model probabilistically generates states $s \in S$ by sampling a Bernoulli random variable for each of the $i \in R$ regions: $P(s) = \prod_{i \in R} P(A_{i}, B_{i}, C_{i})$. %= (P(a) \cdot P(b) \cdot P(c)) ^n$$
+\ndg{actually, consider moving this eqn down until after a need for prior is clear from the L0 model.}
 
 
 
@@ -643,8 +645,8 @@ L_0(s \mid u ) \propto P(s)\cdot \mathcal{L}(u, s)
 \end{equation}
 \noindent where $\mathcal{L}(u, s)$ is the lexicon that encodes the literal meanings of the quantified utterances used in syllogisms. 
 These meanings can resolve to deterministic outcomes (e.g., $\mathcal{L}(u, s) = 1$ if the utterance $u$ is true of $s$, and 0 otherwise). 
-In practice, however, we assume a small amount of noise $\phi$ in the semantics such that $\mathcal{L}(u, s) = 1$ with probability proportional to $1-\phi$ and if the utterance $u$ is true of $s$; thus, states which are literally incompatible the utterance with have a small ($\phi$) probability rather than a 0 probability.
-In other words, we assume a continuously valued semantics such that $\mathcal{L}(u, s) = 1-\phi$, a technique introduced by \citeA{degen2020redundancy}.
+In practice, however, we assume a small amount of noise $\phi$ in the semantics such that logically true $\mathcal{L}(u, s)$ may be judged false with probability proportional to $1-\phi$; conversely, states which are literally incompatible the utterance with have a small ($\phi$) probability of being judged true (rather than a 0 probability).
+Equivalently, we assume a continuously valued semantics such that $\mathcal{L}(u, s) = 1-\phi$ or $\phi$, a technique introduced by \citeA{degen2020redundancy}.
 
 
 The model of literal interpretation can be used to update the prior distribution on states (Venn diagrams) into a posterior distribution given the meaning of the premises of the syllogism. 
@@ -757,7 +759,7 @@ The second component of a syllogistic reasoning model is a model of conclusion p
 That is, given a set of beliefs about the likely state of affairs (Eq.~\ref{eq:L0premises}), what conclusion should be drawn?
 We formalize three models of conclusion production.
 The first is a literal speaker, who selects conclusions that are true given the speaker's beliefs about the state. 
-The second is a pragmatic speaker, who selects a conclusion that would best convey information about the likely state to a naive listener (\emph{State communication}). 
+The second is a pragmatic speaker, who selects a conclusion that would best convey information about the \ndg{most?} likely state to a naive listener (\emph{State communication}). 
 Our third and most sophisticated model is of a pragmatic speaker who chooses utterance to convey information about her entire belief distribution over states (\emph{Belief alignment}). 
 %align a naive listener's beliefs about the state with the beliefs of the speaker.
 %Since these models produce a distribution over conclusions, we label these models as reasoner models $R$, so as to not confuse them with the speaker models $S$ that are used as part of the recursion in the pragmatic interpretation of premises. \mht{switch to $S$ since no more pragmatic interpretation?}
@@ -807,15 +809,17 @@ The speaker then chooses utterances soft-max optimally with respect that utility
 S_1(u_3 \mid u_1, u_2) \propto \exp{ [ \alpha \cdot  \sum_s  \ln L_0(s \mid u_3) \cdot L_0(s \mid u_1, u_2) ] } \label{eq:R1a}
 \end{equation}
 
+\ndg{add a note that the two L0's in this eqn are actually the two different agents, but they are treated equivalently?}
+
 % \mht{this sampling a state idea might be directly analogous to how mental models theory treats this conclusion selection process (with respect to a particular model)...}
 
 \subsubsection{Informative production of conclusions: Belief alignment}
 
-Rather than the speaker sampling a state and then selecting an utterance to describe that state, the informational utility can be defined with respect to the reasoner's full belief distribution over state. 
+Rather than the speaker sampling a state and then selecting an utterance to describe that state, the informational utility can be defined with respect to the reasoner's full belief distribution over states. \ndg{cite goodman and stuhmueller 2013 -- i think the first rsa with this KL formulation?} 
 The utility of a conclusion, then, is quantified by how well it would align the listener's beliefs with those of the reasoner. 
 Formally, we use the information-theoretic measure of Kullback-Leibler (KL) divergence as the measure of alignment of the naive listener and reasoner's belief distributions. 
 %Again, this formalization is agnostic as to how we compute the reasoner's state distribution (whether it be via a literal or a pragmatic interpretation of the premises), and so 
-We denote the reasoner's belief distribution over the state as $S$.
+We denote the reasoner's belief distribution over the state as $S$ \ndg{= L0(s|u1,u2)}. \ndg{use same notation above...}
 
 \begin{align}
   \label{eq:KL-divergence}
@@ -835,7 +839,7 @@ Without it, the speaker would be required to say \emph{nothing follows} for any 
 A logically invalid syllogism is one in which no conclusion is true in every state in which the premises are true.
 If a speaker were to choose one of these conclusions, then the states that are incompatible with the conclusion would be imagined (by the listener) to have 0 probability. 
 But since the conclusion is not logically valid, the speaker believes these states to have non-zero probability.
-This combination leads Eq.\ref{eq:KL-divergence} to be undefined, which results in the model always saying \emph{nothing follows} for logically invalid syllogisms.
+This combination leads Eq.~\ref{eq:KL-divergence} to be undefined, which results in the model always saying \emph{nothing follows} for logically invalid syllogisms.
 By adding a small amount of noise into the semantics, we avoid this boundary case.
 
 
