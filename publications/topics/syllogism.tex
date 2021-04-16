@@ -876,7 +876,7 @@ By adding a small amount of noise into the semantics, we avoid this boundary cas
 \section{Modeling the Ragni et al. (2019) data set}
 
 We test our models using a dataset published by \citeA{ragni2019does}. 
-The data set consists of the results of a web experiment in which participants ($n = 139$) provided conclusions to all 64 syllogisms. In the experiment, participants completed all syllogistic reasoning problems after a brief training phase. Participants responded by selecting one of the nine possible responses for the conclusion of the syllogism (4 quantifier choices x 2 term orders + 1 \emph{nothing follows}).
+The data set consists of the results of a web experiment in which participants ($n = 139$) provided conclusions to all 64 syllogisms. In the experiment, participants completed all syllogistic reasoning problems after a brief training phase. Participants responded by selecting one of the nine possible responses for the conclusion of the syllogism (4 quantifier choices x 2 term orders + 1 \emph{nothing follows}). \ndg{perhaps say why we use this dataset instead of the many others?}
 %Participants' responses to four example syllogisms are shown in Figure \ref{fig:ragniData}).
 
 %\begin{figure}[th]
@@ -1079,7 +1079,7 @@ $ \alpha \sim \text{Uniform}(0, 10)$
 
     \end{tabular}
   \end{center}
-  \caption{\small Bayesian data analysis model. The conclusion choices for each $i$ participant on each $j$ syllogism $d_{ij}$ are generated via the pragmatic reasoner model $R_1$, which defines a conditional distribution on conclusions $c$ given premises $\vec{p}_j$. The reasoner model $R_1$ is a Rational Speech-Act (RSA) model that interprets premises according to a literal listener model $L_0$, which updates its beliefs according to the literal meaning $\mathcal{L}$ of the sentences it hears. Literal meanings are the standard, truth-functional meanings of the quantifiers (Table 1\label{tab:sem}) with a small amount of noise $\phi$. The prior distribution over states $P(x)$ is parameterized by independent Bernoulli weights $\theta_k$ for each of the 7 $k$ regions of a Venn diagram. The reasoner $R_1$'s prior distribution over conclusions includes a preference $\beta$ for term-orderings (A--C vs. C--A) that match the ordering of the terms in the premises. Finally, the reasoner $R_1$ that selects conclusions has a soft-max parameter $\alpha$.}
+  \caption{\small Bayesian data analysis model. The conclusion choices for each $i$ participant on each $j$ syllogism $d_{ij}$ are generated via the pragmatic reasoner model $R_1$, which defines a conditional distribution on conclusions $c$ given premises $\vec{p}_j$. The reasoner model $R_1$ is a Rational Speech-Act (RSA) model that interprets premises according to a literal listener model $L_0$, which updates its beliefs according to the literal meaning $\mathcal{L}$ of the sentences it hears. Literal meanings are the standard, truth-functional meanings of the quantifiers (Table 1\label{tab:sem}) with a small amount of noise $\phi$. The prior distribution over states $P(x)$ is parameterized by independent Bernoulli weights $\theta_k$ for each of the 7 $k$ regions of a Venn diagram. \ndg{in text it says theta = 0.5 no?} The reasoner $R_1$'s prior distribution over conclusions includes a preference $\beta$ for term-orderings (A--C vs. C--A) that match the ordering of the terms in the premises. Finally, the reasoner $R_1$ that selects conclusions has a soft-max parameter $\alpha$.}
   \label{fig:bayesnet}
 \end{figure}
 
@@ -1120,6 +1120,8 @@ For \emph{Some / Some}, the most likely and useful conclusion is \emph{Some}.
 By changing the second premise to \emph{Some Bs are not Cs} (\emph{Some / Some not} syllogism), the modal conclusion changes to \emph{Some not}.
 Yet changing the first premise also to \emph{Some As are not Bs} (\emph{Some not / Some not} syllogism) does not change the modal conclusion, which is also \emph{Some not}. 
 Both the Belief Alignment model and the Literal Speaker are able to capture these subtle changes, revealing that the literal meanings of the premises are shifting participants choice of conclusions. 
+
+\ndg{would be nice to say a little about param posteriors for the best model. especially beta and phi.}
 
 \begin{figure}[t]
 \centering
