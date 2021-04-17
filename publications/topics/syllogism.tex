@@ -488,7 +488,7 @@ Below, we formalize each of these three ingredients --  logic, probability, and 
 
 % \mht{move Mental Model of JL to footnote and start with the minimal model of types}
 
-Our model is built on top of an ontology of the \ndg{typo} types situations about objects with properties that can hold in the world.
+Our model is built on top of an ontology of types of situations about objects with properties that can hold in the world.
 Consider the second syllogism from above:
 
 \begin{quote}
@@ -815,7 +815,7 @@ S_1(u_3 \mid u_1, u_2) \propto \exp{ [ \alpha \cdot  \sum_s  \ln L_0(s \mid u_3)
 
 \subsubsection{Informative production of conclusions: Belief alignment}
 
-Rather than the speaker sampling a state and then selecting an utterance to describe that state, the informational utility can be defined with respect to the reasoner's full belief distribution over states. \ndg{cite goodman and stuhmueller 2013 -- i think the first rsa with this KL formulation?} 
+Rather than the speaker sampling a state and then selecting an utterance to describe that state, the informational utility can be defined with respect to the reasoner's full belief distribution over states \cite{Goodman2013, scontras2018probabilistic}. 
 The utility of a conclusion, then, is quantified by how well it would align the listener's beliefs with those of the reasoner. 
 Formally, we use the information-theoretic measure of Kullback-Leibler (KL) divergence as the measure of alignment of the naive listener and reasoner's belief distributions. 
 %Again, this formalization is agnostic as to how we compute the reasoner's state distribution (whether it be via a literal or a pragmatic interpretation of the premises), and so 
@@ -876,7 +876,9 @@ By adding a small amount of noise into the semantics, we avoid this boundary cas
 \section{Modeling the Ragni et al. (2019) data set}
 
 We test our models using a dataset published by \citeA{ragni2019does}. 
-The data set consists of the results of a web experiment in which participants ($n = 139$) provided conclusions to all 64 syllogisms. In the experiment, participants completed all syllogistic reasoning problems after a brief training phase. Participants responded by selecting one of the nine possible responses for the conclusion of the syllogism (4 quantifier choices x 2 term orders + 1 \emph{nothing follows}). \ndg{perhaps say why we use this dataset instead of the many others?}
+The data set consists of the results of a web experiment in which participants ($n = 139$) provided conclusions to all 64 syllogisms. In the experiment, participants completed all syllogistic reasoning problems after a brief training phase. Participants responded by selecting one of the nine possible responses for the conclusion of the syllogism (4 quantifier choices x 2 term orders + 1 \emph{nothing follows}). 
+%\ndg{perhaps say why we use this dataset instead of the many others?}
+We use this data set because it is large and comprehensive (i.e., has many responses for all 64 syllogisms). 
 %Participants' responses to four example syllogisms are shown in Figure \ref{fig:ragniData}).
 
 %\begin{figure}[th]
@@ -936,7 +938,7 @@ We put a uniform prior between (1, 5) on this preference weight since we assume 
 \node[det, above=of R1](L0){$L_{0}$};
 
 \node[det, left=of L0, yshift=1cm](x){$x$};
-\node[latent, left=of x](theta){$\theta_k$};
+\node[const, left=of x](theta){$\theta_k = 0.5$};
 
 \node[det, right=of L0, yshift=1cm](lex){$\mathcal{L}$};
 \node[latent, right=of lex](phi){$\phi$};
@@ -980,7 +982,7 @@ We put a uniform prior between (1, 5) on this preference weight since we assume 
 
 \node[draw, align=left, execute at begin node=\setlength{\baselineskip}{3ex}] at (6.5, 5) { 
 \text{\underline{Data-analysis Priors} } \\ 
-$ \theta_k  \sim \text{Uniform}(0, 1)$ \\
+%$ \theta_k  \sim \text{Uniform}(0, 1)$ \\
 $ \phi  \sim \text{Uniform}(0, 0.1)$ \\
 $ \beta  \sim \text{Uniform}(1, 5)$ \\
 $ \alpha \sim \text{Uniform}(0, 10)$ 
@@ -1079,7 +1081,7 @@ $ \alpha \sim \text{Uniform}(0, 10)$
 
     \end{tabular}
   \end{center}
-  \caption{\small Bayesian data analysis model. The conclusion choices for each $i$ participant on each $j$ syllogism $d_{ij}$ are generated via the pragmatic reasoner model $R_1$, which defines a conditional distribution on conclusions $c$ given premises $\vec{p}_j$. The reasoner model $R_1$ is a Rational Speech-Act (RSA) model that interprets premises according to a literal listener model $L_0$, which updates its beliefs according to the literal meaning $\mathcal{L}$ of the sentences it hears. Literal meanings are the standard, truth-functional meanings of the quantifiers (Table 1\label{tab:sem}) with a small amount of noise $\phi$. The prior distribution over states $P(x)$ is parameterized by independent Bernoulli weights $\theta_k$ for each of the 7 $k$ regions of a Venn diagram. \ndg{in text it says theta = 0.5 no?} The reasoner $R_1$'s prior distribution over conclusions includes a preference $\beta$ for term-orderings (A--C vs. C--A) that match the ordering of the terms in the premises. Finally, the reasoner $R_1$ that selects conclusions has a soft-max parameter $\alpha$.}
+  \caption{\small Bayesian data analysis model. The conclusion choices for each $i$ participant on each $j$ syllogism $d_{ij}$ are generated via the pragmatic reasoner model $R_1$, which defines a conditional distribution on conclusions $c$ given premises $\vec{p}_j$. The reasoner model $R_1$ is a Rational Speech-Act (RSA) model that interprets premises according to a literal listener model $L_0$, which updates its beliefs according to the literal meaning $\mathcal{L}$ of the sentences it hears. Literal meanings are the standard, truth-functional meanings of the quantifiers (Table 1\label{tab:sem}) with a small amount of noise $\phi$. The prior distribution over states $P(x)$ is parameterized by independent Bernoulli weights $\theta_k$ for each of the 7 $k$ regions of a Venn diagram, which we assume are all equal to 0.5. The reasoner $R_1$'s prior distribution over conclusions includes a preference $\beta$ for term-orderings (A--C vs. C--A) that match the ordering of the terms in the premises. Finally, the reasoner $R_1$ that selects conclusions has a soft-max parameter $\alpha$.}
   \label{fig:bayesnet}
 \end{figure}
 
