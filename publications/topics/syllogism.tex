@@ -582,9 +582,6 @@ The set of unique states that we consider has size $2^7 = 128$.\footnote{
 There are $2^7$ states and not $2^8$ states since the empty region (or, the object type which has neither of the three properties: $\{\neg A, \neg B, \neg C\}$) does not impact the truth conditions of the quantifier sentences used in syllogisms.
 }
 %, though we exclude the state where all eight regions are empty (i.e., the state where there are no As, Bs, and Cs, but also no things that are not As, Bs, or Cs).
-\ndg{it'd be good to first say here that our model has a prior over these possible situations...}
-Our model probabilistically generates states $s \in S$ by sampling a Bernoulli random variable for each of the $i \in R$ regions: $P(s) = \prod_{i \in R} P(A_{i}, B_{i}, C_{i})$. %= (P(a) \cdot P(b) \cdot P(c)) ^n$$
-\ndg{actually, consider moving this eqn down until after a need for prior is clear from the L0 model.}
 
 
 
@@ -632,11 +629,14 @@ No As are Bs                                       & $\forall i \in R: A(i) \cen
 \end{table}
 
 \subsection{Interpreting the premises}
-
-Given a representation and assignment of prior probabilities to different states (Venn diagrams), we now introduce a probabilistic listener model that updates their beliefs about the states given the premises of the syllogism. 
+%\ndg{it'd be good to first say here that our model has a prior over these possible situations...}
+%Our model \ndg{actually, consider moving this eqn down until after a need for prior is clear from the L0 model.}
+%Given a representation of different states (Venn diagrams), 
+We now introduce a probabilistic listener model that updates their beliefs about the states given the premises of the syllogism. 
+The model's prior on states $P(s)$ is constructed by sampling a Bernoulli random variable for each of the $i \in R$ regions: $P(s) = \prod_{i \in R} P(A_{i}, B_{i}, C_{i})$. %= (P(a) \cdot P(b) \cdot P(c)) ^n$$
 %This interpretation process can occur at the level of a literal listener (who updates beliefs based on the truth-conditional meaning of the premises) or a pragmatic listener who interprets the premises by reasoning about why a speaker chose to produce the premises that she did. 
 %\subsubsection{Premise interpretation}
-We interpret the premises of a syllogism with a model of a Bayesian literal listener $L_0$ which updates its prior beliefs about the state via the literal, truth conditional meaning of the utterance (shown in Table \ref{tab:sem}):
+The premises of a syllogism update this prior on states via the literal, truth conditional meaning of each of the premises (shown in Table \ref{tab:sem}):
 %All our recursive reasoning modeling components ground out in a model of literal interpretation.
 %This model component is 
 \begin{equation}
@@ -759,7 +759,7 @@ The second component of a syllogistic reasoning model is a model of conclusion p
 That is, given a set of beliefs about the likely state of affairs (Eq.~\ref{eq:L0premises}), what conclusion should be drawn?
 We formalize three models of conclusion production.
 The first is a literal speaker, who selects conclusions that are true given the speaker's beliefs about the state. 
-The second is a pragmatic speaker, who selects a conclusion that would best convey information about the \ndg{most?} likely state to a naive listener (\emph{State communication}). 
+The second is a pragmatic speaker, who selects a conclusion that would best convey information about an individual likely state to a naive listener (\emph{State communication}). 
 Our third and most sophisticated model is of a pragmatic speaker who chooses utterance to convey information about her entire belief distribution over states (\emph{Belief alignment}). 
 %align a naive listener's beliefs about the state with the beliefs of the speaker.
 %Since these models produce a distribution over conclusions, we label these models as reasoner models $R$, so as to not confuse them with the speaker models $S$ that are used as part of the recursion in the pragmatic interpretation of premises. \mht{switch to $S$ since no more pragmatic interpretation?}
@@ -809,7 +809,11 @@ The speaker then chooses utterances soft-max optimally with respect that utility
 S_1(u_3 \mid u_1, u_2) \propto \exp{ [ \alpha \cdot  \sum_s  \ln L_0(s \mid u_3) \cdot L_0(s \mid u_1, u_2) ] } \label{eq:R1a}
 \end{equation}
 
-\ndg{add a note that the two L0's in this eqn are actually the two different agents, but they are treated equivalently?}
+Note that the two $L_0$'s in Eq.~\ref{eq:R1a} are actually two different agents.
+$L(s \mid u_1, u_2)$ is the reasoner who updates their beliefs about the state given the premises.
+$L(s \mid u_3)$ is a hypothetical listener that the reasoner is communicating with; they update their beliefs about the state from the conclusion ($u_3$).
+The priors and likelihoods of these agents are equivalent and thus are represented equivalently. 
+%\ndg{add a note that the two L0's in this eqn are actually the two different agents, but they are treated equivalently?}
 
 % \mht{this sampling a state idea might be directly analogous to how mental models theory treats this conclusion selection process (with respect to a particular model)...}
 
@@ -819,17 +823,17 @@ Rather than the speaker sampling a state and then selecting an utterance to desc
 The utility of a conclusion, then, is quantified by how well it would align the listener's beliefs with those of the reasoner. 
 Formally, we use the information-theoretic measure of Kullback-Leibler (KL) divergence as the measure of alignment of the naive listener and reasoner's belief distributions. 
 %Again, this formalization is agnostic as to how we compute the reasoner's state distribution (whether it be via a literal or a pragmatic interpretation of the premises), and so 
-We denote the reasoner's belief distribution over the state as $S$ \ndg{= L0(s|u1,u2)}. \ndg{use same notation above...}
+We denote the reasoner's belief distribution over the state as $S= L_0(s \mid  u_1,u_2)$. 
 
 \begin{align}
   \label{eq:KL-divergence}
-  \text{KL}({S \mid \mid L_0}(u)) = \sum_{s} S(s) \ \log \frac{S(s)}{{L_{0}}(s \mid u)}
+  \text{KL}({ S \mid \mid L_0}(u)) = \sum_{s}  S(s) \ \log \frac{ S(s)}{{L_{0}}(s \mid u)}
 \end{align}
 
 \noindent Then, the speaker model that selects conclusions an informative manner is given by: 
 
 \begin{equation}
-S_1(u_3 \mid u_1,  u_2) \propto  \exp [ \alpha_2 \cdot - \text{KL}({S_1(s) \mid \mid L_0}(s \mid u_3)) ]  \label{eq:R1b}
+S_1(u_3 \mid u_1,  u_2) \propto  \exp [ \alpha_2 \cdot - \text{KL}({ L_0(s \mid  u_1,u_2) \mid \mid L_0}(s \mid u_3)) ]  \label{eq:R1b}
 \end{equation}
 
 \noindent where $L_0(s \mid u)$ is the literal listener model defined in Equation \ref{eq:L0}. 
@@ -1123,7 +1127,11 @@ By changing the second premise to \emph{Some Bs are not Cs} (\emph{Some / Some n
 Yet changing the first premise also to \emph{Some As are not Bs} (\emph{Some not / Some not} syllogism) does not change the modal conclusion, which is also \emph{Some not}. 
 Both the Belief Alignment model and the Literal Speaker are able to capture these subtle changes, revealing that the literal meanings of the premises are shifting participants choice of conclusions. 
 
-\ndg{would be nice to say a little about param posteriors for the best model. especially beta and phi.}
+The Belief Alignment model's inferred parameter values provide more insight into how the model is able to make the predictions it does.
+The MAP and 95\% credible interval for the figural effect (first-term preference) parameter was  $\beta = 2.01 (1.82, 2.14)$, showing that our model prefers conclusions whose terms match those of the premises by a factor of 2-to-1. 
+The semantic noise parameter was inferred to be $\theta = 0.06 (0.02, 0.06)$, showing that even a little bit of noise in the semantics aids the model in making better predictions.
+Finally, the speaker optimality parameter was  $\alpha = 6.88 (1.43, 7.15)$, covering a range of values consistent with what is typically observed in the RSA literature. 
+%\ndg{would be nice to say a little about param posteriors for the best model. especially beta and phi.}
 
 \begin{figure}[t]
 \centering
@@ -1155,7 +1163,7 @@ Both the Belief Alignment model and the Literal Speaker are able to capture thes
 
 \subsection{Comparison to other theories}
 
-\ndg{awk:}We found the model that explained the human syllogistic reasoning data set the best was that which produced conclusions by aligning a listener's beliefs with those of a speaker (who had their beliefs updating from the literal meaning of the premises).
+%\ndg{awk:}We found the model that explained the human syllogistic reasoning data set the best was that which produced conclusions by aligning a listener's beliefs with those of a speaker (who had their beliefs updating from the literal meaning of the premises).
 Our modeling approach is a Computational or Rational Level of analysis model \cite{marr1982vision, anderson1990adaptive} that seeks to describe the computations that underly human syllogistic reasoning without stipulating a precise implementation of such a reasoning process. 
 Many other theories of syllogistic reasoning instead consider the process by which a human reasoner solves a syllogism.
 The two most influential theories of human syllogistic reasoning are the Mental Models Theory \cite{johnsonlaird2006we, khemlani2013processes} and the Probability Heuristics Model \cite{Chater1999}, each of which share features with our logic, probability, and pragmatics approach. 
