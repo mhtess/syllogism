@@ -1,4 +1,4 @@
-\documentclass[floatsintext, doc]{apa6}
+\documentclass[floatsintext, man]{apa6}
 %\bibliography{references}
 \usepackage{apacite}
 \usepackage{subcaption}
@@ -203,10 +203,40 @@ Logic or syntactic-based approaches have attempted to articulate modified logica
 Process accounts have been developed to describe how we manipulate  model- or diagram-based mental representations to arrive at a conclusion, the most prominent example being the Mental Models theory \cite{johnson1975models}.
 Still other approaches attempt to articulate the rational or functional basis of human logical reasoning, interrogating deductive reasoning as a special case of probabilistic inference \cite{oaksford2001probabilistic, oaksford2007bayesian, hahn2007rationality, tenenbaum2006theory},  formalized in the Probability Heuristics Model of syllogistic reasoning \cite{Chater1999}.
 
+
+
+%: both mm and ph take on a fairly standard  competence theory (FO logic, probability) but then have to appeal to process idiosyncrasies or heuristics, both thought to arise from resource constraints in order to explain human judgements. 
+
+
 Though the substantial prior work provides insight into how humans reason with syllogisms, a unified, explanatory theory of human syllogistic reasoning remains outstanding \cite{Khemlani2012}. 
+The most prominent accounts of syllogistic reasoning -- Mental Models Theory \cite{johnson1975models, johnson2015logic} and the Probability Heuristics Model  \cite{Chater1999} -- assume a standard competence-level theory involving first-order logic and probabilities, but appeal to either process-level idiosyncrasies or heuristics presumed to arise from resource constraints in order to explain human judgments. 
+Furthermore, the fact that syllogisms involve natural language demands a theory that can be integrated with principles of natural language -- semantics and pragmatics -- which are intuitively at play for human reasoning \cite{sperber1986relevance,mercier2017enigma}.
+Natural language semantics plays a role in many theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, but how those semantics interface with pragmatic reasoning is either posited in an ad-hoc manner \cite{Chater1999} or has been limited to simple Gricean enrichment of the premises \cite{Roberts2001}.	
+
+
+%in contrast, we also start from FO logic with probabilities, but construe syllogistic reasoning as part of communication thus adding pragmatic conclusion selection as part of the competence theory. while there are almost certainly important processing details driven by resource limitations, we don't need to appeal to them in order to explain many aspects of human judgements.
+
+We take up the task of developing a competence-level theory that builds upon first-order logic and probabilities but construes syllogistic reasoning as part of communication. 
+%in the style of \citeA{marr1982vision} and \citeA{anderson1990adaptive} that integrates three core ingredients widely believed to be at play in human syllogistic reasoning: logic, probability, and pragmatics. 
+%$ logic, probability, and pragmatics in a rational model.
+%\mht{should start with more about probabilistic models and logic}
+In particular, we view syllogistic reasoning through the lens of the language understanding processes that guide everyday reasoning with language, a process which involves reasoning about how an interlocutor would interpret a speaker's statements \cite{Grice1975, Clark1996, Levinson2000}. 
+% interpreting the meanings of the sentences heard and social reasoning about why a speaker would bother to say those sentences 
+% Syllogistic reasoning is then part logical reasoning and part riddle solving (as suggested by the Ong, 1982 quotation above).
+%Each of these component tasks could involve pragmatic reasoning beyond the words of the syllogism 
+We formalize this hypothesis in a probabilistic model of pragmatic reasoning in the Rational Speech Act framework \cite{Frank2012a, goodman2016pragmatic}.
+Our model is able to explain a number of qualitative phenomena in syllogistic reasoning, including articulating a reasoning mechanism by which a person could respond \emph{nothing follows}, an outstanding problem in theories of syllogistic reasoning \cite{riesterer2020modeling}.
+We additionally show that pragmatics enters into the conclusion selection process by way of participants reflecting on how well their choice of conclusion would convey their own beliefs to a naive listener. 
+While there are almost certainly important processing details driven by resource limitations, we do not need to appeal to them in order to explain many aspects of human judgements.
+And though we do not explain all of the variance in the human data, the model provides a path forward for addressing several outstanding issues including including how pragmatics might enter into the interpretation of premises and  how the content of a syllogism can affect reasoning (known as \emph{belief bias}).
+%We discuss the question of whether premise interpretation may also be pragmatic in some important way.
+%As a Bayesian model, our approach also naturally extends to explain
+
+
+
 % thwhat is still outstanding is a model that unifies and explains syllogistic reasoning in terms of a rational computation.\ndg{i don;t think we want to say that...}
-The most promising application of explaining syllogistic reasoning in terms of a rational computation, the Probability Heuristics Model, falls short at fully articulating a coherent probabilistic logic and instead resorts to positing ad-hoc heuristics thought to approximate that logic \cite{Chater1999}.
-The mental models approach provides a process-level account, which can be enhanced with probabilistic constructs and assumptions \cite{johnson2015logic}, but does not have the goal of providing a rational analysis. 
+%The most promising application of explaining syllogistic reasoning in terms of a rational computation, the Probability Heuristics Model, falls short at fully articulating a coherent probabilistic logic and instead resorts to positing ad-hoc heuristics thought to approximate that logic \cite{Chater1999}.
+%The mental models approach provides a process-level account, which can be enhanced with probabilistic constructs and assumptions \cite{johnson2015logic}, but does not have the goal of providing a rational analysis. 
 % is still outstanding. 
 %In particular, a model that tries to explain how reasoning works and why it fails 
 % why mental reasoning works, what the function is, how it achieves that function, and how errors might arise from gaps between the problem the mind is solving and what the context might require.
@@ -216,8 +246,7 @@ The mental models approach provides a process-level account, which can be enhanc
 %-- rational analysis of syllogistic reasoning
 %- explains what its for and why it works
 %- the problem people are solving is communicating beliefs rather than deducing what is true
-Furthermore, the fact that syllogisms involve natural language demands a theory that can be integrated with principles of natural language -- semantics and pragmatics -- which are intuitively at play for human reasoning \cite{sperber1986relevance,mercier2017enigma}.
-Natural language semantics plays a role in many theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, but how those semantics interface with pragmatic reasoning is either posited in an ad-hoc manner \cite{Chater1999} or has been limited to simple Gricean enrichment of the premises \cite{Roberts2001}.	
+
 
 %Contra more traditional approaches that  assume deductive reasoning is the ideal framework by which to evaluate human reasoning  and try to explain reasoning errors as arising from improper use of deductive rules \cite{rips1994, geurts2003reasoning} or biased construction of logical models \cite{JL1984, Newstead1992}, the probabilisitic lens assumes that human reasoners about logical reasoning tasks as they approach many other kinds of everyday reasoning, which often takes the form of probabilistic inference under uncertainty \cite{tenenbaum2006theory}. 
 
@@ -237,19 +266,7 @@ Natural language semantics plays a role in many theories of reasoning \cite{JL19
 %Reasoning through a syllogism, thus, involves interpreting and producing natural language sentences; understanding such a task requires a careful examination of the  that may be at play.
 
 % Inspired by Luria's experiments, we explore the idea that understanding human syllogistic reasoning requires a careful look at participants' understanding of the task \cite{henle1962relation}. 
-We take up the task of developing a rational theory in the style of \citeA{marr1982vision} and \citeA{anderson1990adaptive} that integrates three core ingredients widely believed to be at play in human syllogistic reasoning: logic, probability, and pragmatics. 
-%$ logic, probability, and pragmatics in a rational model.
-%\mht{should start with more about probabilistic models and logic}
-In particular, we view syllogistic reasoning through the lens of the language understanding processes that guide everyday reasoning with language, a process which involves reasoning about how an interlocutor would interpret a speaker's statements \cite{Grice1975, Clark1996, Levinson2000}. 
-% interpreting the meanings of the sentences heard and social reasoning about why a speaker would bother to say those sentences 
-% Syllogistic reasoning is then part logical reasoning and part riddle solving (as suggested by the Ong, 1982 quotation above).
-%Each of these component tasks could involve pragmatic reasoning beyond the words of the syllogism 
-We formalize this hypothesis in a probabilistic model of pragmatic reasoning in the Rational Speech Act framework \cite{Frank2012a, goodman2016pragmatic}.
-Our model is able to explain a number of qualitative phenomena in syllogistic reasoning, including articulating a reasoning mechanism by which a person could respond \emph{nothing follows}, an outstanding problem in theories of syllogistic reasoning \cite{riesterer2020modeling}.
-We additionally show that pragmatics enters into the conclusion selection process by way of participants reflecting on how well their choice of conclusion would convey their own beliefs to a naive listener. 
-Though we do not explain all of the variance in human data, the model provides a path forward for addressing several outstanding issues including including how pragmatics might enter into the interpretation of premises and  how the content of a syllogism can affect reasoning (known as \emph{belief bias}).
-%We discuss the question of whether premise interpretation may also be pragmatic in some important way.
-%As a Bayesian model, our approach also naturally extends to explain
+
 
 %\ndg{say "rational" a lot less i this section.}
 
@@ -1313,7 +1330,7 @@ It is straightforward to extend our approach to reasoning with other explicit qu
 Additionally, syllogisms that appear in natural discourse often make use of implicitly quantified, generic statements (e.g., \emph{Taxes on the wealthy will be modified}; see also \citeNP{khemlani2008syllogistic}); our approach could naturally be expanded to incorporate recent advances in the computational semantics of generics to account for syllogistic reasoning about generic premises \cite{tessler2019language}. 
 Finally, this model could be used to consider the implications of pragmatic reasoning on the interpretation of the premises. 
 Such a pragmatic interpretation model could be constructed as a standard Rational Speech Act pragmatic listener \cite{Frank2012a, goodman2016pragmatic, scontras2018probabilistic}; that is, treating the listener component of the model as a listener who reasons about why a speaker produced the premises that they did, where the speaker decides what utterance to produce in order to convey information about the state (or, belief distribution) to a naive literal listener.  %is the kind of pragmatic speaker we have considered in this paper, who 
-Indeed, we have explored several versions of this kind of pragmatic model in the course of this project but found that no model extension we tried provided a substantially better quantitative fit to Ragni et al. (2019) data than the model that interprets the premises literally as we presented.\footnote{
+Indeed, we have explored several versions of this kind of pragmatic model in the course of this project (described briefly in the Appendix) but found that no model extension we tried provided a substantially better quantitative fit to Ragni et al. (2019) data than the model that interprets the premises literally as we presented.\footnote{
 Specifically, we formalized pragmatic listener models that interpret the premises from a rational speaker who wants to convey information about the full state as well as a speaker who wants to convey information about a number of different Questions Under Discussion \cite{Roberts2004QUD}, in which the speaker only cares about conveying information about the $A, C$ terms of the state; see also \citeNP{tessler2014some} for yet a different formulation of pragmatic interpretation of premises which achieves a comparable fit to that presented here.
 }
 We do not take this null result as evidence that pragmatics does not enter into the interpretation process of a syllogism.
@@ -1368,9 +1385,9 @@ An agent needs to be posited at the other end of the line so that a conclusion m
 
 \appendix
 
-\section{Appendix}
+\section{Appendix: Pragmatic interpretation of premises}
 
-\subsubsection{Pragmatic interpretation of premises}
+%\subsubsection{}
 
 Understanding language often involves reasoning not only about the literal meaning of what was said but about why an interlocutor (the speaker) would bother to say what they said, which can lead to enriched interpretations beyond the literal meanings. 
 We can formalize this reasoning through a series of Bayesian models that recursively reason about one another, as developed in the Rational Speech Act (RSA) framework \cite{Frank2012a, goodman2016pragmatic, scontras2018probabilistic}.
@@ -1386,15 +1403,15 @@ Following standard practice in RSA modeling, the speaker is a soft-max rational 
 
 \paragraph{Alternative utterances}
 The proportionality in Equation \ref{eq:S1} implies a normalization over a set of alternative utterances (i.e., the set of sentences that the speaker could have produced); in our case, the set of alternative utterances amounts to a set of alternative syllogistic premises that a speaker could have produced. 
-There are at least three sets of alternative premises that are \emph{a priori} plausible and we test our models on all three: (1) alternative premises that have the same ordering of terms (i.e., syllogisms of the same form, or ``figure''), but whose quantified relation between the terms could be different (e.g., if the speaker says \emph{All As are Bs / All Bs are Cs}, the alternative set is the set of syllogisms of the form \emph{Q As are Bs} / \emph{Q Bs are Cs} where $Q \in \{all, some, \emph{not all}, none\}$); (2) alternative premises that differ either in the quantified relation between terms or the ordering of the terms, but not both (i.e., utterances with an edit-distance of 1); (3) the maximal set of alternative premises in which the quantifier and the ordering of terms could be different.
+There are at least three sets of alternative premises that are \emph{a priori} plausible and we tested models using each of: (1) alternative premises that have the same ordering of terms (i.e., syllogisms of the same form, or ``figure''), but whose quantified relation between the terms could be different (e.g., if the speaker says \emph{All As are Bs / All Bs are Cs}, the alternative set is the set of syllogisms of the form \emph{Q As are Bs} / \emph{Q Bs are Cs} where $Q \in \{all, some, \emph{not all}, none\}$); (2) alternative premises that differ either in the quantified relation between terms or the ordering of the terms, but not both (i.e., utterances with an edit-distance of 1); (3) the maximal set of alternative premises in which the quantifier and the ordering of terms could be different.
 
 \paragraph{Question Under Discussion (QUD)}
 When deciding what to say, speakers may choose their utterances to convey information about a particular topic of relevance and listeners may assume that speakers had a particular topic of relevance in mind when interpreting the utterances heard. 
 We formalize this topic as a Question Under Discussion (or, QUD), which acts as a function that projects the state space onto a lower-dimensional representation of the state space \cite{Roberts2004QUD, kao2014nonliteral}.
-Though QUDs may not be the explicit question asked of a person \cite<e.g.,>{}, in the context of a syllogistic reasoning problem, the most natural QUD is the explicit question asked of participants: What relationship between As and Cs follows from the premises?
-In particular, we consider the QUD when interpreting the premises of a syllogism (\emph{As are Bs}, \emph{Bs are Cs}) to be about the
+Though QUDs may not be the explicit question asked of a person \cite<e.g.,>{}, in the context of a syllogistic reasoning problem, the most natural QUD is the explicit question asked of participants: What relationship between As and Cs follows from the premises? \cite{tessler2014some}
+In particular, we considered the QUD when interpreting the premises of a syllogism (\emph{As are Bs}, \emph{Bs are Cs}) to be about the A--C relationship. 
 In our model, this QUD function acts by transforming a three circle Venn diagram (A, B, C) into a two circle diagram (A, C): $Q(\{A,B,C\}) = \{A,C\}$.
-Example results of this transformation can be seen in Figure \ref{fig:lit_state_qud}(ii). 
+%Example results of this transformation can be seen in Figure \ref{fig:lit_state_qud}(ii). 
 
 
 The pragmatic listener who interprets the premises relative to this QUD is given by a set of equations:
@@ -1402,9 +1419,9 @@ The pragmatic listener who interprets the premises relative to this QUD is given
 \begin{align}
 L_1(s \mid u_1,  u_2, Q)& \propto  P(s)\cdot S_1(u_1, u_2 \mid s, Q)  \label{eq:L1q} \\ 
 S_1(u_1, u_2 \mid s, Q) &\propto  \exp [ \alpha_1 \cdot \ln L_0(Q(s) \mid u_1,  u_2, Q)]  \label{eq:S1q} \\
-L_0(Q(s) \mid u_1,  u_2) & = \sum_{s \in \mathcal{S}}  Q(s) * L_0(s\mid u_1,  u_2) \label{eq:L0q}
+L_0(Q(s) \mid u_1,  u_2) & = \sum_{s' \in \mathcal{S}}  \delta_{Q(s)=Q(s')} \cdot L_0(s'\mid u_1,  u_2) \label{eq:L0q}
 \end{align} 
-\mht{is this the best way to write out the QUD model?}
+%\mht{is this the best way to write out the QUD model?}
 
 
 
