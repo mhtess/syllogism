@@ -1,4 +1,4 @@
-\documentclass[floatsintext, man]{apa6}
+\documentclass[floatsintext, doc]{apa6}
 %\bibliography{references}
 \usepackage{apacite}
 \usepackage{subcaption}
@@ -129,11 +129,11 @@
 
 \authornote{Corresponding author: Michael Henry Tessler,  Department of Brain and Cognitive Sciences, Building 46, Room 3027,	Massachusetts Institute of Technology, 77 Massachusetts Avenue, Cambridge, MA 02139-4307, USA; tessler@mit.edu}
 
-\keywords{syllogisms; reasoning; pragmatics; semantics; Rational Speech Act \newline\indent Word count: 6639}
+\keywords{syllogisms; reasoning; pragmatics; semantics; Rational Speech Act \newline\indent Word count: 6622}
 
 \abstract{
 Syllogistic reasoning lies at the intriguing intersection of natural and formal reasoning, of language and logic. 
-Syllogisms comprise a formal system of reasoning yet make use of natural language quantifiers (e.g., \emph{all}, \emph{some}), and invite natural language conclusions. 
+Syllogisms comprise a formal system of reasoning yet make use of natural language quantifiers (e.g., \emph{all}, \emph{some}) and invite natural language conclusions. 
 The conclusions people tend to draw from syllogisms deviate substantially from a purely logical perspective. 
 Are principles of natural language understanding to blame?
 We develop probabilistic pragmatics models of syllogistic reasoning, couched within the Rational Speech Act framework, and explore the pressures that pragmatic reasoning place on the production of conclusions.
@@ -460,7 +460,7 @@ And though we do not explain all of the variance in the human data, the model pr
 %By formalizing syllogistic reasoning as a probabilistic pragmatics problem, there is a natural way to account for influence of background knowledge in the form of the prior distribution on possible situations. We construct domains where we expect correlations between properties (e.g., knives – being sharp – cut well) and investigate syllogistic reasoning over these content domains. By measuring the prior probability of the eight possible combinations of binary features, we are able to generate predictions for syllogistic reasoning problems that are influenced by this kind of prior knowledge. Such influence of background knowledge on reasoning, known as belief bias in the syllogistic reasoning domain, has been of interest to psychologists for quite some time (e.g., Evans, Handley, \& Pollard, 1983; Dube, Rotello, \& Heit, 2010). We formalize this “bias” as rational belief updating given prior knowledge and find that the pragmatics model is too influenced by these kind of prior beliefs (Figure 2).
 
 
-\section{Computational Model}
+\section{Rational Speech Act Model}
 
 We develop a family of models of syllogistic reasoning that use the logic of the syllogism to update a probabilistically-generated distribution over world states and then decide what pragmatically useful conclusion would best convey that distribution on states to a naive listener.
 We describe our model in three stages: the ontology and semantics in the model, how the premises get interpreted, and how the conclusion gets produced. 
@@ -519,7 +519,8 @@ For the remaining 37 (58\%), no conclusion follows from the premises; in terms o
 
 % \mht{move Mental Model of JL to footnote and start with the minimal model of types}
 
-Our model is built on top of an ontology of types of situations about objects with properties that can hold in the world.
+Our model is built on top of an ontology of states (or situations), which encode the types of objects that exist in a world. 
+An object-type is represented by its properties.
 Consider the second syllogism from above:
 
 \begin{quote}
@@ -529,9 +530,7 @@ Some bakers are chemists. \\
 Some artists are chemists.
 \end{quote}
 
-The types of situations that are possible are composed of the unique types of objects that could appear in those situations. 
-For example, one such type of situation is:
-
+One possible state that is consistent with this syllogism is:
 
 \begin{tabularx}{.8\textwidth}{XXXXX}
 %\begin{quotation} 
@@ -544,7 +543,7 @@ For example, one such type of situation is:
 %\end{quotation}
 \end{tabularx}
 
-\noindent In this situation, there are three unique types of entities: an artist who is also a baker, a baker who is also a chemist, and artist who is also a baker and chemist.\footnote{
+\noindent In this state, there are three unique types of objects or entities: an artist who is also a baker, a baker who is also a chemist, and artist who is also a baker and chemist.\footnote{
 This formalism is different from a \emph{mental model} in the style of  \citeA{johnson1983mental}. In that formalism, you could have a mental model like:
 
 %\begin{figure}
@@ -601,17 +600,16 @@ For generalized quantifiers (e.g., \emph{most}, \emph{few}), the number of objec
 \end{figure}
 
 
-This kind of situation model, in which only the unique object types are represented, can also be displayed as a Venn diagram (Figure 1).
+This representation of states, in which only the unique object types are present, can also be displayed as a Venn diagram (Figure 1).
 %Syllogisms are arguments that relate two terms (denoted \emph{A} and \emph{C}) via a third term (\emph{B}). 
 %The model is based on an ontology of situations represented by Venn diagrams corresponding to all possible logical relations between the sets of three properties: A, B, C. 
 %The choice of explicit representation of object~vs.~object types
-The Venn diagram contains eight regions $i \in R$, corresponding to the unique object types that could be referred to in the syllogism. 
-Each region corresponds to the presence or absence of each of the three properties: $\{\{A,B,C\},$ $\{A,B,\neg C\},$ $\{A,\neg B,C\},$ $\{\neg A, B, C\},$ $\{A, \neg B, \neg C\},...\}$. (For simplicity, when possible, we will refer to regions by the properties that are present, omitting the absent properties; for example, $\{A, B, \neg C\}$ will be referred to as $AB$.)
+A region in the diagram corresponds to an object type (e.g., an A which is also a B and a C) and the Venn diagram contains eight regions $i \in R$, which correspond to all object types that could be referred to in the syllogism: $\{\{A,B,C\},$ $\{A,B,\neg C\},$ $\{A,\neg B,C\},$ $\{\neg A, B, C\},$ $\{A, \neg B, \neg C\},...\}$. For simplicity, when possible, we will refer to regions by the properties that are present, omitting the absent properties; for example, $\{A, B, \neg C\}$ will be referred to as $AB$.
+Each region in the Venn diagram can take on a binary value, indicating the presence or absence of that unique object type.
 %These regions can be thought of as unique object types (e.g., an object defined by having properties $A$ and $B$ but not $C$) that are present in a situation.\footnote{This diagram representation is analogous to a mental model in the style of \citeA{johnson1983mental} composed of object tokens (e.g., some objects which have properties $A$ or $B$, etc.) but where only unique object tokens are represented (e.g., there cannot be two objects which have the same set of properties).}
 Then, a state or situation (Venn diagram) $s \in S$ is composed of the set of object types (regions) that are present (e.g., $\{AB, BC, ABC\}$ is one possible state).
-The set of unique states that we consider has size $2^7 = 128$.\footnote{
-There are $2^7$ states and not $2^8$ states since the empty region (or, the object type which has neither of the three properties: $\{\neg A, \neg B, \neg C\}$) does not impact the truth conditions of the quantifier sentences used in syllogisms.
-}
+The set of unique states then has size $2^8 = 256$, however the empty region (or, the object type which has neither of the three properties: $\{\neg A, \neg B, \neg C\}$) does not impact the truth conditions of the quantifier sentences used in syllogisms, and so we consider only $2^7 = 128$ states.
+
 %, though we exclude the state where all eight regions are empty (i.e., the state where there are no As, Bs, and Cs, but also no things that are not As, Bs, or Cs).
 
 
@@ -667,7 +665,7 @@ We now introduce a probabilistic listener model that updates their beliefs about
 The model's prior on states $P(s)$ is constructed by sampling a Bernoulli random variable for each of the $i \in R$ regions: $P(s) = \prod_{i \in R} P(A_{i}, B_{i}, C_{i})$. %= (P(a) \cdot P(b) \cdot P(c)) ^n$$
 %This interpretation process can occur at the level of a literal listener (who updates beliefs based on the truth-conditional meaning of the premises) or a pragmatic listener who interprets the premises by reasoning about why a speaker chose to produce the premises that she did. 
 %\subsubsection{Premise interpretation}
-The premises of a syllogism update this prior on states via the literal, truth conditional meaning of each of the premises (shown in Table \ref{tab:sem}):
+The premises of a syllogism update this prior on states via the literal, truth conditional meaning of each of the premises $u$ (shown in Table \ref{tab:sem}):
 %All our recursive reasoning modeling components ground out in a model of literal interpretation.
 %This model component is 
 \begin{equation}
