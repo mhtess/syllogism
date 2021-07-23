@@ -190,7 +190,6 @@ Perhaps unsurprisingly, how everyday human beings reason with syllogisms differs
 % Syllogisms thus also became one of the first domains where cognitive psychology looked to evaluate human reasoning against a set of rational norms.
 
 
-Our modeling approach is a Computational or Rational Level of analysis model \cite{marr1982vision, anderson1990adaptive} that seeks to describe the computations that underly human syllogistic reasoning without stipulating a precise implementation of such a reasoning process. 
 
 
 
@@ -214,9 +213,13 @@ Furthermore, the fact that syllogisms involve natural language demands a theory 
 Natural language semantics plays a role in many theories of reasoning \cite{JL1978, Khemlani2012, geurts2003reasoning}, but how those semantics interface with pragmatic reasoning is either posited in an ad-hoc manner \cite{Chater1999} or has been limited to simple Gricean enrichment of the premises \cite{Roberts2001}.	
 
 
+
+
+
 %in contrast, we also start from FO logic with probabilities, but construe syllogistic reasoning as part of communication thus adding pragmatic conclusion selection as part of the competence theory. while there are almost certainly important processing details driven by resource limitations, we don't need to appeal to them in order to explain many aspects of human judgements.
 
 We take up the task of developing a competence-level theory that builds upon first-order logic and probabilities but construes syllogistic reasoning as part of communication. 
+Our modeling approach is a Computational or Rational Level of analysis model \cite{marr1982vision, anderson1990adaptive} that seeks to describe the computations that underly human syllogistic reasoning without stipulating a precise implementation of such a reasoning process. 
 %in the style of \citeA{marr1982vision} and \citeA{anderson1990adaptive} that integrates three core ingredients widely believed to be at play in human syllogistic reasoning: logic, probability, and pragmatics. 
 %$ logic, probability, and pragmatics in a rational model.
 %\mht{should start with more about probabilistic models and logic}
@@ -772,7 +775,7 @@ For example, in the logically invalid \emph{No As are Bs}, \emph{Some Bs are Cs}
 \begin{figure}[b]
     \centering
         \includegraphics[width = 0.95\textwidth]{figs/venn_literal_AA1_AI1_EI1_exp.pdf}
-    \caption{ Literal interpreter model's posterior expectation over each of the regions of the state implied by three syllogisms. Darker opacity denotes higher posterior probability.}
+    \caption{A representation of the literal interpreter model's belief distribution over states. The diagram shows the marginal posterior means over regions. The opacity in each region denotes the posterior probability of that region (object type) being true of the premises.}
     \label{fig:lit_state_qud}
 \end{figure}
 
@@ -848,7 +851,7 @@ The priors and likelihoods of these agents are equivalent and thus are represent
 
 \subsubsection{Informative production of conclusions: Belief alignment}
 
-Rather than the speaker sampling a state and then selecting an utterance to describe that state, the informational utility can be defined with respect to the reasoner's full belief distribution over states \cite{Goodman2013, scontras2018probabilistic}. 
+Rather than the speaker sampling a state and then selecting an utterance to describe that state, the informational utility can be defined with respect to the reasoner's full belief distribution over states (Figure \ref{fig:lit_state_qud}; \citeNP{Goodman2013, scontras2018probabilistic}). 
 The utility of a conclusion, then, is quantified by how well it would align the listener's beliefs with those of the reasoner. 
 Formally, we use the information-theoretic measure of Kullback-Leibler (KL) divergence as the measure of alignment of the naive listener and reasoner's belief distributions. 
 %Again, this formalization is agnostic as to how we compute the reasoner's state distribution (whether it be via a literal or a pragmatic interpretation of the premises), and so 
@@ -935,7 +938,7 @@ To assess how well our models can accommodate the syllogistic reasoning data fro
 \subsubsection{Parameters and priors}
 
 The Rational Speech Act modeling framework assumes speakers are approximately rational agents who produce utterances as actions whose utility is defined by conveying information to a listener. The degree of rationality of the speaker interpolates between probability matching behavior and utility maximizing behavior. 
-For these parameters, we assume uniform priors over the range of (0, 20), consistent with the prior literature on RSA models. 
+For the speaker rationally parameter, we assume a uniform prior over the range of (0, 10), consistent with the prior literature on RSA models. 
 We additionally assume a small amount of noise in the literal semantics of the utterances such that with a small probability $\phi$, the literal listener disregards the utterance heard and does not update its beliefs via that utterance; we put a uniform prior over the limited range of (0, 0.1) over this parameter since we assume the noise to be a small quantity. 
 For simplicity, we parametrize the prior distribution over states $P(x)$ in the reasoner models in a strictly uninformative manner: all regions (object types) have equal probability of being true, which is fixed to 0.5.\footnote{
 We experimented with more flexible parameterizations of the prior but found that these did not significantly improve model performance on this data set.}
@@ -1128,7 +1131,7 @@ We estimated the marginal likelihoods of the data under each model using an Anne
 
 \subsubsection{Results}
 
-Overall, we found that the Belief Alignment pragmatic speaker model was the best fitting and most parsimonious model of the syllogistic reasoning data set. 
+Overall, we found that the Belief Alignment pragmatic speaker model predicted the empirical data the best and provided the most parsimonious explanation of the three models.
 This model performed several orders of magnitude better at explaining the data, taking into the account model complexity (in comparison to the Literal Speaker model, $\log BF \approx 300$; in comparison to the State Communication pragmatic speaker $\log BF \approx 1200$).
 It also achieved the highest correlation coefficient and lowest mean squared error of the RSA model variants (Table \ref{tab:altStats}).
 
@@ -1231,9 +1234,9 @@ In the implementation of this model that we use, these heuristics are parameteri
 
 \subsubsection{Quantitative comparison}
 
-To compare the quantitative accuracy of these alternatives theories to our own, we analyze the results of a recent study of these theories which focused on modeling the behavior of individual participants in the syllogistic reasoning task \cite{riesterer2020models}.
+To compare the quantitative accuracy of these alternatives theories to our own, we analyzed the results of a recent study of these theories which focused on modeling the behavior of individual participants in the syllogistic reasoning task \cite{riesterer2020models}.
 This study explored the predictive capabilities of the mReasoner and Probability Heuristics theories by treating the parameters of the models as individual-level parameters which could vary among participants (as well as the group-level version of the model, in which a single set of parameters governs the behavior of the population of participants).
-The parameters of these models were fit to the same data set from \citeA{ragni2019does} that we modeled above with the Rational Speech Act models.\footnote{The predictions of these models were accessed via the companion repository to the paper: \url{https://github.com/nriesterer/cogsci-individualization}.}
+\citeA{riesterer2020models} fit the parameters of these models to the same data set from \citeA{ragni2019does} that we modeled above with the Rational Speech Act models.\footnote{The predictions of these models were accessed via the companion repository to the paper: \url{https://github.com/nriesterer/cogsci-individualization}.}
 
 Since \citeA{riesterer2020models} focus on predictive accuracy of the models for individual behavior, their implementation of the Probability Heuristics model treats the five model parameters as binary (0 or 1). This focus on predictive accuracy means that if a participant uses a heuristic $<50\%$ of the time, the best predictions that could be made would result by setting the corresponding parameter to 0. 
 To examine the predictions of these theories in a manner more comparable to our analysis of the Rational Speech Act models, we treated the predictions of these alternative models for individual participants similar to how we treated the behavioral responses of individual participants. 
@@ -1253,7 +1256,7 @@ We constructed bootstrapped 95\% confidence intervals for the model predictions 
         columns/r2/.style={string type, column name={$r^2$}, column type = l,  sci sep align, precision=2},
    columns/mse/.style={fixed, column name={MSE}, column type = l, dec sep align, precision=3},	      
    columns/nParameters/.style={string type, column name={Parameters}, column type = l,  sci sep align, precision=3},
-     ]{csv_to_tex/allModels_stats_0paramPriors.csv}\caption{Summary statistics for the RSA and alternative models. Alternative models were fitted to both group level data and individual level data. Individual-level variants use a new set of parameters for each individual participant in the data set ($n=139$).}\label{tab:altStats}
+     ]{csv_to_tex/allModels_stats_0paramPriors.csv}\caption{Summary statistics for the RSA and alternative models predicting the data from Ragni et al. (2019). Alternative models were fitted to both group level data and individual level data. Individual-level variants use a new set of parameters for each individual participant in the data set ($n=139$).}\label{tab:altStats}
 \end{table}
 \end{center}
 
