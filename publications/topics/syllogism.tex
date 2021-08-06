@@ -216,20 +216,20 @@ Natural language semantics plays a role in many theories of reasoning \cite{JL19
 %in contrast, we also start from FO logic with probabilities, but construe syllogistic reasoning as part of communication thus adding pragmatic conclusion selection as part of the competence theory. while there are almost certainly important processing details driven by resource limitations, we don't need to appeal to them in order to explain many aspects of human judgements.
 
 We take up the task of developing a competence-level theory that builds upon first-order logic and probabilities but construes syllogistic reasoning as part of communication. 
-Our modeling approach is a Computational or Rational Level of analysis model \cite{marr1982vision, anderson1990adaptive} that seeks to describe the computations that underly human syllogistic reasoning without stipulating a precise implementation of such a reasoning process. 
+Our modeling approach is a Computational or Rational Level of analysis model that seeks to describe the computations that underly human syllogistic reasoning without stipulating a precise implementation of such a reasoning process \cite{marr1982vision, anderson1990adaptive}. 
 %in the style of \citeA{marr1982vision} and \citeA{anderson1990adaptive} that integrates three core ingredients widely believed to be at play in human syllogistic reasoning: logic, probability, and pragmatics. 
 %$ logic, probability, and pragmatics in a rational model.
 %\mht{should start with more about probabilistic models and logic}
 In particular, we view syllogistic reasoning through the lens of the language understanding processes that guide everyday reasoning with language, a process which involves reasoning about how an interlocutor would interpret a speaker's statements \cite{Grice1975, Clark1996, Levinson2000}. 
-Specifically, we propose that human reasoning with syllogisms is a task with two important sub-components: A reasoner first interprets the premises of the syllogism by behaving like a listener interpreting natural language expressions and then produces a conclusion by acting like a speaker choosing what to say.
+Specifically, we propose that human reasoning with syllogisms is a task with two important sub-tasks: A reasoner first interprets the premises of the syllogism by behaving like a listener interpreting natural language expressions, and then the reasoner produces a conclusion by acting like a speaker deciding what to say.
 % interpreting the meanings of the sentences heard and social reasoning about why a speaker would bother to say those sentences 
 % Syllogistic reasoning is then part logical reasoning and part riddle solving (as suggested by the Ong, 1982 quotation above).
 %Each of these component tasks could involve pragmatic reasoning beyond the words of the syllogism 
 We formalize this hypothesis in a probabilistic model of pragmatic reasoning in the Rational Speech Act framework \cite{Frank2012a, goodman2016pragmatic}.
 Our model is able to explain a number of qualitative phenomena in syllogistic reasoning, including articulating a rational mechanism by which a person could respond \emph{nothing follows}, an outstanding problem in theories of syllogistic reasoning \cite{riesterer2020modeling}.
 We additionally show that pragmatics enters into the conclusion selection process by way of participants reflecting on how well their choice of conclusion would convey their own beliefs to a naive listener. 
-While there are almost certainly important processing details driven by resource limitations, we do not need to appeal to them in order to explain many aspects of human judgements.
-And though we do not explain all of the variance in the human data, the model provides a path forward for addressing several outstanding issues including including how pragmatics might enter into the interpretation of premises and  how the content of a syllogism can affect reasoning (known as \emph{belief bias}).
+While there are almost certainly important processing details driven by resource limitations, we do not need to appeal to them in order to explain many aspects of human judgments.
+And though we do not explain all of the variance in the human data, the model provides a path forward for addressing several outstanding issues including how pragmatics might enter into the interpretation of premises and  how the content of a syllogism can affect reasoning (known as \emph{belief bias}).
 %We discuss the question of whether premise interpretation may also be pragmatic in some important way.
 %As a Bayesian model, our approach also naturally extends to explain
 
@@ -464,10 +464,17 @@ And though we do not explain all of the variance in the human data, the model pr
 \section{Rational Speech Act Model}
 
 We develop a family of models of syllogistic reasoning as communication. 
-A reasoner first behaves as a listener who updates their prior beliefs about the world given the premises of the syllogism; then, the reasoner behaves as a speaker who is deciding what conclusion to say given their updated beliefs about the world. 
+A reasoner first behaves as a listener who updates their prior beliefs about the world given the premises of the syllogism; then, the reasoner behaves as a speaker who is deciding what conclusion to say given their updated beliefs about the world (Figure \ref{fig:cartoon}). 
 We describe our model in three stages: the ontology and semantics in the model, the listener model (or, how the premises get interpreted), and the speaker model (or, how the conclusion gets produced). 
 Pragmatic reasoning could enter into both the interpretation and production components \cite{Roberts2001}; that is, the reasoner could behave as a pragmatic listener, a pragmatic speaker, both, or neither. 
-We restrict ourselves here to only consider pragmatic reasoning in the conclusion production component (i.e., the pragmatic speaker) but return to pragmatic interpretation of the premises (i.e., the pragmatic listener) in General Discussion.
+We restrict ourselves here to only consider pragmatic reasoning in the conclusion production component (i.e., the pragmatic speaker) but return to pragmatic interpretation of the premises (i.e., the pragmatic listener) in the General Discussion.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width = \textwidth]{figs/cartoon.pdf}
+\caption{Overview of the probabilistic pragmatics perspective of syllogistic reasoning. The reasoner first acts as a listener (left), interpreting the premises of the syllogism by updating its prior beliefs about the state (Venn diagram) according to the truth-functional meanings of the quantifier relations in the premises, resulting in a posterior distribution over states. Then, the reasoner acts a speaker (right), deciding among a set of conclusions which would be the best to produce. The speaker decides on a conclusion to produce by reasoning about how a hypothetical listener who would interpret that conclusion.}
+\label{fig:cartoon}
+\end{figure}
 
 %Our model thus has three components: logic, probability, and pragmatics.
 %We describe each of these ingredients and show how they combine to form the foundation of a communicative model of syllogistic reasoning. 
@@ -511,7 +518,7 @@ Some bakers are chemists. \\
 Some artists are chemists.
 \end{quote}
 
-The logical space defined by classical, Aristotelean syllogisms is comprised of all combinations of quantifiers and term orders for the premises (e.g., \textsc{quantifier} \textsc{A} -- \textsc{B} vs. \textsc{quantifier} \textsc{B} -- \textsc{A}).\footnote{In addition to being restricted to considering only the Aristotelean quantifiers, the classic syllogistic reasoning task further only considers the primitive terms \textsc{As}, \textsc{Bs}, and \textsc{Cs} (e.g., one may not come up with a conclusion referring to \textsc{non-As}).}
+The logical space defined by classical, Aristotelean syllogisms is comprised of all combinations of quantifiers and term orders for the premises (e.g., \textsc{quantifier} \textsc{A} -- \textsc{B} vs. \textsc{quantifier} \textsc{B} -- \textsc{A}).\footnote{In addition to being restricted to considering only the Aristotelean quantifiers, the classic syllogistic reasoning task further only makes use of the primitive terms \textsc{As}, \textsc{Bs}, and \textsc{Cs} (e.g., one may not come up with a conclusion referring to \textsc{non-As}).}
 In total, each of the two premises can be appear with one of the four quantifiers and two term orders yielding:  $4$ quantifiers  $\times$ 2 term orderings $\times$ 2 premises = 64 syllogistic premises.
 Of the 64 unique syllogistic premises, only 27 yield a logically valid conclusion that uses the Aristotelean quantifiers (\emph{all}, \emph{some}, \emph{some...not}, \emph{none}): a conclusion that is true in every situation in which the premises are true.\footnote{Following \citeA{Khemlani2012} and others, we describe the syllogisms assuming ``existential import''; namely, that the premises describe categories that contain actual members (i.e., there are at least some artists, bakers, and chemists).}
 For the remaining 37, several conclusions may follow from the premises, but there are no conclusions that are necessarily true given the premises; in terms of the syllogistic reasoning task, the ``correct response'' for these syllogistic premises is typically taken to be that ``nothing follows'' (or, ``No Valid Conclusion''; NVC). 
@@ -597,7 +604,7 @@ For generalized quantifiers (e.g., \emph{most}, \emph{few}), the number of objec
       \draw \thirdcircle node [text=black,below right] {$C$};
     \end{tikzpicture}
 \label{fig:venn}
-\caption{A state is represented by Boolean values over the regions of a Venn diagram, corresponding to the presence or absence of unique object types.}
+\caption{A state is represented by Boolean values over the regions of a Venn diagram, corresponding to the presence or absence of unique object types. The diagram depicts a state in which there are ABs, BCs, ABCs, and no other object types.}
 \end{figure}
 
 
@@ -717,6 +724,7 @@ Logically valid syllogisms give rise to a distribution over states where a quant
 For example, in the logically valid syllogism  \emph{All As are Bs}, \emph{All Bs are Cs} (the ``Barbara'' syllogism), the relationship \emph{All As are Cs} is true in every possible state in which the premises are true; in particular, the region \emph{ABC} (an object which has all three properties) is true in every possible state (Figure \ref{fig:AAvenns}).
 On the other hand, the premises of logically invalid syllogisms tend to give rise to many possible states in which no particular syllogistic conclusion is true in every state; some conclusions are true in more states, however, than other conclusions.
 For example, in the logically invalid \emph{All As are Bs}, \emph{All Cs are Bs}, the conclusion \emph{No As are Cs} is logically possible though is true in fewer states than \emph{Some As are Cs} (Figure \ref{fig:EIvenns}).
+The fact that our model reasons about a distribution of states that are likely given the premises enables it to draw classical syllogistic conclusions from sets of premises with no necessary (i.e., valid) conclusions.
 
 
 \begin{figure}[t]
@@ -770,13 +778,6 @@ For example, in the logically invalid \emph{All As are Bs}, \emph{All Cs are Bs}
 %\end{figure*}
 
 
-\begin{figure}[b]
-    \centering
-        \includegraphics[width = 0.95\textwidth]{figs/venn_literal_AA1_AI1_AA2_exp.pdf}
-    \caption{A representation of the literal interpreter model's belief distribution over states. The diagram shows the marginal posterior means over regions. The opacity in each region denotes the posterior probability of that region (object type) being true of the premises.}
-    \label{fig:lit_state_qud}
-\end{figure}
-
 
 
 
@@ -790,7 +791,7 @@ That is, given a set of beliefs about the likely state of affairs (Eq.~\ref{eq:L
 We formalize three models of conclusion production.
 The first is a literal speaker, who selects conclusions that are true given the speaker's beliefs about the state. 
 The second is a pragmatic speaker, who selects a conclusion that would best convey information about an individual likely state to a naive listener (\emph{State communication}). 
-Our third and most sophisticated model is of a pragmatic speaker who chooses utterance to convey information about her entire belief distribution over states (\emph{Belief alignment}). 
+Our third and most sophisticated model is of a pragmatic speaker who chooses utterances to convey information about her entire belief distribution over states (\emph{Belief alignment}). 
 %align a naive listener's beliefs about the state with the beliefs of the speaker.
 %Since these models produce a distribution over conclusions, we label these models as reasoner models $R$, so as to not confuse them with the speaker models $S$ that are used as part of the recursion in the pragmatic interpretation of premises. \mht{switch to $S$ since no more pragmatic interpretation?}
 %The pragmatic production of a conclusion is a model of a speaker who tries to produce the most informative utterance (conclusion) to convey information to a naive listener. 
@@ -801,11 +802,11 @@ The syllogistic reasoning task presents participants with a set of options for t
 Particular tasks differ in the set of options that are given to participants, but the maximal set includes the four quantifiers  (\emph{all}, \emph{some}, \emph{not all}, \emph{none}) crossed with the two orderings of the terms of the conclusion (i.e., \emph{A -- C} or \emph{C -- A}).
 Thus, there are eight quantified conclusion options. 
 
-A ninth unique option, however, is also available: the option that \emph{nothing follows} (sometimes described \emph{no valid conclusion}). 
+A ninth unique option, however, is also available: the option that \emph{nothing follows} (sometimes described as \emph{no valid conclusion}). 
 The \emph{nothing follows} conclusion is the logically correct answer for the logically invalid syllogisms and is produced to variable extents by participants in both logically valid and invalid syllogisms \cite{Khemlani2012}.
 While the semantics of the quantifier conclusions are quite clear (Table \ref{tab:sem}), the proper treatment of the \emph{nothing follows} conclusion is not obvious. 
 Extant theories treat this option indirectly, either as a byproduct or last resort of a reasoning process, when it is treated at all \cite{ragni2019does, riesterer2020modeling}.
-We approach the question of the meaning of \emph{nothing follows} from a language production standpoint, where we formalize the statement as tantamount to not saying anything at all. 
+We approach the question of the meaning of \emph{nothing follows} from a language production standpoint, where we formalize the statement that \emph{nothing follows} as being tantamount to not saying anything at all. 
 Formally, we model the \emph{nothing follows} statement as a vacuous, or silent, utterance: an utterance which is true in every possible state of affairs.
 Hence, the impact of using such an utterance is that it does not serve to update a listener's beliefs about the state. 
 % From a language production perspective, however, the
@@ -829,21 +830,31 @@ S_0(u_3 \mid u_1, u_2) \propto \exp[ \alpha \cdot \sum_s \mathcal{L}(u_3, s) \cd
 
 Here, $\mathcal{L}(u_3, s)$ is assumed to be a deterministic semantic function (unlike that inside $L_0$ which is a function of noise parameter $\phi$) that conditions on the literal meaning of the utterance $u_3$.
 
+
+\begin{figure}[b]
+    \centering
+        \includegraphics[width = 0.95\textwidth]{figs/venn_literal_AA1_AI1_AA2_exp.pdf}
+    \caption{A representation of the literal listener model's belief distribution over states. The diagram shows the marginal posterior means over regions. The opacity in each region denotes the posterior probability of that region (object type) being true of the premises. The probability of a particular state is proportional to the joint probability of each region being true.}
+    \label{fig:lit_state_qud}
+\end{figure}
+
+
+
 \subsubsection{Informative production of conclusions: State communication}
 
 We define a more sophisticated speaker model who selects conclusions in order to convey information to a naive listener (who has heard neither premises nor conclusion). 
 Since the reasoner does not know the state (but only has beliefs about the state given the premises of the syllogism), we operationalize the informational utility of a conclusion by marginalizing over the speaker's beliefs about the state.
 This speaker model first samples a state from the conditional distribution on states given the premises (as did the literal speaker in Eq.~\ref{eq:R0}).
 Following standard practice in the Rational Speech Act modeling framework, the utility of the utterance for a particular state is the negative surprisal of the state given the utterance.
-The speaker then chooses utterances soft-max optimally with respect that utility function.
+The speaker then chooses utterances soft-max optimally with respect to that utility function.
 
 \begin{equation}
 S_1(u_3 \mid u_1, u_2) \propto \exp{ [ \alpha \cdot  \sum_s  \ln L_0(s \mid u_3) \cdot L_0(s \mid u_1, u_2) ] } \label{eq:R1a}
 \end{equation}
 
 Note that the two $L_0$'s in Eq.~\ref{eq:R1a} are actually two different agents.
-$L(s \mid u_1, u_2)$ is the reasoner who updates their beliefs about the state given the premises.
-$L(s \mid u_3)$ is a hypothetical listener that the reasoner is communicating with; they update their beliefs about the state from the conclusion ($u_3$).
+$L_0(s \mid u_1, u_2)$ is the reasoner who is acting as a listener updating their beliefs about the state given the premises.
+$L_0(s \mid u_3)$ is a hypothetical listener that the reasoner, when acting as a speaker, is communicating with; this hypothetical listener updates their beliefs about the state from the conclusion ($u_3$).
 The priors and likelihoods of these agents are equivalent and thus are represented equivalently. 
 %\ndg{add a note that the two L0's in this eqn are actually the two different agents, but they are treated equivalently?}
 
@@ -862,7 +873,7 @@ We denote the reasoner's belief distribution over the state as $S= L_0(s \mid  u
   \text{KL}({ S \mid \mid L_0}(u)) = \sum_{s}  S(s) \ \log \frac{ S(s)}{{L_{0}}(s \mid u)}
 \end{align}
 
-\noindent Then, the speaker model that selects conclusions an informative manner is given by: 
+\noindent Then, the speaker model that selects conclusions in an informative manner is given by: 
 
 \begin{equation}
 S_1(u_3 \mid u_1,  u_2) \propto  \exp [ \alpha \cdot - \text{KL}({ L_0(s \mid  u_1,u_2) \mid \mid L_0}(s \mid u_3)) ]  \label{eq:R1b}
@@ -873,8 +884,8 @@ S_1(u_3 \mid u_1,  u_2) \propto  \exp [ \alpha \cdot - \text{KL}({ L_0(s \mid  u
 We note that a critical ingredient to this Belief Alignment model of conclusion production is the noisy semantics we assume inside the literal listener $L_0$.
 Without it, the speaker would be required to say \emph{nothing follows} for any logically invalid syllogism. 
 A logically invalid syllogism is one in which no conclusion is true in every state in which the premises are true.
-If a speaker were to choose one of these conclusions, then the states that are incompatible with the conclusion would be imagined (by the listener) to have 0 probability. 
-But since the conclusion is not logically valid, the speaker believes these states to have non-zero probability.
+If a reasoner/speaker were to choose one of these conclusions, then the states that are incompatible with the conclusion would be imagined (by the hypothetical listener) to have 0 probability. 
+But since the conclusion is not logically valid, the reasoner/speaker believes these states to have non-0 probability.
 This combination leads Eq.~\ref{eq:KL-divergence} to be undefined, which results in the model always saying \emph{nothing follows} for logically invalid syllogisms.
 By adding a small amount of noise into the semantics, we avoid this boundary case.
 
@@ -1290,6 +1301,7 @@ These results suggest that these alternative theories encode process-level hypot
 
 Reasoning with syllogisms sits at the intriguing intersection of language and logic. 
 Syllogisms are a logical system, but they are expressed using natural language quantifiers and invite natural language inferences. 
+We introduced a probabilistic pragmatic perspective for syllogistic reasoning, where reasoning involves behaving both as a listener interpreting the premises of the syllogism and as a speaker deciding what conclusion to say.
 We developed and tested a family of probabilistic models of syllogistic reasoning that incorporate a logical semantics with a generative model of situations and then formalize how considerations of pragmatic informativeness could affect the selection of conclusions.
 We found that conclusions selected by participants were best explained by a model that chose its conclusion from a syllogism by reasoning about how well that conclusion would align a naive listener's beliefs with those of their own. 
 We next discuss the modeling approach in more detail, including how it can be extended to account for other phenomena in syllogistic reasoning, as well as implications of our findings in the context of other work on pragmatic reasoning with syllogisms.
@@ -1330,7 +1342,7 @@ For example, \citeA{tessler2015understanding} found that some content effects in
 Further work should look to these prior beliefs to formalize hypotheses about how world knowledge rationally affects reasoning, which could speak to outstanding debates about whether these effects should be considered a ``bias'' \cite<e.g.,>{Klauer2000, Garnham2005, Dube2011}. 
 
 Our model uses the literal, natural language semantics of the premises of the syllogism to update the model's prior beliefs. 
-It is straightforward to extend our approach to reasoning with other explicit quantifiers (e.g., \emph{most} and \emph{few}; see e.g., \citeNP{tessler2014some}, cf., \citeNP{geurts2003reasoning}).
+To extend our approach to reasoning with other explicit quantifiers (e.g., \emph{most} and \emph{few}), one could either generalize the binary regions in the Venn diagram to have continuous values or articulate an ontology of states that makes use of token entities instead of types (see e.g., \citeNP{tessler2014some}, cf., \citeNP{geurts2003reasoning}).
 Additionally, syllogisms that appear in natural discourse often make use of implicitly quantified, generic statements (e.g., \emph{Taxes on the wealthy will be modified}; see also \citeNP{khemlani2008syllogistic}); our approach could naturally be expanded to incorporate recent advances in the computational semantics of generics to account for syllogistic reasoning about generic premises \cite{tessler2019language}. 
 Finally, this model could be used to consider the implications of pragmatic reasoning on the interpretation of the premises. 
 Such a pragmatic interpretation model could be constructed as a standard Rational Speech Act pragmatic listener \cite{Frank2012a, goodman2016pragmatic, scontras2018probabilistic}; that is, treating the listener component of the model as a listener who reasons about why a speaker produced the premises that they did, where the speaker decides what utterance to produce in order to convey information about the state (or, belief distribution) to a naive literal listener.  %is the kind of pragmatic speaker we have considered in this paper, who 
