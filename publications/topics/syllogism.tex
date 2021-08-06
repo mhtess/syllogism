@@ -136,7 +136,8 @@ Syllogistic reasoning lies at the intriguing intersection of natural and formal 
 Syllogisms comprise a formal system of reasoning yet make use of natural language quantifiers (e.g., \emph{all}, \emph{some}) and invite natural language conclusions. 
 The conclusions people tend to draw from syllogisms deviate substantially from a purely logical perspective. 
 Are principles of natural language understanding to blame?
-We develop probabilistic pragmatics models of syllogistic reasoning, couched within the Rational Speech Act framework, and explore the pressures that pragmatic reasoning place on the production of conclusions.
+We introduce a probabilistic pragmatic perspective on syllogistic reasoning: We dissect reasoning with natural language arguments into two sub-problems, language comprehension and language production. 
+We formalize Rational Speech Act models of syllogistic reasoning and explore the pressures that pragmatic reasoning places on the production of conclusions.
 We test our models on a recent, large data set of syllogistic reasoning and find that reasoners select conclusions in a pragmatic manner with the goal of aligning the beliefs of a naive listener to those of their own. 
 We compare our model to previously published models that implement two alternative theories -- Mental Models and Probability Heuristics -- finding that our model accounts for the full distributions of responses in a manner slightly better than previous accounts but with an order-of-magnitude fewer parameters. 
 Our approach represents a view of human syllogistic reasoning as natural communication.}
@@ -146,9 +147,6 @@ Our approach represents a view of human syllogistic reasoning as natural communi
 \maketitle
 
 
-%\begin{aquote}{\textbf{Walter J. Ong}, \emph{Orality and Literacy} (1982)}The syllogism is like a text: fixed, boxed-off, isolated... The riddle [by contrast] belongs in the oral world. To solve a riddle, canniness is needed: one draws on knowledge, often deeply subconscious, beyond the words themselves in the riddle. \end{aquote}
-
-%\HRule
 
 \newpage
 
@@ -173,14 +171,13 @@ Some of the tax modifications in the bill will expire in 10 years.
 
 You may be tempted to draw a similar conclusion:  \emph{Some of the tax modifications on the wealthy will expire in 10 years}.
 The argument seems reasonable, and yet the conclusion is not true in all situations in which the premises are true.
-The argument is logically invalid.
 Consider, for instance, that there could be tax modifications applied to the non-wealthy, and that those modifications are the ones that will expire in 10 years.
+Then, the premises would be true but the conclusion false: The argument is logically invalid.
 
-
-Human intuitions about what conclusions reasonably follow from a set of premises are seemingly supported by something other than pure logical necessity. %, then what is that?
-Aristotle's invention of syllogisms -- the kinds of two premise arguments shown above --  can be interpreted, in fact, as an attempt to tame the irrationality of the human mind.
+Human intuitions about what conclusions reasonably follow from a set of premises seem to be supported by something other than pure logical necessity. 
+Aristotle's invention of syllogisms -- the kinds of two premise arguments shown above -- can be interpreted, in fact, as an attempt to tame the irrationality of the human mind.
 % Syllogisms are the foundation of modern logic.
-In recent centuries, cognitive psychologists have turned the syllogism back on the human mind, as a rational basis from which to evaluate human reasoning \cite{Storring1908}.
+In the modern era, cognitive psychologists have turned the syllogism back on the human mind, as a rational basis from which to evaluate human reasoning \cite{Storring1908}.
 Perhaps unsurprisingly, how everyday human beings reason with syllogisms differs from what classical rules of logic would dictate \cite<for a meta-analysis, see:>{Khemlani2012}.
 
 
@@ -224,6 +221,7 @@ Our modeling approach is a Computational or Rational Level of analysis model \ci
 %$ logic, probability, and pragmatics in a rational model.
 %\mht{should start with more about probabilistic models and logic}
 In particular, we view syllogistic reasoning through the lens of the language understanding processes that guide everyday reasoning with language, a process which involves reasoning about how an interlocutor would interpret a speaker's statements \cite{Grice1975, Clark1996, Levinson2000}. 
+Specifically, we propose that human reasoning with syllogisms is a task with two important sub-components: A reasoner first interprets the premises of the syllogism by behaving like a listener interpreting natural language expressions and then produces a conclusion by acting like a speaker choosing what to say.
 % interpreting the meanings of the sentences heard and social reasoning about why a speaker would bother to say those sentences 
 % Syllogistic reasoning is then part logical reasoning and part riddle solving (as suggested by the Ong, 1982 quotation above).
 %Each of these component tasks could involve pragmatic reasoning beyond the words of the syllogism 
@@ -465,9 +463,11 @@ And though we do not explain all of the variance in the human data, the model pr
 
 \section{Rational Speech Act Model}
 
-We develop a family of models of syllogistic reasoning that use the logic of the syllogism to update a probabilistically-generated distribution over world states and then decide what pragmatically useful conclusion would best convey that distribution on states to a naive listener.
-We describe our model in three stages: the ontology and semantics in the model, how the premises get interpreted, and how the conclusion gets produced. 
-Pragmatic reasoning could enter into both the interpretation and production components \cite{Roberts2001}; we restrict ourselves here to only consider pragmatic reasoning in the conclusion production component but return to pragmatic interpretation of the premises in General Discussion.
+We develop a family of models of syllogistic reasoning as communication. 
+A reasoner first behaves as a listener who updates their prior beliefs about the world given the premises of the syllogism; then, the reasoner behaves as a speaker who is deciding what conclusion to say given their updated beliefs about the world. 
+We describe our model in three stages: the ontology and semantics in the model, the listener model (or, how the premises get interpreted), and the speaker model (or, how the conclusion gets produced). 
+Pragmatic reasoning could enter into both the interpretation and production components \cite{Roberts2001}; that is, the reasoner could behave as a pragmatic listener, a pragmatic speaker, both, or neither. 
+We restrict ourselves here to only consider pragmatic reasoning in the conclusion production component (i.e., the pragmatic speaker) but return to pragmatic interpretation of the premises (i.e., the pragmatic listener) in General Discussion.
 
 %Our model thus has three components: logic, probability, and pragmatics.
 %We describe each of these ingredients and show how they combine to form the foundation of a communicative model of syllogistic reasoning. 
@@ -501,8 +501,6 @@ Pragmatic reasoning could enter into both the interpretation and production comp
 \subsection{Ontology and semantics}
 
 
-
-
 The relations used in classical Aristotelean syllogisms are quantifiers: \emph{all}, \emph{some}, \emph{some .... are not}, and \emph{none}.
 An example Aristotelean syllogism reads:
 
@@ -513,10 +511,10 @@ Some bakers are chemists. \\
 Some artists are chemists.
 \end{quote}
 
-The logical space defined by classical syllogisms is comprised of all combinations of quantifiers and term orders for the premises (e.g., \textsc{quantifier} \textsc{A} -- \textsc{B} vs. \textsc{quantifier} \textsc{B} -- \textsc{A}).
-In total, each of the two premises can be appear with one of the four quantifiers and two term orders yielding:  $4$ quantifiers  $\times$ 2 term orderings $\times$ 2 premises = 64 syllogisms.
-Of the 64 unique syllogistic premises, only 27  (42\%) yield a logically valid conclusion: a conclusion that is true in every situation in which the premises are true.
-For the remaining 37 (58\%), no conclusion follows from the premises; in terms of the syllogistic reasoning, the correct responses is ``nothing follows'' (or, ``No Valid Conclusion''; NVC). 
+The logical space defined by classical, Aristotelean syllogisms is comprised of all combinations of quantifiers and term orders for the premises (e.g., \textsc{quantifier} \textsc{A} -- \textsc{B} vs. \textsc{quantifier} \textsc{B} -- \textsc{A}).\footnote{In addition to being restricted to considering only the Aristotelean quantifiers, the classic syllogistic reasoning task further only considers the primitive terms \textsc{As}, \textsc{Bs}, and \textsc{Cs} (e.g., one may not come up with a conclusion referring to \textsc{non-As}).}
+In total, each of the two premises can be appear with one of the four quantifiers and two term orders yielding:  $4$ quantifiers  $\times$ 2 term orderings $\times$ 2 premises = 64 syllogistic premises.
+Of the 64 unique syllogistic premises, only 27 yield a logically valid conclusion that uses the Aristotelean quantifiers (\emph{all}, \emph{some}, \emph{some...not}, \emph{none}): a conclusion that is true in every situation in which the premises are true.\footnote{Following \citeA{Khemlani2012} and others, we describe the syllogisms assuming ``existential import''; namely, that the premises describe categories that contain actual members (i.e., there are at least some artists, bakers, and chemists).}
+For the remaining 37, several conclusions may follow from the premises, but there are no conclusions that are necessarily true given the premises; in terms of the syllogistic reasoning task, the ``correct response'' for these syllogistic premises is typically taken to be that ``nothing follows'' (or, ``No Valid Conclusion''; NVC). 
 
 % The types of situations that can hold in the world.
 
@@ -660,12 +658,12 @@ No As are Bs                                       & $\forall i \in R: A(i) \cen
 \label{tab:sem}
 \end{table}
 
-\subsection{Interpreting the premises}
+\subsection{Interpreting the premises, as a listener}
 %\ndg{it'd be good to first say here that our model has a prior over these possible situations...}
 %Our model \ndg{actually, consider moving this eqn down until after a need for prior is clear from the L0 model.}
 %Given a representation of different states (Venn diagrams), 
 We now introduce a probabilistic listener model that updates their beliefs about the states given the premises of the syllogism. 
-The model's prior on states $P(s)$ is constructed by sampling a Bernoulli random variable for each of the $i \in R$ regions: $P(s) = \prod_{i \in R} P(A_{i}, B_{i}, C_{i})$. %= (P(a) \cdot P(b) \cdot P(c)) ^n$$
+The model's prior on states $P(s)$ is constructed by sampling a Bernoulli random variable for each of the $i \in R$ regions: $P(s) \propto \prod_{i \in R} P(A_{i}, B_{i}, C_{i})$. %= (P(a) \cdot P(b) \cdot P(c)) ^n$$
 %This interpretation process can occur at the level of a literal listener (who updates beliefs based on the truth-conditional meaning of the premises) or a pragmatic listener who interprets the premises by reasoning about why a speaker chose to produce the premises that she did. 
 %\subsubsection{Premise interpretation}
 The premises of a syllogism update this prior on states via the literal, truth conditional meaning of each of the premises $u$ (shown in Table \ref{tab:sem}):
@@ -718,13 +716,13 @@ Equation \ref{eq:L0premises} defines a probability distribution over states (Ven
 Logically valid syllogisms give rise to a distribution over states where a quantifier relationship between the conclusion terms of the syllogism is true in all possible states given the premises. 
 For example, in the logically valid syllogism  \emph{All As are Bs}, \emph{All Bs are Cs} (the ``Barbara'' syllogism), the relationship \emph{All As are Cs} is true in every possible state in which the premises are true; in particular, the region \emph{ABC} (an object which has all three properties) is true in every possible state (Figure \ref{fig:AAvenns}).
 On the other hand, the premises of logically invalid syllogisms tend to give rise to many possible states in which no particular syllogistic conclusion is true in every state; some conclusions are true in more states, however, than other conclusions.
-For example, in the logically invalid \emph{No As are Bs}, \emph{Some Bs are Cs}, the conclusion \emph{All As are Cs} is logically possible though is true in fewer states than \emph{No As are Cs} (Figure \ref{fig:EIvenns}).
+For example, in the logically invalid \emph{All As are Bs}, \emph{All Cs are Bs}, the conclusion \emph{No As are Cs} is logically possible though is true in fewer states than \emph{Some As are Cs} (Figure \ref{fig:EIvenns}).
 
 
 \begin{figure}[t]
 \centering
-\includegraphics[width = \textwidth]{figs/diagrams_noneAB_someBC.pdf}
-\caption{Set of Venn diagrams (states) literally compatible with the premises of the logically invalid syllogism: \emph{No As are Bs}, \emph{Some Bs are Cs}. No syllogistic conclusion is true in every compatible state.}
+\includegraphics[width = \textwidth]{figs/diagrams_allAB_allCB.pdf}
+\caption{Set of Venn diagrams (states) literally compatible with the premises of the logically invalid syllogism: \emph{All As are Bs}, \emph{All Cs are Bs}. No Aristotelean syllogistic conclusion is true in every compatible state.}
 \label{fig:EIvenns}
 \end{figure}
 
@@ -774,7 +772,7 @@ For example, in the logically invalid \emph{No As are Bs}, \emph{Some Bs are Cs}
 
 \begin{figure}[b]
     \centering
-        \includegraphics[width = 0.95\textwidth]{figs/venn_literal_AA1_AI1_EI1_exp.pdf}
+        \includegraphics[width = 0.95\textwidth]{figs/venn_literal_AA1_AI1_AA2_exp.pdf}
     \caption{A representation of the literal interpreter model's belief distribution over states. The diagram shows the marginal posterior means over regions. The opacity in each region denotes the posterior probability of that region (object type) being true of the premises.}
     \label{fig:lit_state_qud}
 \end{figure}
@@ -785,10 +783,10 @@ For example, in the logically invalid \emph{No As are Bs}, \emph{Some Bs are Cs}
 
 
 
-\subsection{Producing a conclusion}
+\subsection{Producing a conclusion, as a speaker}
 
 The second component of a syllogistic reasoning model is a model of conclusion production. 
-That is, given a set of beliefs about the likely state of affairs (Eq.~\ref{eq:L0premises}), what conclusion should be drawn?
+That is, given a set of beliefs about the likely state of affairs (Eq.~\ref{eq:L0premises}), a speaker decides what conclusion should be drawn.
 We formalize three models of conclusion production.
 The first is a literal speaker, who selects conclusions that are true given the speaker's beliefs about the state. 
 The second is a pragmatic speaker, who selects a conclusion that would best convey information about an individual likely state to a naive listener (\emph{State communication}). 
@@ -822,12 +820,14 @@ Hence, the impact of using such an utterance is that it does not serve to update
 Given a belief updating model based on the premises of a syllogism $L_0$, %(either literal $L_0$ or pragmatic $L_1$), 
 we define a literal production model $S_0$ that uses the listener $L_0$'s posterior distribution on states to determine what conclusion is likely to be true given the premises. 
 This model $S_0$ can be viewed as one that is sampling a state from the listener's posterior distribution on states and randomly selecting among the conclusions that are literally true of that state. 
-
+For a tighter comparison to the other models, we include a soft-max temperature parameter $\alpha$ that interpolates between probability matching behavior and probability maximizing behavior. 
 %The strength of a syllogistic argument (two premises) for a conclusion is a real-valued number between 0 and 1 given by the $P(u_c \mid u_1, u_2)$, where $u_1$ and $u_2$ are the two premises of the syllogism.
 
 \begin{equation}
-S_0(u_3 \mid u_1, u_2) \propto \sum_s \mathcal{L}(u_3, s) \cdot L_0(s \mid u_1, u_2) \label{eq:R0}
+S_0(u_3 \mid u_1, u_2) \propto \exp[ \alpha \cdot \sum_s \mathcal{L}(u_3, s) \cdot L_0(s \mid u_1, u_2)] \label{eq:R0}
 \end{equation}
+
+Here, $\mathcal{L}(u_3, s)$ is assumed to be a deterministic semantic function (unlike that inside $L_0$ which is a function of noise parameter $\phi$) that conditions on the literal meaning of the utterance $u_3$.
 
 \subsubsection{Informative production of conclusions: State communication}
 
@@ -865,7 +865,7 @@ We denote the reasoner's belief distribution over the state as $S= L_0(s \mid  u
 \noindent Then, the speaker model that selects conclusions an informative manner is given by: 
 
 \begin{equation}
-S_1(u_3 \mid u_1,  u_2) \propto  \exp [ \alpha_2 \cdot - \text{KL}({ L_0(s \mid  u_1,u_2) \mid \mid L_0}(s \mid u_3)) ]  \label{eq:R1b}
+S_1(u_3 \mid u_1,  u_2) \propto  \exp [ \alpha \cdot - \text{KL}({ L_0(s \mid  u_1,u_2) \mid \mid L_0}(s \mid u_3)) ]  \label{eq:R1b}
 \end{equation}
 
 \noindent where $L_0(s \mid u)$ is the literal listener model defined in Equation \ref{eq:L0}. 
@@ -1125,7 +1125,10 @@ $ \alpha \sim \text{Uniform}(0, 10)$
 
 We implemented the cognitive models and the Bayesian data analytic models in the probabilistic programming language WebPPL \cite{dippl}. 
 To learn about the credible values of the parameters, we ran 3 MCMC chains each for 15,000 iterations discarding the first 5,000 iterations for burn-in. 
-We assessed convergence through visual comparison of the posterior distributions to ensure that the inferences that resulted from looking at different chains were not appreciably different.
+We assessed convergence through visual comparison of the posterior distributions to ensure that the inferences that resulted from looking at different chains were not appreciably different.\footnote{
+The full Bayesian data analytic model is unidentifiable owing to symmetries in the parameter space. Thus, a convergence statistic 
+such as the Gelman-Rubin convergence statistic $R$ \cite{gelman1992inference} is not a good indicator for the reliability of the posterior predictions from these models. Accordingly, the $R$ values for these MCMC chains were relatively high, indicating high chain variability. Notably, the $R$ values for the posterior predictions were substantially lower than those for the parameters (most $R$ values for the predictions fell between 1.3 and 1.4 whereas the $R$ values for the parameters ranged between 1.75 and 2.5). The conclusions we draw thus are primarily about the model predictions and model comparison; less important (and less reliable) are the parameter estimates from these models.
+}
 We performed model comparison by computing Bayes Factors, which quantify the likelihood of the data under each model averaging over the model's prior distribution over parameters. By averaging over each model's prior on parameters, Bayes Factors implicitly penalize models with extra degrees of freedom \cite{lee2014bayesian}.
 We estimated the marginal likelihoods of the data under each model using an Annealed Importance Sampling algorithm \cite{neal2001annealed}.
 
@@ -1138,7 +1141,7 @@ It also achieved the highest correlation coefficient and lowest mean squared err
 \begin{figure}[t]
 \centering
 \includegraphics[width = \textwidth]{figs/bda_rsa_scatters_0paramPrior.pdf}
-\caption{Posterior predictive model fits for the literal speaker model and two versions of the pragmatic speaker model. Each dot represents one of nine possible conclusions for one of the 64 possible syllogisms. Error bars denote bootstrapped 95\% confidence intervals for the empirical data and 95\% Bayesian credible intervals for the model predictions.}
+\caption{Posterior predictive model fits for the literal speaker model and two versions of the pragmatic speaker model. Each dot represents one of nine possible conclusions for one of the 64 possible syllogisms. Error bars denote bootstrapped 95\% confidence intervals for the empirical data. Posterior model predictions did not exhibit significant variance; the horizontal error bars that are large enough to see represent the 95\% Bayesian credible intervals for the model predictions.}
 \label{fig:scatters}
 \end{figure}
 
@@ -1340,7 +1343,20 @@ As well, the participants were from Western, educated, industrialized, rich, dem
 % \mht{confirm the participants of Ragni et al. were WEIRD?}.
 Reasoning with syllogisms varies appreciably across individuals \cite{galotti1986individual, bacon2003individual} and substantially so in illiterate persons \cite{dias2005reasoning}.
 In other contexts or populations, we may see that reasoning with syllogisms as a special case of reasoning about an argument or a riddle \cite<cf.>{luria1976cognitive, Ong1982}. 
-Extending our modeling approach with a pragmatic interpretation component will be important for analyzing such behavior. 
+Extending our modeling approach with a pragmatic interpretation component will be important for analyzing such behavior.\footnote{
+It is additionally noteworthy that the pragmatic interpretation models we explored break the independence of the likelihood of utterances that is assumed by the literal interpretation model (Eq.~\ref{eq:L0}). We believe pragmatics provides a plausible mechanism by which the likelihood of otherwise independent utterances can become dependent (namely, via a rational speaker choosing to produce the two utterances).}
+
+Human reasoning with syllogisms has captured the attention of theoretical and empirical psychologists from the time of \citeA{Storring1908} and many theoretical frameworks have been brought to bear on these capacities for the last half-century.
+Our approach represents a marriage of the structured, Bayesian perspective on cognition \cite{tenenbaum2011grow} with principles of natural language, formalized in models of rational communication \cite{Frank2012a, Goodman2013, scontras2018probabilistic}. 
+Many contemporary cognitive modeling frameworks are concerned with the computational constraints that the mind may operate within, and such approaches to these constraints might help explain the residual variability that our pragmatics models left unexplained.
+One such new framework for the integration of processing constraints into rational models of cognition -- \emph{resource rational analysis} \cite{griffiths2015rational, lieder2020resource}  -- could be brought to bear directly on our probabilistic pragmatics perspective in a number of ways. 
+In contrast to our Belief Alignment speaker model who aims to communicate their entire belief distribution over states, a resource rational speaker might instead draw a few samples from its posterior distribution on states and seek to convey those states succinctly \cite<cf.,>{vul2014one}.
+Furthermore, a resource rational pragmatic reasoner (behaving as a listener) may not fully represent their interlocutor's (the speaker's) knowledge state or goals, leading to asymmetries in how the listener/reasoner responds to the speaker's argument~vs.~how the speaker might have intended \cite{hawkins2021division}.
+Quantum probability models of cognition are similar to Bayesian models but take as their starting point the axioms of quantum probability theory \cite{pothos2013can}. One key difference between quantum and classical theories of probability is the order dependence of conjunctive events under quantum theory. This lens in particular could be used for investigating deviations from Bayesian rational reasoning between logically identical syllogisms, whose premises are order reversed (e.g., \emph{Some As are Bs / All Bs are Cs} vs. \emph{All Bs are Cs / Some As are Bs}); at the same time, such divergences could also be addressed from a probabilistic pragmatics perspective (see Footnote 11). 
+Finally, heuristic accounts have had noteworthy success in explaining human syllogistic reasoning (e.g., the Probability Heuristics Model; \citeNP{Chater1999}); such a perspective could be extended with the contemporary adaptive toolbox approach, by incorporating the interaction between the cognitive agent and the environment \cite{hertwig2019taming}. 
+Such an extension could be productive in describing the ecological setting in which human syllogistic reasoning can be best understood and how that might vary across culture. 
+The heuristic perspective may, however, turn out to look a lot like a resource rational implementation of the Bayesian model (i.e., the line between an algorithmic implementation of rational inference and heuristics for inference may turn out to be superficial; see also e.g., \citeNP{lieder2018anchoring}). 
+
 
 % Aristotle invented syllogisms in order to tame -- to make more precise -- the human capacities for reasoning.
 % Cognitive psychologists turned formalism back on itself and created a measuring stick by which to evaluate human reasoning. 
