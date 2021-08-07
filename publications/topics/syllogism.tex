@@ -129,7 +129,7 @@
 
 \authornote{Corresponding author: Michael Henry Tessler,  Department of Brain and Cognitive Sciences, Building 46, Room 3027,	Massachusetts Institute of Technology, 77 Massachusetts Avenue, Cambridge, MA 02139-4307, USA; tessler@mit.edu}
 
-\keywords{syllogisms; reasoning; pragmatics; semantics; Rational Speech Act \newline\indent Word count: 6622}
+\keywords{syllogisms; reasoning; pragmatics; semantics; Rational Speech Act \newline\indent Word count: 6995}
 
 \abstract{
 Syllogistic reasoning lies at the intriguing intersection of natural and formal reasoning, of language and logic. 
@@ -461,7 +461,7 @@ And though we do not explain all of the variance in the human data, the model pr
 %By formalizing syllogistic reasoning as a probabilistic pragmatics problem, there is a natural way to account for influence of background knowledge in the form of the prior distribution on possible situations. We construct domains where we expect correlations between properties (e.g., knives – being sharp – cut well) and investigate syllogistic reasoning over these content domains. By measuring the prior probability of the eight possible combinations of binary features, we are able to generate predictions for syllogistic reasoning problems that are influenced by this kind of prior knowledge. Such influence of background knowledge on reasoning, known as belief bias in the syllogistic reasoning domain, has been of interest to psychologists for quite some time (e.g., Evans, Handley, \& Pollard, 1983; Dube, Rotello, \& Heit, 2010). We formalize this “bias” as rational belief updating given prior knowledge and find that the pragmatics model is too influenced by these kind of prior beliefs (Figure 2).
 
 
-\section{Rational Speech Act Model}
+\section{Rational Speech Act Models}
 
 We develop a family of models of syllogistic reasoning as communication. 
 A reasoner first behaves as a listener who updates their prior beliefs about the world given the premises of the syllogism; then, the reasoner behaves as a speaker who is deciding what conclusion to say given their updated beliefs about the world (Figure \ref{fig:cartoon}). 
@@ -1156,7 +1156,7 @@ It also achieved the highest correlation coefficient and lowest mean squared err
 \label{fig:scatters}
 \end{figure}
 
-The Belief Alignment Pragmatic Speaker model captures a number of interesting patterns in human syllogistic reasoning behavior. 
+The Belief Alignment Pragmatic Speaker model captures a number of interesting patterns in the human syllogistic reasoning behavior. 
 By incorporating a notion of informativeness into the selection of a conclusion, the model is able to  show a preference among equally true conclusions. For example, in the \emph{All As are Bs / All Bs are Cs} syllogism, the conclusion \emph{Some As are Cs} is true in every possible world that \emph{All As are Cs} is true, because \emph{all} entails \emph{some}. Nonetheless, the Belief Alignment pragmatic speaker model and human participants strongly prefer the \emph{all} conclusion (Figure \ref{fig:bars}, top-left facet); the model arrives at this preference because \emph{all} more informatively conveys the belief state of the speaker in comparison to \emph{some}.
 %The model can also 
 
@@ -1231,20 +1231,20 @@ The reasoning process under this theory proceeds by first constructing a the men
 
 Here we compare to a recent implementation of this theory \cite<the mReasoner model>{khemlani2013processes}, which is also probabilistic in nature (e.g., the model determines the number of objects to represent in the model by sampling  from a Poisson distribution). 
 The model has four free parameters (canonically denoted $\lambda$, $\epsilon$, $\sigma$, and $\omega$): 
-$\lambda$ determines the number of entities represented in the model, $\epsilon$ determines the kind of mental model constructed (either a canonical or non-canonical representation of the entities consistent with the syllogism; as described by \citeNP{bucciarelli1999strategies}), $\sigma$ denoted the probability of engaging in a search for counterexamples, and $\omega$ modulates the conclusion selection process that results when engaging in a search for counterexamples.  
+$\lambda$ determines the number of entities represented in the model, $\epsilon$ determines the kind of mental model constructed (either a canonical or non-canonical representation of the entities consistent with the syllogism; as described by \citeNP{bucciarelli1999strategies}), $\sigma$ denotes the probability of engaging in a search for counterexamples, and $\omega$ modulates the conclusion selection process that results when engaging in a search for counterexamples.  
 %σ denotes the propensity of mReasoner to engage its search for counterexamples and ω specifies how to continue after a counterexample is found. With the proba- bility of ω, the conclusion quantifier is weakened and a new search for counterexamples starts.
 \paragraph{Probability Heuristics} 
 
 The Probability Heuristics model of \citeA{Chater1999} seeks to account for human syllogistic reasoning as a process of determining probabilistically valid (``p-valid'') conclusions, which can be approximated through a number of heuristics. 
 Two heuristics generate candidate quantifiers for the conclusion, which use a notion of informativity for which \citeA{Chater1999} define a rank ordering: \emph{all} $>$ \emph{some} $>$ \emph{none} $>$ \emph{some...not}.  
-The ``min-heuristic'' takes the quantifier of the least informative premise to be a potential conclusion quantifier and the ``p-entailment heuristic'' further allows for a quantifier that is entailed by the ``min-heuristic'' quantifier to also be a candidate quantifier for the conclusion (e.g., is \emph{all} is generated from the ``min-heuristic'', \emph{some} will be generated from the ``p-entailment heuristic''). 
+The ``min-heuristic'' takes the quantifier of the least informative premise to be a potential conclusion quantifier, and the ``p-entailment heuristic'' further allows for a quantifier that is entailed by the ``min-heuristic'' quantifier to also be a candidate quantifier for the conclusion (e.g., if \emph{all} is generated from the ``min-heuristic'', \emph{some} will be generated from the ``p-entailment heuristic''). 
 A parameter (canonically referred to as $p_{ent}$) modulates which heuristic (min or p-entail) the reasoner uses to generate conclusions. 
-A third heuristic (``attachment'') determines the ordering of the terms in the conclusion (A--C vs. C--A): this heuristic stipulates that the subject term of the conclusion should match the subject term of the least-informative premise, when allowable. 
+A third heuristic (``attachment'') determines the ordering of the terms in the conclusion (A--C vs. C--A): this heuristic stipulates that the subject term of the conclusion should match the subject term of the least-informative premise, when allowable, similar in spirit to the $\beta$ ``irrationality'' parameter used in the Bayesian data analysis of the Rational Speech Act models. 
 
-Two more heuristics determine the confidence (or, probability) of each the candidate conclusions. 
+Two more heuristics determine the confidence (or, probability) of each of the candidate conclusions. 
 Foremost, the ``max-heuristic'' stipulates the the probability of a candidate conclusion is proportional to the informativity of the most informative premise.
 The ``O-heuristic'' additionally downweights conclusions that use the ``some...not'' quantifier.
-In the implementation of this model that we use, these heuristics are parameterized by 4 parameters, which govern the confidence placed in conclusions of each of the four quantifiers (all, some, some...not, and none).
+In the implementation of the Probability Heuristics model that we use, these heuristics are parameterized by 4 parameters, which govern the confidence placed in conclusions of each of the four quantifiers (all, some, some...not, and none).
 
 \subsubsection{Quantitative comparison}
 
@@ -1279,8 +1279,8 @@ We constructed bootstrapped 95\% confidence intervals for the model predictions 
 The mReasoner and Probability Heuristics models with parameters fit globally to the whole data set (group-level models) perform quite poorly overall (Figure \ref{fig:altModels}). 
 The models largely make categorical predictions (1s or 0s) whereas the aggregated human data is graded.
 With parameters fit to individual participants and predictions aggregated, the mReasoner and Probability Heuristics models perform quite a bit better and comparable to our Rational Speech Act models in terms of their correlation and mean squared errors.
-The individual-level parameterization of the models use a different set of parameters for each of the 139 participants in the task, however, yielding a total number of parameters that is 1-to-2 orders of magnitude larger than the the group-level versions of these models and our Rational Speech Act models (Figure \ref{fig:altModels}).\footnote{We discuss model complexity here in a coarse-grained manner. The PHM parameters in the \citeA{riesterer2020models} implementation are binary and thus do not add to model complexity in the same way as continuous parameters do. Still, we think that the approximate complexity of the models can be appreciated by their order-of-magnitude difference in the number of the parameters.}
-These results suggest that these alternative theories encode process-level hypotheses that may be well-suited to model an individual participant's reasoning behavior, but are insufficient to adequately describe the computational problem that human reasoners are aiming to achieve. 
+The individual-level parameterization of the models use a different set of parameters for each of the 139 participants in the task, however, yielding a total number of parameters that is 1-to-2 orders of magnitude larger than the the group-level versions of these models and our Rational Speech Act models (Figure \ref{fig:altModels}).\footnote{We discuss model complexity here in a coarse-grained manner. The PHM parameters in the \citeA{riesterer2020models} implementation are binary and thus do not add to model complexity in the same way as continuous parameters do. Still, we think that the approximate complexity of the models can be appreciated by their order-of-magnitude difference in the number of parameters.}
+These results suggest that these alternative theories encoding process-level hypotheses may be well-suited to model an individual participant's reasoning behavior, but are insufficient to adequately describe the computational problem that human reasoners are aiming to achieve. 
 
 %The group-level version of the mReasoner model has 4 parameters and PHM has 5.
 %Their corresponding individual-level models have 556 ($4\times 139$) and 695 ($5 \times 139$) parameters.
@@ -1335,9 +1335,11 @@ When their beliefs are not substantially changed by hearing the premises (e.g., 
 To our knowledge, this formalization is the first substantive hypothesis about how the \emph{nothing follows} conclusion can be rationally produced in the syllogistic reasoning task.
 %\mht{change last sentence:: This model serves as a substantial contribution to the syllogistic reasoning literature, as the formalization and treatment of the \emph{nothing follows} conclusion is something that has been missed from extant proposals \cite{riesterer2020modeling}}.
 
+\subsection{Extending the framework}
+
 Our approach to syllogistic reasoning is at its core a Bayesian approach, where the premises of a syllogism update a reasoner's prior beliefs about the relationship between three properties. 
 In our modeling, we did not assume anything substantive about these prior beliefs, except that they were constant across all syllogisms. %, and we used Bayesian data analysis to infer the prior beliefs used in the reasoner model, a kind of ``descriptive Bayesian'' approach \cite{tauber2017bayesian}.
-Prior beliefs can, however, form the basis for formalizing hypotheses about how the content of the syllogism (i.e., the content of the particular terms: A, B, C) affects reasoning, a topic known that ``belief bias'' that has been of interest to psychologists for decades \cite{Oakhill1989, Oakhill1993, Cherubini1998}.
+Prior beliefs can, however, form the basis for formalizing hypotheses about how the content of the syllogism (i.e., the content of the particular terms: A, B, C) affects reasoning, a topic known as ``belief bias'' that has been of interest to psychologists for decades \cite{Oakhill1989, Oakhill1993, Cherubini1998}.
 For example, \citeA{tessler2015understanding} found that some content effects in syllogistic reasoning could be captured by empirically measuring the relevant prior beliefs and using them in a model similar to that presented here.
 Further work should look to these prior beliefs to formalize hypotheses about how world knowledge rationally affects reasoning, which could speak to outstanding debates about whether these effects should be considered a ``bias'' \cite<e.g.,>{Klauer2000, Garnham2005, Dube2011}. 
 
@@ -1350,7 +1352,7 @@ Indeed, we have explored several versions of this kind of pragmatic model in the
 Specifically, we formalized pragmatic listener models that interpret the premises from a rational speaker who wants to convey information about the full state as well as a speaker who wants to convey information about a number of different Questions Under Discussion \cite{Roberts2004QUD}, in which the speaker only cares about conveying information about the $A, C$ terms of the state; see also \citeNP{tessler2014some} for yet a different formulation of pragmatic interpretation of premises which achieves a comparable fit to that presented here.
 }
 We do not take this null result as evidence that pragmatics does not enter into the interpretation process of a syllogism.
-We have only considered one particular experimental protocol and data set (from Ragni et al., 2019), where participants were presented with all 64 syllogisms, which potentially reveals the generative process of the syllogism (parametric recombination of quantifiers and term orders) and perhaps induces a more logical analysis of the syllogisms.
+We have only considered one particular experimental protocol and data set (from Ragni et al., 2019), where participants were presented with all 64 syllogisms; this experimental protocol potentially reveals to the participant the generative process of the syllogism (parametric recombination of quantifiers and term orders), which could induce a more logical analysis of the syllogisms.
 As well, the participants were from Western, educated, industrialized, rich, democratic societies, a feature not shared with most other human beings \cite{henrich2010most}. 
 % \mht{confirm the participants of Ragni et al. were WEIRD?}.
 Reasoning with syllogisms varies appreciably across individuals \cite{galotti1986individual, bacon2003individual} and substantially so in illiterate persons \cite{dias2005reasoning}.
@@ -1358,20 +1360,30 @@ In other contexts or populations, we may see that reasoning with syllogisms as a
 Extending our modeling approach with a pragmatic interpretation component will be important for analyzing such behavior.\footnote{
 It is additionally noteworthy that the pragmatic interpretation models we explored break the independence of the likelihood of utterances that is assumed by the literal interpretation model (Eq.~\ref{eq:L0}). We believe pragmatics provides a plausible mechanism by which the likelihood of otherwise independent utterances can become dependent (namely, via a rational speaker choosing to produce the two utterances).}
 
-Human reasoning with syllogisms has captured the attention of theoretical and empirical psychologists from the time of \citeA{Storring1908} and many theoretical frameworks have been brought to bear on these capacities for the last half-century.
-Our approach represents a marriage of the structured, Bayesian perspective on cognition \cite{tenenbaum2011grow} with principles of natural language, formalized in models of rational communication \cite{Frank2012a, Goodman2013, scontras2018probabilistic}. 
-Many contemporary cognitive modeling frameworks are concerned with the computational constraints that the mind may operate within, and such approaches to these constraints might help explain the residual variability that our pragmatics models left unexplained.
-One such new framework for the integration of processing constraints into rational models of cognition -- \emph{resource rational analysis} \cite{griffiths2015rational, lieder2020resource}  -- could be brought to bear directly on our probabilistic pragmatics perspective in a number of ways. 
+\subsection{Relationship to other frameworks for extending rationality}
+
+Human reasoning with syllogisms has captured the attention of theoretical and empirical psychologists from the time of \citeA{Storring1908}, and many theoretical frameworks have been brought to bear on these capacities for the last half-century.
+Our approach extends the structured, Bayesian perspective on cognition \cite{tenenbaum2011grow} with principles of natural language, formalized in models of rational communication \cite{Frank2012a, Goodman2013, scontras2018probabilistic}. 
+Many contemporary cognitive modeling frameworks are instead concerned with extending notions of rationality by incorporating computational constraints that the mind may operate within, and such approaches to these constraints might help explain the residual variability that our pragmatics models left unexplained.
+We briefly discuss the relationship of our approach to three approaches to extending rationality: resource rationality, quantum models of cognition, and ecologically rational heuristics.
+
+A recent powerful framework for the integration of processing constraints into rational models of cognition -- \emph{resource rational analysis} \cite{griffiths2015rational, lieder2020resource}  -- could be brought to bear directly on our probabilistic pragmatics perspective in a number of ways. 
 In contrast to our Belief Alignment speaker model who aims to communicate their entire belief distribution over states, a resource rational speaker might instead draw a few samples from its posterior distribution on states and seek to convey those states succinctly \cite<cf.,>{vul2014one}.
-Furthermore, a resource rational pragmatic reasoner (behaving as a listener) may not fully represent their interlocutor's (the speaker's) knowledge state or goals, leading to asymmetries in how the listener/reasoner responds to the speaker's argument~vs.~how the speaker might have intended \cite{hawkins2021division}.
-Quantum probability models of cognition are similar to Bayesian models but take as their starting point the axioms of quantum probability theory \cite{pothos2013can}. One key difference between quantum and classical theories of probability is the order dependence of conjunctive events under quantum theory. This lens in particular could be used for investigating deviations from Bayesian rational reasoning between logically identical syllogisms, whose premises are order reversed (e.g., \emph{Some As are Bs / All Bs are Cs} vs. \emph{All Bs are Cs / Some As are Bs}); at the same time, such divergences could also be addressed from a probabilistic pragmatics perspective (see Footnote 11). 
-Finally, heuristic accounts have had noteworthy success in explaining human syllogistic reasoning (e.g., the Probability Heuristics Model; \citeNP{Chater1999}); such a perspective could be extended with the contemporary adaptive toolbox approach, by incorporating the interaction between the cognitive agent and the environment \cite{hertwig2019taming}. 
+Furthermore, a resource rational pragmatic reasoner (behaving as a listener) may not fully represent their interlocutor's (the speaker's) knowledge state or goals due to computational, leading to asymmetries in how the listener/reasoner responds to the speaker's argument~vs.~how the speaker might have intended \cite{hawkins2021division}; this kind of wrinkle introduced by resource rational considerations could have important implications for the pragmatic perspective on syllogistic reasoning.
+
+Quantum probability models of cognition are similar to Bayesian models but take as their starting point the axioms of quantum probability theory \cite{pothos2013can}. One key difference between quantum and classical theories of probability is the order dependence of conjunctive events under quantum theory. This lens in particular could be used for investigating deviations from Bayesian rational reasoning between logically identical syllogisms, whose premises are order reversed (e.g., \emph{Some As are Bs / All Bs are Cs} vs. \emph{All Bs are Cs / Some As are Bs}).
+At the same time, such divergences could also result from a probabilistic pragmatics perspective, in which a speaker deciding to say two utterances in a particular order could lead to a non-independence of the likelihood of those utterances (see also Footnote 11). 
+
+Heuristic accounts have had remarkable success in explaining human syllogistic reasoning (e.g., the Probability Heuristics Model; \citeNP{Chater1999}); such a perspective could be extended with the contemporary adaptive toolbox approach, by incorporating the interaction between the cognitive agent and the environment \cite{hertwig2019taming}. 
 Such an extension could be productive in describing the ecological setting in which human syllogistic reasoning can be best understood and how that might vary across culture. 
 The heuristic perspective may, however, turn out to look a lot like a resource rational implementation of the Bayesian model (i.e., the line between an algorithmic implementation of rational inference and heuristics for inference may turn out to be superficial; see also e.g., \citeNP{lieder2018anchoring}). 
 
 
 % Aristotle invented syllogisms in order to tame -- to make more precise -- the human capacities for reasoning.
 % Cognitive psychologists turned formalism back on itself and created a measuring stick by which to evaluate human reasoning. 
+
+\subsection{Conclusion}
+
 
 We articulate the verbal reasoning machinery that underlies the human capacity to reason with deductive arguments. 
 This machinery is composed of three ingredients: logic, probability, and pragmatics. 
