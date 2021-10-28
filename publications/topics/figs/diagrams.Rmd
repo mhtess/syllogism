@@ -1,5 +1,5 @@
 ---
-title: "diagrams"
+title: "Visualizations of sets of venn diagrams (Figs 3 & 4)"
 author: "MH Tessler"
 date: "10/29/2020"
 output: pdf_document
@@ -17,44 +17,34 @@ set.seed(20201027)
 ```
 
 
-Helper functions
+# Helper function to make Venn Diagram from data frame
 
 ```{r}
 genes <- paste("sample",1:100000,sep="")
 
-get_samples_from_df = function(df, field){
-  data.frame(df[[field]]) %>%
-    pivot_longer(-probs, names_to = "key", values_to = "val") %>%
-    group_by(key) %>%
-    summarize(prob = sum(val * probs),
-              src = field) %>%
-    rwebppl::get_samples(., num_samples = 1000)
-}
-
-genes <- paste("sample",1:100000,sep="")
-
-
-get_venn_samples <- function(df_samples){
-  
-  make_venn_sample <- function(region, i){
-    # print(i)
-    samp = genes[i]
-    A = ifelse(str_detect(region, "A"), samp, NA)
-    B = ifelse(str_detect(region, "B"), samp, NA)
-    C = ifelse(str_detect(region, "C"), samp, NA)
-     return(data.frame(A = A, B = B, C = C))
-  }
-  x <- imap(df_samples, make_venn_sample) %>%
-    bind_rows(.)
-
-  list(
-    A = x$A[!is.na(x$A)],
-    B = x$B[!is.na(x$B)],
-    C = x$C[!is.na(x$C)]
-  )
-}
 
 venn_diagram_from_df <- function(df){
+
+  get_venn_samples <- function(df_samples){
+  
+    make_venn_sample <- function(region, i){
+      # print(i)
+      samp = genes[i]
+      A = ifelse(str_detect(region, "A"), samp, NA)
+      B = ifelse(str_detect(region, "B"), samp, NA)
+      C = ifelse(str_detect(region, "C"), samp, NA)
+       return(data.frame(A = A, B = B, C = C))
+    }
+    x <- imap(df_samples, make_venn_sample) %>%
+      bind_rows(.)
+  
+    list(
+      A = x$A[!is.na(x$A)],
+      B = x$B[!is.na(x$B)],
+      C = x$C[!is.na(x$C)]
+    )
+  }
+    
   df %>%
     gather(key, prob) %>%
     rwebppl::get_samples(., num_samples = 100) %>%
@@ -69,41 +59,8 @@ venn_diagram_from_df <- function(df){
 }
 ```
 
-Data frames for Venn Diagrams
 
-```{r}
-
-empty.venn <- data.frame(
-  A = 0, B = 0, C = 0, 
-  AB = 0, BC = 0, AC = 0,
-  ABC = 0
-)
-
-barbara.venn <- data.frame(
-  A = 0, B = 0, C = 1, 
-  AB = 1, BC = 1, AC = 0,
-  ABC = 1
-)
-
-allsome.venn <- data.frame(
-  A = 0, B = 1, C = 1, 
-  AB = 1, BC = 1, AC = 0,
-  ABC = 0.5
-)
-```
-
-
-# Visualizations
-
-```{r}
-plot1 <- venn_diagram_from_df(empty.venn) + guides(fill = F)
-plot2 <- venn_diagram_from_df(barbara.venn) + guides(fill = F)
-plot3 <- venn_diagram_from_df(allsome.venn) + guides(fill = F)
-
-plot_grid(plot1, plot2, plot3, ncol=3,
-          labels = c("i", "ii", "iii"))
-```
-
+# Figure 3 
 
 All As are Bs
 All Bs are Cs
@@ -143,12 +100,145 @@ aa3 <- venn_diagram_from_df(all.all.3) + guides(fill = F)
 aa4 <- venn_diagram_from_df(all.all.4) + guides(fill = F)
 
 
-plot_grid(aa1, aa2, aa3, aa4, ncol=4)#,
-          #labels = c("i", "ii", "iii", "iv"))
+plot_grid(aa1, aa2, aa3, aa4, ncol=4)
 
-ggsave("diagrams_allAB_allBC.pdf", width = 9, height = 2.25)
+# ggsave("diagrams_allAB_allBC.pdf", width = 9, height = 2.25)
+```
+
+
+# Figure 4
+
+All As are Bs
+All Cs are Bs
+
+[
+  'ABC',       'AB;ABC',
+  'ABC;BC',    'AB;BC',
+  'AB;ABC;BC', 'ABC;B',
+  'AB;ABC;B',  'ABC;B;BC',
+  'AB;B;BC',   'AB;ABC;B;BC'
+]
+
+```{r}
+
+all.all.3.1 <- data.frame(
+  A = 0, B = 0, C = 0, 
+  AB = 0, BC = 0, AC = 0,
+  ABC = 1
+)
+
+all.all.3.2 <- data.frame(
+  A = 0, B = 0, C = 0, 
+  AB = 1, BC = 0, AC = 0,
+  ABC = 1
+)
+
+all.all.3.3 <- data.frame(
+  A = 0, B = 0, C = 0, 
+  AB = 0, BC = 1, AC = 0,
+  ABC = 1
+)
+
+all.all.3.4 <- data.frame(
+  A = 0, B = 0, C = 0, 
+  AB = 1, BC = 1, AC = 0,
+  ABC = 0
+)
+
+all.all.3.5 <- data.frame(
+  A = 0, B = 0, C = 0, 
+  AB = 1, BC = 1, AC = 0,
+  ABC = 1
+)
+
+all.all.3.6 <- data.frame(
+  A = 0, B = 1, C = 0, 
+  AB = 0, BC = 0, AC = 0,
+  ABC = 1
+)
+
+all.all.3.7 <- data.frame(
+  A = 0, B = 1, C = 0, 
+  AB = 1, BC = 0, AC = 0,
+  ABC = 1)
+
+all.all.3.8 <- data.frame(
+  A = 0, B = 1, C = 0, 
+  AB = 0, BC = 1, AC = 0,
+  ABC = 1)
+
+all.all.3.9 <- data.frame(
+  A = 0, B = 1, C = 0, 
+  AB = 1, BC = 1, AC = 0,
+  ABC = 0
+)
+
+all.all.3.10 <- data.frame(
+  A = 0, B = 1, C = 0, 
+  AB = 1, BC = 1, AC = 0,
+  ABC = 1
+)
+
+aa21 <- venn_diagram_from_df(all.all.3.1) + guides(fill = F)
+aa22 <- venn_diagram_from_df(all.all.3.2) + guides(fill = F)
+aa23 <- venn_diagram_from_df(all.all.3.3) + guides(fill = F)
+aa24 <- venn_diagram_from_df(all.all.3.4) + guides(fill = F)
+aa25 <- venn_diagram_from_df(all.all.3.5) + guides(fill = F)
+aa26 <- venn_diagram_from_df(all.all.3.6) + guides(fill = F)
+aa27 <- venn_diagram_from_df(all.all.3.7) + guides(fill = F)
+aa28 <- venn_diagram_from_df(all.all.3.8) + guides(fill = F)
+aa29 <- venn_diagram_from_df(all.all.3.9) + guides(fill = F)
+aa210 <- venn_diagram_from_df(all.all.3.10) + guides(fill = F)
+
+
+
+plot_grid(aa21, aa22, aa23, aa24, aa25,
+          aa26, aa27, aa28, aa29, aa210, ncol=5)
+
+# ggsave("diagrams_allAB_allCB.pdf", width = 10, height = 4)
 
 ```
+
+# Misc other diagrams
+
+
+Data frames for Venn Diagrams
+
+```{r}
+
+empty.venn <- data.frame(
+  A = 0, B = 0, C = 0, 
+  AB = 0, BC = 0, AC = 0,
+  ABC = 0
+)
+
+barbara.venn <- data.frame(
+  A = 0, B = 0, C = 1, 
+  AB = 1, BC = 1, AC = 0,
+  ABC = 1
+)
+
+allsome.venn <- data.frame(
+  A = 0, B = 1, C = 1, 
+  AB = 1, BC = 1, AC = 0,
+  ABC = 0.5
+)
+```
+
+
+# Visualizations
+
+```{r}
+plot1 <- venn_diagram_from_df(empty.venn) + guides(fill = F)
+plot2 <- venn_diagram_from_df(barbara.venn) + guides(fill = F)
+plot3 <- venn_diagram_from_df(allsome.venn) + guides(fill = F)
+
+plot_grid(plot1, plot2, plot3, ncol=3,
+          labels = c("i", "ii", "iii"))
+```
+
+
+
 
 
 No As are Bs
@@ -289,7 +379,170 @@ plot_grid(ns1, ns2, ns3, ns4,
           ns9, ns10, ns11, ns12,
           ns13, ns14, ns15, ns16, ncol=4)
 
-ggsave("diagrams_noneAB_someBC.pdf", width = 9, height = 7)
+# ggsave("diagrams_noneAB_someBC.pdf", width = 9, height = 7)
 
 ```
+
+No As are Bs
+No Bs are Cs
+
+[
+  '',       'AC',
+  'A',     'A;AC',
+  'B',     'B;AC',
+  'A;B',   'A;B;AC',
+  
+  'C',     'AC;C',
+  'A;C',   'A;AC;C',
+  'B;C',   'B;AC;C',
+  'A;B;C', 'A;B;AC;C'
+]
+
+       C     B    BC     A    AC    AB   ABC
+1  FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+2  FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
+3  FALSE FALSE FALSE  TRUE FALSE FALSE FALSE
+4  FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE
+5  FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
+6  FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE
+7  FALSE  TRUE FALSE  TRUE FALSE FALSE FALSE
+8  FALSE  TRUE FALSE  TRUE  TRUE FALSE FALSE
+9   TRUE FALSE FALSE FALSE FALSE FALSE FALSE
+10  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE
+11  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE
+12  TRUE FALSE FALSE  TRUE  TRUE FALSE FALSE
+13  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE
+14  TRUE  TRUE FALSE FALSE  TRUE FALSE FALSE
+15  TRUE  TRUE FALSE  TRUE FALSE FALSE FALSE
+16  TRUE  TRUE FALSE  TRUE  TRUE FALSE FALSE
+
+
+```{r}
+
+none.none.1 <- data.frame(
+  A = 0, B = 0, C = 0, 
+  AB = 0, BC = 0, AC = 0,
+  ABC = 0
+)
+
+none.none.2 <- data.frame(
+  A = 0, B = 0, C = 0, 
+  AB = 0, BC = 0, AC = 1,
+  ABC = 0
+)
+
+none.none.3 <- data.frame(
+  A = 1, B = 0, C = 0, 
+  AB = 0, BC = 0, AC = 1,
+  ABC = 0
+)
+
+none.none.4 <- data.frame(
+  A = 1, B = 0, C = 0, 
+  AB = 0, BC = 0, AC = 0,
+  ABC = 0
+)
+
+none.none.5 <- data.frame(
+  A = 0, B = 1, C = 0, 
+  AB = 0, BC = 0, AC = 0,
+  ABC = 0
+)
+
+none.none.6 <- data.frame(
+  A = 0, B = 1, C = 0, 
+  AB = 0, BC = 0, AC = 1,
+  ABC = 0
+)
+
+none.none.7 <- data.frame(
+  A = 1, B = 1, C = 0, 
+  AB = 0, BC = 0, AC = 0,
+  ABC = 0
+)
+
+none.none.8 <- data.frame(
+  A = 1, B = 1, C = 0, 
+  AB = 0, BC = 0, AC = 1,
+  ABC = 0
+)
+
+none.none.9 <- data.frame(
+  A = 0, B = 0, C = 1, 
+  AB = 0, BC = 0, AC = 0,
+  ABC = 0
+)
+
+none.none.10 <- data.frame(
+  A = 0, B = 0, C = 1, 
+  AB = 0, BC = 0, AC = 1,
+  ABC = 0
+)
+
+none.none.11 <- data.frame(
+  A = 1, B = 0, C = 1, 
+  AB = 0, BC = 0, AC = 1,
+  ABC = 0
+)
+
+none.none.12 <- data.frame(
+  A = 1, B = 0, C = 1, 
+  AB = 0, BC = 0, AC = 0,
+  ABC = 0
+)
+
+none.none.13 <- data.frame(
+  A = 0, B = 1, C = 1, 
+  AB = 0, BC = 0, AC = 0,
+  ABC = 0
+)
+
+none.none.14 <- data.frame(
+  A = 0, B = 1, C = 1, 
+  AB = 0, BC = 0, AC = 1,
+  ABC = 0
+)
+
+none.none.15 <- data.frame(
+  A = 1, B = 1, C = 1, 
+  AB = 0, BC = 0, AC = 0,
+  ABC = 0
+)
+
+none.none.16 <- data.frame(
+  A = 1, B = 1, C = 1, 
+  AB = 0, BC = 0, AC = 1,
+  ABC = 0
+)
+
+ns1 <- venn_diagram_from_df(none.none.1) + guides(fill = F)
+ns2 <- venn_diagram_from_df(none.none.2) + guides(fill = F)
+ns3 <- venn_diagram_from_df(none.none.3) + guides(fill = F)
+ns4 <- venn_diagram_from_df(none.none.4) + guides(fill = F)
+ns5 <- venn_diagram_from_df(none.none.5) + guides(fill = F)
+ns6 <- venn_diagram_from_df(none.none.6) + guides(fill = F)
+ns7 <- venn_diagram_from_df(none.none.7) + guides(fill = F)
+ns8 <- venn_diagram_from_df(none.none.8) + guides(fill = F)
+ns9 <- venn_diagram_from_df(none.none.9) + guides(fill = F)
+ns10 <- venn_diagram_from_df(none.none.10) + guides(fill = F)
+ns11 <- venn_diagram_from_df(none.none.11) + guides(fill = F)
+ns12 <- venn_diagram_from_df(none.none.12) + guides(fill = F)
+ns13 <- venn_diagram_from_df(none.none.13) + guides(fill = F)
+ns14 <- venn_diagram_from_df(none.none.14) + guides(fill = F)
+ns15 <- venn_diagram_from_df(none.none.15) + guides(fill = F)
+ns16 <- venn_diagram_from_df(none.none.16) + guides(fill = F)
+
+
+
+
+plot_grid(ns1, ns2, ns3, ns4,
+          ns5, ns6, ns7, ns8,
+          ns9, ns10, ns11, ns12,
+          ns13, ns14, ns15, ns16, ncol=4)
+
+ggsave("diagrams_noneAB_noneBC.pdf", width = 9, height = 7)
+
+```
+
+
 
